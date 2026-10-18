@@ -883,6 +883,7 @@ def test_verify_wheel_execution(temp_output_dir: Path) -> None:
             extra_context={
                 "project_name": "Wheel Smoke App",
                 "include_cli": "yes",
+                "python_version": f"{sys.version_info.major}.{sys.version_info.minor}",
             },
         )
     )
@@ -930,6 +931,7 @@ def test_lazy_load_behavior(temp_output_dir: Path) -> None:
             extra_context={
                 "project_name": "Lazy App",
                 "include_cli": "yes",
+                "python_version": f"{sys.version_info.major}.{sys.version_info.minor}",
             },
         )
     )
