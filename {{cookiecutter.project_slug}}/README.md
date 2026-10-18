@@ -202,3 +202,12 @@ Distributed under the {{ cookiecutter.license }} License. See [LICENSE](LICENSE)
 {% else %}
 All rights reserved.
 {% endif %}
+
+---
+
+<p align="center">
+  <sub>
+    Built with the <a href="https://github.com/bwrob/zenith">Zenith</a> template
+    by <a href="https://bwrob.dev">bwrob</a>.
+  </sub>
+</p>

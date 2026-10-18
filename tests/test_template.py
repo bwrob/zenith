@@ -216,6 +216,10 @@ def test_default_generation(temp_output_dir: Path) -> None:
     assert (project_dir / "tests" / "__snapshots__" / "test_core.ambr").exists()
     assert (project_dir / "tests" / "test_cli.py").exists()
     assert (project_dir / "docs" / "index.md").exists()
+    docs_index_text = (project_dir / "docs" / "index.md").read_text()
+    assert "https://github.com/bwrob/zenith" in docs_index_text
+    assert "https://bwrob.dev" in docs_index_text
+    assert "Built with the <a href=" in docs_index_text
     assert (project_dir / "docs" / "changelog.md").exists()
     assert (project_dir / "docs" / "javascripts" / "mathjax.js").exists()
     assert (project_dir / "docs" / "javascripts" / "termynal.js").exists()
@@ -581,6 +585,9 @@ def test_default_generation(temp_output_dir: Path) -> None:
     assert "CLI Layer" in readme_text
     assert "license-MIT" in readme_text
     assert "Verify Wheel" in readme_text
+    assert "https://github.com/bwrob/zenith" in readme_text
+    assert "https://bwrob.dev" in readme_text
+    assert "Built with the <a href=" in readme_text
 
     # Verify AGENTS.md content
     agents_text = (project_dir / "AGENTS.md").read_text()
@@ -808,6 +815,9 @@ def test_no_license(temp_output_dir: Path) -> None:
     assert "badge/license" not in readme_text
     assert "All rights reserved." in readme_text
     assert "[LICENSE](LICENSE)" not in readme_text
+    assert "https://github.com/bwrob/zenith" in readme_text
+    assert "https://bwrob.dev" in readme_text
+    assert "Built with the <a href=" in readme_text
 
 
 def test_package_name_keyword_validation(temp_output_dir: Path) -> None:
