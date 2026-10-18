@@ -131,8 +131,8 @@ trigger a Tach interface violation error.
 `tach check-external` (external third-party dependency hygiene). `tach check-external`
 automatically catches:
 
-1. **Unused dependencies**: Packages declared in `[project.dependencies]` that are never
-   imported in `src/` (controlled by `[rules] unused_external_dependencies = "error"`,
+1. **Unused dependencies**: Packages declared in `[project.dependencies]` that the codebase
+   never imports in `src/` (controlled by `[rules] unused_external_dependencies = "error"`,
    which is `"error"` by default).
 2. **Transitive or dev-only imports**: Importing an undeclared transitive
    dependency (such as `click` via `typer`) or a dev dependency inside `src/`.

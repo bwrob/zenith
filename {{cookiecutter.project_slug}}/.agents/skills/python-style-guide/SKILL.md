@@ -19,7 +19,7 @@ subtyping, functional transformation, and static typing.
 ## 1. Core Principles
 
 1. **Explicit, Static Precision**: Every signature, return value, and interface
-   boundary must be fully typed. If a type cannot be expressed, refactor the design.
+   boundary must have complete types. If you cannot express a type, refactor the design.
 2. **Data & Behavior Separation**: Model data with immutable, transparent
    records (`dataclass(frozen=True)`). Express operations as pure functions.
 3. **Composition over Inheritance**: Never use subclassing for code reuse. Compose

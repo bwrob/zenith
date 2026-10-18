@@ -1,7 +1,7 @@
 ---
 description: >-
   Workflow for proposing, drafting, reviewing, and updating Architecture Decision Records (ADRs) in Zenith projects.
-  Enforces the Michael Nygard MADR standard, numbering sequences, status lifecycles, and architectural invariants.
+  Enforces the MADR decision format, numbering sequences, status lifecycles, and architectural invariants.
   Use when proposing new architectural choices, documenting significant design decisions, superseding prior decisions, or updating docs/adr/.
   Triggers: adr, architecture decision record, architectural decision, record decision, create adr, document architecture, new adr.
 name: adr
@@ -24,7 +24,7 @@ Each ADR follows a defined lifecycle:
 
 | Status | Meaning |
 | :--- | :--- |
-| **`Proposed`** | Under design review. The team has not finalized consensus. |
+| **`Proposed`** | Under design review. The team did not reach consensus yet. |
 | **`Accepted`** | Approved by maintainers. Actively governs the codebase and architecture. |
 | **`Rejected`** | Evaluated and declined. Kept in the archive to document why the team avoided an approach. |
 | **`Superseded`** | Replaced by a later decision (for example, `Superseded by ADR-0004`). |

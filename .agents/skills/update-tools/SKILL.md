@@ -65,7 +65,7 @@ Before editing a skill, review what changed in the upgraded tool version:
 
 ---
 
-## 3. Updating the Skill Document
+## 3. Update the Skill Document
 
 Update the corresponding skill files in `{{cookiecutter.project_slug}}/.agents/skills/tool-<name>/SKILL.md`
 (and any reference docs under `references/`):
@@ -78,12 +78,12 @@ Update the corresponding skill files in `{{cookiecutter.project_slug}}/.agents/s
   - Code block line length: strictly $\le 79$ characters.
   - Frontmatter sorting: `description` before `name` (MD072).
   - Heading hierarchy: narrative content must precede subheadings (MD082).
-  - Blank lines: code fences must be surrounded by blank lines (MD031).
+  - Blank lines: place blank lines before and after code fences (MD031).
   - Embedded Python: snippets must pass `ruff check` and `ruff format`.
 
 ---
 
-## 4. Syncing Template Skills
+## 4. Sync Template Skills
 
 Zenith treats `{{cookiecutter.project_slug}}/.agents/skills/` as the canonical source
 of truth for shared skills. Root skills in `.agents/skills/` are relative symlinks.

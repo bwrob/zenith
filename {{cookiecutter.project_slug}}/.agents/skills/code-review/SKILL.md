@@ -47,7 +47,7 @@ It establishes the quality gates that all code changes must satisfy before merge
      Omit speculative nitpicks and hypothetical race conditions without a concrete trigger path.
      Skip issues enforced by automated CI gates unless currently failing.
      Omit stylistic preferences not codified in `python-style-guide`.
-     If a finding cannot be grounded in a failing input or an explicit rule, leave it out.
+     If you cannot ground a finding in a failing input or an explicit rule, leave it out.
 
 ---
 

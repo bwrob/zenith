@@ -1,9 +1,9 @@
 ---
 name: asd-ste100
 description: >-
-  Use when text must be parsed without human review.
+  Use when an agent must parse text without human review.
   Applies to tool descriptions, error messages, inter-agent instructions, system prompts, and status reports.
-  Triggers: disambiguate, STE100 rewrite, apply Simplified Technical English, plain-language rewrite, controlled-language rewrite, rewrite so an agent cannot misread this.
+  Triggers: disambiguate, STE100 rewrite, apply Simplified Technical English, plain-language rewrite, controlled-language rewrite, rewrite so an agent cannot misread the text.
   Not for creative or marketing copy.
 version: 0.5.0
 ---

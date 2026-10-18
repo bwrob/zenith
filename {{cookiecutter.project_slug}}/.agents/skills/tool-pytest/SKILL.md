@@ -90,8 +90,8 @@ doctest_optionflags    =
 
 Coverage uses Python 3.12+'s low-overhead PEP 669 `sys.monitoring` engine (`core = sysmon`).
 It tracks subprocesses and `os._exit()` calls automatically (`patch = subprocess, _exit`).
-It monitors both `src/` and `tests/` so that untested helper functions or fixture
-branches are caught immediately:
+It monitors both `src/` and `tests/` so that pytest catches untested helper functions
+or fixture branches immediately:
 
 ```ini
 [run]

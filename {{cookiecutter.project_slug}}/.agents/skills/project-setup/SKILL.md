@@ -36,7 +36,7 @@ Before you set up the environment, check that required system tools are availabl
    ```bash
    uv --version
    ```
-   If `uv` is not installed, install it with the official script:
+   If your system lacks `uv`, install it with the official script:
    ```bash
    curl -LsSf https://astral.sh/uv/install.sh | sh
    ```
@@ -111,7 +111,7 @@ uv run poe verify-wheel
 
 ### Missing or Corrupted Virtual Environment
 
-If `.venv/` is broken or inconsistent:
+If `.venv/` breaks or becomes inconsistent:
 
 ```bash
 rm -rf .venv

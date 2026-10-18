@@ -42,9 +42,9 @@ flowchart LR
   1. A live reference for end users and AI coding agents.
   2. A real-world canary test suite verifying that every tool, test, static typing, and workflow succeeds.
   3. The deployment origin for documentation hosted on GitHub Pages.
-- **Cardinal Rule**: **Never make ad-hoc edits exclusively inside `zenith-example`.** Any manual changes
-  in `zenith-example` will be overwritten when `sync_example.py` runs. All bug fixes, configuration
-  updates, and feature additions must originate in `zenith/{{cookiecutter.project_slug}}` or `zenith/hooks/`.
+- **Cardinal Rule**: **Never make ad-hoc edits exclusively inside `zenith-example`.** The
+  `sync_example.py` script overwrites manual changes in `zenith-example`. All bug fixes,
+  configuration updates, and feature additions must originate in `zenith/{{cookiecutter.project_slug}}` or `zenith/hooks/`.
 
 ---
 
@@ -167,7 +167,7 @@ gh run view <run-id> --repo bwrob/zenith-example --log-failed
 Common root causes:
 
 - **Coverage drops below 100%**: A new code path in `src/` or `_lazy.py` lacks unit tests in `tests/test_core.py`.
-- **TOML formatting failure**: A newly introduced or modified `.toml` file was not formatted according to `.taplo.toml`.
+- **TOML formatting failure**: A newly introduced or modified `.toml` file does not match `.taplo.toml` formatting.
 - **Markdown or syntax issue**: Documentation contains malformed links, unescaped MathJax equations, or unrendered code blocks.
 - **Lockfile mismatch**: `uv.lock` in the showcase repository requires dependency resynchronization.
 
