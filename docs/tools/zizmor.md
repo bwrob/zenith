@@ -1,0 +1,63 @@
+# zizmor: CI Security Static Analysis
+
+[![Tool: zizmor](https://img.shields.io/badge/security-zizmor-red.svg)](https://woodruffw.github.io/zizmor/)
+
+`zizmor` is a static security analysis tool for GitHub Actions CI/CD workflows written in Rust by William Woodruff.
+
+---
+
+## What It Does
+
+`zizmor` parses GitHub Actions YAML workflow manifests to detect security vulnerabilities, insecure patterns, and potential attack vectors. It identifies unescaped context interpolations that expose steps to script injection, flags workflows lacking explicit minimal permission blocks, and warns against unpinned third-party actions referencing mutable branch heads.
+
+By checking for patterns where fork pull requests or untrusted triggers could exfiltrate secrets, zizmor secures CI pipelines before changes are deployed.
+
+---
+
+## Why It's in Zenith
+
+Continuous integration pipelines represent high-value attack surfaces because they hold deployment credentials, PyPI release tokens, and code signing keys. AI coding assistants frequently introduce insecure CI patterns, such as unquoted GitHub event contexts in run steps.
+
+Zenith runs zizmor as an automated security quality gate in both pre-commit hooks and scheduled CI pipelines, guaranteeing that infrastructure-as-code remains hardened against supply-chain and injection attacks.
+
+---
+
+## Configuration in Zenith
+
+Configured in `.zizmor.yml` at the project root:
+
+```python exec="1" result="yaml"
+from pathlib import Path
+
+path = Path("{{cookiecutter.project_slug}}/.zizmor.yml")
+if not path.exists():
+    path = Path(".zizmor.yml")
+print(path.read_text().strip())
+```
+
+And integrated into `.pre-commit-config.yaml`:
+
+```yaml
+- repo: https://github.com/woodruffw/zizmor-pre-commit
+  rev: v1.4.1
+  hooks:
+      - id: zizmor
+        name: 🛡️ zizmor · Audit GitHub Actions workflows
+```
+
+---
+
+## Key Invocations
+
+```bash
+uv run zizmor .github/workflows/   # Run static security audit on CI workflows
+uv run pre-commit run zizmor -a    # Run zizmor via pre-commit
+```
+
+---
+
+## Upstream Documentation
+
+- [zizmor Official Documentation](https://woodruffw.github.io/zizmor/)
+- [zizmor GitHub Repository](https://github.com/woodruffw/zizmor)
+- [GitHub Actions Security Hardening Guide](https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions)

@@ -7,7 +7,7 @@ SCRIPTS_DIR = (
     Path(__file__).resolve().parent.parent
     / ".agents"
     / "skills"
-    / "inspect-module-setup"
+    / "workflow-inspect-repo"
     / "scripts"
 )
 sys.path.insert(0, str(SCRIPTS_DIR))

@@ -1,0 +1,219 @@
+# ==============================================================================
+# Zensical Configuration (zensical.toml)
+#
+# Tool: Zensical (https://github.com/zensical/zensical)
+# Purpose: Modern, fast static documentation site generator configured with TOML.
+# Why it's in Zenith: Provides instant live-reloading documentation with native
+# dark/light/system mode switching, Lucide icons, Mermaid diagrams, client-side
+# MathJax integration for LaTeX math, markdown-exec for dynamic code execution,
+# and mkdocstrings for automated Python API documentation generation.
+# ==============================================================================
+
+[project]
+    edit_uri         = "edit/main/docs/"
+    repo_name        = "bwrob/zenith"
+    repo_url         = "https://github.com/bwrob/zenith"
+    site_author      = "bwrob"
+    site_description = "Zenith: An opinionated, strict Cookiecutter template for modern Python projects using uv, ruff, pyrefly, complexipy, zensical, rumdl, tach, and poethepoet."
+    site_name        = "Zenith"
+    site_url         = "https://bwrob.github.io/zenith/"
+
+    nav = [
+        { "Overview" = "index.md" },
+        { "Philosophy" = "philosophy.md" },
+        { "CI/CD Actions" = "ci-actions.md" },
+        { "Tooling Stack" = [
+            "tools/index.md",
+            { "Build & Workflow" = [
+                { "uv" = "tools/uv.md" },
+                { "Poe the Poet" = "tools/poethepoet.md" },
+                { "Typer" = "tools/typer.md" },
+                { "Cookiecutter" = "tools/cookiecutter.md" },
+            ] },
+            { "Code Quality" = [
+                { "Ruff" = "tools/ruff.md" },
+                { "Pyrefly" = "tools/pyrefly.md" },
+                { "Tach" = "tools/tach.md" },
+                { "complexipy" = "tools/complexipy.md" },
+                { "Griffe" = "tools/griffe.md" },
+                { "typos" = "tools/typos.md" },
+            ] },
+            { "Testing & Security" = [
+                { "pytest" = "tools/pytest.md" },
+                { "Coverage.py" = "tools/coverage.md" },
+                { "mutmut" = "tools/mutmut.md" },
+                { "Cosmic Ray" = "tools/cosmic-ray.md" },
+                { "zizmor" = "tools/zizmor.md" },
+            ] },
+            { "Documentation & Formatting" = [
+                { "Zensical" = "tools/zensical.md" },
+                { "rumdl" = "tools/rumdl.md" },
+                { "Taplo" = "tools/taplo.md" },
+                { "Prettier" = "tools/prettier.md" },
+                { "Typst" = "tools/typst.md" },
+                { "Termynal" = "tools/termynal.md" },
+            ] },
+        ] },
+        { "Agent Skills" = [
+            "skills/index.md",
+            { "Workflows" = "skills/workflow.md" },
+            { "Tools" = "skills/tool.md" },
+            { "Guides" = "skills/guide.md" },
+            { "Domains" = "skills/domain.md" },
+        ] },
+        { "Changelog" = "changelog.md" },
+    ]
+
+    extra_css = [
+        "stylesheets/palette.css",
+        "stylesheets/custom.css",
+        "stylesheets/termynal.css",
+    ]
+
+    extra_javascript = [
+        "javascripts/mathjax.js",
+        "https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js",
+        "javascripts/termynal.js",
+    ]
+
+    [project.validation]
+        invalid_link_anchors  = true
+        invalid_links         = true
+        shadowed_definitions  = true
+        shadowed_footnotes    = true
+        unresolved_footnotes  = true
+        unresolved_references = true
+        unused_definitions    = true
+        unused_footnotes      = true
+
+    [project.theme]
+        features = [
+            "announce.dismiss",
+            "content.action.edit",
+            "content.action.view",
+            "content.code.annotate",
+            "content.code.copy",
+            "content.code.select",
+            "content.footnote.tooltips",
+            "content.tabs.link",
+            "content.tooltips",
+            "navigation.footer",
+            "navigation.indexes",
+            "navigation.instant",
+            "navigation.instant.prefetch",
+            "navigation.instant.preview",
+            "navigation.path",
+            "navigation.top",
+            "navigation.tracking",
+            "search.highlight",
+            "search.suggest",
+            "toc.follow",
+        ]
+        language = "en"
+        logo = "assets/zenith-star.svg"
+
+        [[project.theme.palette]]
+            media       = "(prefers-color-scheme)"
+            toggle.icon = "lucide/sun-moon"
+            toggle.name = "Switch to light mode"
+
+        [[project.theme.palette]]
+            media       = "(prefers-color-scheme: light)"
+            scheme      = "default"
+            toggle.icon = "lucide/sun"
+            toggle.name = "Switch to dark mode"
+
+        [[project.theme.palette]]
+            media       = "(prefers-color-scheme: dark)"
+            scheme      = "slate"
+            toggle.icon = "lucide/moon"
+            toggle.name = "Switch to system preference"
+
+    [[project.extra.social]]
+        icon = "fontawesome/brands/github"
+        link = "https://github.com/bwrob/zenith"
+
+    [project.markdown_extensions]
+        abbr = {}
+        admonition = {}
+        attr_list = {}
+        def_list = {}
+        footnotes = {}
+        md_in_html = {}
+        pymdownx.arithmatex.generic = true
+        pymdownx.betterem = {}
+        pymdownx.caret = {}
+        pymdownx.details = {}
+        pymdownx.emoji.emoji_generator = "zensical.extensions.emoji.to_svg"
+        pymdownx.emoji.emoji_index = "zensical.extensions.emoji.twemoji"
+        pymdownx.highlight.anchor_linenums = true
+        pymdownx.highlight.line_spans = "__span"
+        pymdownx.highlight.pygments_lang_class = true
+        pymdownx.inlinehilite = {}
+        pymdownx.keys = {}
+        pymdownx.magiclink = {}
+        pymdownx.mark = {}
+        pymdownx.smartsymbols = {}
+        pymdownx.snippets.check_paths = true
+        pymdownx.snippets.dedent_subsections = true
+        pymdownx.superfences.custom_fences = [
+            { name = "mermaid", class = "mermaid", format = "pymdownx.superfences.fence_code_format" },
+            { name = "tree", class = "tree", validator = "markdown_exec.validator", format = "markdown_exec.formatter" },
+            { name = "markdown", class = "markdown", validator = "markdown_exec.validator", format = "markdown_exec.formatter" },
+            { name = "md", class = "md", validator = "markdown_exec.validator", format = "markdown_exec.formatter" },
+            { name = "python", class = "python", validator = "markdown_exec.validator", format = "markdown_exec.formatter" },
+            { name = "bash", class = "bash", validator = "markdown_exec.validator", format = "markdown_exec.formatter" },
+            { name = "sh", class = "sh", validator = "markdown_exec.validator", format = "markdown_exec.formatter" },
+        ]
+        pymdownx.tabbed.alternate_style = true
+        pymdownx.tabbed.combine_header_slug = true
+        pymdownx.tasklist.custom_checkbox = true
+        pymdownx.tilde = {}
+        toc.permalink = true
+        zensical.extensions.preview.targets.include = [ "*" ]
+
+    [project.plugins.gh-admonitions]
+
+    [project.plugins.llmstxt]
+        full_output = "llms-full.txt"
+
+        [project.plugins.llmstxt.sections]
+            "Agent Skills" = [
+                "skills/index.md",
+                "skills/workflow.md",
+                "skills/tool.md",
+                "skills/guide.md",
+                "skills/domain.md",
+            ]
+            "Overview & Philosophy" = [
+                "index.md",
+                "philosophy.md",
+                "ci-actions.md",
+                "changelog.md",
+            ]
+            "Tooling Stack" = [
+                "tools/index.md",
+                "tools/uv.md",
+                "tools/ruff.md",
+                "tools/pyrefly.md",
+                "tools/complexipy.md",
+                "tools/tach.md",
+                "tools/griffe.md",
+                "tools/poethepoet.md",
+                "tools/zensical.md",
+                "tools/rumdl.md",
+                "tools/typos.md",
+                "tools/pytest.md",
+                "tools/coverage.md",
+                "tools/mutmut.md",
+                "tools/cosmic-ray.md",
+                "tools/prettier.md",
+                "tools/taplo.md",
+                "tools/zizmor.md",
+                "tools/typst.md",
+                "tools/termynal.md",
+                "tools/typer.md",
+                "tools/cookiecutter.md",
+            ]
+
+    [project.plugins.markdown-exec]

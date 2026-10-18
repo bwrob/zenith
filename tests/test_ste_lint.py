@@ -1,4 +1,4 @@
-"""Unit tests for .agents/skills/asd-ste100/scripts/ (ste modular linter package)."""
+"""Unit tests for .agents/skills/guide-ste100/scripts/ (ste modular linter package)."""
 
 import io
 import sys
@@ -8,7 +8,7 @@ SCRIPTS_DIR = (
     Path(__file__).resolve().parent.parent
     / ".agents"
     / "skills"
-    / "asd-ste100"
+    / "guide-ste100"
     / "scripts"
 )
 sys.path.insert(0, str(SCRIPTS_DIR))

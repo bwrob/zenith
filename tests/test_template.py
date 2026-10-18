@@ -76,14 +76,14 @@ def test_default_generation(temp_output_dir: Path) -> None:
     assert (project_dir / ".github" / "copilot-instructions.md").exists()
     assert (project_dir / ".github" / "codecov.yml").exists()
     for skill in [
-        "adr",
-        "asd-ste100",
-        "changelog-writing",
-        "code-review",
-        "git-workflow",
-        "project-setup",
-        "python-style-guide",
-        "skill-creator",
+        "workflow-adr",
+        "workflow-changelog",
+        "workflow-code-review",
+        "workflow-git",
+        "workflow-setup",
+        "workflow-skill-creator",
+        "guide-python",
+        "guide-ste100",
         "tool-complexipy",
         "tool-poethepoet",
         "tool-prettier",
@@ -103,7 +103,7 @@ def test_default_generation(temp_output_dir: Path) -> None:
     ]:
         assert (project_dir / ".agents" / "skills" / skill / "SKILL.md").exists()
     setup_skill_text = (
-        project_dir / ".agents" / "skills" / "project-setup" / "SKILL.md"
+        project_dir / ".agents" / "skills" / "workflow-setup" / "SKILL.md"
     ).read_text()
     assert "disable-model-invocation: true" in setup_skill_text
     assert "fail_under = 100" in (project_dir / ".coveragerc").read_text()
@@ -136,7 +136,7 @@ def test_default_generation(temp_output_dir: Path) -> None:
         project_dir
         / ".agents"
         / "skills"
-        / "changelog-writing"
+        / "workflow-changelog"
         / "templates"
         / "changelog.md"
     ).exists()
@@ -144,7 +144,7 @@ def test_default_generation(temp_output_dir: Path) -> None:
         project_dir
         / ".agents"
         / "skills"
-        / "code-review"
+        / "workflow-code-review"
         / "templates"
         / "review_output.md"
     ).exists()
@@ -152,7 +152,7 @@ def test_default_generation(temp_output_dir: Path) -> None:
         project_dir
         / ".agents"
         / "skills"
-        / "skill-creator"
+        / "workflow-skill-creator"
         / "templates"
         / "SKILL_TEMPLATE.md"
     ).exists()
@@ -176,16 +176,16 @@ def test_default_generation(temp_output_dir: Path) -> None:
         / "zensical.toml"
     ).exists()
     assert (
-        project_dir / ".agents" / "skills" / "adr" / "templates" / "adr.md"
+        project_dir / ".agents" / "skills" / "workflow-adr" / "templates" / "adr.md"
     ).exists()
     assert (
-        project_dir / ".agents" / "skills" / "asd-ste100" / "scripts" / "ste-lint.py"
+        project_dir / ".agents" / "skills" / "guide-ste100" / "scripts" / "ste-lint.py"
     ).exists()
     assert (
         project_dir
         / ".agents"
         / "skills"
-        / "asd-ste100"
+        / "guide-ste100"
         / "references"
         / "writing-rules.md"
     ).exists()

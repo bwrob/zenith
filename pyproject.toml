@@ -33,6 +33,13 @@
         "ruff>=0.17.0",
         "taplo>=0.9.3",
     ]
+    docs = [
+        "markdown-exec>=1.12.0",
+        "mkdocstrings[python]>=0.28.0",
+        "pymdown-extensions>=10.14.0",
+        "typst>=0.13.0",
+        "zensical>=0.0.8",
+    ]
 
 [tool.uv]
     package = false
@@ -49,6 +56,9 @@
         "check-skills",
         "test",
     ], help = "Run linting, formatting check, skills check, and test suite." }
+    docs-build = { cmd = "zensical build --strict --clean", help = "Build static HTML documentation site into site/." }
+    docs-logo = { cmd = "typst compile assets/zenith-star.typ assets/zenith-star.svg", help = "Compile documentation logotype SVG with Typst." }
+    docs-serve = { cmd = "zensical serve", help = "Start live-reloading documentation dev server." }
     fix = { ignore_fail = "return_zero", sequence = [
         { cmd = "ruff check --fix" },
         { cmd = "ruff format" },
@@ -63,7 +73,7 @@
     format-toml = { cmd = "taplo format", help = "Format TOML configuration files with Taplo." }
     format-yaml = { cmd = "pre-commit run prettier --all-files", help = "Format YAML configuration files with Prettier." }
     lint = { cmd = "ruff check", help = "Lint codebase with Ruff." }
-    lint-ste = { cmd = "python .agents/skills/asd-ste100/scripts/ste-lint.py .agents/skills", help = "Lint agent skills against ASD-STE100 structural rules." }
+    lint-ste = { cmd = "python .agents/skills/guide-ste100/scripts/ste-lint.py .agents/skills", help = "Lint agent skills against ASD-STE100 structural rules." }
     sync-example = { cmd = "python scripts/sync_example.py", help = "Render and sync showcase repository (zenith-example)." }
     sync-skills = { cmd = "python scripts/sync_skills.py", help = "Synchronize repo skills as symlinks from template source of truth." }
     sync-skills-check = { cmd = "python scripts/sync_skills.py --check", help = "Check that repo skills are properly symlinked to template source of truth." }

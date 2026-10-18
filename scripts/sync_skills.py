@@ -6,7 +6,7 @@ skill in `.agents/skills/` is a relative symlink pointing directly to its templa
 counterpart.
 
 Repository-specific skills that only exist in `.agents/skills/` (e.g.
-`inspect-module-setup`, `tool-cookiecutter`, `update-tools`, `zenith-example-sync`)
+`workflow-inspect-repo`, `tool-cookiecutter`, `workflow-update-tools`, `workflow-example-sync`)
 are preserved untouched.
 """
 
