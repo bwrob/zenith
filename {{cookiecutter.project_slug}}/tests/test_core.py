@@ -2,10 +2,14 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from hypothesis import given, strategies as st
-from syrupy.assertion import SnapshotAssertion
 
 from {{ cookiecutter.package_name }}.core import get_greeting
+
+if TYPE_CHECKING:
+    from syrupy.assertion import SnapshotAssertion
 {% if cookiecutter.include_cli in [True, "yes", "true", "True", "1"] %}
 from unittest.mock import patch
 
