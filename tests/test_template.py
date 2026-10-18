@@ -897,6 +897,7 @@ def test_verify_wheel_execution(temp_output_dir: Path) -> None:
         cwd=str(project_dir),
         capture_output=True,
         text=True,
+        encoding="utf-8",
         check=False,
     )
     assert result.returncode == 0, (
@@ -910,6 +911,7 @@ def test_verify_wheel_execution(temp_output_dir: Path) -> None:
         cwd=str(project_dir),
         capture_output=True,
         text=True,
+        encoding="utf-8",
         check=False,
     )
     assert result_tests.returncode == 0, (
@@ -972,6 +974,7 @@ else:
         cwd=str(project_dir),
         capture_output=True,
         text=True,
+        encoding="utf-8",
         check=False,
     )
     assert result.returncode == 0, (
@@ -1006,6 +1009,7 @@ def test_generated_toml_formatting_with_taplo(temp_output_dir: Path) -> None:
         cwd=str(project_dir),
         capture_output=True,
         text=True,
+        encoding="utf-8",
         check=False,
     )
     assert result.returncode == 0, (
