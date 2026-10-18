@@ -1,0 +1,116 @@
+name: Template Tests & Quality Gates
+
+env:
+    UV_NO_SYNC: true
+    PYTHONWARNDEFAULTENCODING: "1"
+    PYTHONUTF8: "1"
+
+permissions:
+    contents: read
+
+on:
+    push:
+        branches: ["main"]
+    pull_request:
+        branches: ["main"]
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
+jobs:
+    quality:
+        name: 🎨 Code Quality & Structural Analysis
+        runs-on: ubuntu-latest
+        timeout-minutes: 10
+        steps:
+            - name: 🛠️ Check out repository
+              uses: actions/checkout@v7
+              with:
+                  persist-credentials: false
+
+            - name: 🛠️ Install uv and use Python 3.13
+              uses: astral-sh/setup-uv@v10.3.0
+              with:
+                  python-version: "3.13"
+                  enable-cache: true
+
+            - name: 🛠️ Install project dependencies
+              run: uv sync
+
+            - name: 🐍 Run ruff linter check
+              run: uv run poe lint
+
+            - name: 🐍 Run ruff formatter check
+              run: uv run poe format-check
+
+            - name: ⚙️ Run taplo TOML formatter check
+              run: uv run poe format-check-toml
+
+            - name: 🎨 Run prettier YAML check
+              run: uv run poe format-yaml
+
+            - name: 🎨 Run prettier CSS check
+              run: uv run poe format-css
+
+            - name: 🔄 Verify skills symlinks
+              run: uv run poe sync-skills-check
+
+            - name: 🔍 Validate agent skills structural invariants
+              run: uv run poe check-skills
+
+            - name: 📝 Run ASD-STE100 linter
+              run: uv run poe lint-ste
+
+    test:
+        name: 🐍 Template Test Suite (${{ matrix.os }}, py${{ matrix.python-version }})
+        runs-on: ${{ matrix.os }}
+        timeout-minutes: 15
+        strategy:
+            fail-fast: false
+            matrix:
+                os: [ubuntu-latest, macos-latest]
+                python-version: ["3.12", "3.13", "3.14"]
+                include:
+                    - os: windows-latest
+                      python-version: "3.13"
+
+        steps:
+            - name: 🛠️ Check out repository
+              uses: actions/checkout@v7
+              with:
+                  persist-credentials: false
+
+            - name: 🛠️ Install uv and use Python ${{ matrix.python-version }}
+              uses: astral-sh/setup-uv@v10.3.0
+              with:
+                  python-version: ${{ matrix.python-version }}
+                  enable-cache: true
+
+            - name: 🛠️ Install project dependencies
+              run: uv sync
+
+            - name: 🧪 Run pytest suite with coverage
+              run: uv run poe test
+
+            - name: 🧹 Verify clean working tree after tests
+              shell: bash
+              run: |
+                  if [ -n "$(git status --porcelain)" ]; then
+                      echo "::error::Tests left untracked or modified files in the working tree:"
+                      git status --short
+                      exit 1
+                  fi
+
+    check:
+        name: 🛠️ All Checks Status
+        if: always()
+        needs:
+            - quality
+            - test
+        runs-on: ubuntu-latest
+        steps:
+            - name: Decide whether all required jobs succeeded
+              uses: re-actors/alls-green@release/v1
+              with:
+                  jobs: ${{ toJSON(needs) }}

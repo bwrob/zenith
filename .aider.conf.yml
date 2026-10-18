@@ -7,7 +7,7 @@
 # ==============================================================================
 
 read:
-  - AGENTS.md
+    - AGENTS.md
 
 lint-cmd: "uv run ruff check --fix"
 auto-lint: true

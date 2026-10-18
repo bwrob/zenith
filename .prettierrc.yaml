@@ -3,12 +3,12 @@
 #
 # Tool: Prettier (https://prettier.io/)
 # Purpose: Opinionated code and data formatter.
-# Why it's in Zenith: Enforces consistent 2-space indentation, 88-character line
+# Why it's in Zenith: Enforces consistent 4-space indentation, 88-character line
 # length, and clean formatting across all YAML manifests and CSS stylesheets.
 # ==============================================================================
 
 printWidth: 88
-tabWidth: 2
+tabWidth: 4
 useTabs: false
 semi: true
 singleQuote: false

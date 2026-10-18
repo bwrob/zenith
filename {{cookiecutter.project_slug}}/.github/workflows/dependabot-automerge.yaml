@@ -1,32 +1,32 @@
 name: Dependabot Auto-Merge
 
 on:
-  pull_request:
+    pull_request:
 
 permissions:
-  contents: read
+    contents: read
 
 concurrency:
-  group: {% raw %}${{ github.workflow }}-${{ github.ref }}{% endraw %}
-  cancel-in-progress: true
+    group: {% raw %}${{ github.workflow }}-${{ github.ref }}{% endraw %}
+    cancel-in-progress: true
 
 jobs:
-  dependabot:
-    name: 🤖 Enable Auto-Merge for Dependabot
-    runs-on: ubuntu-latest
-    if: {% raw %}github.event.pull_request.user.login == 'dependabot[bot]'{% endraw %}
-    permissions:
-      contents: write # Required to squash and merge pull requests
-      pull-requests: write # Required to enable auto-merge on pull requests
-    steps:
-      - name: Dependabot metadata
-        id: metadata
-        uses: dependabot/fetch-metadata@v3
-        with:
-          github-token: {% raw %}"${{ secrets.GITHUB_TOKEN }}"{% endraw %}
+    dependabot:
+        name: 🤖 Enable Auto-Merge for Dependabot
+        runs-on: ubuntu-latest
+        if: {% raw %}github.event.pull_request.user.login == 'dependabot[bot]'{% endraw %}
+        permissions:
+            contents: write # Required to squash and merge pull requests
+            pull-requests: write # Required to enable auto-merge on pull requests
+        steps:
+            - name: Dependabot metadata
+              id: metadata
+              uses: dependabot/fetch-metadata@v3
+              with:
+                  github-token: {% raw %}"${{ secrets.GITHUB_TOKEN }}"{% endraw %}
 
-      - name: Enable auto-merge for Dependabot PRs
-        run: gh pr merge --auto --squash "$PR_URL"
-        env:
-          PR_URL: {% raw %}${{ github.event.pull_request.html_url }}{% endraw %}
-          GH_TOKEN: {% raw %}${{ secrets.GITHUB_TOKEN }}{% endraw %}
+            - name: Enable auto-merge for Dependabot PRs
+              run: gh pr merge --auto --squash "$PR_URL"
+              env:
+                  PR_URL: {% raw %}${{ github.event.pull_request.html_url }}{% endraw %}
+                  GH_TOKEN: {% raw %}${{ secrets.GITHUB_TOKEN }}{% endraw %}

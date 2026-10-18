@@ -13,8 +13,10 @@ extend-ignore-re = [
 ]
 
 [default.extend-words]
-CPY  = "CPY"
-Ines = "Ines"
+CPY    = "CPY"
+Ines   = "Ines"
+ment   = "ment"
+utiliz = "utiliz"
 
 [files]
 extend-exclude = [

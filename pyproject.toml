@@ -49,7 +49,7 @@
         "check-skills",
         "test",
     ], help = "Run linting, formatting check, skills check, and test suite." }
-    fix = { sequence = [
+    fix = { ignore_fail = "return_zero", sequence = [
         { cmd = "ruff check --fix" },
         { cmd = "ruff format" },
         { cmd = "taplo format" },

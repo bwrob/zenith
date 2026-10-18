@@ -1,48 +1,48 @@
 name: Source Distribution Verification
 
 env:
-  UV_NO_SYNC: true
-  PYTHONWARNDEFAULTENCODING: "1"
-  PYTHONUTF8: "1"
+    UV_NO_SYNC: true
+    PYTHONWARNDEFAULTENCODING: "1"
+    PYTHONUTF8: "1"
 
 permissions:
-  contents: read
+    contents: read
 
 on:
-  push:
-    branches: ["main"]
-  pull_request:
-    branches: ["main"]
+    push:
+        branches: ["main"]
+    pull_request:
+        branches: ["main"]
 
 concurrency:
-  group: {% raw %}${{ github.workflow }}-${{ github.ref }}{% endraw %}
-  cancel-in-progress: true
+    group: {% raw %}${{ github.workflow }}-${{ github.ref }}{% endraw %}
+    cancel-in-progress: true
 
 jobs:
-  test-sdist:
-    name: 📦 Sdist Extraction & Redistribution Smoke Test
-    runs-on: ubuntu-latest
-    steps:
+    test-sdist:
+        name: 📦 Sdist Extraction & Redistribution Smoke Test
+        runs-on: ubuntu-latest
+        steps:
 {% include "ci/_setup_uv.yaml" %}
-      - name: 🛠️ Install project dependencies
-        run: uv sync
+            - name: 🛠️ Install project dependencies
+              run: uv sync
 
-      - name: 📦 Build source distribution
-        run: uv build --sdist
+            - name: 📦 Build source distribution
+              run: uv build --sdist
 
-      - name: 📂 Extract sdist to isolated sandbox
-        run: |
-          mkdir -p dist/extracted
-          tar -xzf dist/*.tar.gz -C dist/extracted
+            - name: 📂 Extract sdist to isolated sandbox
+              run: |
+                  mkdir -p dist/extracted
+                  tar -xzf dist/*.tar.gz -C dist/extracted
 
-      - name: 🧪 Run test suite from inside extracted distribution
-        run: |
-          cd dist/extracted/*
-          uv sync --group test
-          uv run poe test
+            - name: 🧪 Run test suite from inside extracted distribution
+              run: |
+                  cd dist/extracted/*
+                  uv sync --group test
+                  uv run poe test
 
-      - name: 🎡 Verify wheel builds from sdist
-        run: |
-          cd dist/extracted/*
-          uv build --wheel
-          python "$GITHUB_WORKSPACE/scripts/verify_wheel.py" --run-tests
+            - name: 🎡 Verify wheel builds from sdist
+              run: |
+                  cd dist/extracted/*
+                  uv build --wheel
+                  python "$GITHUB_WORKSPACE/scripts/verify_wheel.py" --run-tests

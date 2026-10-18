@@ -1,14 +1,14 @@
-      - name: Check out repository
-        uses: actions/checkout@v7
-        with:
-          persist-credentials: false
+            - name: Check out repository
+              uses: actions/checkout@v7
+              with:
+                  persist-credentials: false
 
-      - name: Install uv and setup Python
-        uses: astral-sh/setup-uv@v10.3.0
-        with:
-          python-version: "{{ cookiecutter.python_version }}"
-          enable-cache: true
+            - name: Install uv and setup Python
+              uses: astral-sh/setup-uv@v10.3.0
+              with:
+                  python-version: "{{ cookiecutter.python_version }}"
+                  enable-cache: true
 
-      - name: Set dependency resolution cutoff
-        shell: bash
-        run: echo "UV_EXCLUDE_NEWER=$(python3 -c 'import datetime; print((datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(hours=1)).strftime("%Y-%m-%dT%H:%M:%SZ"))')" >> "$GITHUB_ENV"
+            - name: Set dependency resolution cutoff
+              shell: bash
+              run: echo "UV_EXCLUDE_NEWER=$(python3 -c 'import datetime; print((datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(hours=1)).strftime("%Y-%m-%dT%H:%M:%SZ"))')" >> "$GITHUB_ENV"

@@ -7,7 +7,7 @@
 # ==============================================================================
 
 read:
-  - AGENTS.md
+    - AGENTS.md
 
 lint-cmd: "uv run poe fix"
 auto-lint: true

@@ -1,72 +1,72 @@
 name: Sync Showcase Example
 
 on:
-  push:
-    branches:
-      - main
-  workflow_dispatch:
-    inputs:
-      target_branch:
-        description: "Branch of zenith-example to push to"
-        required: false
-        default: "main"
+    push:
+        branches:
+            - main
+    workflow_dispatch:
+        inputs:
+            target_branch:
+                description: "Branch of zenith-example to push to"
+                required: false
+                default: "main"
 
 concurrency:
-  group: sync-showcase
-  cancel-in-progress: true
+    group: sync-showcase
+    cancel-in-progress: true
 
 jobs:
-  sync-showcase:
-    name: Sync zenith-example showcase
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
+    sync-showcase:
+        name: Sync zenith-example showcase
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
 
-    steps:
-      - name: Configure SSH for zenith-example
-        run: |
-          mkdir -p ~/.ssh
-          chmod 700 ~/.ssh
-          echo "$SSH_KEY" | tr -d '\r' > ~/.ssh/id_ed25519
-          printf "\n" >> ~/.ssh/id_ed25519
-          chmod 600 ~/.ssh/id_ed25519
-          ssh-keyscan -t ed25519,rsa github.com >> ~/.ssh/known_hosts
-        env:
-          SSH_KEY: ${{ secrets.EXAMPLE_REPO_DEPLOY_KEY }}
+        steps:
+            - name: Configure SSH for zenith-example
+              run: |
+                  mkdir -p ~/.ssh
+                  chmod 700 ~/.ssh
+                  echo "$SSH_KEY" | tr -d '\r' > ~/.ssh/id_ed25519
+                  printf "\n" >> ~/.ssh/id_ed25519
+                  chmod 600 ~/.ssh/id_ed25519
+                  ssh-keyscan -t ed25519,rsa github.com >> ~/.ssh/known_hosts
+              env:
+                  SSH_KEY: ${{ secrets.EXAMPLE_REPO_DEPLOY_KEY }}
 
-      - name: Checkout Zenith template
-        uses: actions/checkout@v7
-        with:
-          path: zenith
+            - name: Checkout Zenith template
+              uses: actions/checkout@v7
+              with:
+                  path: zenith
 
-      - name: Checkout zenith-example showcase
-        uses: actions/checkout@v7
-        with:
-          repository: bwrob/zenith-example
-          path: zenith-example
-          ref: ${{ github.event.inputs.target_branch || 'main' }}
+            - name: Checkout zenith-example showcase
+              uses: actions/checkout@v7
+              with:
+                  repository: bwrob/zenith-example
+                  path: zenith-example
+                  ref: ${{ github.event.inputs.target_branch || 'main' }}
 
-      - name: Install uv
-        uses: astral-sh/setup-uv@v10.3.0
-        with:
-          enable-cache: true
-          python-version: "3.13"
+            - name: Install uv
+              uses: astral-sh/setup-uv@v10.3.0
+              with:
+                  enable-cache: true
+                  python-version: "3.13"
 
-      - name: Sync showcase repository
-        run: |
-          cd zenith
-          uv run python scripts/sync_example.py ../zenith-example
+            - name: Sync showcase repository
+              run: |
+                  cd zenith
+                  uv run python scripts/sync_example.py ../zenith-example
 
-      - name: Commit and push changes
-        run: |
-          cd zenith-example
-          git remote set-url origin git@github.com:bwrob/zenith-example.git
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add -A
-          if git diff --staged --quiet; then
-            echo "No changes in showcase to commit."
-          else
-            git commit -m "chore(showcase): sync with bwrob/zenith@${{ github.sha }}"
-            git push origin HEAD:${{ github.event.inputs.target_branch || 'main' }}
-          fi
+            - name: Commit and push changes
+              run: |
+                  cd zenith-example
+                  git remote set-url origin git@github.com:bwrob/zenith-example.git
+                  git config user.name "github-actions[bot]"
+                  git config user.email "github-actions[bot]@users.noreply.github.com"
+                  git add -A
+                  if git diff --staged --quiet; then
+                    echo "No changes in showcase to commit."
+                  else
+                    git commit -m "chore(showcase): sync with bwrob/zenith@${{ github.sha }}"
+                    git push origin HEAD:${{ github.event.inputs.target_branch || 'main' }}
+                  fi

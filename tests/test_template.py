@@ -309,6 +309,7 @@ def test_default_generation(temp_output_dir: Path) -> None:
         is not None
     )
     assert "griffe-warnings-deprecated>=" in pyproject_text
+    assert "griffe>=" in pyproject_text
     assert "mutation" in pyproject_text
     assert "mutmut>=" in pyproject_text
     assert "cosmic-ray>=" in pyproject_text

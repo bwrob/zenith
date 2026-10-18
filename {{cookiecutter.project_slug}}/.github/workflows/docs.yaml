@@ -1,56 +1,56 @@
 name: Docs
 
 on:
-  push:
-    branches:
-      - main
-  workflow_dispatch:
+    push:
+        branches:
+            - main
+    workflow_dispatch:
 
 permissions:
-  contents: read
+    contents: read
 
 concurrency:
-  group: "pages"
-  cancel-in-progress: false
+    group: "pages"
+    cancel-in-progress: false
 
 jobs:
-  deploy:
-    name: 🚀 Deploy Documentation to GitHub Pages
-    environment:
-      name: github-pages
-      url: {% raw %}${{ steps.deployment.outputs.page_url }}{% endraw %}
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pages: write # Required to deploy site artifacts to GitHub Pages
-      id-token: write # Required for GitHub Pages OIDC authentication
-    steps:
+    deploy:
+        name: 🚀 Deploy Documentation to GitHub Pages
+        environment:
+            name: github-pages
+            url: {% raw %}${{ steps.deployment.outputs.page_url }}{% endraw %}
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+            pages: write # Required to deploy site artifacts to GitHub Pages
+            id-token: write # Required for GitHub Pages OIDC authentication
+        steps:
 {% include "ci/_setup_uv.yaml" %}
-      - name: Configure GitHub Pages
-        uses: actions/configure-pages@v6
+            - name: Configure GitHub Pages
+              uses: actions/configure-pages@v6
 
-      - name: Install dependencies
-        run: uv sync --group docs
+            - name: Install dependencies
+              run: uv sync --group docs
 
-      - name: Build documentation with Zensical
-        id: build_docs
-        run: uv run zensical build --clean --strict
+            - name: Build documentation with Zensical
+              id: build_docs
+              run: uv run zensical build --clean --strict
 
-      - name: 📋 Summarize documentation build failures
-        if: failure() && steps.build_docs.outcome == 'failure'
-        run: |
-          echo "### ⚠️ Documentation Build Failed" >> "$GITHUB_STEP_SUMMARY"
-          echo "" >> "$GITHUB_STEP_SUMMARY"
-          echo "To reproduce documentation build failures locally, run:" >> "$GITHUB_STEP_SUMMARY"
-          echo '```bash' >> "$GITHUB_STEP_SUMMARY"
-          echo "uv run poe docs-build" >> "$GITHUB_STEP_SUMMARY"
-          echo '```' >> "$GITHUB_STEP_SUMMARY"
+            - name: 📋 Summarize documentation build failures
+              if: failure() && steps.build_docs.outcome == 'failure'
+              run: |
+                  echo "### ⚠️ Documentation Build Failed" >> "$GITHUB_STEP_SUMMARY"
+                  echo "" >> "$GITHUB_STEP_SUMMARY"
+                  echo "To reproduce documentation build failures locally, run:" >> "$GITHUB_STEP_SUMMARY"
+                  echo '```bash' >> "$GITHUB_STEP_SUMMARY"
+                  echo "uv run poe docs-build" >> "$GITHUB_STEP_SUMMARY"
+                  echo '```' >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v5
-        with:
-          path: site
+            - name: Upload Pages artifact
+              uses: actions/upload-pages-artifact@v5
+              with:
+                  path: site
 
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v5
+            - name: Deploy to GitHub Pages
+              id: deployment
+              uses: actions/deploy-pages@v5
