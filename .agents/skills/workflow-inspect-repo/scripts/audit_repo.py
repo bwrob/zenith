@@ -455,10 +455,10 @@ def audit_pillar_3_static_analysis(
         strengths.append("Zizmor GitHub Actions workflow security static analyzer")
 
     # Git Hooks: pre-commit vs prek
-    if (root / ".pre-commit-config.yaml").exists():
+    if (root / "prek.toml").exists() or (root / ".prek.toml").exists():
+        strengths.append("Prek native fast Git hooks runner (`prek.toml`)")
+    elif (root / ".pre-commit-config.yaml").exists():
         strengths.append("Pre-commit git hooks configured (`.pre-commit-config.yaml`)")
-    elif (root / ".prek.toml").exists():
-        strengths.append("Prek native fast Git hooks runner")
 
     level = 4 if score >= 5 else (3 if score >= 3 else (2 if score >= 1 else 1))
     return PillarAudit(

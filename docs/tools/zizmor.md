@@ -2,23 +2,34 @@
 
 [![Tool: zizmor](https://img.shields.io/badge/security-zizmor-red.svg)](https://woodruffw.github.io/zizmor/)
 
-`zizmor` is a static security analysis tool for GitHub Actions CI/CD workflows written in Rust by William Woodruff.
+`zizmor` is a static security analysis tool for GitHub Actions CI/CD workflows written
+in Rust by William Woodruff.
 
 ---
 
 ## What It Does
 
-`zizmor` parses GitHub Actions YAML workflow manifests to detect security vulnerabilities, insecure patterns, and potential attack vectors. It identifies unescaped context interpolations that expose steps to script injection, flags workflows lacking explicit minimal permission blocks, and warns against unpinned third-party actions referencing mutable branch heads.
+`zizmor` parses GitHub Actions YAML workflow manifests to detect security
+vulnerabilities, insecure patterns, and potential attack vectors. It identifies
+unescaped context interpolations that expose steps to script injection, flags workflows
+lacking explicit minimal permission blocks, and warns against unpinned third-party
+actions referencing mutable branch heads.
 
-By checking for patterns where fork pull requests or untrusted triggers could exfiltrate secrets, zizmor secures CI pipelines before changes are deployed.
+By checking for patterns where fork pull requests or untrusted triggers could exfiltrate
+secrets, zizmor secures CI pipelines before changes are deployed.
 
 ---
 
 ## Why It's in Zenith
 
-Continuous integration pipelines represent high-value attack surfaces because they hold deployment credentials, PyPI release tokens, and code signing keys. AI coding assistants frequently introduce insecure CI patterns, such as unquoted GitHub event contexts in run steps.
+Continuous integration pipelines represent high-value attack surfaces because they hold
+deployment credentials, PyPI release tokens, and code signing keys. AI coding assistants
+frequently introduce insecure CI patterns, such as unquoted GitHub event contexts in run
+steps.
 
-Zenith runs zizmor as an automated security quality gate in both pre-commit hooks and scheduled CI pipelines, guaranteeing that infrastructure-as-code remains hardened against supply-chain and injection attacks.
+Zenith runs zizmor as an automated security quality gate in both prek hooks and
+scheduled CI pipelines, guaranteeing that infrastructure-as-code remains hardened
+against supply-chain and injection attacks.
 
 ---
 
@@ -35,14 +46,15 @@ if not path.exists():
 print(path.read_text().strip())
 ```
 
-And integrated into `.pre-commit-config.yaml`:
+And integrated into `prek.toml`:
 
-```yaml
-- repo: https://github.com/woodruffw/zizmor-pre-commit
-  rev: v1.4.1
-  hooks:
-      - id: zizmor
-        name: 🛡️ zizmor · Audit GitHub Actions workflows
+```toml
+[[repos]]
+repo = "https://github.com/woodruffw/zizmor-pre-commit"
+rev = "v1.4.1"
+hooks = [
+    { id = "zizmor", name = "🛡️ zizmor · Audit GitHub Actions workflows" },
+]
 ```
 
 ---
@@ -51,7 +63,7 @@ And integrated into `.pre-commit-config.yaml`:
 
 ```bash
 uv run zizmor .github/workflows/   # Run static security audit on CI workflows
-uv run pre-commit run zizmor -a    # Run zizmor via pre-commit
+uv run prek run zizmor -a          # Run zizmor via prek
 ```
 
 ---

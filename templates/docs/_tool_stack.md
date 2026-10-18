@@ -11,3 +11,4 @@
   test ordering with pytest.
 - **Typst**: Modern markup-based layout engine for documentation logotypes.
 - **Poe the Poet**: Declarative task automation.
+- **prek**: Blazing-fast Rust-native Git hook lifecycle management and local verification gates.

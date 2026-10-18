@@ -27,10 +27,12 @@
 [dependency-groups]
     dev = [
         "poethepoet>=0.42.0",
-        "pre-commit>=4.0.0",
+        "prek>=0.5.5",
         "pytest>=8.0.0",
         "pytest-cov>=6.0.0",
+        "pytest-xdist>=3.8.0",
         "ruff>=0.17.0",
+        "rumdl>=0.0.8",
         "taplo>=0.9.3",
     ]
     docs = [
@@ -63,21 +65,23 @@
         { cmd = "ruff check --fix" },
         { cmd = "ruff format" },
         { cmd = "taplo format" },
-        { cmd = "pre-commit run prettier --all-files" },
-        { cmd = "pre-commit run prettier-css --all-files" },
+        { cmd = "rumdl fmt docs/" },
+        { cmd = "prek run prettier --all-files" },
+        { cmd = "prek run prettier-css --all-files" },
     ], help = "Auto-fix linting and formatting issues." }
     format = { cmd = "ruff format", help = "Format Python code with Ruff." }
     format-check = { cmd = "ruff format --check", help = "Check formatting with Ruff." }
     format-check-toml = { cmd = "taplo format --check", help = "Check TOML configuration files with Taplo." }
-    format-css = { cmd = "pre-commit run prettier-css --all-files", help = "Format CSS stylesheets with Prettier." }
+    format-css = { cmd = "prek run prettier-css --all-files", help = "Format CSS stylesheets with Prettier via prek." }
+    format-md = { cmd = "rumdl fmt docs/", help = "Format documentation with rumdl." }
     format-toml = { cmd = "taplo format", help = "Format TOML configuration files with Taplo." }
-    format-yaml = { cmd = "pre-commit run prettier --all-files", help = "Format YAML configuration files with Prettier." }
+    format-yaml = { cmd = "prek run prettier --all-files", help = "Format YAML configuration files with Prettier via prek." }
     lint = { cmd = "ruff check", help = "Lint codebase with Ruff." }
     lint-ste = { cmd = "python .agents/skills/guide-ste100/scripts/ste-lint.py .agents/skills", help = "Lint agent skills against ASD-STE100 structural rules." }
     sync-example = { cmd = "python scripts/sync_example.py", help = "Render and sync showcase repository (zenith-example)." }
     sync-skills = { cmd = "python scripts/sync_skills.py", help = "Synchronize repo skills as symlinks from template source of truth." }
     sync-skills-check = { cmd = "python scripts/sync_skills.py --check", help = "Check that repo skills are properly symlinked to template source of truth." }
-    test = { cmd = "pytest --cov --cov-report=term-missing --cov-report=xml", help = "Run unit test suite with 100% coverage." }
+    test = { cmd = "pytest -n auto --dist=worksteal --max-worker-restart=0 --cov --cov-report=term-missing --cov-report=xml", env = { COVERAGE_FILE = "/tmp/.zenith_coverage" }, help = "Run unit test suite in parallel with xdist and 100% coverage." }
 
 [tool.pytest.ini_options]
     norecursedirs = [ "{{cookiecutter.project_slug}}", ".*", "build", "dist" ]

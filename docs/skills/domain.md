@@ -1,23 +1,31 @@
 # Domains
 
 > [!IMPORTANT]
-> **Strict Reservation Notice**:
-> The **`domain-*`** skill prefix is **strictly reserved for the author and maintainers of the instantiated project**.
-> The Zenith template intentionally includes **zero** `domain-*` skills out-of-the-box, ensuring that your application domain namespace remains clean, unpolluted, and free of naming collisions with upstream template updates.
+> **Strict Reservation Notice**: The **`domain-*`** skill prefix is
+> **strictly reserved for the author and maintainers of the instantiated project**. The
+> Zenith template intentionally includes **zero** `domain-*` skills out-of-the-box,
+> ensuring that your application domain namespace remains clean, unpolluted, and free of
+> naming collisions with upstream template updates.
 
 ---
 
 ## What Are Domain Skills?
 
-While generic AI coding assistants understand Python syntax, pytest fixtures, and standard library modules, they have **zero context about your proprietary business domain**.
+While generic AI coding assistants understand Python syntax, pytest fixtures, and
+standard library modules, they have
+**zero context about your proprietary business domain**.
 
 Without domain guidance, autonomous AI agents tend to:
+
 - Make invalid assumptions about customer billing calculations or subscription tiers.
 - Invent unauthorized order state transitions.
 - Misunderstand tenant isolation or authentication boundaries.
-- Implement business logic that violates regulatory compliance (e.g. HIPAA, GDPR, PCI-DSS).
+- Implement business logic that violates regulatory compliance (e.g. HIPAA, GDPR,
+  PCI-DSS).
 
-**Domain Skills (`domain-*`) solve this by codifying your business rules, domain invariants, entity lifecycles, and proprietary service logic into structured runbooks that AI agents load when working on domain code.**
+**Domain Skills (`domain-*`) solve this by codifying your business rules, domain
+invariants, entity lifecycles, and proprietary service logic into structured runbooks
+that AI agents load when working on domain code.**
 
 ---
 
@@ -50,6 +58,7 @@ version: 1.0.0
 ## Recommended Patterns
 
 ### Invariant Tables
+
 Define core domain constraints in clear, non-negotiable tables:
 
 | Subscription Tier | Seat Limit | API Request Cap | Storage Quota |
@@ -59,6 +68,7 @@ Define core domain constraints in clear, non-negotiable tables:
 | **Enterprise** | Unlimited | Custom | Unlimited |
 
 ### State Machine Lifecycles
+
 Document valid state transitions so agents never introduce illegal states:
 
 ```mermaid
@@ -72,7 +82,9 @@ stateDiagram-v2
 ```
 
 ### Edge Case Matrices
-Document how the domain handles boundary conditions (e.g., Leap year billing, fractional cent rounding, concurrent subscription upgrades).
+
+Document how the domain handles boundary conditions (e.g., Leap year billing, fractional
+cent rounding, concurrent subscription upgrades).
 
 ---
 
@@ -80,25 +92,35 @@ Document how the domain handles boundary conditions (e.g., Leap year billing, fr
 
 Here are typical domain skills you can scaffold in your Zenith project:
 
-- **`domain-auth`**: Session lifecycles, JWT claims, OAuth2 token refreshing, and RBAC permission hierarchies.
-- **`domain-billing`**: Subscription models, tax calculation rules, discount codes, and payment retry schedules.
-- **`domain-order-fulfillment`**: Cart checkout workflows, shipping provider dispatching, and refund approval thresholds.
-- **`domain-data-ingestion`**: Sensor telemetry normalization, schema migration invariants, and dead-letter queue routing.
-- **`domain-compliance`**: PII masking protocols, audit log retention requirements, and data export contracts.
+- **`domain-auth`**: Session lifecycles, JWT claims, OAuth2 token refreshing, and RBAC
+  permission hierarchies.
+- **`domain-billing`**: Subscription models, tax calculation rules, discount codes, and
+  payment retry schedules.
+- **`domain-order-fulfillment`**: Cart checkout workflows, shipping provider
+  dispatching, and refund approval thresholds.
+- **`domain-data-ingestion`**: Sensor telemetry normalization, schema migration
+  invariants, and dead-letter queue routing.
+- **`domain-compliance`**: PII masking protocols, audit log retention requirements, and
+  data export contracts.
 
 ---
 
 ## Authoring Domain Skills
 
-Use the [Skill Creator (`workflow-skill-creator`)](workflow.md#workflow-skill-creator) workflow:
+Use the [Skill Creator (`workflow-skill-creator`)](workflow.md#workflow-skill-creator)
+workflow:
 
 1. Create the skill directory:
+
    ```bash
    mkdir -p .agents/skills/domain-<name>/{templates,references}
    ```
-2. Author `SKILL.md` with active voice, concise rules, and explicit triggers following [ASD-STE100](guide.md#guide-ste100).
+
+2. Author `SKILL.md` with active voice, concise rules, and explicit triggers following
+   [ASD-STE100](guide.md#guide-ste100).
 3. Register the skill in your project's `AGENTS.md`.
 4. Validate compliance:
+
    ```bash
    uv run poe check-skills
    ```

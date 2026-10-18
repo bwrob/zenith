@@ -18,7 +18,7 @@ CONFIG_FILES_WITH_HEADERS = [
     "pytest.ini",
     ".taplo.toml",
     "typos.toml",
-    ".pre-commit-config.yaml",
+    "prek.toml",
     ".prettierrc.yaml",
     ".editorconfig",
     ".zizmor.yml",
@@ -117,7 +117,7 @@ def setup_agent_instructions() -> None:
                 '            "Bash(uv run typos:*)",\n'
                 '            "Bash(uv run taplo:*)",\n'
                 '            "Bash(uv run zizmor:*)",\n'
-                '            "Bash(uv run pre-commit:*)"\n'
+                '            "Bash(uv run prek:*)"\n'
                 "        ],\n"
                 '        "deny": [\n'
                 '            "Bash(rm -rf /*)",\n'
@@ -178,6 +178,7 @@ def main() -> None:
 
     setup_agent_instructions()
     format_toml_files()
+    init_prek()
 
 
 def format_toml_files() -> None:
@@ -187,6 +188,43 @@ def format_toml_files() -> None:
         try:
             subprocess.run(
                 [taplo_bin, "format"],
+                cwd=PROJECT_DIR,
+                check=False,
+                capture_output=True,
+            )
+        except (OSError, subprocess.SubprocessError):
+            pass
+
+
+def init_prek() -> None:
+    """Initialize git repository and install prek git hooks if tools are available."""
+    git_bin = shutil.which("git")
+    if not git_bin:
+        return
+    git_dir = os.path.join(PROJECT_DIR, ".git")
+    if not os.path.isdir(git_dir):
+        try:
+            subprocess.run(
+                [git_bin, "init"],
+                cwd=PROJECT_DIR,
+                check=False,
+                capture_output=True,
+            )
+        except (OSError, subprocess.SubprocessError):
+            return
+
+    prek_bin = shutil.which("prek")
+    uv_bin = shutil.which("uv")
+    cmd: list[str] | None = None
+    if prek_bin:
+        cmd = [prek_bin, "install"]
+    elif uv_bin:
+        cmd = [uv_bin, "run", "prek", "install"]
+
+    if cmd:
+        try:
+            subprocess.run(
+                cmd,
                 cwd=PROJECT_DIR,
                 check=False,
                 capture_output=True,

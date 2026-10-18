@@ -77,7 +77,7 @@ Change into the local showcase directory and execute the complete verification s
 cd ../zenith-example
 uv run poe test             # Enforces 100% test coverage (fail_under = 100)
 uv run poe code-quality      # Runs lint, format-check, format-check-toml, type-check, tach, etc.
-uv run pre-commit run --all-files
+uv run prek run --all-files
 ```
 
 Both `poe test` and `poe code-quality` must exit with return code `0` before proceeding.

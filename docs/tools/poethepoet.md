@@ -2,21 +2,34 @@
 
 [![Tool: poethepoet](https://img.shields.io/badge/tasks-poethepoet-blue.svg)](https://poethepoet.natn.io/)
 
-`Poe the Poet` (`poe`) is a declarative, cross-platform task runner designed for Python and virtual environment managers like `uv`.
+`Poe the Poet` (`poe`) is a declarative, cross-platform task runner designed for Python
+and virtual environment managers like `uv`.
 
 ---
 
 ## What It Does
 
-Poe the Poet codifies project operations into declarative, cross-platform command sequences. Tasks are defined directly in TOML files, supporting single commands, multi-step scripts, and sequential composite workflows that execute reliably across Linux, macOS, and Windows without requiring fragile shell scripts or Makefiles. When commands are executed, Poe automatically forwards command-line flags and positional arguments transparently to the underlying tools.
+Poe the Poet codifies project operations into declarative, cross-platform command
+sequences. Tasks are defined directly in TOML files, supporting single commands,
+multi-step scripts, and sequential composite workflows that execute reliably across
+Linux, macOS, and Windows without requiring fragile shell scripts or Makefiles. When
+commands are executed, Poe automatically forwards command-line flags and positional
+arguments transparently to the underlying tools.
 
 ---
 
 ## Why It's in Zenith
 
-Zenith chooses Poe the Poet to guarantee zero behavioral drift between developer workstations and CI runners. Instead of maintaining separate script files or relying on ad-hoc shell invocations, developers and automated workflows execute identical named tasks like `uv run poe test` or `uv run poe code-quality`.
+Zenith chooses Poe the Poet to guarantee zero behavioral drift between developer
+workstations and CI runners. Instead of maintaining separate script files or relying on
+ad-hoc shell invocations, developers and automated workflows execute identical named
+tasks like `uv run poe test` or `uv run poe code-quality`.
 
-Poe automatically executes all commands within the hermetic `uv` environment, injecting strict runtime hygiene settings such as UTF-8 encoding enforcement and standard library warning traps. By composing individual linters, formatters, type checkers, and test runners into unified compound tasks, Poe provides a single, unambiguous interface for repository maintenance.
+Poe automatically executes all commands within the hermetic `uv` environment, injecting
+strict runtime hygiene settings such as UTF-8 encoding enforcement and standard library
+warning traps. By composing individual linters, formatters, type checkers, and test
+runners into unified compound tasks, Poe provides a single, unambiguous interface for
+repository maintenance.
 
 ---
 

@@ -33,5 +33,5 @@
 - [ ] AI tools were used:
   - Tool(s): `<!-- e.g. Claude Code / Antigravity / Cursor / Copilot -->`
   - Scope: `<!-- e.g. test scaffolding / refactoring / initial draft -->`
-  - [ ] I confirm that I have reviewed, edited, and locally verified all changes myself (`uv run pytest && uv run pre-commit run --all-files`), adhering to `AI_POLICY.md`.
+  - [ ] I confirm that I have reviewed, edited, and locally verified all changes myself (`uv run pytest && uv run prek run --all-files`), adhering to `AI_POLICY.md`.
   - [ ] AI coding assistants are credited in commit messages using `Co-authored-by` trailers (e.g. `Co-authored-by: Claude <noreply@anthropic.com>`).

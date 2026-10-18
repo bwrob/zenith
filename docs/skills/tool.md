@@ -1,14 +1,19 @@
 # Tools
 
-The **`tool-*`** skill group provides autonomous AI coding agents with verified syntax, concrete CLI flags, configuration specifications, and operational runbooks for specific external developer tools, compilers, formatters, and libraries.
+The **`tool-*`** skill group provides autonomous AI coding agents with verified syntax,
+concrete CLI flags, configuration specifications, and operational runbooks for specific
+external developer tools, compilers, formatters, and libraries.
 
 ---
 
 ## Why AI Agents Need Tool Skills
 
-While modern LLMs have general knowledge of popular Python libraries, they frequently hallucinate non-existent flags, use obsolete configuration syntax, or guess incorrect subcommands when working on modern tooling stacks.
+While modern LLMs have general knowledge of popular Python libraries, they frequently
+hallucinate non-existent flags, use obsolete configuration syntax, or guess incorrect
+subcommands when working on modern tooling stacks.
 
 `tool-*` skills act as **deterministic execution groundings**:
+
 - They provide the exact syntax used in the current version of the tool.
 - They show concrete `uv run poe <task>` invocations.
 - They document configuration files (`*.toml`, `*.yaml`) and specific rule overrides.
@@ -36,6 +41,7 @@ While modern LLMs have general knowledge of popular Python libraries, they frequ
 | **`tool-cosmic-ray`** | [Cosmic Ray](../tools/cosmic-ray.md) | Cross-platform AST mutation testing evaluating test suite assertiveness and detecting survivor mutants. |
 | **`tool-prettier`** | [Prettier](../tools/prettier.md) | Consistent 4-space formatting across GitHub Actions YAML workflows and custom CSS stylesheets. |
 | **`tool-taplo`** | [Taplo](../tools/taplo.md) | TOML toolkit, formatter, and schema validation with aligned key-values and 4-space indentation. |
+| **`tool-prek`** | [prek](../tools/prek.md) | Blazing-fast Rust-native Git hook manager executing pre-commit hooks and local verification gates. |
 | **`tool-zizmor`** | [zizmor](../tools/zizmor.md) | Static security analysis auditing GitHub Actions workflows for script injection and excessive permissions. |
 | **`tool-termynal`** | [Termynal](../tools/termynal.md) | Lightweight animated terminal widget for documentation pages wrapped in `<div class="termy">`. |
 | **`tool-typer`** | [Typer](../tools/typer.md) | Modern type-safe command-line interfaces with PEP 593 `Annotated` parameters and Rich formatting. |
@@ -46,15 +52,22 @@ While modern LLMs have general knowledge of popular Python libraries, they frequ
 
 ## Custom Tool Skills
 
-When your project adds major external dependencies or infrastructure tools, create matching `tool-*` skills so AI agents understand how to use them correctly:
+When your project adds major external dependencies or infrastructure tools, create
+matching `tool-*` skills so AI agents understand how to use them correctly:
 
 ```bash
 mkdir -p .agents/skills/tool-docker
 ```
 
 Common tool skills added to Zenith projects:
-- **`tool-docker`**: Multi-stage Dockerfile patterns, buildx caches, and non-root container user hygiene.
-- **`tool-fastapi`**: Pydantic v2 schemas, dependency injection, and OpenAPI response documentation.
-- **`tool-alembic`**: Database migration generation, revision branches, and autocommit transactions.
-- **`tool-playwright`**: End-to-end browser testing, locators, and headless CI verification.
-- **`tool-kubernetes`**: Helm chart templates, pod resource limits, and probe definitions.
+
+- **`tool-docker`**: Multi-stage Dockerfile patterns, buildx caches, and non-root
+  container user hygiene.
+- **`tool-fastapi`**: Pydantic v2 schemas, dependency injection, and OpenAPI response
+  documentation.
+- **`tool-alembic`**: Database migration generation, revision branches, and autocommit
+  transactions.
+- **`tool-playwright`**: End-to-end browser testing, locators, and headless CI
+  verification.
+- **`tool-kubernetes`**: Helm chart templates, pod resource limits, and probe
+  definitions.

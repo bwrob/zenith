@@ -51,47 +51,65 @@ Serving documentation at http://127.0.0.1:8000
 
 ## The Zenith Philosophy
 
-Zenith eliminates **scaffolding debt** and **quality decay**. Instead of spending days configuring linters, type checkers, and test harnesses—or fighting architectural drift down the road—Zenith establishes a non-negotiable standard of excellence from commit zero across four foundational pillars:
+Zenith eliminates **scaffolding debt** and **quality decay**. Instead of spending days
+configuring linters, type checkers, and test harnesses—or fighting architectural drift
+down the road—Zenith establishes a non-negotiable standard of excellence from commit
+zero across four foundational pillars:
 
 <div class="grid cards" markdown>
 
--   __Modern Rust-Native Tooling__
+-   **Modern Rust-Native Tooling**
 
     ---
 
-    Sub-second developer loops powered by **[uv](tools/uv.md)**, **[Ruff](tools/ruff.md)**, **[Pyrefly](tools/pyrefly.md)**, **[Tach](tools/tach.md)**, **[complexipy](tools/complexipy.md)**, and **[Zensical](tools/zensical.md)**. All tasks run through **[Poe the Poet](tools/poethepoet.md)** for identical local and CI execution.
+    Sub-second developer loops powered by **[uv](tools/uv.md)**,
+    **[Ruff](tools/ruff.md)**, **[Pyrefly](tools/pyrefly.md)**,
+    **[Tach](tools/tach.md)**, **[complexipy](tools/complexipy.md)**, and
+    **[Zensical](tools/zensical.md)**. All tasks run through
+    **[Poe the Poet](tools/poethepoet.md)** for identical local and CI execution.
 
--   __First-Class AI Agent Readiness__
-
-    ---
-
-    Built for autonomous pair-programming with Claude Code, Gemini CLI, Antigravity, and Codex. Canonical `AGENTS.md` context, modular skills in [`.agents/skills/`](skills/index.md), transparent review standards, and automated `llms.txt`.
-
--   __Ruthless Quality Guardrails__
+-   **First-Class AI Agent Readiness**
 
     ---
 
-    Zero compromises: **100% mandatory test coverage** (`fail_under = 100`), strict static typing with Pyrefly, cognitive complexity <= 10 per function, module boundary enforcement, and CI security auditing with **[zizmor](tools/zizmor.md)**.
+    Built for autonomous pair-programming with Claude Code, Gemini CLI, Antigravity, and
+    Codex. Canonical `AGENTS.md` context, modular skills in
+    [`.agents/skills/`](skills/index.md), transparent review standards, and automated
+    `llms.txt`.
 
--   __Hermetic Delivery & CI/CD__
+-   **Ruthless Quality Guardrails**
 
     ---
 
-    Zero-drift automation: multi-version matrix testing across Python 3.12–3.15, isolated wheel package smoke tests, automated documentation publishing, and PyPI Trusted Publishing with supply-chain safeguards.
+    Zero compromises: **100% mandatory test coverage** (`fail_under = 100`), strict
+    static typing with Pyrefly, cognitive complexity <= 10 per function, module boundary
+    enforcement, and CI security auditing with **[zizmor](tools/zizmor.md)**.
+
+-   **Hermetic Delivery & CI/CD**
+
+    ---
+
+    Zero-drift automation: multi-version matrix testing across Python 3.12–3.15,
+    isolated wheel package smoke tests, automated documentation publishing, and PyPI
+    Trusted Publishing with supply-chain safeguards.
 
 </div>
 
 > [!IMPORTANT]
 > **Built for Long-Term Production, Not Throwaway Scripts**
 >
-> Zenith is engineered for **production libraries, services, and frameworks** intended to be maintained over years by teams of humans and AI agents.
+> Zenith is engineered for **production libraries, services, and frameworks** intended
+> to be maintained over years by teams of humans and AI agents.
 >
 > **Zenith is probably not suited for:**
+>
 > - Quick two-script throwaway automations or web scrapers.
 > - 24-hour hackathon prototypes where dirty hacks precede design.
 > - Beginners learning fundamental Python syntax for the first time.
 >
-> If you only need a single script, use `uv run script.py`. When your codebase must remain robust, typed, and tested across hundreds of commits, Zenith is your foundation.
+> If you only need a single script, use `uv run script.py`. When your codebase must
+> remain robust, typed, and tested across hundreds of commits, Zenith is your
+> foundation.
 >
 > [Read the full philosophy & project sizing rubric →](philosophy.md)
 
@@ -99,7 +117,8 @@ Zenith eliminates **scaffolding debt** and **quality decay**. Instead of spendin
 
 ## Project Structure
 
-Every project scaffolded from Zenith matches the production architecture of the **[zenith-example](https://github.com/bwrob/zenith-example)** showcase repository:
+Every project scaffolded from Zenith matches the production architecture of the
+**[zenith-example](https://github.com/bwrob/zenith-example)** showcase repository:
 
 ```tree
 zenith-example/
@@ -129,7 +148,8 @@ zenith-example/
 > [!TIP]
 > **Explore the Live Showcase Repository**
 >
-> Browse the real instantiated code, commit history, and GitHub Actions CI runs in **[bwrob/zenith-example on GitHub](https://github.com/bwrob/zenith-example)**.
+> Browse the real instantiated code, commit history, and GitHub Actions CI runs in
+> **[bwrob/zenith-example on GitHub](https://github.com/bwrob/zenith-example)**.
 
 ---
 
@@ -137,25 +157,26 @@ zenith-example/
 
 <div class="grid cards" markdown>
 
--   __[Philosophy & Sizing](philosophy.md)__
+-   **[Philosophy & Sizing](philosophy.md)**
 
     ---
 
     In-depth rationale, tool comparisons against legacy stacks, and sizing rubric.
 
--   __[Tooling Stack](tools/index.md)__
+-   **[Tooling Stack](tools/index.md)**
 
     ---
 
-    Comprehensive guides for the integrated tool stack, including Typer CLI, uv, and Pyrefly.
+    Comprehensive guides for the integrated tool stack, including Typer CLI, uv, and
+    Pyrefly.
 
--   __[Agent Skills](skills/index.md)__
+-   **[Agent Skills](skills/index.md)**
 
     ---
 
     Four-prefix taxonomy (`workflow-*`, `tool-*`, `guide-*`, `domain-*`) for AI agents.
 
--   __[CI/CD Pipelines](ci-actions.md)__
+-   **[CI/CD Pipelines](ci-actions.md)**
 
     ---
 

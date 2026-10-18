@@ -27,6 +27,7 @@
             { "Build & Workflow" = [
                 { "uv" = "tools/uv.md" },
                 { "Poe the Poet" = "tools/poethepoet.md" },
+                { "prek" = "tools/prek.md" },
                 { "Typer" = "tools/typer.md" },
                 { "Cookiecutter" = "tools/cookiecutter.md" },
             ] },

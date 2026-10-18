@@ -10,7 +10,7 @@
       "Bash(uv run rumdl:*)",
       "Bash(uv run typos:*)",
       "Bash(uv run zizmor:*)",
-      "Bash(uv run pre-commit:*)"
+      "Bash(uv run prek:*)"
     ],
     "deny": [
       "Bash(rm -rf /*)",

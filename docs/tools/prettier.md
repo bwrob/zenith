@@ -2,23 +2,33 @@
 
 [![Tool: Prettier](https://img.shields.io/badge/formatter-prettier-f7b93e.svg)](https://prettier.io/)
 
-`Prettier` is an opinionated code formatter. Zenith utilizes Prettier exclusively through `pre-commit` to format GitHub Actions YAML manifests, issue templates, and custom CSS stylesheets.
+`Prettier` is an opinionated code formatter. Zenith utilizes Prettier exclusively
+through `prek` to format GitHub Actions YAML manifests, issue templates, and
+custom CSS stylesheets.
 
 ---
 
 ## What It Does
 
-Prettier parses configuration files and stylesheets, re-printing them to adhere to strict stylistic standards. In Zenith, it standardizes 4-space indentation, list formatting, key-value spacing, and scalar wrapping across GitHub Actions workflows (`.github/workflows/*.yaml`) and custom CSS sheets (`docs/stylesheets/*.css`).
+Prettier parses configuration files and stylesheets, re-printing them to adhere to
+strict stylistic standards. In Zenith, it standardizes 4-space indentation, list
+formatting, key-value spacing, and scalar wrapping across GitHub Actions workflows
+(`.github/workflows/*.yaml`) and custom CSS sheets (`docs/stylesheets/*.css`).
 
-By formatting files automatically, Prettier completely eliminates stylistic noise from pull request reviews and version control diffs.
+By formatting files automatically, Prettier completely eliminates stylistic noise from
+pull request reviews and version control diffs.
 
 ---
 
 ## Why It's in Zenith
 
-Zenith enforces consistent 4-space indentation across all languages in the project (Python, TOML, YAML, and CSS). Prettier is wired exclusively through pre-commit mirrors, executing formatting without requiring a global Node.js installation or package manifests in the Python repository.
+Zenith enforces consistent 4-space indentation across all languages in the project
+(Python, TOML, YAML, and CSS). Prettier is wired exclusively through prek mirrors,
+executing formatting without requiring a global Node.js installation or package
+manifests in the Python repository.
 
-It integrates directly into dedicated task runners (`poe format-yaml`, `poe format-css`) and the overarching `poe code-quality` verification pipeline.
+It integrates directly into dedicated task runners (`poe format-yaml`, `poe format-css`)
+and the overarching `poe code-quality` verification pipeline.
 
 ---
 
@@ -35,18 +45,16 @@ if not path.exists():
 print(path.read_text().strip())
 ```
 
-And registered in `.pre-commit-config.yaml`:
+And registered in `prek.toml`:
 
-```yaml
-- repo: https://github.com/pre-commit/mirrors-prettier
-  rev: v4.0.0-alpha.8
-  hooks:
-      - id: prettier
-        name: 🎨 prettier · Format YAML files
-        types: [yaml]
-      - id: prettier
-        name: 🎨 prettier · Format CSS files
-        types: [css]
+```toml
+[[repos]]
+repo = "https://github.com/pre-commit/mirrors-prettier"
+rev = "v4.0.0-alpha.8"
+hooks = [
+    { id = "prettier", name = "🎨 prettier · Format YAML files", types = ["yaml"] },
+    { id = "prettier", name = "🎨 prettier · Format CSS files", types = ["css"] },
+]
 ```
 
 ---

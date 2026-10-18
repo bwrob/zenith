@@ -98,6 +98,9 @@ uv run poe code-quality
 - [ ] Run code quality checks with `uv run poe code-quality`
 - [ ] Preview documentation with `uv run poe docs-serve`
 
+> [!NOTE]
+> To enable automated documentation deployment to GitHub Pages via `.github/workflows/docs.yaml`, open your GitHub repository, navigate to **Settings** → **Pages**, and set **Build and deployment** → **Source** to **GitHub Actions**.
+
 > [!TIP]
 > When browsing docs, press ++slash++ or ++cmd+k++ (or ++ctrl+k++ on Linux/Windows) to instantly search documentation symbols and pages.
 > Hovering internal links like [API Reference](reference.md) activates floating link previews.

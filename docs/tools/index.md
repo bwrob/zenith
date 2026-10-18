@@ -1,80 +1,58 @@
 # Zenith Tooling Stack
 
-Zenith replaces fragmented, slow Python tooling with an ultra-fast, Rust-powered toolchain configured with strict quality guardrails.
+Zenith replaces fragmented, slow Python tooling with an ultra-fast, Rust-powered
+toolchain configured with strict quality guardrails.
 
 ---
 
-## Tooling Matrix
+## Tool Architecture & Categories
 
-| Tool | Group | Primary Role | Upstream Documentation |
-|---|---|---|---|
-| **[uv](uv.md)** | Build & Workflow | Package manager, virtual environments, lockfiles, and PEP 517 builds | [docs.astral.sh/uv](https://docs.astral.sh/uv/) |
-| **[Poe the Poet](poethepoet.md)** | Build & Workflow | Declarative development task runner integrated with uv | [poethepoet.natn.io](https://poethepoet.natn.io/) |
-| **[Typer](typer.md)** | Build & Workflow | Type-safe CLI framework with Rich terminal rendering | [typer.tiangolo.com](https://typer.tiangolo.com/) |
-| **[Cookiecutter](cookiecutter.md)** | Build & Workflow | Project templating engine powering Zenith generation | [cookiecutter.readthedocs.io](https://cookiecutter.readthedocs.io/) |
-| **[Ruff](ruff.md)** | Code Quality | Blazing-fast Python linter and formatter with preview rules | [docs.astral.sh/ruff](https://docs.astral.sh/ruff/) |
-| **[Pyrefly](pyrefly.md)** | Code Quality | Meta's strict type checker and 100% type coverage engine | [github.com/facebook/pyrefly](https://github.com/facebook/pyrefly) |
-| **[Tach](tach.md)** | Code Quality | Modular boundary enforcement, circular dependency blocker | [github.com/gauge-sh/tach](https://github.com/gauge-sh/tach) |
-| **[complexipy](complexipy.md)** | Code Quality | Fast cognitive complexity analyzer enforcing max <= 10 | [github.com/rohaquinlop/complexipy](https://github.com/rohaquinlop/complexipy) |
-| **[Griffe](griffe.md)** | Code Quality | Static AST analysis and breaking public API change detector | [mkdocstrings.github.io/griffe](https://mkdocstrings.github.io/griffe/) |
-| **[typos](typos.md)** | Code Quality | High-performance source code and doc spell checker | [github.com/crate-ci/typos](https://github.com/crate-ci/typos) |
-| **[pytest](pytest.md)** | Testing & Security | Fixture-based test framework with parallel, property, and snapshot plugins | [docs.pytest.org](https://docs.pytest.org/) |
-| **[Coverage.py](coverage.md)** | Testing & Security | 100% statement and branch test coverage engine | [coverage.readthedocs.io](https://coverage.readthedocs.io/) |
-| **[mutmut](mutmut.md)** | Testing & Security | Fast AST mutation testing for local TDD loops (macOS/Linux) | [mutmut.readthedocs.io](https://mutmut.readthedocs.io/) |
-| **[Cosmic Ray](cosmic-ray.md)** | Testing & Security | AST mutation testing evaluating test suite assertiveness | [cosmic-ray.readthedocs.io](https://cosmic-ray.readthedocs.io/) |
-| **[zizmor](zizmor.md)** | Testing & Security | Static security analysis tool for GitHub Actions workflows | [woodruffw.github.io/zizmor](https://woodruffw.github.io/zizmor/) |
-| **[Zensical](zensical.md)** | Documentation & Formatting | Fast TOML-based static documentation generator | [github.com/zensical/zensical](https://github.com/zensical/zensical) |
-| **[rumdl](rumdl.md)** | Documentation & Formatting | Rust-native Markdown linter and embedded code checker | [github.com/rvben/rumdl](https://github.com/rvben/rumdl) |
-| **[Taplo](taplo.md)** | Documentation & Formatting | Consistent TOML formatting and schema validation | [taplo.tamasfe.dev](https://taplo.tamasfe.dev/) |
-| **[Prettier](prettier.md)** | Documentation & Formatting | Opinionated formatter for YAML workflows and CSS stylesheets | [prettier.io](https://prettier.io/) |
-| **[Typst](typst.md)** | Documentation & Formatting | Markup-based layout engine for compiling SVG documentation assets | [typst.app/docs](https://typst.app/docs/) |
-| **[Termynal](termynal.md)** | Documentation & Formatting | Lightweight terminal animation widget for documentation | [github.com/ines/termynal](https://github.com/ines/termynal) |
-
----
-
-## Tool Categories
+The diagram below maps the complete Zenith tool ecosystem across four operational
+pillars:
 
 ```mermaid
-flowchart LR
-    subgraph Build["Build & Workflow"]
+flowchart TB
+    subgraph Build["🛠️ Build & Workflow"]
         direction TB
-        uv["uv"]
-        poe["Poe the Poet"]
-        typer["Typer"]
-        cc["Cookiecutter"]
+        uv["uv<br/><i>Package Manager & Builds</i>"]
+        poe["Poe the Poet<br/><i>Hermetic Task Runner</i>"]
+        prek["prek<br/><i>Git Hook Automation</i>"]
+        typer["Typer<br/><i>Type-Safe CLI Framework</i>"]
+        cc["Cookiecutter<br/><i>Template Scaffolding</i>"]
     end
 
-    subgraph Quality["Code Quality"]
+    subgraph Quality["🛡️ Code Quality & Architecture"]
         direction TB
-        ruff["Ruff"]
-        pyrefly["Pyrefly"]
-        tach["Tach"]
-        complex["complexipy"]
-        griffe["Griffe"]
-        typos["typos"]
+        ruff["Ruff<br/><i>Linter & Formatter</i>"]
+        pyrefly["Pyrefly<br/><i>Strict Type Checker</i>"]
+        tach["Tach<br/><i>Boundary Enforcer</i>"]
+        complex["complexipy<br/><i>Complexity Ceiling</i>"]
+        griffe["Griffe<br/><i>API Change Detector</i>"]
+        typos["typos<br/><i>Source Spell Checker</i>"]
     end
 
-    subgraph Test["Testing & Security"]
+    subgraph Test["🧪 Testing & Security"]
         direction TB
-        pytest["pytest"]
-        cov["Coverage.py"]
-        mutmut["mutmut"]
-        cosmic["Cosmic Ray"]
-        zizmor["zizmor"]
+        pytest["pytest<br/><i>Parallel Test Engine</i>"]
+        cov["Coverage.py<br/><i>100% Branch Coverage</i>"]
+        mutmut["mutmut<br/><i>Fast Local Mutation</i>"]
+        cosmic["Cosmic Ray<br/><i>Deep AST Mutation</i>"]
+        zizmor["zizmor<br/><i>CI Security Analyzer</i>"]
     end
 
-    subgraph Docs["Documentation & Formatting"]
+    subgraph Docs["📚 Documentation & Formatting"]
         direction TB
-        zensical["Zensical"]
-        rumdl["rumdl"]
-        taplo["Taplo"]
-        prettier["Prettier"]
-        typst["Typst"]
-        termy["Termynal"]
+        zensical["Zensical<br/><i>Fast Docs Generator</i>"]
+        rumdl["rumdl<br/><i>Markdown Linter</i>"]
+        taplo["Taplo<br/><i>TOML Formatter</i>"]
+        prettier["Prettier<br/><i>YAML & CSS Formatter</i>"]
+        typst["Typst<br/><i>SVG Layout Engine</i>"]
+        termy["Termynal<br/><i>Animated Terminal</i>"]
     end
 
     click uv "uv/" "Explore uv documentation"
     click poe "poethepoet/" "Explore Poe the Poet documentation"
+    click prek "prek/" "Explore prek documentation"
     click typer "typer/" "Explore Typer documentation"
     click cc "cookiecutter/" "Explore Cookiecutter documentation"
     click ruff "ruff/" "Explore Ruff documentation"
@@ -96,4 +74,60 @@ flowchart LR
     click termy "termynal/" "Explore Termynal documentation"
 ```
 
-Click any tool above to explore its technical description, architectural rationale in Zenith, detailed configuration options, and upstream references.
+Click any tool above to view its technical specifications, architectural rationale in
+Zenith, configuration showcases, and upstream references.
+
+---
+
+## Dedicated Configuration Files vs. `pyproject.toml`
+
+Most modern Python tools—such as Ruff, Pytest, Coverage, and Taplo—support defining
+configuration directly inside `pyproject.toml` using `[tool.*]` tables. While
+consolidating settings into a single file appears convenient, Zenith intentionally
+standardizes on **separate, dedicated configuration files per tool** whenever possible
+(`ruff.toml`, `pyrefly.toml`, `complexipy.toml`, `tach.toml`, `poe_tasks.toml`,
+`pytest.ini`, `.coveragerc`, `.taplo.toml`, `prek.toml`):
+
+- **Focused, High-Signal Code Reviews**: Modifying a linter rule, adjusting type check
+  settings, or updating task scripts creates a clean, isolated Git diff in that tool's
+  specific file. Pull requests remain easy to review without unnecessary changes to the
+  core packaging manifest.
+- **Prevents Monolithic File Bloat**: Storing configuration for 15+ comprehensive
+  developer tools in `pyproject.toml` results in a gigantic file stretching hundreds of
+  lines. This bloat obscures essential PEP 621 package metadata, project dependencies,
+  and build system specifications.
+- **Granular Git Blame & History**: Each tool configuration retains an independent
+  commit history. Inspecting `git log ruff.toml` or `git blame tach.toml` surfaces the
+  exact context, author, and pull request for architectural decisions over time.
+- **Tool-Native Schema Support**: Dedicated files allow language servers, editors, and
+  formatters to attach dedicated JSON/TOML schemas directly to the target configuration
+  file without schema interference.
+
+---
+
+## Tooling Matrix
+
+| Tool | Group | Primary Role | Upstream Documentation |
+|---|---|---|---|
+| **[uv](uv.md)** | Build & Workflow | Package manager, virtual environments, lockfiles, and PEP 517 builds | [docs.astral.sh/uv](https://docs.astral.sh/uv/) |
+| **[Poe the Poet](poethepoet.md)** | Build & Workflow | Declarative development task runner integrated with uv | [poethepoet.natn.io](https://poethepoet.natn.io/) |
+| **[prek](prek.md)** | Build & Workflow | Ultra-fast Rust Git hook runner and local quality gate automation | [prek.j178.dev](https://prek.j178.dev/) |
+| **[Typer](typer.md)** | Build & Workflow | Type-safe CLI framework with Rich terminal rendering | [typer.tiangolo.com](https://typer.tiangolo.com/) |
+| **[Cookiecutter](cookiecutter.md)** | Build & Workflow | Project templating engine powering Zenith generation | [cookiecutter.readthedocs.io](https://cookiecutter.readthedocs.io/) |
+| **[Ruff](ruff.md)** | Code Quality | Blazing-fast Python linter and formatter with preview rules | [docs.astral.sh/ruff](https://docs.astral.sh/ruff/) |
+| **[Pyrefly](pyrefly.md)** | Code Quality | Meta's strict type checker and 100% type coverage engine | [github.com/facebook/pyrefly](https://github.com/facebook/pyrefly) |
+| **[Tach](tach.md)** | Code Quality | Modular boundary enforcement, circular dependency blocker | [github.com/gauge-sh/tach](https://github.com/gauge-sh/tach) |
+| **[complexipy](complexipy.md)** | Code Quality | Fast cognitive complexity analyzer enforcing max <= 10 | [github.com/rohaquinlop/complexipy](https://github.com/rohaquinlop/complexipy) |
+| **[Griffe](griffe.md)** | Code Quality | Static AST analysis and breaking public API change detector | [mkdocstrings.github.io/griffe](https://mkdocstrings.github.io/griffe/) |
+| **[typos](typos.md)** | Code Quality | High-performance source code and doc spell checker | [github.com/crate-ci/typos](https://github.com/crate-ci/typos) |
+| **[pytest](pytest.md)** | Testing & Security | Fixture-based test framework with parallel, property, and snapshot plugins | [docs.pytest.org](https://docs.pytest.org/) |
+| **[Coverage.py](coverage.md)** | Testing & Security | 100% statement and branch test coverage engine | [coverage.readthedocs.io](https://coverage.readthedocs.io/) |
+| **[mutmut](mutmut.md)** | Testing & Security | Fast AST mutation testing for local TDD loops (macOS/Linux) | [mutmut.readthedocs.io](https://mutmut.readthedocs.io/) |
+| **[Cosmic Ray](cosmic-ray.md)** | Testing & Security | AST mutation testing evaluating test suite assertiveness | [cosmic-ray.readthedocs.io](https://cosmic-ray.readthedocs.io/) |
+| **[zizmor](zizmor.md)** | Testing & Security | Static security analysis tool for GitHub Actions workflows | [woodruffw.github.io/zizmor](https://woodruffw.github.io/zizmor/) |
+| **[Zensical](zensical.md)** | Documentation & Formatting | Fast TOML-based static documentation generator | [github.com/zensical/zensical](https://github.com/zensical/zensical) |
+| **[rumdl](rumdl.md)** | Documentation & Formatting | Rust-native Markdown linter and embedded code checker | [github.com/rvben/rumdl](https://github.com/rvben/rumdl) |
+| **[Taplo](taplo.md)** | Documentation & Formatting | Consistent TOML formatting and schema validation | [taplo.tamasfe.dev](https://taplo.tamasfe.dev/) |
+| **[Prettier](prettier.md)** | Documentation & Formatting | Opinionated formatter for YAML workflows and CSS stylesheets | [prettier.io](https://prettier.io/) |
+| **[Typst](typst.md)** | Documentation & Formatting | Markup-based layout engine for compiling SVG documentation assets | [typst.app/docs](https://typst.app/docs/) |
+| **[Termynal](termynal.md)** | Documentation & Formatting | Lightweight terminal animation widget for documentation | [github.com/ines/termynal](https://github.com/ines/termynal) |

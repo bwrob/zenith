@@ -1,0 +1,68 @@
+# Configuration file for `prek`, a git hook framework written in Rust.
+# See https://prek.j178.dev for more information.
+#:schema https://www.schemastore.org/prek.json
+
+default_install_hook_types = [ "pre-commit" ]
+default_stages             = [ "pre-commit" ]
+exclude                    = '^({{cookiecutter\.project_slug}}|templates)/'
+fail_fast                  = false
+
+[[repos]]
+    hooks = [
+        { id = "check-case-conflict", name = "🛠️ prek · Check for case conflicts" },
+        { id = "check-merge-conflict", name = "🛠️ prek · Check for merge conflicts" },
+        { id = "check-yaml", name = "🛠️ prek · Check YAML files" },
+        { id = "end-of-file-fixer", name = "🛠️ prek · Fix end of file" },
+        { id = "mixed-line-ending", name = "🛠️ prek · Check mixed line endings" },
+        { id = "trailing-whitespace", name = "🛠️ prek · Check trailing whitespace" },
+        { id = "check-json", name = "🛠️ prek · Check JSON files" },
+        { id = "check-added-large-files", name = "🛠️ prek · Check for large files", args = [
+            "--maxkb=2000",
+        ] },
+        { id = "check-toml", name = "🛠️ prek · Check TOML files" },
+    ]
+    repo = "https://github.com/pre-commit/pre-commit-hooks"
+    rev = "v6.0.0"
+
+[[repos]]
+    hooks = [
+        { id = "gitleaks", name = "🔒 security · Detect hardcoded secrets" },
+    ]
+    repo = "https://github.com/gitleaks/gitleaks"
+    rev = "v8.30.0"
+
+[[repos]]
+    hooks = [
+        { id = "validate-pyproject", name = "🐍 validate-pyproject · Validate pyproject.toml" },
+    ]
+    repo = "https://github.com/abravalheri/validate-pyproject"
+    rev = "0.26"
+
+[[repos]]
+    hooks = [
+        { id = "ruff-check", name = "🐍 ruff · Check Python code", args = [
+            "--fix",
+        ], files = '(\.(py|pyi)$|(^|/)(pyproject\.toml|uv\.lock)$)', types_or = [
+            "file",
+        ], pass_filenames = false },
+        { id = "ruff-format", name = "🐍 ruff · Format Python code" },
+    ]
+    repo = "https://github.com/astral-sh/ruff-pre-commit"
+    rev = "v0.17.0"
+
+[[repos]]
+    hooks = [ { id = "taplo-format", name = "⚙️ taplo · Format TOML files" } ]
+    repo  = "https://github.com/ComPWA/taplo-pre-commit"
+    rev   = "v0.9.3"
+
+[[repos]]
+    hooks = [
+        { id = "prettier", name = "🎨 prettier · Format YAML files", types = [
+            "yaml",
+        ] },
+        { id = "prettier", name = "🎨 prettier · Format CSS files", alias = "prettier-css", types = [
+            "css",
+        ] },
+    ]
+    repo = "https://github.com/pre-commit/mirrors-prettier"
+    rev = "v3.1.0"

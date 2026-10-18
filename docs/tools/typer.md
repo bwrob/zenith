@@ -2,29 +2,44 @@
 
 [![Tool: Typer](https://img.shields.io/badge/cli-typer-009688.svg)](https://typer.tiangolo.com/)
 
-`Typer` is a modern library for building command-line applications based on Python type hints, created by Sebastián Ramírez (tiangolo). It brings the developer ergonomics, automatic validation, and modern typing of FastAPI to the command line.
+`Typer` is a modern library for building command-line applications based on Python type
+hints, created by Sebastián Ramírez (tiangolo). It brings the developer ergonomics,
+automatic validation, and modern typing of FastAPI to the command line.
 
 ---
 
 ## What It Does
 
-Typer parses command-line arguments and options using standard Python type annotations. Utilizing modern `typing.Annotated` metadata, parameter definitions cleanly decouple argument validation from descriptive help text, flags, and environment fallbacks. String inputs are automatically converted into native Python types including numbers, paths, booleans, enums, and UUIDs.
+Typer parses command-line arguments and options using standard Python type annotations.
+Utilizing modern `typing.Annotated` metadata, parameter definitions cleanly decouple
+argument validation from descriptive help text, flags, and environment fallbacks. String
+inputs are automatically converted into native Python types including numbers, paths,
+booleans, enums, and UUIDs.
 
-Through its integration with Rich, Typer automatically generates colored, structured terminal help screens, elegant error dialogs, and progress displays directly from function signatures and docstrings. It also provides automatic tab-completion support across all major shells.
+Through its integration with Rich, Typer automatically generates colored, structured
+terminal help screens, elegant error dialogs, and progress displays directly from
+function signatures and docstrings. It also provides automatic tab-completion support
+across all major shells.
 
 ---
 
 ## Why It's in Zenith
 
-Zenith chooses Typer for projects that require a command-line interface because it harmonizes completely with strict static type checking. Unlike legacy `argparse` or decorator-heavy alternatives, Typer functions remain ordinary, fully typed Python functions that pass Pyrefly strict analysis without escaping into dynamic reflection.
+Zenith chooses Typer for projects that require a command-line interface because it
+harmonizes completely with strict static type checking. Unlike legacy `argparse` or
+decorator-heavy alternatives, Typer functions remain ordinary, fully typed Python
+functions that pass Pyrefly strict analysis without escaping into dynamic reflection.
 
-This design makes CLI commands trivial to unit test via `typer.testing.CliRunner`. As applications scale from a single entry point to deep subcommand trees, Typer preserves strict type guarantees and clean architectural boundaries.
+This design makes CLI commands trivial to unit test via `typer.testing.CliRunner`. As
+applications scale from a single entry point to deep subcommand trees, Typer preserves
+strict type guarantees and clean architectural boundaries.
 
 ---
 
 ## Terminal Demonstration
 
-The interactive terminal below showcases the Typer CLI running with Rich formatting using the **[Termynal](termynal.md)** widget:
+The interactive terminal below showcases the Typer CLI running with Rich formatting
+using the **[Termynal](termynal.md)** widget:
 
 <div class="termy">
 
@@ -67,7 +82,8 @@ Display a personalized greeting.
 
 ## Configuration in Zenith
 
-Configured in `src/<package_name>/cli.py` and registered under `[project.scripts]` in `pyproject.toml`:
+Configured in `src/<package_name>/cli.py` and registered under `[project.scripts]` in
+`pyproject.toml`:
 
 ```python
 from typing import Annotated
@@ -104,7 +120,8 @@ Zenith automatically configures entry points in `pyproject.toml`:
 {{ cookiecutter.project_slug }} = "{{ cookiecutter.package_name }}.cli:app"
 ```
 
-Because Zenith manages the environment with `uv`, you can execute the CLI immediately with:
+Because Zenith manages the environment with `uv`, you can execute the CLI immediately
+with:
 
 ```bash
 uv run {{ cookiecutter.project_slug }} --help
@@ -114,7 +131,8 @@ uv run {{ cookiecutter.project_slug }} --help
 
 ## Automated CLI Testing
 
-CLI commands in Zenith projects are verified using `typer.testing.CliRunner` in `tests/test_cli.py`:
+CLI commands in Zenith projects are verified using `typer.testing.CliRunner` in
+`tests/test_cli.py`:
 
 ```python
 from typer.testing import CliRunner
@@ -139,7 +157,9 @@ def test_greet_custom_name() -> None:
 
 ## Conditional Scaffolding
 
-If a project is an internal library or data engine without a command-line interface, setting `include_cli = false` in `cookiecutter.json`:
+If a project is an internal library or data engine without a command-line interface,
+setting `include_cli = false` in `cookiecutter.json`:
+
 - Removes `src/<package_name>/cli.py`.
 - Removes Typer and Rich from `dependencies`.
 - Removes CLI unit tests from `tests/test_cli.py`.

@@ -15,12 +15,12 @@ contributors must adhere to the following principles:
 ## 2. Verification Gate Before Submitting
 
 - **Mandatory Local Verification**: Before submitting a PR, verify all template tests,
-  linting, formatting, and pre-commit checks locally:
+  linting, formatting, and prek checks locally:
 
   ```bash
   uv run poe test
   uv run poe code-quality
-  uv run pre-commit run --all-files
+  uv run prek run --all-files
   ```
 
 - **Hermetic Testing**: Never submit untested template Jinja2 modifications or hook

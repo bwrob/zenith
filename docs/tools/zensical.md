@@ -2,23 +2,34 @@
 
 [![Tool: Zensical](https://img.shields.io/badge/docs-zensical-teal.svg)](https://github.com/zensical/zensical)
 
-`Zensical` is a fast static documentation site generator written in Rust and Python by the creators of Material for MkDocs and mkdocstrings. It configures documentation via typed `zensical.toml` files, replacing legacy `mkdocs.yml` setups.
+`Zensical` is a fast static documentation site generator written in Rust and Python by
+the creators of Material for MkDocs and mkdocstrings. It configures documentation via
+typed `zensical.toml` files, replacing legacy `mkdocs.yml` setups.
 
 ---
 
 ## What It Does
 
-Zensical generates static technical documentation sites with sub-second live reloading. It automates API documentation via `mkdocstrings[python]`, client-side MathJax LaTeX rendering, dynamic code execution through `markdown-exec`, and native Mermaid diagram support.
+Zensical generates static technical documentation sites with sub-second live reloading.
+It automates API documentation via `mkdocstrings[python]`, client-side MathJax LaTeX
+rendering, dynamic code execution through `markdown-exec`, and native Mermaid diagram
+support.
 
-It also automatically compiles machine-readable `site/llms.txt` and `site/llms-full.txt` feeds, allowing AI coding assistants to consume project architecture guides and API reference surfaces in a single contextual payload.
+It also automatically compiles machine-readable `site/llms.txt` and `site/llms-full.txt`
+feeds, allowing AI coding assistants to consume project architecture guides and API
+reference surfaces in a single contextual payload.
 
 ---
 
 ## Why It's in Zenith
 
-Zenith chooses Zensical because it standardizes on TOML configuration (`zensical.toml`), avoiding YAML sprawl and unifying configuration patterns with `pyproject.toml`.
+Zenith chooses Zensical because it standardizes on TOML configuration (`zensical.toml`),
+avoiding YAML sprawl and unifying configuration patterns with `pyproject.toml`.
 
-With strict validation enabled (`zensical build --strict`), deployments fail automatically if an internal link, anchor tag, footnote, or cross-reference is broken. Designed for dual human and AI consumption, Zensical pairs modern responsive theming with automated machine-readable feeds.
+With strict validation enabled (`zensical build --strict`), deployments fail
+automatically if an internal link, anchor tag, footnote, or cross-reference is broken.
+Designed for dual human and AI consumption, Zensical pairs modern responsive theming
+with automated machine-readable feeds.
 
 ---
 
@@ -37,7 +48,8 @@ Zenith enhances Zensical with specialized plugins configured under `[project.plu
 
 ## Markdown Extensions Suite
 
-Zenith enables a comprehensive suite of Python-Markdown and PyMdown Extensions under `[project.markdown_extensions]` to support rich technical authoring:
+Zenith enables a comprehensive suite of Python-Markdown and PyMdown Extensions under
+`[project.markdown_extensions]` to support rich technical authoring:
 
 | Extension Category | Extensions | Enabled Features |
 |---|---|---|
@@ -77,9 +89,14 @@ uv run poe docs-build                  # Strict production build into site/
 ### Live Reloading Watchdog
 
 `zensical serve` includes an integrated file watchdog:
-- **Instant Millisecond Rebuilds**: Monitors `docs/`, `zensical.toml`, assets, and stylesheets, updating pages in milliseconds as Markdown files are modified.
-- **WebSocket Live Browser Sync**: Automatically pushes changes to all open browser tabs without manual page refreshes.
-- **Agent Workflow Note**: When developers run `uv run poe docs-serve` in a terminal window, AI agents do not need to execute rebuilds during editing turns because the watchdog reloads pages automatically.
+
+- **Instant Millisecond Rebuilds**: Monitors `docs/`, `zensical.toml`, assets, and
+  stylesheets, updating pages in milliseconds as Markdown files are modified.
+- **WebSocket Live Browser Sync**: Automatically pushes changes to all open browser tabs
+  without manual page refreshes.
+- **Agent Workflow Note**: When developers run `uv run poe docs-serve` in a terminal
+  window, AI agents do not need to execute rebuilds during editing turns because the
+  watchdog reloads pages automatically.
 
 ---
 

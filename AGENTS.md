@@ -42,8 +42,8 @@ Before editing code or executing tasks, ensure an isolated, clean working enviro
   work:
   - `uv run poe test`
   - `uv run poe code-quality`
-  - `uv run pre-commit run --all-files`
-  - Always re-read any files modified by formatters or `pre-commit` hooks before making
+  - `uv run prek run --all-files`
+  - Always re-read any files modified by formatters or `prek` hooks before making
     subsequent edits.
 - **Reproduce-First Bug Scoping**: When fixing a bug, first reproduce the failure with a
   minimal test, trace the root cause, and search the codebase for sibling occurrences of

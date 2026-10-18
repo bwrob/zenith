@@ -50,12 +50,12 @@ def test_default_generation(temp_output_dir: Path) -> None:
     assert (project_dir / ".coveragerc").exists()
     assert (project_dir / ".gitattributes").exists()
     assert (project_dir / ".prettierrc.yaml").exists()
-    assert (project_dir / ".pre-commit-config.yaml").exists()
-    precommit_text = (project_dir / ".pre-commit-config.yaml").read_text()
-    assert "prettier" in precommit_text
-    assert "prettier-css" in precommit_text
-    assert "pyrefly-coverage" in precommit_text
-    assert "uv\\.lock" in precommit_text
+    assert (project_dir / "prek.toml").exists()
+    prek_text = (project_dir / "prek.toml").read_text()
+    assert "prettier" in prek_text
+    assert "prettier-css" in prek_text
+    assert "pyrefly-coverage" in prek_text
+    assert "uv-lock" in prek_text
     assert (project_dir / ".editorconfig").exists()
     assert (project_dir / ".zizmor.yml").exists()
     assert (project_dir / ".gemini" / "settings.json").exists()
@@ -548,9 +548,9 @@ def test_default_generation(temp_output_dir: Path) -> None:
         in (project_dir / ".agents" / "skills" / "tool-uv" / "SKILL.md").read_text()
     )
 
-    # Verify pre-commit config has typos
-    precommit_text = (project_dir / ".pre-commit-config.yaml").read_text()
-    assert "crate-ci/typos" in precommit_text
+    # Verify prek config has typos
+    prek_text = (project_dir / "prek.toml").read_text()
+    assert "crate-ci/typos" in prek_text
 
     # Verify Tach setup
     tach_text = (project_dir / "tach.toml").read_text()

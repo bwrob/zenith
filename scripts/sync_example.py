@@ -59,6 +59,8 @@ def sync_example(target_dir: Path, *, lock: bool = True) -> Path:
 
         # Copy new files from rendered project into target
         for item in rendered_path.iterdir():
+            if item.name == ".git":
+                continue
             dest = resolved_target / item.name
             if item.is_dir():
                 shutil.copytree(item, dest, symlinks=True)

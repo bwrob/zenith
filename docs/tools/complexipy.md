@@ -2,23 +2,34 @@
 
 [![Tool: complexipy](https://img.shields.io/badge/complexity-complexipy-crimson.svg)](https://github.com/rohaquinlop/complexipy)
 
-`complexipy` is an extremely fast cognitive complexity analyzer for Python code written in Rust. It measures how difficult functions and methods are for a human or AI agent to read and understand.
+`complexipy` is an extremely fast cognitive complexity analyzer for Python code written
+in Rust. It measures how difficult functions and methods are for a human or AI agent to
+read and understand.
 
 ---
 
 ## What It Does
 
-Cognitive complexity measures the mental effort required to understand the control flow of code. Unlike Cyclomatic Complexity, which simply counts independent linear execution paths, Cognitive Complexity penalizes nested control structures, recursion, cascading conditional ladders, and convoluted boolean expressions.
+Cognitive complexity measures the mental effort required to understand the control flow
+of code. Unlike Cyclomatic Complexity, which simply counts independent linear execution
+paths, Cognitive Complexity penalizes nested control structures, recursion, cascading
+conditional ladders, and convoluted boolean expressions.
 
-`complexipy` performs this analysis in milliseconds, generating detailed terminal reports that pinpoint exact lines where cognitive overhead spikes.
+`complexipy` performs this analysis in milliseconds, generating detailed terminal
+reports that pinpoint exact lines where cognitive overhead spikes.
 
 ---
 
 ## Why It's in Zenith
 
-Deeply nested logic and tangled branching are the primary sources of regression bugs in production software. AI coding assistants frequently write deeply nested code when attempting to patch complex functionality.
+Deeply nested logic and tangled branching are the primary sources of regression bugs in
+production software. AI coding assistants frequently write deeply nested code when
+attempting to patch complex functionality.
 
-Zenith enforces a hard ceiling of **cognitive complexity <= 10** per function or method. Functions that exceed 10 points fail CI immediately, forcing developers and AI agents to refactor logic into small, composable functions with early returns, structural pattern matching, or dispatch tables.
+Zenith enforces a hard ceiling of **cognitive complexity <= 10** per function or method.
+Functions that exceed 10 points fail CI immediately, forcing developers and AI agents to
+refactor logic into small, composable functions with early returns, structural pattern
+matching, or dispatch tables.
 
 ---
 
@@ -37,7 +48,10 @@ print(path.read_text().strip())
 
 ### Complexity Threshold Guidelines
 
-Scores between 1 and 5 indicate simple, easily testable logic. Scores between 6 and 10 represent acceptable complexity for orchestration or algorithm dispatch. Any score above 10 is strictly prohibited in Zenith and must be refactored via helper extraction or dispatch logic.
+Scores between 1 and 5 indicate simple, easily testable logic. Scores between 6 and 10
+represent acceptable complexity for orchestration or algorithm dispatch. Any score above
+10 is strictly prohibited in Zenith and must be refactored via helper extraction or
+dispatch logic.
 
 ---
 

@@ -203,6 +203,7 @@ def test_sync_example(tmp_path: Path) -> None:
 
     fake_rendered = tmp_path / "fake_rendered"
     fake_rendered.mkdir()
+    (fake_rendered / ".git").mkdir()
     (fake_rendered / "new_file.txt").write_text("new", encoding="utf-8")
     new_sub = fake_rendered / "new_sub"
     new_sub.mkdir()

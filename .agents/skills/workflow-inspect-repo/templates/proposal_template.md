@@ -36,5 +36,5 @@ Exact verification steps and shell commands:
 
 - Unit & template tests (`uv run pytest`).
 - Static analysis & formatting verification (`uv run ruff check && uv run ruff format --check`).
-- Pre-commit verification (`uv run pre-commit run --all-files`).
+- Prek verification (`uv run prek run --all-files`).
 - End-to-end template generation & smoke tests (`uv run poe code-quality`).
