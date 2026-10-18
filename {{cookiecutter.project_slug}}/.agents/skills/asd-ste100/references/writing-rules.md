@@ -4,12 +4,14 @@ This file summarizes the public, official description of ASD-STE100 (Simplified 
 
 ## What ASD-STE100 Is
 
-ASD-STE100 is a controlled natural language. It was first released in 1986
-by what is now ASD (the AeroSpace and Defense Industries Association of Europe).
-European airlines requested the standard for maintenance documentation that
-cannot be misread. A misread instruction on an aircraft can kill people.
-The Simplified Technical English Maintenance Group (STEMG) maintains the
-standard. It is free to download. The current edition is Issue 9 (January 2025).
+ASD-STE100 is a controlled natural language. ASD (the AeroSpace and
+Defense Industries Association of Europe) first released the standard in 1986.
+European airlines requested it for maintenance documentation that
+technicians cannot misread.
+
+A misread instruction on an aircraft can kill people. The Simplified
+Technical English Maintenance Group (STEMG) maintains the standard. It is
+free to download. The current edition is Issue 9 (January 2025).
 
 ## Structure
 
@@ -24,7 +26,7 @@ standard. It is free to download. The current edition is Issue 9 (January 2025).
 
 **Word choice**
 - Use approved words only in their approved meaning and part of speech.
-- Each word maps to exactly one meaning — don't rely on context to disambiguate a word that has several dictionary senses.
+- Each word maps to exactly one meaning. Do not rely on context to disambiguate a word that has several dictionary senses.
 - Prefer the plainer, shorter, more common word over a formal or rare synonym.
 - Use an approved verb for an action, not a noun derived from that verb (Rule 3.7).
 - Do not make phrasal verbs by putting a verb and a preposition together (Rule 9.3). Their meaning is not predictable from the parts, and non-native readers and translation systems both mishandle them.

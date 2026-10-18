@@ -111,7 +111,7 @@ Analyze technical documentation generation and asset pipelines:
   MkDocs* and *mkdocstrings* built `zensical`, patterns discovered in mature
   `mkdocs.yml` setups translate directly into `zensical.toml`.
 - **Strict Build Validation**: Check for `[project.validation]` rules in
-  `zensical.toml` (`invalid_links`, `unresolved_references`, etc.) or
+  `zensical.toml` (`invalid_links`, `unresolved_references`, and other checks) or
   `strict: true` in `mkdocs.yml`.
 - **API Reference Generator**: Inspect docstring tools (`mkdocstrings`, `griffe`).
   Review docstring styles (`numpy`, `google`) and cross-references.
@@ -156,12 +156,12 @@ instructions, guardrails, and operational tooling:
 
 - **Agent Skills & Custom Capabilities**: Check for repository agent skills
   (`.agents/skills/`, `.agent/skills/`, `.cursor/skills/`, `.gemini/skills/`).
-  Identify domain-specific workflows, benchmark harnesses, code generators, or
+  Identify domain-specific workflows, benchmark suites, code generators, or
   diagnostic scripts packaged as skills.
 - **Agent Instructions & Discovery**: Inspect `AGENTS.md`, `CLAUDE.md`,
   `.cursorrules`, `.cursor/rules/`, `.windsurfrules`, and
   `.github/copilot-instructions.md`. Evaluate instruction hierarchy, localized
-  subfolder instructions, and discovery symlinks (e.g. `CLAUDE.md -> AGENTS.md`).
+  subfolder instructions, and discovery symlinks (for example, `CLAUDE.md -> AGENTS.md`).
 - **AI Governance & Contribution Policies**: Inspect AI usage policies
   (`AI_POLICY.md`) and PR disclosure checklists (`pull_request_template.md`).
   Check bot-gating rules and verification mandates.
@@ -350,7 +350,7 @@ parallel subagents in chunks of 2–3 repositories per subagent):
    `.temp/batch-inspection/<NN>-<slug>.md`. **Never stop at vague or high-level observations.**
    For every discovery, compare the finding directly against `{{cookiecutter.project_slug}}`
    and formulate a concrete, well-explained proposal containing:
-   - **Exact Target File**: Target path in `{{cookiecutter.project_slug}}/` (e.g. `{{cookiecutter.project_slug}}/pyproject.toml`, `{{cookiecutter.project_slug}}/tach.toml`, `{{cookiecutter.project_slug}}/pytest.ini`, `{{cookiecutter.project_slug}}/ruff.toml`, etc.) and corresponding root assets.
+   - **Exact Target File**: Target path in `{{cookiecutter.project_slug}}/` (for example, `pyproject.toml`, `tach.toml`, `pytest.ini`, `ruff.toml`) and corresponding root assets.
    - **Concrete Code Diff / Drop-in Replacement**: Exact code snippets or before/after diffs ready for immediate execution.
    - **Well-Explained Architectural Rationale**: Detailed explanation of the mechanism, what edge cases, runtime crashes, or developer friction it prevents, and why Zenith benefits.
    - **Verification Plan**: Exact commands (`uv run pytest`, `uv run ruff check`) to check the update.

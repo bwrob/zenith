@@ -99,7 +99,7 @@ these patterns.
 
 ### A. Adding a New Documentation Page
 
-1. Create the markdown file inside `docs/` (e.g., `docs/architecture.md`).
+1. Create the markdown file inside `docs/` (for example, `docs/architecture.md`).
 2. Register the page in `project.nav` in `zensical.toml`:
 
    ```toml
@@ -125,7 +125,7 @@ these patterns.
 
 ### B. Auto-Documenting Python Code with `mkdocstrings` & `griffe`
 
-In any markdown document (e.g. `docs/reference.md`), use the `:::` block:
+In any markdown document (for example, `docs/reference.md`), use the `:::` block:
 
 ```markdown
 # API Reference

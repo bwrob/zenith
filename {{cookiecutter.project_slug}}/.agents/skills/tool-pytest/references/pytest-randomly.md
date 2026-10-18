@@ -55,7 +55,7 @@ When a test fails under `pytest-randomly`:
 - **Identify the polluter**: Run `pytest --randomly-seed=...` with `-k` or
   binary search across test files to locate which prior test modified state.
 - **Common culprits**:
-  - Un-reset global caches (e.g. `functools.lru_cache`). Clear them in an
+  - Un-reset global caches (for example, `functools.lru_cache`). Clear them in an
     autouse fixture:
 
     ```python

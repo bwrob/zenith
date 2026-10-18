@@ -187,7 +187,7 @@ Configure whitespace trimming and template behavior directly:
 
 - `lstrip_blocks`: Strips leading tabs and spaces from the start of a line to a block.
 - `trim_blocks`: Strips the first newline after a block tag (`{% ... %}`).
-  *Caveat*: `trim_blocks: true` also strips newlines after inline block tags at the end of a line (e.g. `url: {% raw %}${{ ... }}{% endraw %}` in YAML workflows), causing subsequent lines to collapse. In templates with inline raw blocks, prefer using `lstrip_blocks: true` alone.
+  *Caveat*: `trim_blocks: true` also strips newlines after inline block tags at the end of a line (for example, `url: {% raw %}${{ ... }}{% endraw %}` in YAML workflows). This behavior collapses subsequent lines. In templates with inline raw blocks, use `lstrip_blocks: true` alone.
 
 ### E. Deterministic Line Endings (`_new_lines`)
 

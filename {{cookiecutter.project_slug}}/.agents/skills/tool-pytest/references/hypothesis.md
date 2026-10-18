@@ -42,9 +42,8 @@ types:
 
 When `hypothesis` encounters an assertion failure:
 
-1. **Shrinking**: It iteratively prunes and simplifies the input (e.g. reducing
-   a 1000-character string with unicode to `""` or `" "`) to isolate the exact
-   trigger.
+1. **Shrinking**: It prunes and simplifies failing inputs to isolate the
+   exact trigger. For example, it reduces large strings to `""` or `" "`.
 2. **Database Cache**: Hypothesis stores failing inputs in `.hypothesis/examples/`.
    Subsequent test runs re-test previously failing inputs first before exploring
    new random space.

@@ -117,7 +117,7 @@ Follow these patterns to change `pyproject.toml` during development.
 
 ### A. Adding a New Dependency Group (PEP 735)
 
-When adding a specialized group (e.g. `benchmark` or `typing`):
+When adding a specialized group (for example, `benchmark` or `typing`):
 
 1. Declare the group under `[dependency-groups]`:
 
@@ -128,7 +128,7 @@ When adding a specialized group (e.g. `benchmark` or `typing`):
    ]
    ```
 
-2. If it should install automatically during local `uv sync`, add it to
+2. If the group must install automatically during local `uv sync`, add it to
    `default-groups`:
 
    ```toml

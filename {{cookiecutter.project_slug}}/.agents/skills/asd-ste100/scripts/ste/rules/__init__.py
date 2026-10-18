@@ -4,7 +4,12 @@ from collections.abc import Sequence
 
 from ste.rules.base import Rule
 from ste.rules.lists import DANGLING_CONJUNCTION_RULE, DanglingConjunctionRule
+from ste.rules.paragraphs import PARAGRAPH_LENGTH_RULE, ParagraphLengthRule
 from ste.rules.patterns import (
+    BANNED_MODAL_RULE,
+    CONTRACTION_RULE,
+    ING_CLAUSE_RULE,
+    LATIN_ABBREV_RULE,
     MARKETING_ADJECTIVE_RULE,
     NOMINALIZATION_RULE,
     PASSIVE_VOICE_RULE,
@@ -12,7 +17,9 @@ from ste.rules.patterns import (
     PHRASAL_VERB_RULE,
     PRESENT_PERFECT_RULE,
     SEMICOLON_RULE,
+    TRAILING_CONDITION_RULE,
     UNAPPROVED_PHRASE_RULE,
+    UNAPPROVED_WORD_RULE,
     PatternRule,
 )
 from ste.rules.sentences import LONG_SENTENCE_RULE, LongSentenceRule
@@ -23,6 +30,7 @@ ALL_RULES: tuple[Rule, ...] = (
     LONG_SENTENCE_RULE,
     SYNONYM_ROTATION_RULE,
     DANGLING_CONJUNCTION_RULE,
+    PARAGRAPH_LENGTH_RULE,
 )
 
 RULE_MAP: dict[str, Rule] = {rule.id: rule for rule in ALL_RULES}
@@ -38,10 +46,15 @@ def get_rules(disabled: Sequence[str] | None = None) -> tuple[Rule, ...]:
 
 __all__ = [
     "ALL_RULES",
+    "BANNED_MODAL_RULE",
+    "CONTRACTION_RULE",
     "DANGLING_CONJUNCTION_RULE",
+    "ING_CLAUSE_RULE",
+    "LATIN_ABBREV_RULE",
     "LONG_SENTENCE_RULE",
     "MARKETING_ADJECTIVE_RULE",
     "NOMINALIZATION_RULE",
+    "PARAGRAPH_LENGTH_RULE",
     "PASSIVE_VOICE_RULE",
     "PATTERN_RULES",
     "PHRASAL_VERB_RULE",
@@ -49,9 +62,12 @@ __all__ = [
     "RULE_MAP",
     "SEMICOLON_RULE",
     "SYNONYM_ROTATION_RULE",
+    "TRAILING_CONDITION_RULE",
     "UNAPPROVED_PHRASE_RULE",
+    "UNAPPROVED_WORD_RULE",
     "DanglingConjunctionRule",
     "LongSentenceRule",
+    "ParagraphLengthRule",
     "PatternRule",
     "Rule",
     "SynonymRotationRule",

@@ -92,7 +92,7 @@ settings.
 
 ### A. Allowing Additional HTML Elements (MD033)
 
-If you embed custom HTML tags (e.g. `<details>`, `<summary>`, `<video>`):
+If you embed custom HTML tags (for example, `<details>`, `<summary>`, `<video>`):
 
 ```toml
 [MD033]

@@ -5,7 +5,7 @@ description: >
   initial verification runs. Runs only when explicitly requested.
   Use when asked to set up or fix a development checkout.
   Use to install project dependencies, fix a missing or broken .venv,
-  or prepare a machine for contributing. Don't use for routine code editing
+  or prepare a machine for contributing. Do not use for routine code editing
   or individual test runs.
 disable-model-invocation: true
 name: project-setup

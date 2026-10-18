@@ -16,10 +16,11 @@ sys.path.insert(0, str(SCRIPTS_DIR))
 from ste.cli import main, run_selftest
 from ste.directives import Action, Directive, build_suppressions, parse_directive
 from ste.engine import lint_document
+from ste.fixer import fix_line, fix_text
 from ste.inline import mask_inline
 from ste.markdown import _frontmatter, parse, split_table_row
 from ste.model import Block, BlockKind, Finding, Severity, Span, Suppressions
-from ste.reporter import format_json, format_text
+from ste.reporter import compute_compliance_score, format_json, format_text
 from ste.rules import ALL_RULES, get_rules
 
 
@@ -207,14 +208,21 @@ def test_markdown_frontmatter_edge_cases() -> None:
 
 def test_all_rules_and_get_rules() -> None:
     """Test rule retrieval and filtering."""
-    assert len(ALL_RULES) == 10
+    assert len(ALL_RULES) == 17
     active = get_rules(disabled=["semicolon", "passive-voice"])
-    assert len(active) == 8
+    assert len(active) == 15
     rule_ids = {r.id for r in active}
     assert "semicolon" not in rule_ids
     assert "passive-voice" not in rule_ids
     assert "phrasal-verb" in rule_ids
     assert "unapproved-phrase" in rule_ids
+    assert "unapproved-word" in rule_ids
+    assert "contraction" in rule_ids
+    assert "latin-abbrev" in rule_ids
+    assert "ing-clause" in rule_ids
+    assert "banned-modal" in rule_ids
+    assert "trailing-condition" in rule_ids
+    assert "paragraph-length" in rule_ids
 
 
 def test_lint_engine_and_reporters() -> None:
@@ -322,3 +330,167 @@ def test_extended_rules() -> None:
     doc3 = parse("We allow read access. We also permit write access.")
     res3 = lint_document(doc3)
     assert any(f.rule == "synonym-rotation" for f in res3.findings)
+
+
+def test_unapproved_words_and_bare_nominalization() -> None:
+    """Verify unapproved-word rule and bare nominalizations without articles."""
+    doc = parse(
+        "We utilize this method and commence testing. We perform verification of the data."
+    )
+    res = lint_document(doc)
+    rules_hit = {f.rule for f in res.findings}
+    assert "unapproved-word" in rules_hit
+    assert "nominalization" in rules_hit
+
+    # Test expanded unapproved phrases
+    doc_phrase = parse(
+        "The agent is capable of running tasks in conjunction with other tools."
+    )
+    res_phrase = lint_document(doc_phrase)
+    assert any(f.rule == "unapproved-phrase" for f in res_phrase.findings)
+
+    # Test new unapproved words and phrases inspired by JAICHANGPARK / menonpg / sourdough-checker
+    doc_new = parse(
+        "This operation is hazardous and precludes recovery. The agent is able to proceed."
+    )
+    res_new = lint_document(doc_new)
+    rules_new = {f.rule for f in res_new.findings}
+    assert "unapproved-word" in rules_new
+    assert "unapproved-phrase" in rules_new
+
+
+def test_compute_compliance_score() -> None:
+    """Verify compliance scoring calculations and bounds."""
+    # Empty text -> 100.0
+    assert compute_compliance_score([], 0, 0) == 100.0
+
+    # Clean text -> 100.0
+    assert compute_compliance_score([], 100, 0) == 100.0
+
+    # Advisory vs hard penalty
+    f_hard = Finding(
+        file="test.md",
+        line=1,
+        column=1,
+        rule="semicolon",
+        severity=Severity.HARD,
+        match=";",
+        message="Hard",
+    )
+    f_adv = Finding(
+        file="test.md",
+        line=2,
+        column=1,
+        rule="passive-voice",
+        severity=Severity.ADVISORY,
+        match="is done",
+        message="Advisory",
+    )
+    # 1 hard in 100 words -> 100 - (15 * 1.0) = 85.0
+    assert compute_compliance_score([f_hard], 100, 1) == 85.0
+    # 1 advisory in 100 words -> 100 - (5 * 1.0) = 95.0
+    assert compute_compliance_score([f_adv], 100, 0) == 95.0
+
+    # Extreme violations clamp to 0.0
+    many_findings = [f_hard] * 10
+    assert compute_compliance_score(many_findings, 50, 10) == 0.0
+
+
+def test_contractions_latin_and_ing_clause() -> None:
+    """Verify contractions, Latin abbreviations, and subordinate -ing clauses."""
+    # Test contraction
+    doc1 = parse("Don't run this command; it's dangerous.")
+    res1 = lint_document(doc1)
+    assert any(f.rule == "contraction" for f in res1.findings)
+
+    # Test Latin abbreviations
+    doc2 = parse("Install required packages (e.g. pytest, ruff, etc.).")
+    res2 = lint_document(doc2)
+    assert any(f.rule == "latin-abbrev" for f in res2.findings)
+
+    # Test subordinate -ing participle clause
+    doc3 = parse("We configure the cache, enabling faster subsequent test runs.")
+    res3 = lint_document(doc3)
+    assert any(f.rule == "ing-clause" for f in res3.findings)
+
+    # Test expanded slop word and slop phrase
+    doc4 = parse("We delve into this problem when it comes to performance.")
+    res4 = lint_document(doc4)
+    rules4 = {f.rule for f in res4.findings}
+    assert "unapproved-word" in rules4
+    assert "unapproved-phrase" in rules4
+
+
+def test_banned_modals_trailing_conditions_and_paragraphs() -> None:
+    """Verify banned-modal, trailing-condition, and paragraph-length rules."""
+    # Banned modal
+    doc_modal = parse("You should verify the output. You ought to proceed.")
+    res_modal = lint_document(doc_modal)
+    assert any(f.rule == "banned-modal" for f in res_modal.findings)
+
+    # Trailing condition
+    doc_cond = parse("Shut down the process, if the memory exceeds limits.")
+    res_cond = lint_document(doc_cond)
+    assert any(f.rule == "trailing-condition" for f in res_cond.findings)
+
+    # Paragraph length (more than 6 sentences)
+    seven_sentences = (
+        "One sentence. Two sentence. Three sentence. Four sentence. "
+        "Five sentence. Six sentence. Seven sentence."
+    )
+    doc_para = parse(seven_sentences)
+    res_para = lint_document(doc_para)
+    assert any(f.rule == "paragraph-length" for f in res_para.findings)
+
+    # Compliant paragraph (6 sentences or fewer)
+    six_sentences = (
+        "One sentence. Two sentence. Three sentence. Four sentence. "
+        "Five sentence. Six sentence."
+    )
+    doc_para_ok = parse(six_sentences)
+    res_para_ok = lint_document(doc_para_ok)
+    assert not any(f.rule == "paragraph-length" for f in res_para_ok.findings)
+
+
+def test_fixer_and_cli_fix(tmp_path: Path) -> None:
+    """Verify deterministic fixer and CLI --fix flag."""
+    sample = (
+        "# Title\n\n"
+        "In order to test, don't run `don't break this code`.\n"
+        "Install tools (e.g. pytest).\n\n"
+        "```python\n"
+        "# in order to stay untouched\n"
+        "val = don't\n"
+        "```\n\n"
+        "<!-- ste-lint-disable -->\n"
+        "in order to ignore\n"
+        "<!-- ste-lint-enable -->\n\n"
+        "Subsequent to tests, utilize the cache.\n"
+    )
+    fixed, count = fix_text(sample)
+    assert count > 0
+    assert "To test, do not run `don't break this code`." in fixed
+    assert "(for example, pytest)." in fixed
+    assert "# in order to stay untouched" in fixed
+    assert "in order to ignore" in fixed
+    assert "After tests, use the cache." in fixed
+
+    # Line without backticks
+    plain_fixed, p_count = fix_line("don't utilize this")
+    assert plain_fixed == "do not use this"
+    assert p_count == 2
+
+    # CLI --fix on file
+    f_path = tmp_path / "fix_me.md"
+    f_path.write_text("Don't fail this.\n", encoding="utf-8")
+    assert main(["--fix", str(f_path)]) == 0
+    assert f_path.read_text(encoding="utf-8") == "Do not fail this.\n"
+
+    # CLI --fix on stdin
+    stdin_stream = io.StringIO("In order to proceed.\n")
+    stdout_stream = io.StringIO()
+    import contextlib
+
+    with contextlib.redirect_stdout(stdout_stream):
+        assert main(["--fix"], stdin=stdin_stream) == 0
+    assert stdout_stream.getvalue() == "To proceed.\n"

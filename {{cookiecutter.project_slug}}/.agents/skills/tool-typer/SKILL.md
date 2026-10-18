@@ -26,7 +26,7 @@ when you enable CLI generation.
 - **Explicit `Typer()` Apps**: Always instantiate an explicit `app = typer.Typer(...)` instance and register subcommands with `@app.command()`. Never use `typer.run()` in production applications.
 - **Modern Configurations**:
   - `no_args_is_help=True`: Display the help message automatically when invoked without required arguments.
-  - `rich_markup_mode="rich"`: Allow Rich tags (e.g. `[bold green]...[/bold green]`) in command docstrings and parameter help text.
+  - `rich_markup_mode="rich"`: Allow Rich tags (for example, `[bold green]...[/bold green]`) in command docstrings and parameter help text.
 
 ---
 
@@ -105,7 +105,7 @@ CLI applications must respond quickly (<50ms). Heavy imports executed at module 
 
 ### Guidelines for Fast CLI Startup
 
-1. **Defer Heavy Imports**: Do not import heavy libraries (e.g., database drivers, machine learning frameworks, large data parsers) at the top of `cli.py`. Import them lazily inside the command body where they execute.
+1. **Defer Heavy Imports**: Do not import heavy libraries (for example, database drivers, machine learning frameworks, large data parsers) at the top of `cli.py`. Import them lazily inside the command body where they execute.
 2. **Import Rich Utilities Inside Functions**: When using formatting or progress helpers,
    import lazily. Construct `Console()` instances within commands if startup latency is critical.
 3. **Enforce with Ruff**: Use `flake8-tidy-imports` to detect and forbid premature top-level imports:

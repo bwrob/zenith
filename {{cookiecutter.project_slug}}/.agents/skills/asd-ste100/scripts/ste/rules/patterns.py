@@ -69,7 +69,9 @@ MARKETING_ADJECTIVE_RULE = PatternRule(
         r"\b(seamless(?:ly)?|robust(?:ly)?|cutting-edge|effortless(?:ly)?|"
         r"blazing(?:ly)?[- ]fast|lightning[- ]fast|rock[- ]solid|ultra[- ]fast|"
         r"world-class|state-of-the-art|game-chang(?:ing|er)|authoritative|"
-        r"comprehensive|battle-tested|industry-standard|turnkey|bulletproof)\b",
+        r"comprehensive|battle-tested|industry-standard|turnkey|bulletproof|"
+        r"groundbreaking|transformative|testament|innovative|unprecedented|"
+        r"meticulous(?:ly)?|holistic|multifaceted|vibrant)\b",
         re.IGNORECASE,
     ),
     message="Marketing adjective. Delete, or replace with the measurement that earns the claim.",
@@ -82,11 +84,71 @@ UNAPPROVED_PHRASE_RULE = PatternRule(
     pattern=re.compile(
         r"\b(in order to|prior to|subsequent to|with the exception of|"
         r"due to the fact that|in the event that|in the event of|"
-        r"for the purpose of|at the present time|with regard to|in regard to)\b",
+        r"for the purpose of|at the present time|at this time|"
+        r"with regard to|in regard to|with reference to|"
+        r"is capable of|it is necessary to|in the vicinity of|"
+        r"in conjunction with|in accordance with|a number of|"
+        r"when it comes to|out of the box|under the hood|"
+        r"at the end of the day|in conclusion|in summary|"
+        r"enables you to|allows you to|aims to|"
+        r"has the capability to|is able to|in view of the fact that|"
+        r"it is recommended that)\b",
         re.IGNORECASE,
     ),
-    message="Unapproved phrase. Use plain equivalents (to, before, after, except, because, if, now, about).",
-    description="Check for wordy, unapproved multi-word connectives.",
+    message="Unapproved phrase. Use plain equivalents (to, before, after, except, because, if, now, about, can, must, near, with, under, some).",
+    description="Check for wordy, unapproved multi-word connectives and phrases.",
+)
+
+UNAPPROVED_WORD_RULE = PatternRule(
+    id="unapproved-word",
+    severity=Severity.HARD,
+    pattern=re.compile(
+        r"\b(utiliz(?:e|es|ed|ing|ation)|commenc(?:e|es|ed|ing|ement)|"
+        r"ascertain(?:s|ed|ing)?|endeavor(?:s|ed|ing)?|"
+        r"facilitat(?:e|es|ed|ing)|replenish(?:es|ed|ing)?|"
+        r"procure(?:s|d|ing)?|procurement|rectif(?:y|ies|ied|ying)|"
+        r"delve(?:s|d|ing)?|tapestry|plethora|myriad|streamline(?:s|d|ing)?|"
+        r"bolster(?:s|ed|ing)?|elucidat(?:e|es|ed|ing)|foster(?:s|ed|ing)?|"
+        r"harness(?:es|ed|ing)?|revolutioniz(?:e|es|ed|ing)|"
+        r"preclude(?:s|d|ing)?|necessitat(?:e|es|ed|ing)|"
+        r"hazardous|prescrib(?:e|es|ed|ing))\b",
+        re.IGNORECASE,
+    ),
+    message="Unapproved word. Use simpler approved alternatives (use, start, find, try, help, fill, get, correct, prevent, need, dangerous, specify).",
+    description="Check for complex, unapproved STE words.",
+)
+
+CONTRACTION_RULE = PatternRule(
+    id="contraction",
+    severity=Severity.HARD,
+    pattern=re.compile(
+        r"\b([a-zA-Z]+(?:n't|'ll|'re|'ve|'d)|it's|you're)\b",
+        re.IGNORECASE,
+    ),
+    message="Contraction (Rule 4.2). Expand into full forms (do not, cannot, it is, you are).",
+    description="Check for prohibited informal contractions.",
+)
+
+LATIN_ABBREV_RULE = PatternRule(
+    id="latin-abbrev",
+    severity=Severity.HARD,
+    pattern=re.compile(
+        r"\b(e\.g\.|i\.e\.|etc\.?)(?=[\s,.)]|\b)",
+        re.IGNORECASE,
+    ),
+    message="Latin abbreviation (GR-6). Use plain alternatives (for example, that is) or list all items.",
+    description="Check for Latin abbreviations (e.g., i.e., etc.).",
+)
+
+ING_CLAUSE_RULE = PatternRule(
+    id="ing-clause",
+    severity=Severity.HARD,
+    pattern=re.compile(
+        r",\s+(making|allowing|enabling|ensuring|creating|providing|resulting|leading|causing|helping)\b",
+        re.IGNORECASE,
+    ),
+    message="Subordinate '-ing' participle clause (Rule 3.5). Start a new sentence with an active subject and finite verb.",
+    description="Check for trailing subordinate '-ing' participle clauses.",
 )
 
 NOMINALIZATION_RULE = PatternRule(
@@ -94,7 +156,7 @@ NOMINALIZATION_RULE = PatternRule(
     severity=Severity.HARD,
     pattern=re.compile(
         r"\b(perform|performs|performed|conduct|conducts|conducted|carry out|carries out|carried out)"
-        r"\s+(?:a|an|the)\s+\w+(?:tion|sion|ment|ance|ence|ysis)\b",
+        r"\s+(?:(?:a|an|the)\s+)?\w+(?:tion|sion|ment|ance|ence|ysis)\b",
         re.IGNORECASE,
     ),
     message="Action frozen into a noun. Use the verb (analyze, not perform an analysis of).",
@@ -126,13 +188,35 @@ PRESENT_PERFECT_RULE = PatternRule(
     description="Check for compound tenses / present perfect (advisory).",
 )
 
+BANNED_MODAL_RULE = PatternRule(
+    id="banned-modal",
+    severity=Severity.HARD,
+    pattern=re.compile(r"\b(should|would|ought to)\b", re.IGNORECASE),
+    message="Unapproved modal (Rule 3.2). State requirements with 'must' or imperative, or state as direct fact.",
+    description="Check for unapproved modal verbs (should, would, ought to).",
+)
+
+TRAILING_CONDITION_RULE = PatternRule(
+    id="trailing-condition",
+    severity=Severity.ADVISORY,
+    pattern=re.compile(r",\s+(?:if|when)\b", re.IGNORECASE),
+    message="Trailing condition (Rule 5.4). Put the condition before the command (e.g. 'If X, do Y').",
+    description="Check for trailing conditions placed after instructions.",
+)
+
 PATTERN_RULES: tuple[PatternRule, ...] = (
     SEMICOLON_RULE,
     PHRASAL_VERB_RULE,
     MARKETING_ADJECTIVE_RULE,
     UNAPPROVED_PHRASE_RULE,
+    UNAPPROVED_WORD_RULE,
+    CONTRACTION_RULE,
+    LATIN_ABBREV_RULE,
+    ING_CLAUSE_RULE,
     NOMINALIZATION_RULE,
     PASSIVE_VOICE_RULE,
     PRESENT_PERFECT_RULE,
+    BANNED_MODAL_RULE,
+    TRAILING_CONDITION_RULE,
 )
 

@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import TextIO
 
 from ste.engine import lint_text
+from ste.fixer import fix_text
 from ste.model import Finding, Severity
 from ste.reporter import format_json, format_text
 from ste.rules import ALL_RULES, get_rules
@@ -25,6 +26,11 @@ def build_parser() -> argparse.ArgumentParser:
         nargs="*",
         type=Path,
         help="Markdown file(s) to lint. If omitted, reads from standard input.",
+    )
+    parser.add_argument(
+        "--fix",
+        action="store_true",
+        help="Automatically fix common mechanical violations (contractions, Latin abbreviations, unapproved phrases) in-place.",
     )
     parser.add_argument(
         "--json",
@@ -220,6 +226,26 @@ def main(argv: list[str] | None = None, stdin: TextIO = sys.stdin) -> int:
                 print(f"Error reading {p}: file or directory not found", file=sys.stderr)
                 return 1
 
+        if args.fix:
+            total_fixed = 0
+            for file_path in target_files:
+                try:
+                    content = file_path.read_text(encoding="utf-8")
+                except OSError as exc:
+                    print(f"Error reading {file_path}: {exc}", file=sys.stderr)
+                    return 1
+                fixed, count = fix_text(content)
+                if count > 0:
+                    try:
+                        file_path.write_text(fixed, encoding="utf-8")
+                        total_fixed += count
+                        print(f"Fixed {count} violation(s) in {file_path}")
+                    except OSError as exc:
+                        print(f"Error writing {file_path}: {exc}", file=sys.stderr)
+                        return 1
+            print(f"Total violations fixed: {total_fixed}")
+            return 0
+
         for file_path in target_files:
             try:
                 content = file_path.read_text(encoding="utf-8")
@@ -231,6 +257,10 @@ def main(argv: list[str] | None = None, stdin: TextIO = sys.stdin) -> int:
             words_total += result.words_total
     else:
         content = stdin.read()
+        if args.fix:
+            fixed, _ = fix_text(content)
+            sys.stdout.write(fixed)
+            return 0
         result = lint_text(content, filename="<stdin>", rules=rules)
         findings.extend(result.findings)
         words_total += result.words_total

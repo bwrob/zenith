@@ -67,7 +67,7 @@ exclude = [
 
 - **`align_entries = true`**: Aligns `=` signs within a table block.
 - **`indent_entries = true`**: Indents table entries with 4 spaces (`indent_string = "    "`).
-- **`indent_tables = true`**: Indents nested sub-tables (e.g. `[cosmic-ray.distributor]`).
+- **`indent_tables = true`**: Indents nested sub-tables (for example, `[cosmic-ray.distributor]`).
 - **`compact_arrays = false`**: Expands multi-line arrays for clean diff tracking.
 - **`reorder_keys = true`**: Sorts keys alphabetically within each table.
 - **`exclude`**: Excludes virtual environments (`.venv/`), build artifacts, and skill templates.
@@ -92,7 +92,7 @@ Pre-commit includes Taplo in `.pre-commit-config.yaml` to prevent committing unf
 
 ### Unformatted TOML in CI or Pre-commit
 
-If CI or pre-commit flags an unformatted TOML file (e.g. `cosmic-ray.toml`):
+If CI or pre-commit flags an unformatted TOML file (for example, `cosmic-ray.toml`):
 
 ```bash
 uv run poe fix

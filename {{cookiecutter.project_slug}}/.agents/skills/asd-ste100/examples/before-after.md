@@ -68,9 +68,9 @@ It rewrote the third sentence as "an outdated client is the most common cause".
 Both read better. Both are wrong: the first asserts a failure the system only suspects,
 and the second invents a frequency claim not in the input.
 
-"May have failed" keeps a compound verb form that the simple-tense rule would otherwise remove.
+"May have failed" keeps a compound verb form that the simple-tense rule otherwise removes.
 **When the tense rule and the modality rule conflict, modality wins** —
-dropping the auxiliary here would remove the uncertainty along with the tense.
+dropping the auxiliary here removes the uncertainty along with the tense.
 
 ### Example C — Inter-agent instruction
 
@@ -90,7 +90,7 @@ dropping the auxiliary here would remove the uncertainty along with the tense.
 > Wait for the upstream job to finish with no errors. Then read the output artifact. Warning: a timeout can produce a partial artifact. Check that the artifact is complete before you use it.
 
 Two deliberate calls worth stating rather than hiding:
-- "should proceed to consume" became the imperative "read". STE allows this for instructions, where a recommendation addressed to the executing agent is a command. Do not make the same move in descriptive text.
+- The phrase `"should proceed to consume"` became the imperative "read". STE allows this for instructions, where a recommendation addressed to the executing agent is a command. Do not make the same move in descriptive text.
 - The final sentence is **new**. The original warned about partial artifacts without saying what to do about it. Adding the check makes the warning actionable. Because it adds new content, this guide notes it explicitly rather than passing it off as a rewrite. If the source's silence was deliberate, drop the sentence.
 
 ### Example D — README prose (STE-flavored mode)

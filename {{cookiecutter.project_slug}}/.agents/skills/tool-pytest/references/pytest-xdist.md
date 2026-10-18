@@ -26,7 +26,7 @@ uv run poe test-fast                  # Executes pytest with -n auto
 The `--dist` option controls how xdist partitions tests across workers:
 
 - **`--dist load`** (default): xdist dispatches tests to idle workers one by
-  one. Maximizes CPU utilization across test suites.
+  one. Maximizes CPU use across test suites.
 - **`--dist loadscope`**: Assigns tests in the same module or class to the
   same worker. Ideal when class-level or module-level fixtures are
   expensive to initialize.

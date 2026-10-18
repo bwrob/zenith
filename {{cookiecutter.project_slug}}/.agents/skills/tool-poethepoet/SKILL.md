@@ -322,7 +322,7 @@ Follow these engineering conventions when editing poe tasks:
 - **Use global `env` for project-wide runtime flags**: Set flags (such as
   `PYTHONUTF8 = "1"`) under `[env]` or `[tool.poe.env]`.
   Do not repeat them across multiple individual tasks.
-- **Compose, don't recurse**: Use `sequence`, `parallel`, or `deps` to chain
+- **Compose, do not recurse**: Use `sequence`, `parallel`, or `deps` to chain
   tasks. Never shell out using `cmd = "poe other-task"`.
 - **Always provide `help`**: Every public task must include a concise `help`
   string for self-documentation.

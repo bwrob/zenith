@@ -86,6 +86,6 @@ if TYPE_CHECKING:
   exceptions, and validation edge cases.
 - **Inspect `htmlcov/`**: Run `uv run poe coverage` and open
   `htmlcov/index.html` in a browser to see exact lines highlighted in red.
-- **Don't abuse pragma**: Only mark code as `# pragma: no cover` if it is
-  genuinely unreachable in standard test environments (e.g. OS-specific
+- **Do not abuse pragma**: Only mark code as `# pragma: no cover` if it is
+  genuinely unreachable in standard test environments (for example, OS-specific
   fallbacks).

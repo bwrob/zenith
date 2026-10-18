@@ -265,11 +265,11 @@ Follow these engineering rules when authoring or refactoring tests:
    3 or more tests.
 2. **Behavior-Sentence Naming & Single Behavior Per Test**:
    Test names must state the observable behavior (`test_<action>_when_<condition>`
-   or `test_<subject>_<expected_outcome>`). Each test should verify one behavior
+   or `test_<subject>_<expected_outcome>`). Each test must verify one behavior
    following clear Arrange / Act / Assert separation.
 3. **The Hollow-Proof Test & Transformation vs. Pass-Through Rule**:
    Before finalizing a test, ask: *"What production bug could pass this test?"*
-   - If a hardcoded return value would pass, tighten the assertion.
+   - If a hardcoded return value passes the test, tighten the assertion.
    - Assert **transformed/computed outputs**, not echoed pass-through inputs
      (for example, asserting `result.name == "foo"` when you pass `name="foo"` only
      tests assignment, not business logic).
