@@ -13,7 +13,7 @@ Zenith replaces fragmented, slow Python tooling with an ultra-fast, Rust-powered
 | **[Typer](typer.md)** | Build & Workflow | Type-safe CLI framework with Rich terminal rendering | [typer.tiangolo.com](https://typer.tiangolo.com/) |
 | **[Cookiecutter](cookiecutter.md)** | Build & Workflow | Project templating engine powering Zenith generation | [cookiecutter.readthedocs.io](https://cookiecutter.readthedocs.io/) |
 | **[Ruff](ruff.md)** | Code Quality | Blazing-fast Python linter and formatter with preview rules | [docs.astral.sh/ruff](https://docs.astral.sh/ruff/) |
-| **[Pyrefly](pyrefly.md)** | Code Quality | Meta's strict static type checker with PEP 695 generics | [github.com/facebook/pyrefly](https://github.com/facebook/pyrefly) |
+| **[Pyrefly](pyrefly.md)** | Code Quality | Meta's strict type checker and 100% type coverage engine | [github.com/facebook/pyrefly](https://github.com/facebook/pyrefly) |
 | **[Tach](tach.md)** | Code Quality | Modular boundary enforcement, circular dependency blocker | [github.com/gauge-sh/tach](https://github.com/gauge-sh/tach) |
 | **[complexipy](complexipy.md)** | Code Quality | Fast cognitive complexity analyzer enforcing max <= 10 | [github.com/rohaquinlop/complexipy](https://github.com/rohaquinlop/complexipy) |
 | **[Griffe](griffe.md)** | Code Quality | Static AST analysis and breaking public API change detector | [mkdocstrings.github.io/griffe](https://mkdocstrings.github.io/griffe/) |

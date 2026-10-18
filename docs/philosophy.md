@@ -92,11 +92,11 @@ When guardrails are automated and strict:
 
     Coverage.py is configured with `fail_under = 100` and `branch = true`. Every single line of code and conditional branch must be executed and asserted in automated tests.
 
--   __Strict Static Typing__
+-   __Strict Static Typing & 100% Type Coverage__
 
     ---
 
-    Meta's Pyrefly static type checker is set to `preset = "strict"`. All parameters, return values, and generic types must be explicitly declared and structurally sound.
+    Meta's Pyrefly static type checker is set to `preset = "strict"`, combined with an automated `pyrefly coverage check` gate enforcing 100% strict type completeness. All parameters, return values, and module-level variables must be explicitly declared and structurally sound.
 
 -   __Cognitive Complexity Ceiling__
 

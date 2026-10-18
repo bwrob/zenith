@@ -1,5 +1,7 @@
 """Unit tests for core functionality."""
 
+from __future__ import annotations
+
 from hypothesis import given, strategies as st
 from syrupy.assertion import SnapshotAssertion
 

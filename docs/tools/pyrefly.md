@@ -41,11 +41,26 @@ Under strict mode, all function parameters and return types must be fully annota
 
 ---
 
+## Type Coverage & Completeness Enforcement
+
+Beyond checking type correctness, Pyrefly provides native type coverage and completeness measurement via `pyrefly coverage`:
+
+- **Coverage Metrics**: Evaluates all typables across your package—function return types, parameters, module-level variables, and class attributes.
+- **Strict Coverage (`--strict`)**: Annotations that resolve to `Any` count as untyped. Only sound, concrete types satisfy the threshold.
+- **Public API Completeness (`--public-only`)**: Checks symbols reachable from public modules via re-export chains, guaranteeing PEP 561 completeness for library consumers.
+- **Automated Gate**: Zenith wires `uv run poe type-coverage` (`pyrefly coverage check src --fail-under 100 --strict`) directly into `poe code-quality` and CI pipelines.
+
+---
+
 ## Key Invocations
 
 ```bash
-uv run pyrefly check           # Run static type analysis across project
-uv run poe type-check          # Wired task in Poe development pipeline
+uv run pyrefly check                                         # Run static type analysis across project
+uv run pyrefly coverage check src --fail-under 100 --strict  # Enforce 100% strict type coverage
+uv run pyrefly coverage check src --public-only              # Check public API completeness
+uv run pyrefly coverage report src                           # Generate detailed JSON coverage report
+uv run poe type-check                                        # Strict type checking task in Poe pipeline
+uv run poe type-coverage                                     # Type coverage gate in poe code-quality
 ```
 
 ---
@@ -53,4 +68,5 @@ uv run poe type-check          # Wired task in Poe development pipeline
 ## Upstream Documentation
 
 - [Pyrefly GitHub Repository](https://github.com/facebook/pyrefly)
+- [Pyrefly Type Coverage Documentation](https://pyrefly.org/en/docs/report/)
 - [Python Typing Documentation](https://docs.python.org/3/library/typing.html)

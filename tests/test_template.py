@@ -54,6 +54,8 @@ def test_default_generation(temp_output_dir: Path) -> None:
     precommit_text = (project_dir / ".pre-commit-config.yaml").read_text()
     assert "prettier" in precommit_text
     assert "prettier-css" in precommit_text
+    assert "pyrefly-coverage" in precommit_text
+    assert "uv\\.lock" in precommit_text
     assert (project_dir / ".editorconfig").exists()
     assert (project_dir / ".zizmor.yml").exists()
     assert (project_dir / ".gemini" / "settings.json").exists()
@@ -283,6 +285,8 @@ def test_default_generation(temp_output_dir: Path) -> None:
     assert "tasks.test-snapshot-update" in poe_text
     assert "tasks.test-mutation" in poe_text
     assert "tasks.test-mutation-cosmic" in poe_text
+    assert "tasks.type-coverage" in poe_text
+    assert '"type-coverage"' in poe_text
     assert "tasks.check-skills" in poe_text
     assert "tasks.repl" in poe_text
     assert '"check-skills"' in poe_text
@@ -470,6 +474,8 @@ def test_default_generation(temp_output_dir: Path) -> None:
     ruff_toml_text = (project_dir / "ruff.toml").read_text()
     assert "combine-as-imports = true" in ruff_toml_text
     assert "extend-immutable-calls" in ruff_toml_text
+    assert "required-imports" in ruff_toml_text
+    assert "future-annotations = true" in ruff_toml_text
 
     # Verify docs reference and mermaid diagrams
     ref_text = (project_dir / "docs" / "reference.md").read_text()

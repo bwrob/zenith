@@ -1,5 +1,7 @@
 """{{ cookiecutter.description }}"""
 
+from __future__ import annotations
+
 {% if cookiecutter.include_cli in [True, "yes", "true", "True", "1"] -%}
 from typing import TYPE_CHECKING
 

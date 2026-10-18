@@ -54,6 +54,9 @@ repos:
           - id: ruff-check
             name: "🐍 ruff · Check Python code"
             args: [--fix]
+            files: (\.(py|pyi)$|(^|/)(pyproject\.toml|uv\.lock)$)
+            types_or: [file]
+            pass_filenames: false
           - id: ruff-format
             name: "🐍 ruff · Format Python code"
 

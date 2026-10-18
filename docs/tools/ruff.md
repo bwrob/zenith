@@ -36,6 +36,7 @@ print(path.read_text().strip())
 ```
 
 ### Key Policy Highlights:
+- **Mandatory Future Annotations**: `required-imports = ["from __future__ import annotations"]` (via rule `I002`) and `future-annotations = true` ensure that every Python module defers runtime annotation evaluation. This eliminates runtime typing overhead, supports postponed typing syntax across all files, and allows `flake8-type-checking` to safely move type-only imports into `if TYPE_CHECKING:` blocks.
 - **Absolute Imports Mandate**: `ban-relative-imports = "all"` eliminates ambiguous relative imports (`from ..module import func`), ensuring every import path is explicit and readable.
 - **Docstring Code Formatting**: `docstring-code-format = true` automatically formats Python snippets embedded inside docstrings.
 - **Trailing Comma & Formatter Compatibility**: Disables `COM812` and `ISC001` to prevent conflicts between the linter and formatter.

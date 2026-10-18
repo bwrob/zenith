@@ -1,5 +1,7 @@
 """Command line interface for {{ cookiecutter.project_slug }}."""
 
+from __future__ import annotations
+
 from typing import Annotated
 
 import typer
@@ -8,13 +10,13 @@ from rich.console import Console
 from {{ cookiecutter.package_name }} import __version__
 from {{ cookiecutter.package_name }}.core import get_greeting
 
-app = typer.Typer(
+app: typer.Typer = typer.Typer(
     name="{{ cookiecutter.project_slug }}",
     help="{{ cookiecutter.description }}",
     no_args_is_help=True,
     rich_markup_mode="rich",
 )
-console = Console()
+console: Console = Console()
 
 
 def version_callback(value: bool) -> None:
