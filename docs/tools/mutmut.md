@@ -20,7 +20,9 @@ Zenith integrates mutation testing to prevent test suites from becoming superfic
 
 Zenith provides `mutmut` as the primary mutation testing tool for rapid, day-to-day developer and AI agent iteration loops. Running `uv run poe test-mutation` evaluates code in seconds, allowing developers to inspect surviving mutants immediately and strengthen assertions before opening a pull request.
 
-> [!WARNING] Platform Compatibility: Windows Limitation
+> [!WARNING]
+> **Platform Compatibility: Windows Limitation**
+>
 > `mutmut` relies on POSIX process mechanics and filesystem assumptions that cause it to fail or behave unreliably on Windows environments.
 >
 > On Windows workstations and cross-platform continuous integration matrix runners, use **[Cosmic Ray](cosmic-ray.md)** via `uv run poe test-mutation-cosmic`. On macOS and Linux, `mutmut` provides the fastest local mutation feedback loop.
