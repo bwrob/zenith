@@ -22,6 +22,34 @@ With strict validation enabled (`zensical build --strict`), deployments fail aut
 
 ---
 
+## Integrated Plugins
+
+Zenith enhances Zensical with specialized plugins configured under `[project.plugins]`:
+
+| Plugin | Capability | Purpose in Zenith |
+|---|---|---|
+| **`gh-admonitions`** | GitHub Alert Callouts | Renders GitHub-flavored alert callouts (`> [!NOTE]`, `> [!TIP]`, `> [!IMPORTANT]`, `> [!WARNING]`, `> [!CAUTION]`) with styled border accents and icons. |
+| **`llmstxt`** | AI Context Manifests | Compiles structured `site/llms.txt` and `site/llms-full.txt` feeds, allowing AI coding assistants to consume repository guides and API signatures in a single contextual payload. |
+| **`markdown-exec`** | Dynamic Code Execution | Executes inline Python, Shell, Tree, and Markdown snippets (`python exec="1"`, `sh exec="1"`) during build, ensuring rendered tool configurations and directory trees reflect live repository files without manual copying. |
+| **`mkdocstrings[python]`** | Automated API Documentation | Extracts and documents public Python functions, classes, type parameters, and protocols directly from source code docstrings via Griffe with NumPy style parsing. |
+
+---
+
+## Markdown Extensions Suite
+
+Zenith enables a comprehensive suite of Python-Markdown and PyMdown Extensions under `[project.markdown_extensions]` to support rich technical authoring:
+
+| Extension Category | Extensions | Enabled Features |
+|---|---|---|
+| **Callouts & Blocks** | `admonition`, `pymdownx.details` | Collapsible `<details>` blocks (`??? note "Title"`), inline notes, and standard warning callouts. |
+| **Code & Diagrams** | `pymdownx.superfences`, `pymdownx.highlight`, `pymdownx.inlinehilite` | Custom fences for interactive **[Mermaid](https://mermaid.js.org/)** diagrams, line numbers (`anchor_linenums`), syntax highlighting, and inline code formatting (`#!python`). |
+| **Math & Symbols** | `pymdownx.arithmatex`, `pymdownx.emoji`, `pymdownx.smartsymbols` | Client-side **[MathJax](https://www.mathjax.org/)** LaTeX formula rendering (`\( ... \)` and `$$ ... $$`), Twemoji SVG emojis (`:octicons-code-24:`), and typographic arrows. |
+| **Interactive UI** | `pymdownx.tabbed`, `pymdownx.tasklist`, `zensical.extensions.preview` | Multi-language tabbed code switchers (`=== "Python"`), interactive task checkboxes (`- [x]`), and instant link hover previews. |
+| **Typography & Structure** | `attr_list`, `def_list`, `footnotes`, `abbr`, `toc` | HTML attribute attaching (`{: .grid .cards }`), definition lists, footnotes (`[^1]`), glossary tooltips, and permalink anchors. |
+| **Content Reuse** | `pymdownx.snippets` | Transclusion of external files and code extracts directly into documentation (`--8<-- "path/to/file"`). |
+
+---
+
 ## Configuration in Zenith
 
 Configured in `zensical.toml` at the project root:
