@@ -11,6 +11,7 @@ def format_text(
     words_total: int,
     hard_count: int,
     baseline: int = 0,
+    files_count: int = 1,
 ) -> str:
     """Format findings in standard compiler/linter terminal format."""
     lines: list[str] = []
@@ -18,9 +19,10 @@ def format_text(
         lines.append(f"{f.file}:{f.line}:{f.column} {f.rule}: {f.message} [{f.match}]")
 
     rate = round(len(findings) * 100 / words_total, 1) if words_total else 0.0
+    files_suffix = f" in {files_count} files" if files_count > 1 else ""
     summary = (
         f"\n{len(findings)} violations ({hard_count} hard, baseline {baseline}), "
-        f"{words_total} words, {rate} per 100 words\n"
+        f"{words_total} words{files_suffix}, {rate} per 100 words\n"
         "Hedges/modality (may, might, could) are never flagged: confidence is content."
     )
     lines.append(summary)
@@ -32,6 +34,7 @@ def format_json(
     words_total: int,
     hard_count: int,
     baseline: int = 0,
+    files_count: int = 1,
 ) -> str:
     """Format findings as structured JSON."""
     rate = round(len(findings) * 100 / words_total, 1) if words_total else 0.0
@@ -41,6 +44,7 @@ def format_json(
         "hard_count": hard_count,
         "baseline": baseline,
         "words": words_total,
+        "files": files_count,
         "per_100_words": rate,
     }
     return json.dumps(payload, indent=2)

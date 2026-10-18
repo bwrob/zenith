@@ -1,6 +1,6 @@
 ---
 description: >-
-  Authoritative guide for Taplo TOML toolkit, formatter, and linter in Rust.
+  Guide for Taplo TOML toolkit, formatter, and linter in Rust.
   Use when formatting, linting, checking, or configuring TOML configuration files.
   Triggers: taplo, toml, format-toml, format-check-toml, .taplo.toml.
 name: tool-taplo
@@ -9,11 +9,11 @@ version: 1.0.0
 
 # Taplo TOML Toolkit & Formatter (`tool-taplo`)
 
-`taplo` is an extremely fast TOML toolkit, linter, and code formatter written in Rust.
-In Zenith repositories, `taplo` enforces consistent 4-space indentation, aligned key-value
-entries, table hierarchy indentation, and alphabetical key ordering across all project
-TOML configuration files (`pyproject.toml`, `poe_tasks.toml`, `ruff.toml`, `tach.toml`,
-`cosmic-ray.toml`, `zensical.toml`, `typos.toml`, etc.).
+`taplo` is a fast TOML toolkit, linter, and formatter written in Rust.
+In Zenith repositories, `taplo` enforces consistent 4-space indentation and
+key-value alignment. It also enforces table indentation and alphabetical key
+ordering across all project TOML files (`pyproject.toml`, `poe_tasks.toml`,
+`ruff.toml`, `tach.toml`, `zensical.toml`).
 
 ---
 
@@ -28,7 +28,7 @@ uv run taplo format path/to/file.toml   # Format a specific TOML file
 uv run taplo lint                       # Lint TOML files against schemas
 ```
 
-In Zenith, task aliases are wired directly into Poe:
+Zenith wires task aliases directly into Poe:
 
 ```bash
 uv run poe format-toml                  # Runs taplo format
@@ -39,9 +39,9 @@ uv run poe code-quality                 # Full quality pipeline including format
 
 ---
 
-## 2. Configuration (`.taplo.toml`)
+## 2. Configuration Location
 
-`taplo` is configured via **`.taplo.toml`** at the project root:
+Configure `taplo` through **`.taplo.toml`** at the project root:
 
 ```toml
 exclude = [
@@ -63,9 +63,9 @@ exclude = [
     reorder_keys    = true
 ```
 
-### Key Formatting Rules
+### Formatting Rules
 
-- **`align_entries = true`**: Aligns `=` signs within a table block for maximum readability.
+- **`align_entries = true`**: Aligns `=` signs within a table block.
 - **`indent_entries = true`**: Indents table entries with 4 spaces (`indent_string = "    "`).
 - **`indent_tables = true`**: Indents nested sub-tables (e.g. `[cosmic-ray.distributor]`).
 - **`compact_arrays = false`**: Expands multi-line arrays for clean diff tracking.
@@ -76,7 +76,7 @@ exclude = [
 
 ## 3. Pre-Commit Integration
 
-Taplo is integrated into `.pre-commit-config.yaml` to ensure no unformatted TOML files are committed:
+Pre-commit includes Taplo in `.pre-commit-config.yaml` to prevent committing unformatted TOML files:
 
 ```yaml
   - repo: https://github.com/ComPWA/taplo-pre-commit
@@ -100,4 +100,4 @@ uv run poe fix
 uv run poe format-toml
 ```
 
-Always verify with `uv run poe format-check-toml`.
+Always check formatting with `uv run poe format-check-toml`.

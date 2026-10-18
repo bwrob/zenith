@@ -63,6 +63,7 @@
     format-toml = { cmd = "taplo format", help = "Format TOML configuration files with Taplo." }
     format-yaml = { cmd = "pre-commit run prettier --all-files", help = "Format YAML configuration files with Prettier." }
     lint = { cmd = "ruff check", help = "Lint codebase with Ruff." }
+    lint-ste = { cmd = "python .agents/skills/asd-ste100/scripts/ste-lint.py .agents/skills", help = "Lint agent skills against ASD-STE100 structural rules." }
     sync-example = { cmd = "python scripts/sync_example.py", help = "Render and sync showcase repository (zenith-example)." }
     sync-skills = { cmd = "python scripts/sync_skills.py", help = "Synchronize repo skills as symlinks from template source of truth." }
     sync-skills-check = { cmd = "python scripts/sync_skills.py --check", help = "Check that repo skills are properly symlinked to template source of truth." }

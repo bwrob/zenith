@@ -42,8 +42,8 @@ When a failure occurs that does not reproduce in isolation:
 before each test:
 
 - Python standard library `random`
-- `numpy.random` (if NumPy is installed)
-- `faker` (if Faker is installed)
+- `numpy.random` (when present)
+- `faker` (when present)
 
 This guarantees each test starts from a known, pseudo-random state rather than
 accumulating entropy from preceding tests.

@@ -1,6 +1,6 @@
 ---
 description: >-
-  Authoritative workflow for inspecting, auditing, and benchmarking mature Python project setups and development skills to extract best practices and propose improvements.
+  Workflow for inspecting, auditing, and benchmarking mature Python project setups and development skills to extract best practices and propose improvements.
   Use when benchmarking external repositories, evaluating tool configurations, or proposing template upgrades.
   Triggers: inspect module, audit repo, benchmark setup, extract skills, inspect-module-setup.
 name: inspect-module-setup
@@ -13,15 +13,15 @@ This skill defines the structured workflow for auditing, benchmarking, and
 reverse-engineering the architecture, configuration, toolchains, CI/CD, and
 agent skills of mature Python projects.
 
-Use this skill whenever benchmarking Zenith against best-in-class repositories,
-evaluating modern tooling shifts in the Python ecosystem, analyzing agent skills
-used during development, or preparing actionable improvement proposals.
+Use this skill when benchmarking Zenith against mature repositories.
+Use it to evaluate modern tooling shifts, analyze agent skills,
+or prepare improvement proposals.
 
-Audit progress, candidate queues, and inspected targets are tracked in
+Zenith tracks audit progress, candidate queues, and inspected targets in
 `.agents/skills/inspect-module-setup/`:
 
 - **Candidate Queue** (`.agents/skills/inspect-module-setup/candidates.log`):
-  Prioritized queue of validated benchmark modules awaiting audit.
+  Prioritized queue of approved benchmark modules awaiting audit.
 - **Inspected Log** (`.agents/skills/inspect-module-setup/inspected.log`): Persistent
   history of completed repository audits across sessions to prevent duplicate analysis.
 
@@ -53,7 +53,7 @@ Analyze dependency classification, pin strategies, and locking mechanics:
   (`dependencies`), optional extras (`[project.optional-dependencies]`), and
   development groups (PEP 735 `[dependency-groups]`).
 - **Tooling & Locks**: Inspect environment management tools (`uv`, `poetry`,
-  `pdm`) and lockfiles (`uv.lock`). Verify if locks are committed.
+  `pdm`) and lockfiles (`uv.lock`). Check if maintainers commit locks.
 - **Pinning Strategy**: Check whether libraries use open lower bounds
   (`package>=1.0.0`) or restrictive upper bounds (`package>=1.0.0,<2.0.0`).
 
@@ -82,8 +82,8 @@ Review developer automation, command discoverability, and local ergonomics:
   `tox`, `make`).
 - **Standard Tasks**: Look for consistent task naming (`lint`, `format`,
   `type-check`, `test`, `test-fast`, `coverage`, `fix`, `code-quality`).
-- **Execution Engine**: Verify whether commands execute inside hermetic virtual
-  environments (e.g. `uv run`).
+- **Execution Engine**: Check whether commands execute inside hermetic virtual
+  environments (for example, `uv run`).
 
 ### Pillar 5: Testing Architecture & Quality Assurance
 
@@ -107,32 +107,25 @@ Analyze technical documentation generation and asset pipelines:
 - **Static Doc Generator**: Identify the engine (`zensical`, `mkdocs-material`,
   `sphinx`). Both `zensical` (`zensical.toml`) and `mkdocs` (`mkdocs.yml`,
   `docs/en/mkdocs.yml`, or multi-file `INHERIT` configs like `mkdocs-common.yml`)
-  are first-class targets to learn from. Because `zensical` is built by the
-  creators of *Material for MkDocs* and *mkdocstrings*, patterns discovered in
-  mature `mkdocs.yml` setups translate directly into `zensical.toml`.
+  are first-class targets to learn from. Because the creators of *Material for
+  MkDocs* and *mkdocstrings* built `zensical`, patterns discovered in mature
+  `mkdocs.yml` setups translate directly into `zensical.toml`.
 - **Strict Build Validation**: Check for `[project.validation]` rules in
   `zensical.toml` (`invalid_links`, `unresolved_references`, etc.) or
   `strict: true` in `mkdocs.yml`.
-- **API Reference Generator**: Inspect docstring parsing tools (`mkdocstrings`,
-  `griffe` static AST analysis, `griffe-typingdoc`, `griffe-inherited-docstrings`),
-  docstring style (`numpy`, `google`, `auto`), signature cross-references
-  (`signature_crossrefs = true`), class inheritance diagrams
-  (`show_inheritance_diagram = true`), symbol backlinks (`backlinks = "tree"`),
-  internal link hover previews (`zensical.extensions.preview`), and external
-  Sphinx inventories (`objects.inv`).
+- **API Reference Generator**: Inspect docstring tools (`mkdocstrings`, `griffe`).
+  Review docstring styles (`numpy`, `google`) and cross-references.
+  Check for inheritance diagrams, symbol backlinks, and Sphinx inventories.
 - **AI / LLM Documentation Indexing**: Check for `llms.txt` / `llms-full.txt`
   files or automated generation via `mkdocs-llmstxt` (`llmstxt` plugin).
-- **Executable & Tested Snippets**: Check for dynamic code execution
-  (`markdown-exec`), external snippet inclusion (`pymdownx.snippets` with
-  `check_paths = true`), isolated tested example directories (`docs_src/`), and
-  automated doctest verification (`--doctest-modules`, `xdoctest`,
-  `pytest-markdown-docs`).
+- **Executable & Tested Snippets**: Check for code execution (`markdown-exec`)
+  and external snippet inclusion (`pymdownx.snippets`).
+  Check for tested example directories (`docs_src/`) and doctest verification.
 - **Versioning & Redirects**: Check for multi-version deployment (`mike`) and
   URL redirect maps (`mkdocs-redirects` / `[project.plugins.redirects]`).
-- **Vector Assets, Terminal Rendering, & Changelogs**: Check for Mermaid
-  diagrams, Typst vector layouts (`.typ`), terminal session animations
-  (`termynal`, `format_svg`), and fragment-based changelogs (`scriv` in
-  `changelog.d/` or `towncrier` in `newsfragments/`).
+- **Vector Assets, Terminal Rendering, & Changelogs**: Check for Mermaid diagrams
+  and Typst vector layouts (`.typ`). Check for terminal animations (`termynal`)
+  and fragment-based changelogs (`scriv`, `towncrier`).
 
 ### Pillar 7: CI/CD & Supply Chain Security
 
@@ -141,7 +134,7 @@ Examine automation pipelines, matrix tests, and publication security:
 - **Matrix CI**: Check GitHub Actions workflows for Python versions (3.12, 3.13,
   3.14, 3.15, free-threading), operating systems (Ubuntu, macOS, Windows).
 - **Fast Caching**: Review caching mechanisms (Astral `setup-uv`, cache keys).
-- **Publication Security**: Verify PyPI Trusted Publishing (OIDC tokens),
+- **Publication Security**: Check PyPI Trusted Publishing (OIDC tokens),
   PEP 740 digital attestations, and provenance generation.
 - **Automation**: Check automated release tools (`release-please`,
   `semantic-release`, `changesets`).
@@ -170,15 +163,14 @@ instructions, guardrails, and operational tooling:
   `.github/copilot-instructions.md`. Evaluate instruction hierarchy, localized
   subfolder instructions, and discovery symlinks (e.g. `CLAUDE.md -> AGENTS.md`).
 - **AI Governance & Contribution Policies**: Inspect AI usage policies
-  (`AI_POLICY.md`), PR template disclosure checklists (`pull_request_template.md`),
-  bot-gating rules, and verification mandates (e.g., local test verification,
-  anti-slop policies).
+  (`AI_POLICY.md`) and PR disclosure checklists (`pull_request_template.md`).
+  Check bot-gating rules and verification mandates.
 - **Tooling Protocols & Extensions**: Check for Model Context Protocol (MCP)
   server definitions (`mcp.json`, `.cursor/mcp.json`), subagents, sidecars, and
   custom agent runners.
-- **Knowledge Encapsulation**: Identify how maintainers encode domain idioms,
-  architectural invariants, and anti-patterns into guidelines so both human
-  contributors and AI coding assistants generate idiomatic, verified code.
+- **Knowledge Encapsulation**: Identify how maintainers record domain idioms,
+  architectural invariants, and anti-patterns. These guidelines enable contributors
+  and AI agents to write verified code.
 
 ### 9-Pillar Maturity Rubric & Scorecard Standards
 
@@ -189,8 +181,8 @@ Assess benchmark repositories against four objective maturity levels across each
 | :---: | :--- | :--- |
 | **Level 1** | **Legacy / Minimal** | Legacy `setup.py` / unpinned requirements, flat layout, no type checking, no task runner, single-version or missing CI, no agent instructions. |
 | **Level 2** | **Modern Baseline** | PEP 621 `[project]` metadata, basic linting (Flake8/Black/Ruff), standard pytest, basic GitHub Actions CI, basic README docs. |
-| **Level 3** | **Advanced Engineering** | PEP 517 build backend (`hatchling`/`poetry-core`), strict typing (`mypy`/`pyright`), committed lockfiles (`uv.lock`/`poetry.lock`), matrix CI, rich docs (`mkdocs-material`/Sphinx), agent instructions (`AGENTS.md`/`CLAUDE.md`). |
-| **Level 4** | **Zenith Gold Standard** | Native `uv_build` backend, PEP 735 `[dependency-groups]`, hermetic task orchestration (`poethepoet`), cognitive complexity gates (`complexipy`), architectural boundaries (`tach`), PyPI Trusted Publishing (OIDC) + PEP 740 build attestations, vector/TOML/strict docs (Zensical or advanced MkDocs Material + Typst), comprehensive agent skills (`.agents/skills/`), and explicit AI governance (`AI_POLICY.md`). |
+| **Level 3** | **Advanced Engineering** | PEP 517 build backend and strict typing. Uses committed lockfiles, matrix CI, rich docs, and agent instructions. |
+| **Level 4** | **Zenith Gold Standard** | Native `uv_build` backend and PEP 735 dependency groups. Enforces task orchestration, cognitive complexity gates, and architectural boundaries. Includes Trusted Publishing, strict docs, agent skills, and AI governance. |
 
 ---
 
@@ -204,7 +196,7 @@ Before inspecting a repository or package:
 
 1. Review `.agents/skills/inspect-module-setup/candidates.log` to pick an accepted
    target from the prioritized queue.
-2. Check `.agents/skills/inspect-module-setup/inspected.log` to verify historical audits
+2. Check `.agents/skills/inspect-module-setup/inspected.log` for historical audits
    and prevent duplicate analysis:
 
 ```bash
@@ -273,7 +265,7 @@ ls -la .github/workflows/
 
 ### Step 4: Transition Modules Between Candidates and Inspected
 
-Once an audit or benchmark review is concluded, move the module from
+Once you conclude an audit or benchmark review, move the module from
 `.agents/skills/inspect-module-setup/candidates.log` to
 `.agents/skills/inspect-module-setup/inspected.log` (or re-queue modules back
 into `candidates.log` when resetting or re-auditing):
@@ -310,15 +302,14 @@ uv run python .agents/skills/inspect-module-setup/scripts/prune_cache.py --targe
 
 When Zenith's setup is already mature and single-repository audits hit diminishing
 returns, run **Batch Inspection Mode** across a cohort of $N$ candidates (typically
-10–25 repositories). Auditing a cohort and synthesizing at the end separates
-**convergent ecosystem standards** (patterns independently adopted across multiple
-flagship projects) from noisy one-off repo quirks, while still capturing singular
-high-leverage breakthroughs.
+10–25 repositories). Auditing a cohort separates **convergent ecosystem standards**
+from noisy quirks. It highlights patterns adopted across flagship projects
+while capturing high-leverage breakthroughs.
 
 ### Phase 1: Cohort Selection & Workspace Preparation
 
 1. Read the top $N$ candidates from `.agents/skills/inspect-module-setup/candidates.log`
-   and verify none appear in `inspected.log`.
+   and check that none appear in `inspected.log`.
 2. Ensure `.temp/batch-inspection/` exists (archive or clear prior batch reports if
    starting a new batch):
 
@@ -362,7 +353,7 @@ parallel subagents in chunks of 2–3 repositories per subagent):
    - **Exact Target File**: Target path in `{{cookiecutter.project_slug}}/` (e.g. `{{cookiecutter.project_slug}}/pyproject.toml`, `{{cookiecutter.project_slug}}/tach.toml`, `{{cookiecutter.project_slug}}/pytest.ini`, `{{cookiecutter.project_slug}}/ruff.toml`, etc.) and corresponding root assets.
    - **Concrete Code Diff / Drop-in Replacement**: Exact code snippets or before/after diffs ready for immediate execution.
    - **Well-Explained Architectural Rationale**: Detailed explanation of the mechanism, what edge cases, runtime crashes, or developer friction it prevents, and why Zenith benefits.
-   - **Verification Plan**: Exact commands (`uv run pytest`, `uv run ruff check`) to validate the update.
+   - **Verification Plan**: Exact commands (`uv run pytest`, `uv run ruff check`) to check the update.
 
 4. **Transition & Cache Hygiene**: Once `.temp/batch-inspection/<NN>-<slug>.md` is
    complete, transition the module from `candidates.log` to `inspected.log` and prune
@@ -375,7 +366,7 @@ parallel subagents in chunks of 2–3 repositories per subagent):
 
 ### Phase 3: Cross-Cohort Synthesis (`.temp/batch-inspection/00-SYNTHESIS.md`)
 
-After all $N$ individual reports (`01-<slug>.md` through `<NN>-<slug>.md`) are written:
+After you complete all $N$ individual reports (`01-<slug>.md` through `<NN>-<slug>.md`):
 
 1. Read and cross-reference all `<NN>-<slug>.md` reports in `.temp/batch-inspection/`.
 2. Deduplicate overlapping findings, filter out low-signal or domain-specific noise, and
@@ -411,18 +402,17 @@ After all $N$ individual reports (`01-<slug>.md` through `<NN>-<slug>.md`) are w
   Persistent record of completed repository audits across sessions to prevent duplicate
   analysis.
 - **Candidate Queue** (`.agents/skills/inspect-module-setup/candidates.log`):
-  Prioritized queue of validated benchmark candidates awaiting audit.
+  Prioritized queue of approved benchmark candidates awaiting audit.
 
 Always check `.agents/skills/inspect-module-setup/candidates.log` for upcoming benchmark
-targets and verify `.agents/skills/inspect-module-setup/inspected.log` to prevent
+targets and check `.agents/skills/inspect-module-setup/inspected.log` to prevent
 duplicate effort.
 
 ---
 
 ## 5. Concrete Proposal Standard
 
-Every improvement proposal generated from this skill (whether from a single-repository
-audit or a batch cohort synthesis) **MUST** follow the standardized template defined in:
+Every proposal generated from this skill **MUST** follow the standardized template defined in:
 👉 [templates/proposal_template.md](./templates/proposal_template.md)
 
 Key required sections include:
@@ -431,4 +421,4 @@ Key required sections include:
 2. **Benchmark Source & Context**: Specific repositories, file paths, and discovered patterns.
 3. **Gap Analysis**: Comparison matrix between target repositories and `{{cookiecutter.project_slug}}`.
 4. **Concrete Code Diffs & Drop-in Replacements**: Exact before/after code diffs targeting specific files in `{{cookiecutter.project_slug}}/` or root assets.
-5. **Verification Plan**: Exact commands (`pytest`, `ruff`, `pre-commit`) to validate changes.
+5. **Verification Plan**: Exact commands (`pytest`, `ruff`, `pre-commit`) to check changes.

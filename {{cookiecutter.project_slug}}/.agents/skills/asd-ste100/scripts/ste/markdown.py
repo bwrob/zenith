@@ -40,6 +40,7 @@ LIST_ITEM = re.compile(
     r"(?:\[[ xX]\] +)?(?P<body>\S.*)$"
 )
 TABLE_SEPARATOR_CELL = re.compile(r"^:?-+:?$")
+LINK_DEFINITION = re.compile(r"^\[(?!\^)[^\]]+\]:[ \t]+\S")
 FRONTMATTER_FENCE = re.compile(r"^---[ \t]*$")
 FRONTMATTER_END = re.compile(r"^(?:---|\.\.\.)[ \t]*$")
 DESCRIPTION_KEY = re.compile(r"^description:[ \t]*(?P<value>.*?)[ \t]*$")
@@ -297,10 +298,11 @@ class _Scanner:
             self.comment = None
 
     def _skip_line(self, line: Line) -> bool:
-        """Skip lines that carry no prose: HTML blocks, rules, alert markers."""
+        """Skip lines that carry no prose: HTML blocks, rules, link defs, alert markers."""
         text = line.stripped
         skip = bool(
             (line.indent <= 3 and THEMATIC_BREAK.match(text))
+            or (line.indent <= 3 and LINK_DEFINITION.match(text))
             or HTML_BLOCK.match(text)
             or (line.quote_depth and ALERT.match(text))
         )

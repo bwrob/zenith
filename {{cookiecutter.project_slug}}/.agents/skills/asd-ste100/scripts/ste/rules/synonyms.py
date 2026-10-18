@@ -16,7 +16,11 @@ SYNONYM_GROUPS: tuple[tuple[str, ...], ...] = (
     ("send", "transmit"),
     ("get", "retrieve", "fetch", "obtain"),
     ("change", "modify", "alter"),
+    ("help", "assist", "aid"),
+    ("choose", "select", "pick"),
+    ("allow", "permit"),
 )
+
 
 
 def _word_pattern(base: str) -> re.Pattern[str]:

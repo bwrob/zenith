@@ -10,7 +10,7 @@
 
 ## Context & Problem Statement
 
-[Describe the context and problem statement. What technical challenge or architectural trade-off requires resolution? What forces, requirements, and constraints apply?]
+[Describe the context and problem statement. What technical challenge or architectural trade-off requires a solution? What forces, requirements, and constraints apply?]
 
 ---
 
@@ -64,4 +64,6 @@ Chosen option: **"Option [X]: [Name of option]"**, because [justification, e.g.,
 
 - **Tach Layers**: [How this decision affects `tach.toml` modules or layer definitions]
 - **Static Typing**: [Impact on Pyrefly type contracts, Protocols, or generic parameters]
-- **Testing Strategy**: [How this architectural invariant is verified in automated tests]
+- **Testing Strategy**: [How automated tests check this architectural invariant]
+
+

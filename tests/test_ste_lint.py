@@ -207,13 +207,14 @@ def test_markdown_frontmatter_edge_cases() -> None:
 
 def test_all_rules_and_get_rules() -> None:
     """Test rule retrieval and filtering."""
-    assert len(ALL_RULES) == 9
+    assert len(ALL_RULES) == 10
     active = get_rules(disabled=["semicolon", "passive-voice"])
-    assert len(active) == 7
+    assert len(active) == 8
     rule_ids = {r.id for r in active}
     assert "semicolon" not in rule_ids
     assert "passive-voice" not in rule_ids
     assert "phrasal-verb" in rule_ids
+    assert "unapproved-phrase" in rule_ids
 
 
 def test_lint_engine_and_reporters() -> None:
@@ -266,3 +267,58 @@ def test_cli_execution_with_file_and_stdin(tmp_path: Path) -> None:
     # JSON output
     stdin_stream3 = io.StringIO("Clean text.")
     assert main(["--json"], stdin=stdin_stream3) == 0
+
+
+def test_link_definition_skipped() -> None:
+    """Verify markdown reference-style link definitions are skipped by scanner."""
+    text = (
+        "See [the reference][ref] for detail.\n\n"
+        "[ref]: https://example.com/very/long/url/path/that/should/not/count/as/prose\n"
+    )
+    doc = parse(text)
+    assert len(doc.blocks) == 1
+    assert "the reference" in doc.blocks[0].text
+
+
+def test_reporter_files_count() -> None:
+    """Verify formatters correctly display multiple files count."""
+    txt = format_text([], 50, 0, baseline=0, files_count=3)
+    assert "in 3 files" in txt
+
+    js = format_json([], 50, 0, baseline=0, files_count=3)
+    assert '"files": 3' in js
+
+
+def test_cli_directory_input(tmp_path: Path) -> None:
+    """Test CLI scanning a directory containing markdown files and skipped dirs."""
+    sub_dir = tmp_path / "skills"
+    sub_dir.mkdir()
+    (sub_dir / "clean1.md").write_text("All is clean and concise.\n", encoding="utf-8")
+    (sub_dir / "clean2.md").write_text(
+        "Second file is also concise.\n", encoding="utf-8"
+    )
+
+    # Skipped directory
+    git_dir = sub_dir / ".git"
+    git_dir.mkdir()
+    (git_dir / "ignore.md").write_text("Has; semicolon\n", encoding="utf-8")
+
+    assert main([str(sub_dir)]) == 0
+
+
+def test_extended_rules() -> None:
+    """Verify extended marketing adjectives, unapproved phrases, and synonym groups."""
+    # Test unapproved phrase
+    doc1 = parse("In the event that the file is missing, exit.")
+    res1 = lint_document(doc1)
+    assert any(f.rule == "unapproved-phrase" for f in res1.findings)
+
+    # Test marketing adjective
+    doc2 = parse("This provides a bulletproof setup.")
+    res2 = lint_document(doc2)
+    assert any(f.rule == "marketing-adjective" for f in res2.findings)
+
+    # Test synonym rotation for allow / permit
+    doc3 = parse("We allow read access. We also permit write access.")
+    res3 = lint_document(doc3)
+    assert any(f.rule == "synonym-rotation" for f in res3.findings)

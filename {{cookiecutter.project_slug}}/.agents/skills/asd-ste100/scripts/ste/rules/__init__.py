@@ -12,6 +12,7 @@ from ste.rules.patterns import (
     PHRASAL_VERB_RULE,
     PRESENT_PERFECT_RULE,
     SEMICOLON_RULE,
+    UNAPPROVED_PHRASE_RULE,
     PatternRule,
 )
 from ste.rules.sentences import LONG_SENTENCE_RULE, LongSentenceRule
@@ -48,6 +49,7 @@ __all__ = [
     "RULE_MAP",
     "SEMICOLON_RULE",
     "SYNONYM_ROTATION_RULE",
+    "UNAPPROVED_PHRASE_RULE",
     "DanglingConjunctionRule",
     "LongSentenceRule",
     "PatternRule",
@@ -55,3 +57,4 @@ __all__ = [
     "SynonymRotationRule",
     "get_rules",
 ]
+

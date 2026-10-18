@@ -15,7 +15,7 @@ uv run pytest --cov --cov-report=xml  # Generate coverage.xml for CI
 uv run pytest --cov-fail-under=80     # Fail if total coverage is below 80%
 ```
 
-In Zenith, canonical coverage tasks are managed via Poe:
+In Zenith, run coverage tasks through Poe:
 
 ```bash
 uv run poe test                       # Test with coverage and XML export
@@ -82,7 +82,7 @@ if TYPE_CHECKING:
 
 ## 4. Best Practices for High Coverage
 
-- **Test failure paths**: Don't just test happy paths; assert error handling,
+- **Test failure paths**: Do not only test happy paths. Assert error handling,
   exceptions, and validation edge cases.
 - **Inspect `htmlcov/`**: Run `uv run poe coverage` and open
   `htmlcov/index.html` in a browser to see exact lines highlighted in red.

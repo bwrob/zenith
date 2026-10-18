@@ -191,8 +191,36 @@ def main(argv: list[str] | None = None, stdin: TextIO = sys.stdin) -> int:
     findings: list[Finding] = []
     words_total = 0
 
+    target_files: list[Path] = []
     if args.files:
-        for file_path in args.files:
+        for p in args.files:
+            if p.is_dir():
+                skipped_dirs = {
+                    ".git",
+                    ".venv",
+                    ".temp",
+                    ".ruff_cache",
+                    ".pytest_cache",
+                    ".rumdl_cache",
+                    "node_modules",
+                    "site",
+                    "dist",
+                    "__pycache__",
+                }
+                for root, dirs, files in p.walk(follow_symlinks=True):
+                    dirs[:] = [d for d in dirs if d not in skipped_dirs]
+                    if any(part in skipped_dirs for part in root.parts):
+                        continue
+                    for f in sorted(files):
+                        if f.endswith(".md"):
+                            target_files.append(root / f)
+            elif p.is_file():
+                target_files.append(p)
+            else:
+                print(f"Error reading {p}: file or directory not found", file=sys.stderr)
+                return 1
+
+        for file_path in target_files:
             try:
                 content = file_path.read_text(encoding="utf-8")
             except OSError as exc:
@@ -209,11 +237,16 @@ def main(argv: list[str] | None = None, stdin: TextIO = sys.stdin) -> int:
 
     findings.sort(key=lambda f: (f.file, f.line, f.column, f.rule))
     hard_count = sum(1 for f in findings if f.severity == Severity.HARD)
+    files_count = len(target_files) if target_files else 1
 
     if args.json:
-        output = format_json(findings, words_total, hard_count, baseline=args.baseline)
+        output = format_json(
+            findings, words_total, hard_count, baseline=args.baseline, files_count=files_count
+        )
     else:
-        output = format_text(findings, words_total, hard_count, baseline=args.baseline)
+        output = format_text(
+            findings, words_total, hard_count, baseline=args.baseline, files_count=files_count
+        )
 
     print(output)
     return 1 if hard_count > args.baseline else 0

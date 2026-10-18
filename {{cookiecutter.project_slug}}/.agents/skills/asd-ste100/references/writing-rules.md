@@ -1,16 +1,24 @@
 # ASD-STE100 Writing Rules — Summary and Sources
 
-This file summarizes the public, official description of ASD-STE100 (Simplified Technical English). It paraphrases rule *categories*. It does not reproduce the standard's text or its ~900-word dictionary verbatim. For the authoritative document, request the free download at the official site.
+This file summarizes the public, official description of ASD-STE100 (Simplified Technical English). It paraphrases rule *categories*. It does not reproduce the standard's text or its ~900-word dictionary verbatim. For the official document, request the free download at the official site.
 
 ## What ASD-STE100 Is
 
-ASD-STE100 is a controlled natural language, first released in 1986 (as AECMA Document PSC-85-16598) by what is now ASD (the AeroSpace and Defense Industries Association of Europe). It was built at the request of European airlines — most staffed by non-native English speakers — who needed maintenance documentation that could not be misread, because a misread instruction on an aircraft can kill people. The standard is maintained by the Simplified Technical English Maintenance Group (STEMG) and has been free to download since Issue 6 (2013). The current edition is Issue 9 (January 2025).
+ASD-STE100 is a controlled natural language. It was first released in 1986
+by what is now ASD (the AeroSpace and Defense Industries Association of Europe).
+European airlines requested the standard for maintenance documentation that
+cannot be misread. A misread instruction on an aircraft can kill people.
+The Simplified Technical English Maintenance Group (STEMG) maintains the
+standard. It is free to download. The current edition is Issue 9 (January 2025).
 
 ## Structure
 
-- **53 writing rules across 9 sections** covering word choice, grammar, sentence structure, and style.
-- **A dictionary** of roughly 900 approved words, each restricted to one meaning and one part of speech, plus roughly 1,200 words to avoid with suggested replacements.
-- **A terminology allowance**: organizations may define their own dictionary of approved technical nouns and verbs beyond the base ~900 words, for domain-specific vocabulary the base dictionary can't cover.
+- **53 writing rules across 9 sections** covering word choice, grammar,
+  sentence structure, and style.
+- **A dictionary** of roughly 900 approved words. The dictionary restricts each word
+  to one meaning and one part of speech. It also lists unapproved words with replacements.
+- **A terminology allowance**: Organizations may define approved technical
+  nouns and verbs. This covers domain-specific vocabulary beyond the base words.
 
 ## Rule Categories (Paraphrased)
 
@@ -23,19 +31,21 @@ ASD-STE100 is a controlled natural language, first released in 1986 (as AECMA Do
 
 **Verb forms**
 - Permitted forms: infinitive, imperative, simple present, simple past, simple future, and past participle used only as an adjective.
-- No present perfect, past perfect, or other compound/auxiliary constructions. "We have received" is not allowed. "We received" is allowed.
-- "-ing" forms are permitted only as a technical noun or as part of a technical noun, not as a verb form.
+<!-- ste-lint-disable -->
+- No present perfect, past perfect, or other compound constructions. Use "We received", never "We have received".
+<!-- ste-lint-enable -->
+- Use "-ing" forms only as a technical noun or as part of a technical noun, not as a verb form.
 
 **Voice**
-- Active voice is required for procedures and instructions.
-- Passive voice is allowed only in descriptive text, and only when the actor performing the action is genuinely unknown or irrelevant to the reader.
+- Use active voice for procedures and instructions.
+- Use passive voice only in descriptive text, and only when the actor performing the action is genuinely unknown or irrelevant to the reader.
 
 **Sentence structure**
 - One instruction per sentence.
 - Maximum ~20 words per sentence for procedures and instructions. Maximum ~25 words for descriptive text.
 - Do not omit sentence parts (verb, subject, article) just to shorten the sentence — the standard explicitly warns that this creates ambiguity rather than clarity.
-- Noun clusters (strings of nouns stacked as a modifier) are capped at 3 words.
-- Semicolons are not permitted at all (Rule 8.1): "You can use all standard English punctuation marks but not the semicolon (;)." Write separate sentences instead. Every other standard mark, including the em dash, remains permitted.
+- Limit noun clusters (strings of nouns stacked as a modifier) to 3 words.
+- Semicolons are not permitted (Rule 8.1). Do not use the semicolon (`;`). Write separate sentences instead. Every other standard mark remains permitted.
 
 **Paragraph and document structure**
 - One topic per paragraph.
@@ -47,7 +57,11 @@ ASD-STE100 is a controlled natural language, first released in 1986 (as AECMA Do
 
 ## Why This Skill Repurposes STE for Agent Output
 
-STE was designed to eliminate ambiguity for a reader who cannot ask a follow-up question — a technician on a tarmac, working from a manual, with no author to call. An AI agent parsing another agent's output, a tool description, or a system message is in the same position: no back-channel to resolve "does this passive-voice sentence mean the caller does X, or the callee does X?" The same rule set that protects an airline mechanic from a misread torque spec protects a downstream agent from a misread instruction.
+AeroSpace and Defense designed STE to eliminate ambiguity for readers who cannot ask follow-up questions.
+A technician on a tarmac works from a manual with no author to call.
+An AI agent parsing another agent's output is in the same position.
+It has no back-channel to resolve ambiguous instructions.
+The same rules that protect an airline mechanic protect a downstream agent from misreading a prompt.
 
 ## Sources
 

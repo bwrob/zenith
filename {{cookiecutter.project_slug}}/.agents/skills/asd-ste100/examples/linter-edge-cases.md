@@ -1,3 +1,4 @@
+<!-- ste-lint-disable-file -->
 # Linter Edge Cases
 
 This file has intentional structural violations. Use it to test the linter.

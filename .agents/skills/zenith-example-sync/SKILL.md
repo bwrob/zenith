@@ -1,9 +1,8 @@
 ---
 description: >-
-  Authoritative guide documenting the architectural relationship between the
-  Zenith template repository and the zenith-example showcase repository, the
-  local and automated sync workflows, and how to verify and monitor downstream
-  CI test status in zenith-example after pushing to zenith main.
+  Guide documenting the relationship between Zenith and
+  the zenith-example showcase repository. Explains local and automated sync
+  workflows and how to verify downstream CI test status.
   Triggers: zenith-example, sync-example, showcase, showcase status, downstream tests, test status.
 name: zenith-example-sync
 version: 1.0.0
@@ -11,10 +10,9 @@ version: 1.0.0
 
 # Zenith Showcase Synchronization & Status Monitoring (`zenith-example-sync`)
 
-This skill documents the architectural relationship between **`zenith`** (the upstream
-Cookiecutter template) and **`zenith-example`** (the downstream showcase repository), the
-synchronization mechanics, and the mandatory verification protocol for checking downstream
-test status after pushing changes to `zenith:main`.
+This skill documents the relationship between **`zenith`** and **`zenith-example`**.
+It covers synchronization mechanics and the mandatory verification protocol
+for downstream test status after pushing changes to `zenith:main`.
 
 ---
 
@@ -42,7 +40,7 @@ flowchart LR
   It is a fully instantiated Python library and CLI project rendered directly from `zenith`.
   It serves as:
   1. A live reference for end users and AI coding agents.
-  2. A real-world canary test suite validating that every tool, test, type check, and workflow succeeds.
+  2. A real-world canary test suite verifying that every tool, test, static typing, and workflow succeeds.
   3. The deployment origin for documentation hosted on GitHub Pages.
 - **Cardinal Rule**: **Never make ad-hoc edits exclusively inside `zenith-example`.** Any manual changes
   in `zenith-example` will be overwritten when `sync_example.py` runs. All bug fixes, configuration
@@ -71,7 +69,7 @@ This automated task (`scripts/sync_example.py`):
 4. Generates an updated `uv.lock` via `uv lock`.
 5. Runs `uv run poe fix` inside `../zenith-example` to format Python (Ruff), TOML (Taplo), Markdown (Rumdl), YAML/CSS (Prettier), and fix typos.
 
-### Step 2: Validate Downstream Quality Gate
+### Step 2: Verify Downstream Quality Gate
 
 Change into the local showcase directory and execute the complete verification suite:
 
@@ -88,7 +86,7 @@ Both `poe test` and `poe code-quality` must exit with return code `0` before pro
 
 ## 3. Automated CI Sync Pipeline (`sync-example.yaml`)
 
-When changes are pushed to `main` in `bwrob/zenith`:
+When you push changes to `main` in `bwrob/zenith`:
 
 1. **GitHub Actions Trigger**: `.github/workflows/sync-example.yaml` executes automatically.
 2. **Environment Setup**: Configures SSH deploy credentials using the repository secret `EXAMPLE_REPO_DEPLOY_KEY`.
@@ -105,8 +103,8 @@ When changes are pushed to `main` in `bwrob/zenith`:
 
 ## 4. Post-Push Verification Protocol (Mandatory)
 
-Whenever you push commits to `zenith`'s `main` branch, you must proactively track both the
-upstream sync workflow and downstream showcase CI runs until all checks pass green.
+Whenever you push commits to `zenith:main`, you must track both upstream and
+downstream CI runs. Monitor these workflows until all runs pass green.
 
 ### Protocol Phase 1: Monitor Upstream Sync Workflow
 
@@ -120,7 +118,7 @@ gh run list --repo bwrob/zenith --workflow sync-example.yaml --limit 1
 gh run watch <run-id> --repo bwrob/zenith
 ```
 
-Confirm that the output reports `✓ sync-showcase in ...s`.
+Verify that the output reports `✓ sync-showcase in ...s`.
 
 ### Protocol Phase 2: Monitor Downstream Showcase CI Runs
 
@@ -203,7 +201,7 @@ Re-execute **Section 4 (Post-Push Verification Protocol)** until all runs report
 
 ---
 
-## 6. Authoritative Invariants
+## 6. Architectural Invariants
 
 1. **100% Mandatory Test Coverage**: Both `zenith` and `zenith-example` mandate 100% statement and branch coverage (`fail_under = 100`).
 2. **Strict TOML Alignment**: All TOML configuration files must pass `uv run poe format-check-toml` (`taplo format --check`).

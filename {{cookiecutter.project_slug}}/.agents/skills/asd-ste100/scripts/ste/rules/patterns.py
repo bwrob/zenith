@@ -50,8 +50,12 @@ PHRASAL_VERB_RULE = PatternRule(
     id="phrasal-verb",
     severity=Severity.HARD,
     pattern=re.compile(
-        r"\b(spin(?:ning|s)? up|spun up|reach(?:ing|es|ed)? out|div(?:e|es|ing|ed) into|"
-        r"dove into|kick(?:ing|s|ed)? off|circl(?:e|es|ing|ed) back|touch(?:ing|es|ed)? base)\b",
+        r"\b(spin(?:ning|s)? up|spun up|spin(?:ning|s)? down|spun down|"
+        r"reach(?:ing|es|ed)? out|div(?:e|es|ing|ed) into|dove into|"
+        r"kick(?:ing|s|ed)? off|circl(?:e|es|ing|ed) back|touch(?:ing|es|ed)? base|"
+        r"drill(?:ing|s|ed)? down|wrap(?:ping|s|ed)? up|ramp(?:ing|s|ed)? up|"
+        r"tear(?:ing|s)? down|tore down|torn down|scale(?:s|d|ing)? up|"
+        r"roll(?:ing|s|ed)? out|figur(?:e|es|ed|ing) out|point(?:ing|s|ed)? out)\b",
         re.IGNORECASE,
     ),
     message="Soft phrasal verb. Use the single plain verb (start, contact, read, begin).",
@@ -62,12 +66,27 @@ MARKETING_ADJECTIVE_RULE = PatternRule(
     id="marketing-adjective",
     severity=Severity.HARD,
     pattern=re.compile(
-        r"\b(seamless(?:ly)?|robust(?:ly)?|cutting-edge|effortless(?:ly)?|blazing[- ]fast|"
-        r"world-class|state-of-the-art|game-chang(?:ing|er))\b",
+        r"\b(seamless(?:ly)?|robust(?:ly)?|cutting-edge|effortless(?:ly)?|"
+        r"blazing(?:ly)?[- ]fast|lightning[- ]fast|rock[- ]solid|ultra[- ]fast|"
+        r"world-class|state-of-the-art|game-chang(?:ing|er)|authoritative|"
+        r"comprehensive|battle-tested|industry-standard|turnkey|bulletproof)\b",
         re.IGNORECASE,
     ),
     message="Marketing adjective. Delete, or replace with the measurement that earns the claim.",
     description="Check for hyperbolic marketing adjectives.",
+)
+
+UNAPPROVED_PHRASE_RULE = PatternRule(
+    id="unapproved-phrase",
+    severity=Severity.HARD,
+    pattern=re.compile(
+        r"\b(in order to|prior to|subsequent to|with the exception of|"
+        r"due to the fact that|in the event that|in the event of|"
+        r"for the purpose of|at the present time|with regard to|in regard to)\b",
+        re.IGNORECASE,
+    ),
+    message="Unapproved phrase. Use plain equivalents (to, before, after, except, because, if, now, about).",
+    description="Check for wordy, unapproved multi-word connectives.",
 )
 
 NOMINALIZATION_RULE = PatternRule(
@@ -111,7 +130,9 @@ PATTERN_RULES: tuple[PatternRule, ...] = (
     SEMICOLON_RULE,
     PHRASAL_VERB_RULE,
     MARKETING_ADJECTIVE_RULE,
+    UNAPPROVED_PHRASE_RULE,
     NOMINALIZATION_RULE,
     PASSIVE_VOICE_RULE,
     PRESENT_PERFECT_RULE,
 )
+

@@ -1,6 +1,6 @@
 ---
 description: >-
-  Authoritative guide for maintaining, testing, and developing Cookiecutter templates with modern 2.x advanced features.
+  Guide to maintain, test, and develop Cookiecutter templates with modern 2.x features.
   Use when editing template configurations, Jinja partials, lifecycle hooks, or running template tests.
   Triggers: cookiecutter, template, scaffold, hooks, cookiecutter.json.
 name: tool-cookiecutter
@@ -10,16 +10,16 @@ version: 2.0.0
 # Cookiecutter Template Engine (`tool-cookiecutter`)
 
 `cookiecutter` is a command-line utility and Python library that scaffolds
-projects from file templates using the Jinja templating engine.
+projects from file templates with the Jinja templating engine.
 
-In this repository, Cookiecutter defines the core generation pipeline for the
-**Zenith** modern Python template, targeting modern Cookiecutter 2.x (2.2+, 2.5+, 2.7+).
+In this repository, Cookiecutter defines the generation pipeline for the
+**Zenith** Python template, targeting modern Cookiecutter 2.x (2.2+, 2.5+, 2.7+).
 
 ---
 
 ## 1. Repository Layout & Template Architecture
 
-A complete modern Cookiecutter repository comprises five key architectural components:
+A modern Cookiecutter repository has five components:
 
 ```text
 zenith/
@@ -39,7 +39,7 @@ zenith/
 
 ## 2. Core CLI, Replay & Testing Commands
 
-Use these commands to test template generation, validate rendered projects, and automate tests.
+Use these commands to test template generation and check rendered projects:
 
 ```bash
 uv run cookiecutter .                                  # Interactive generation test
@@ -53,7 +53,7 @@ uv run pytest                                          # Run template unit & val
 
 ### Programmatic Python Invocation
 
-Template testing and programmatic scaffolding use Cookiecutter's Python API:
+Use Cookiecutter's Python API to test templates programmatically:
 
 ```python
 from pathlib import Path
@@ -76,7 +76,7 @@ project_dir = Path(
 
 ### End-to-End Smoke Test Workflow
 
-Validate that a generated project satisfies all quality gates:
+Check that a generated project satisfies all quality gates:
 
 ```bash
 # 1. Render template to a temporary directory
@@ -94,12 +94,12 @@ uv run poe docs-build
 
 ## 3. Advanced `cookiecutter.json` Features
 
-Modern Cookiecutter provides rich built-in configuration directives in `cookiecutter.json`.
+Cookiecutter provides built-in configuration directives in `cookiecutter.json`.
 
 ### A. Human-Readable Prompts (`__prompts__`)
 
-Cookiecutter 2.2+ supports descriptive prompt questions and option labels via the `__prompts__` key.
-`__prompts__` is automatically stripped from the rendered template context:
+Cookiecutter 2.2+ supports descriptive prompts through `__prompts__`.
+The engine strips `__prompts__` from the rendered context:
 
 ```json
 {
@@ -123,7 +123,7 @@ Cookiecutter 2.2+ supports descriptive prompt questions and option labels via th
 ### B. Native Boolean Variables
 
 Cookiecutter 2.2.0+ supports native JSON booleans (`true` / `false`).
-The interactive prompt automatically validates user responses (`y/n/yes/no/true/false/1/0/on/off`).
+The interactive prompt checks user responses (`y/n/yes/no/true/false/1/0/on/off`).
 
 - In `cookiecutter.json`:
 
@@ -153,7 +153,7 @@ The interactive prompt automatically validates user responses (`y/n/yes/no/true/
 
 ### C. Private Variables (`_` unrendered vs `__` rendered)
 
-- **Unrendered Private Variables (`_name`)**: Constants not prompted to the user and not rendered with Jinja. Useful for internal configurations, line endings, or copy lists:
+- **Unrendered Private Variables (`_name`)**: Constants not prompted to the user and not rendered by Jinja. Useful for internal configurations, line endings, or copy lists:
 
   ```json
   {
@@ -174,7 +174,7 @@ The interactive prompt automatically validates user responses (`y/n/yes/no/true/
 
 ### D. Jinja2 Environment Tweaks (`_jinja2_env_vars`)
 
-Configure whitespace stripping and template engine behavior directly:
+Configure whitespace trimming and template behavior directly:
 
 ```json
 {
@@ -209,7 +209,7 @@ Cookiecutter includes five built-in extensions in `StrictEnvironment`:
 4. `cookiecutter.extensions.RandomStringExtension`: `{{ random_ascii_string(16) }}`
 5. `cookiecutter.extensions.JsonifyExtension`: `{{ cookiecutter.mapping | jsonify }}`
 
-External Jinja extensions can be registered via `_extensions`:
+Register external Jinja extensions in `_extensions`:
 
 ```json
 {
@@ -222,7 +222,7 @@ External Jinja extensions can be registered via `_extensions`:
 
 ### G. Local Template Extensions (`local_extensions.py`)
 
-Cookiecutter 2.1+ loads custom filters directly from `local_extensions.py` (or a `local_extensions/` package) in the template root:
+Cookiecutter 2.1+ loads custom filters from `local_extensions.py` in the template root:
 
 ```python
 # local_extensions.py
@@ -248,7 +248,7 @@ Register it in `cookiecutter.json`:
 
 ### H. Template Inheritance & Partials (`templates/` folder)
 
-Cookiecutter 2.2+ automatically adds `templates/` (at template root) to Jinja's `FileSystemLoader`:
+Cookiecutter 2.2+ adds `templates/` to Jinja's `FileSystemLoader`:
 
 ```text
 cookiecutter-repo/
@@ -267,24 +267,24 @@ Cookiecutter supports three distinct lifecycle hooks:
 
 | Hook | Timing | Working Directory | Context Available | Primary Purpose |
 | :--- | :--- | :--- | :--- | :--- |
-| **`pre_prompt.py`** *(2.4+)* | Before any user questions | Copy of template repository | No | Verify system prerequisites (`uv`, `git`, Python version) |
-| **`pre_gen_project.py`** | After questions, before files render | Generated project directory | Yes (rendered) | Validate input variables (regex, reserved keywords) |
-| **`post_gen_project.py`** | After all files are rendered | Generated project directory | Yes (rendered) | File pruning, educational header stripping, git init |
+| **`pre_prompt.py`** *(2.4+)* | Before any user questions | Copy of template repository | No | Check system prerequisites (`uv`, `git`, Python version) |
+| **`pre_gen_project.py`** | After questions, before files render | Generated project directory | Yes (rendered) | Check input variables (regex, reserved keywords) |
+| **`post_gen_project.py`** | After file rendering | Generated project directory | Yes (rendered) | File pruning, educational header stripping, git init |
 
 ### Hook Error Handling
 
-If any hook exits with a non-zero exit code (`sys.exit(1)`), Cookiecutter immediately halts generation and removes the partially-generated directory (unless `--keep-project-on-failure` is set).
+If a hook exits with a non-zero code (`sys.exit(1)`), Cookiecutter halts generation and deletes the directory.
 
 ---
 
 ## 5. Best Practices & Zenith Rules
 
-Keep these principles in mind when developing the template:
+Follow these principles when developing the template:
 
 - **Edit template, never rendered output**: Always make changes inside
   `{{cookiecutter.project_slug}}/` or `templates/`, not in temporary test output.
-- **Escape Literal Jinja & Workflow Expressions**: When rendering GitHub Actions (`${{ github.sha }}`) or Jinja-syntax docs, wrap them in `{% raw %}...{% endraw %}`.
+- **Escape Literal Jinja & Workflow Expressions**: When rendering GitHub Actions (`${{ github.sha }}`) or Jinja docs, wrap expressions in `{% raw %}...{% endraw %}`.
 - **Maintain Formatting Resilience**: Expressions like `{{ cookiecutter.project_slug }}` vary in character length. Parenthesize lines in Python template code so `ruff format` does not fail on longer names.
-- **Header Stripping Synchronization**: Zenith includes educational comments in config files that `hooks/post_gen_project.py` strips out. Keep `CONFIG_FILES_WITH_HEADERS` in sync when adding new root configs.
+- **Header Stripping Synchronization**: Zenith includes educational comments in config files that `hooks/post_gen_project.py` strips out. Keep `CONFIG_FILES_WITH_HEADERS` synchronized when adding new root configs.
 - **Binary & Asset Protection**: Always register static binary and SVG assets in `_copy_without_render`.
-- **Test All Permutations**: Maintain test cases in `tests/test_template.py` covering boolean flags enabled and disabled, alternate Python versions, and licenses.
+- **Maintain Test Coverage**: Maintain test cases in `tests/test_template.py` covering boolean flags, Python versions, and licenses.
