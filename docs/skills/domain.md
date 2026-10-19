@@ -108,7 +108,7 @@ Here are typical domain skills you can scaffold in your Zenith project:
 ## Authoring Domain Skills
 
 Use the
-[Skill Creator (`workflow-skill-creator`)](workflow.md#skill-authoring--standards-workflow-skill-creator)
+[Skill Creator (`workflow-skill-creator`)](workflow.md#skill-authoring-standards-workflow-skill-creator)
 workflow:
 
 1. Create the skill directory:
