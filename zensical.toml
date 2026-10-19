@@ -57,6 +57,7 @@
         ] },
         { "Agent Skills" = [
             "skills/index.md",
+            { "Spec-Driven Development" = "skills/sdd.md" },
             { "Workflows" = "skills/workflow.md" },
             { "Tools" = "skills/tool.md" },
             { "Guides" = "skills/guide.md" },

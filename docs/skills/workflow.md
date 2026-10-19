@@ -93,7 +93,8 @@ deterministic procedures without skipping critical quality steps.
 - **Directory**: `.agents/skills/workflow-skill-creator/`
 - **Triggers**: `create skill`, `new skill`, `author skill`, `modular skill`.
 - **Purpose**: Governs the creation of new agent skills in Zenith repositories:
-  - Enforces the 4-prefix taxonomy (`workflow-*`, `tool-*`, `guide-*`, `domain-*`).
+  - Enforces the 5-prefix taxonomy (`workflow-*`, `sdd-*`, `tool-*`, `guide-*`,
+    `domain-*`).
   - Implements **progressive disclosure**: lean `SKILL.md` with external `templates/`,
     `references/`, and `examples/`.
   - Enforces Simplified Technical English (ASD-STE100) writing standards.
@@ -101,79 +102,11 @@ deterministic procedures without skipping critical quality steps.
 
 ---
 
-### `workflow-sdd` (Master Orchestrator)
-
-- **Directory**: `.agents/skills/workflow-sdd/`
-- **Triggers**: `sdd`, `spec driven dev`, `feature spec`, `execute sdd`.
-- **Purpose**: Coordinates the full Spec-Driven Development lifecycle across feature
-  development:
-  - **Single Source of Truth**: Manages grounded artifacts in `.specs/<feature-id>/`.
-  - **Approval Stops**: Stops for developer review after specification, plan,
-    implementation, and review by default.
-  - **Autonomous Mode**: Supports hands-off execution when `--autonomous` or `/goal` is
-    specified.
-  - **Fast-Path SDD**: Provides a compact workflow for small features and bug fixes
-    under 150 lines of change.
-  - **Permanent Archival**: Folds completed features into `docs/specs/` with
-    `poe sdd-archive`.
-  - **Task Rollback**: Cleanly reverts flawed task commits and resets plan checkboxes
-    with `poe sdd-revert`.
-
----
-
-### `workflow-sdd-spec`
-
-- **Directory**: `.agents/skills/workflow-sdd-spec/`
-- **Triggers**: `write spec`, `author spec`, `sdd spec`, `clarify requirements`.
-- **Purpose**: Guides requirements clarification and specification drafting:
-  - **EARS Patterns**: Enforces Easy Approach to Requirements Syntax for functional
-    rules.
-  - **Scope Boundaries**: Mandates explicit `In-Scope` and `Out-of-Scope` sections to
-    prevent scope drift.
-  - **Clarification Matrix**: Probes edge cases, state management, and error behaviors
-    before coding.
-  - **Automated Spec Linter**: Validates structure with
-    `poe sdd-check-spec <feature-id>`.
-
----
-
-### `workflow-sdd-plan`
-
-- **Directory**: `.agents/skills/workflow-sdd-plan/`
-- **Triggers**: `plan implementation`, `sdd plan`, `technical plan`, `task breakdown`.
-- **Purpose**: Translates approved specifications into Python 3.12+ architectures:
-  - **Architectural Rules**: Enforces frozen dataclasses, structural protocols, PEP 695
-    generics, and Tach layer boundaries.
-  - **Atomic Task Decomposition**: Breaks work into tasks under 100 lines with explicit
-    verification gates.
-
----
-
-### `workflow-sdd-implement`
-
-- **Directory**: `.agents/skills/workflow-sdd-implement/`
-- **Triggers**: `sdd implement`, `execute plan`, `tdd implementation`, `sdd coding`.
-- **Purpose**: Directs sequential Test-Driven Development execution:
-  - **Red-Green-Refactor Loop**: Writes failing test first, adds minimal code, then
-    refactors and runs auto-fixers.
-  - **Strict Task Order**: Enforces sequential execution without skipping ahead or
-    batching tasks.
-  - **Commit SHA Tracking**: Records Git commit hashes for each completed task directly
-    in `plan.md` for auditability and automated rollback.
-
----
-
-### `workflow-sdd-review`
-
-- **Directory**: `.agents/skills/workflow-sdd-review/`
-- **Triggers**: `sdd review`, `verify spec`, `audit implementation`, `spec conformance`.
-- **Purpose**: Verifies implemented code against original specifications:
-  - **Public API Diff**: Inspects breaking changes and unplanned symbols with Griffe
-    (`poe sdd-check-api`).
-  - **Traceability Matrix**: Enforces requirement-to-test mapping
-    (`poe sdd-check-traceability`).
-  - **Remediation Loop**: Appends a structured `Review Fixes` phase to `plan.md` when
-    changes are requested, enabling immediate re-implementation.
+> [!TIP]
+> **Looking for Spec-Driven Development?**
+> The `sdd-*` skills (`sdd`, `sdd-spec`, `sdd-plan`, `sdd-implement`, `sdd-review`)
+> have been promoted to their own dedicated group. See the
+> [Spec-Driven Development Suite](sdd.md) guide.
 
 ---
 

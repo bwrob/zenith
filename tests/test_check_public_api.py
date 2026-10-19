@@ -1,4 +1,4 @@
-"""Unit tests for check_public_api.py in workflow-sdd-review."""
+"""Unit tests for check_public_api.py in sdd-review."""
 
 from __future__ import annotations
 
@@ -10,7 +10,7 @@ SCRIPTS_DIR = (
     Path(__file__).resolve().parent.parent
     / ".agents"
     / "skills"
-    / "workflow-sdd-review"
+    / "sdd-review"
     / "scripts"
 )
 sys.path.insert(0, str(SCRIPTS_DIR))

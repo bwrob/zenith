@@ -11,22 +11,18 @@ SCRIPTS_SPEC = (
     Path(__file__).resolve().parent.parent
     / ".agents"
     / "skills"
-    / "workflow-sdd-spec"
+    / "sdd-spec"
     / "scripts"
 )
 SCRIPTS_REVIEW = (
     Path(__file__).resolve().parent.parent
     / ".agents"
     / "skills"
-    / "workflow-sdd-review"
+    / "sdd-review"
     / "scripts"
 )
 SCRIPTS_SDD = (
-    Path(__file__).resolve().parent.parent
-    / ".agents"
-    / "skills"
-    / "workflow-sdd"
-    / "scripts"
+    Path(__file__).resolve().parent.parent / ".agents" / "skills" / "sdd" / "scripts"
 )
 
 sys.path.insert(0, str(SCRIPTS_SPEC))

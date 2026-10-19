@@ -82,11 +82,11 @@ def test_default_generation(temp_output_dir: Path) -> None:
         "workflow-changelog",
         "workflow-code-review",
         "workflow-git",
-        "workflow-sdd",
-        "workflow-sdd-implement",
-        "workflow-sdd-plan",
-        "workflow-sdd-review",
-        "workflow-sdd-spec",
+        "sdd",
+        "sdd-implement",
+        "sdd-plan",
+        "sdd-review",
+        "sdd-spec",
         "workflow-setup",
         "workflow-skill-creator",
         "guide-python",
@@ -192,34 +192,19 @@ def test_default_generation(temp_output_dir: Path) -> None:
         project_dir / ".agents" / "skills" / "workflow-adr" / "templates" / "adr.md"
     ).exists()
     assert (
-        project_dir
-        / ".agents"
-        / "skills"
-        / "workflow-sdd-spec"
-        / "templates"
-        / "spec.md"
+        project_dir / ".agents" / "skills" / "sdd-spec" / "templates" / "spec.md"
+    ).exists()
+    assert (
+        project_dir / ".agents" / "skills" / "sdd-plan" / "templates" / "plan.md"
+    ).exists()
+    assert (
+        project_dir / ".agents" / "skills" / "sdd-review" / "templates" / "review.md"
     ).exists()
     assert (
         project_dir
         / ".agents"
         / "skills"
-        / "workflow-sdd-plan"
-        / "templates"
-        / "plan.md"
-    ).exists()
-    assert (
-        project_dir
-        / ".agents"
-        / "skills"
-        / "workflow-sdd-review"
-        / "templates"
-        / "review.md"
-    ).exists()
-    assert (
-        project_dir
-        / ".agents"
-        / "skills"
-        / "workflow-sdd-review"
+        / "sdd-review"
         / "scripts"
         / "check_public_api.py"
     ).exists()
@@ -227,41 +212,26 @@ def test_default_generation(temp_output_dir: Path) -> None:
         project_dir
         / ".agents"
         / "skills"
-        / "workflow-sdd-review"
+        / "sdd-review"
         / "scripts"
         / "check_traceability.py"
     ).exists()
     assert (
-        project_dir
-        / ".agents"
-        / "skills"
-        / "workflow-sdd-spec"
-        / "scripts"
-        / "check_spec.py"
+        project_dir / ".agents" / "skills" / "sdd-spec" / "scripts" / "check_spec.py"
     ).exists()
     assert (
         project_dir
         / ".agents"
         / "skills"
-        / "workflow-sdd-spec"
+        / "sdd-spec"
         / "references"
         / "clarification-matrix.md"
     ).exists()
     assert (
-        project_dir
-        / ".agents"
-        / "skills"
-        / "workflow-sdd"
-        / "scripts"
-        / "archive_feature.py"
+        project_dir / ".agents" / "skills" / "sdd" / "scripts" / "archive_feature.py"
     ).exists()
     assert (
-        project_dir
-        / ".agents"
-        / "skills"
-        / "workflow-sdd"
-        / "scripts"
-        / "revert_task.py"
+        project_dir / ".agents" / "skills" / "sdd" / "scripts" / "revert_task.py"
     ).exists()
     for subagent in [
         "sdd-specifier.md",

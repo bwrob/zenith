@@ -12,11 +12,12 @@ agent capabilities into **modular, prefixed Agent Skills** located in `.agents/s
 
 To prevent naming collisions, maintain predictable agent discovery, and separate
 template capabilities from project domain logic, Zenith standardizes on a
-**limited set of 4 skill prefixes**:
+**standardized set of 5 skill prefixes**:
 
 | Prefix Group | Scope & Purpose | Examples |
 |---|---|---|
-| **[`workflow-*`](workflow.md)** | **Lifecycle & Multi-Step Procedures**<br/>Operational processes, version control, release ceremonies, architecture records, code review audits, and Spec-Driven Development. | `workflow-git`, `workflow-code-review`, `workflow-sdd`, `workflow-changelog`, `workflow-adr`, `workflow-setup`, `workflow-skill-creator`. |
+| **[`sdd-*`](sdd.md)** | **Spec-Driven Development Suite**<br/>Authoring specifications, technical planning, TDD implementation, and verification reviews. | `sdd`, `sdd-spec`, `sdd-plan`, `sdd-implement`, `sdd-review`. |
+| **[`workflow-*`](workflow.md)** | **Lifecycle & Multi-Step Procedures**<br/>Operational processes, version control, release ceremonies, architecture records, code review audits, and skill authoring. | `workflow-git`, `workflow-code-review`, `workflow-changelog`, `workflow-adr`, `workflow-setup`, `workflow-skill-creator`. |
 | **[`tool-*`](tool.md)** | **Tool Mechanics & Tooling Reference**<br/>Concrete command syntax, CLI flags, configuration details, and runbooks for specific developer tools and libraries. | `tool-uv`, `tool-ruff`, `tool-pyrefly`, `tool-tach`, `tool-pytest`, `tool-zensical`, etc. |
 | **[`guide-*`](guide.md)** | **Engineering Conventions & Style**<br/>Coding style conventions, architecture invariants, type parameter rules, and technical writing standards. | `guide-python`, `guide-ste100`. |
 | **[`domain-*`](domain.md)** | **Project Domain & Business Rules**<br/>**Reserved exclusively for the author of the instantiated project.** Documents business rules, domain entities, APIs, and workflows. | `domain-billing`, `domain-auth`, `domain-data-pipeline`. |
@@ -41,6 +42,7 @@ flowchart TD
     Root --> Index[".agents/skills/ Index"]
 
     subgraph Taxonomy["Prefixed Skill Groups"]
+        Index --> S["sdd-*<br/>(Spec-Driven Development)"]
         Index --> W["workflow-*<br/>(Procedures & Lifecycle)"]
         Index --> T["tool-*<br/>(Tool Syntax & Mechanics)"]
         Index --> G["guide-*<br/>(Code & Prose Standards)"]
@@ -64,6 +66,8 @@ flowchart TD
 
 Explore the dedicated documentation pages for each skill group:
 
+- **[Spec-Driven Development](sdd.md)**: Structured specifications, technical planning,
+  TDD implementation, and verification reviews.
 - **[Workflows](workflow.md)**: Release engineering, git hygiene, pre-flight audits,
   ADRs, environment setup, and skill creation.
 - **[Tools](tool.md)**: Direct syntax runbooks for all developer tools integrated into
