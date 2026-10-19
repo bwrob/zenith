@@ -188,6 +188,104 @@ def test_check_skills_main_success(tmp_path: Path) -> None:
     assert ret == 0
 
 
+def test_validate_docs_coverage_missing_dir(tmp_path: Path) -> None:
+    errors = check_skills.validate_docs_coverage(["my-skill"], tmp_path / "missing")
+    assert any("Docs directory not found" in e for e in errors)
+
+
+def test_validate_docs_coverage_no_md_files(tmp_path: Path) -> None:
+    docs_dir = tmp_path / "docs"
+    docs_dir.mkdir()
+    errors = check_skills.validate_docs_coverage(["my-skill"], docs_dir)
+    assert any("No markdown documentation files found" in e for e in errors)
+
+
+def test_validate_docs_coverage_read_error(tmp_path: Path) -> None:
+    docs_dir = tmp_path / "docs"
+    docs_dir.mkdir()
+    (docs_dir / "guide.md").write_text("content", encoding="utf-8")
+    with patch.object(Path, "read_text", side_effect=OSError("Read error")):
+        errors = check_skills.validate_docs_coverage(["my-skill"], docs_dir)
+        assert any("Failed to read" in e for e in errors)
+
+
+def test_validate_docs_coverage_missing_skill(tmp_path: Path) -> None:
+    docs_dir = tmp_path / "docs"
+    docs_dir.mkdir()
+    (docs_dir / "guide.md").write_text(
+        "# Guide\nDocuments `skill-a`.\n", encoding="utf-8"
+    )
+    errors = check_skills.validate_docs_coverage(["skill-a", "skill-b"], docs_dir)
+    assert any("Skill 'skill-b' is not documented" in e for e in errors)
+    assert not any("skill-a" in e for e in errors)
+
+
+def test_validate_docs_coverage_success(tmp_path: Path) -> None:
+    docs_dir = tmp_path / "docs"
+    docs_dir.mkdir()
+    (docs_dir / "guide.md").write_text(
+        "# Guide\nDocuments `skill-a` and `skill-b`.\n", encoding="utf-8"
+    )
+    errors = check_skills.validate_docs_coverage(["skill-a", "skill-b"], docs_dir)
+    assert errors == []
+
+
+def test_check_skills_main_with_docs_check_success(tmp_path: Path) -> None:
+    skills_dir = tmp_path / "skills"
+    skill_dir = skills_dir / "valid-skill"
+    skill_dir.mkdir(parents=True)
+    (skill_dir / "SKILL.md").write_text(
+        "---\nname: valid-skill\ndescription: A valid description with plenty of characters.\n---\n",
+        encoding="utf-8",
+    )
+    docs_dir = tmp_path / "docs"
+    docs_dir.mkdir()
+    (docs_dir / "skills.md").write_text("# Skills\n- `valid-skill`\n", encoding="utf-8")
+
+    ret = check_skills.main([str(skills_dir), "--docs-dir", str(docs_dir)])
+    assert ret == 0
+
+
+def test_check_skills_main_with_docs_check_failure(tmp_path: Path) -> None:
+    skills_dir = tmp_path / "skills"
+    skill_dir = skills_dir / "valid-skill"
+    skill_dir.mkdir(parents=True)
+    (skill_dir / "SKILL.md").write_text(
+        "---\nname: valid-skill\ndescription: A valid description with plenty of characters.\n---\n",
+        encoding="utf-8",
+    )
+    docs_dir = tmp_path / "docs"
+    docs_dir.mkdir()
+    (docs_dir / "skills.md").write_text(
+        "# Skills\nEmpty documentation\n", encoding="utf-8"
+    )
+
+    ret = check_skills.main([str(skills_dir), "--docs-dir", str(docs_dir)])
+    assert ret == 1
+
+
+def test_check_skills_main_candidate_docs_dir(tmp_path: Path) -> None:
+    # Structure: tmp_path / ".agents" / "skills" and tmp_path / "docs" / "skills"
+    skills_dir = tmp_path / ".agents" / "skills"
+    skill_dir = skills_dir / "valid-skill"
+    skill_dir.mkdir(parents=True)
+    (skill_dir / "SKILL.md").write_text(
+        "---\nname: valid-skill\ndescription: A valid description with plenty of characters.\n---\n",
+        encoding="utf-8",
+    )
+    docs_skills_dir = tmp_path / "docs" / "skills"
+    docs_skills_dir.mkdir(parents=True)
+    (docs_skills_dir / "index.md").write_text(
+        "# Index\n`valid-skill` is documented.\n", encoding="utf-8"
+    )
+
+    ret = check_skills.main([str(skills_dir)])
+    assert ret == 0
+
+    ret_no_docs = check_skills.main([str(skills_dir), "--no-docs-check"])
+    assert ret_no_docs == 0
+
+
 # --- sync_example.py tests ---
 
 

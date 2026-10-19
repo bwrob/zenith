@@ -1,73 +1,352 @@
-# Tools
+# Tool Skills
 
-The **`tool-*`** skill group provides autonomous AI coding agents with verified syntax,
-concrete CLI flags, configuration specifications, and operational runbooks for specific
-external developer tools, compilers, formatters, and libraries.
+Modern developer tools move fast. LLMs are notoriously prone to hallucinating outdated
+command flags, inventing non-existent configuration options, or invoking commands
+outside the hermetic project environment.
 
----
+The **`tool-*`** skill suite provides AI coding assistants with
+**deterministic execution groundings**: verified CLI syntax, exact configuration
+schemas, edge-case workarounds, and step-by-step runbooks for every compiler, linter,
+test runner, and utility in the Zenith stack.
 
-## Why AI Agents Need Tool Skills
-
-While modern LLMs have general knowledge of popular Python libraries, they frequently
-hallucinate non-existent flags, use obsolete configuration syntax, or guess incorrect
-subcommands when working on modern tooling stacks.
-
-`tool-*` skills act as **deterministic execution groundings**:
-
-- They provide the exact syntax used in the current version of the tool.
-- They show concrete `uv run poe <task>` invocations.
-- They document configuration files (`*.toml`, `*.yaml`) and specific rule overrides.
-- They include troubleshooting steps for common edge cases.
+Rather than letting models guess how a tool works, Zenith equips them with
+authoritative, version-pinned knowledge.
 
 ---
 
-## Catalog of Template Tool Skills
+## Package Management & Task Execution
 
-| Skill | Target Tool | Core Purpose & Agent Guidance |
-|---|---|---|
-| **`tool-uv`** | [uv](../tools/uv.md) | Package management, virtual environment isolation, lockfile synchronization, and PEP 517 builds. |
-| **`tool-ruff`** | [Ruff](../tools/ruff.md) | High-speed linting, code formatting, docstring compliance, and safe auto-fixing with preview rules (`ALL`). |
-| **`tool-pyrefly`** | [Pyrefly](../tools/pyrefly.md) | Meta's strict static type checker, PEP 695 type parameter syntax, and structural Protocol verification. |
-| **`tool-complexipy`** | [complexipy](../tools/complexipy.md) | Cognitive complexity measurement, ceiling enforcement (max <= 10), and refactoring recipes. |
-| **`tool-tach`** | [Tach](../tools/tach.md) | Modular architectural boundary enforcement, circular dependency elimination, and external dependency validation. |
-| **`tool-griffe`** | [Griffe](../tools/griffe.md) | Static AST analysis, docstring signature inspection, and breaking public API change detection. |
-| **`tool-poethepoet`** | [Poe the Poet](../tools/poethepoet.md) | Declarative task automation, hermetic subprocesses, task composition, and argument forwarding. |
-| **`tool-zensical`** | [Zensical](../tools/zensical.md) | TOML-based documentation, live watchdog server (`zensical serve`), MathJax LaTeX, and `llms.txt` generation. |
-| **`tool-rumdl`** | [rumdl](../tools/rumdl.md) | Rust-native Markdown linting, formatting, and embedded Python code block verification. |
-| **`tool-typos`** | [typos](../tools/typos.md) | Blazing-fast source code, docstring, and documentation spell checking with automated fixing. |
-| **`tool-pytest`** | [pytest](../tools/pytest.md) | Fixture-based test framework, parallel execution, random order shuffling, snapshots, and property testing. |
-| **`tool-coverage`** | [Coverage.py](../tools/coverage.md) | 100% statement and branch coverage enforcement, missed line inspection, and `.coveragerc` configuration. |
-| **`tool-mutmut`** | [mutmut](../tools/mutmut.md) | Fast AST mutation testing for local developer TDD loops and surviving mutant inspection on macOS and Linux. |
-| **`tool-cosmic-ray`** | [Cosmic Ray](../tools/cosmic-ray.md) | Cross-platform AST mutation testing evaluating test suite assertiveness and detecting survivor mutants. |
-| **`tool-prettier`** | [Prettier](../tools/prettier.md) | Consistent 4-space formatting across GitHub Actions YAML workflows and custom CSS stylesheets. |
-| **`tool-taplo`** | [Taplo](../tools/taplo.md) | TOML toolkit, formatter, and schema validation with aligned key-values and 4-space indentation. |
-| **`tool-prek`** | [prek](../tools/prek.md) | Blazing-fast Rust-native Git hook manager executing pre-commit hooks and local verification gates. |
-| **`tool-zizmor`** | [zizmor](../tools/zizmor.md) | Static security analysis auditing GitHub Actions workflows for script injection and excessive permissions. |
-| **`tool-termynal`** | [Termynal](../tools/termynal.md) | Lightweight animated terminal widget for documentation pages wrapped in `<div class="termy">`. |
-| **`tool-typer`** | [Typer](../tools/typer.md) | Modern type-safe command-line interfaces with PEP 593 `Annotated` parameters and Rich formatting. |
-| **`tool-cookiecutter`** | [Cookiecutter](../tools/cookiecutter.md) | Template generation engine, prompt matrices in `cookiecutter.json`, and lifecycle hooks. |
-| **`tool-typst`** | [Typst](../tools/typst.md) | Markup-based layout engine for compiling vector SVG logotypes from plain text `.typ` source files. |
+### Fast Packaging & Environment Isolation (`tool-uv`)
+
+**What it is**: The skill governing Astral's high-speed package installer and resolver.
+
+**Why it's in Zenith**: Python dependency management historically suffered from sluggish
+resolvers, broken environment isolation, and fragmentation between `pip`, `poetry`, and
+`virtualenv`. `uv` replaces this entire ecosystem with a single, lightning-fast Rust
+binary that resolves packages in milliseconds and guarantees byte-for-byte reproducible
+environments via `uv.lock`.
+
+The `tool-uv` skill grounds agents in hermetic execution: running commands via `uv run`,
+managing dependency groups (`dev`, `docs`), and performing cross-platform lockfile
+updates.
 
 ---
 
-## Custom Tool Skills
+### Hermetic Task Automation (`tool-poethepoet`)
 
-When your project adds major external dependencies or infrastructure tools, create
-matching `tool-*` skills so AI agents understand how to use them correctly:
+**What it is**: The runbook for Zenith's declarative task runner, Poe the Poet.
+
+**Why it's in Zenith**: Development teams often rely on ad-hoc shell scripts, obscure
+`Makefile` targets, or global npm scripts that fail across different operating systems.
+Poe the Poet defines development tasks directly inside `poe_tasks.toml` and runs them
+strictly within the isolated `uv` virtual environment.
+
+`tool-poethepoet` teaches agents standard repository tasks—such as `uv run poe test`,
+`uv run poe code-quality`, and `uv run poe fix`—as well as argument forwarding and task
+composition patterns.
+
+---
+
+### Rust-Native Git Pre-Commit Hooks (`tool-prek`)
+
+**What it is**: The skill for running and configuring Git pre-commit lifecycle hooks
+using `prek`.
+
+**Why it's in Zenith**: Traditional Python `pre-commit` incurs noticeable startup
+latency and requires isolated environments for every hook. `prek` is a blazingly fast,
+Rust-native drop-in alternative that executes configured checks in parallel with zero
+runtime overhead.
+
+`tool-prek` guides agents through hook installations (`uv run prek install`), manual
+workspace audits (`uv run prek run --all-files`), and `prek.toml` configuration syntax.
+
+---
+
+### Modern Type-Safe CLI Development (`tool-typer`)
+
+**What it is**: The design guide and syntax reference for building modern command-line
+interfaces using Typer and Rich.
+
+**Why it's in Zenith**: Building CLIs with Python's standard `argparse` requires
+verbose, error-prone boilerplate. Typer leverages modern Python type hints and PEP 593
+`Annotated` metadata to auto-generate help text, validate arguments, and format output
+with Rich terminal components.
+
+`tool-typer` ensures agents build CLIs that adhere to Zenith typing standards, utilize
+lazy subcommand imports for instantaneous startup times, and provide friendly terminal
+panes and tables.
+
+---
+
+### Template Instantiation & Scaffolding (`tool-cookiecutter`)
+
+**What it is**: The skill for maintaining and testing Zenith's Cookiecutter template
+engine, variables, and lifecycle hooks.
+
+**Why it's in Zenith**: Zenith is itself a Cookiecutter template. Maintaining
+`cookiecutter.json`, conditional file trees, and Jinja templating hooks requires strict
+attention to variable scoping and post-generation scripts.
+
+`tool-cookiecutter` provides maintainers and agents with syntax rules for conditional
+blocks, prompt definitions (`__prompts__`), and multi-platform rendering tests.
+
+---
+
+## Code Quality, Static Typing & Architecture
+
+### Blazing-Fast Linting & Formatting (`tool-ruff`)
+
+**What it is**: The operational guide for Astral Ruff, the unified Python linter and
+code formatter.
+
+**Why it's in Zenith**: In the past, Python projects juggled Flake8, Black, isort,
+pyupgrade, and pydocstyle, leading to slow CI builds and conflicting formatting rules.
+Ruff replaces dozens of tools with a single Rust engine operating 10-100x faster than
+legacy alternatives.
+
+`tool-ruff` guides agents through Zenith's comprehensive rule configuration (including
+preview rules and type-checking imports), safe auto-fixing (`ruff check --fix`), and
+formatting rules.
+
+---
+
+### Strict Static Type Checking (`tool-pyrefly`)
+
+**What it is**: The reference guide for Meta's high-speed Pyrefly static type checker.
+
+**Why it's in Zenith**: Static typing is the bedrock of agentic reliability. When types
+are loose or unverified, AI assistants frequently introduce runtime `TypeError` or
+`AttributeError` exceptions. Pyrefly provides near-instantaneous feedback, first-class
+support for modern PEP 695 generic syntax, and strict structural subtyping.
+
+`tool-pyrefly` teaches agents how to interpret Pyrefly diagnostics, write compliant type
+aliases, and enforce 100% strict type coverage across domain packages.
+
+---
+
+### Modular Architecture & Boundary Enforcement (`tool-tach`)
+
+**What it is**: The skill for defining and enforcing module layer boundaries with Tach.
+
+**Why it's in Zenith**: As Python codebases expand, modular boundaries erode into a
+tangled web of circular dependencies and improper layer coupling (such as domain models
+importing CLI controllers). Tach enforces explicit import rules directly in AST.
+
+`tool-tach` ensures agents respect defined layer hierarchies, update `tach.toml` when
+adding new modules, and resolve circular dependencies using dependency injection or
+protocols.
+
+---
+
+### Cognitive Complexity Ceiling (`tool-complexipy`)
+
+**What it is**: The runbook for measuring cognitive complexity and refactoring dense
+code.
+
+**Why it's in Zenith**: While cyclomatic complexity measures linear code branches,
+cognitive complexity measures how difficult code is for a human mind (and an LLM) to
+comprehend. Deeply nested loops and defensive branch conditions are magnets for bugs.
+
+Zenith sets a strict ceiling:
+**no function may exceed a cognitive complexity score of 10**. `tool-complexipy`
+provides agents with concrete refactoring recipes (guard clauses, functional extraction,
+lookup tables) to reduce complexity scores.
+
+---
+
+### Public API Change Detection (`tool-griffe`)
+
+**What it is**: The skill for static AST inspection of Python public API signatures
+using Griffe.
+
+**Why it's in Zenith**: Unintended breaking changes in public APIs break downstream
+consumers. Griffe parses public docstrings and AST signatures without importing or
+executing untrusted code.
+
+In Zenith, `tool-griffe` powers automated API diff audits during Spec-Driven Development
+reviews (`uv run poe sdd-check-api`), ensuring every new, modified, or removed symbol is
+strictly intentional.
+
+---
+
+### Blazing-Fast Typo & Spelling Verification (`tool-typos`)
+
+**What it is**: The guide for source code and documentation spell checking via `typos`.
+
+**Why it's in Zenith**: Typos in code identifiers, configuration keys, or documentation
+anchor links degrade project professionalism and cause subtle runtime bugs. `typos` is a
+zero-dependency Rust tool that scans codebases in milliseconds with virtually zero false
+positives.
+
+`tool-typos` guides agents on running spell checks, maintaining `typos.toml` exclusion
+lists for acronyms, and auto-correcting documentation prose.
+
+---
+
+## Testing, Coverage & Security Assurance
+
+### Comprehensive Test Suite Execution (`tool-pytest`)
+
+**What it is**: The runbook for Zenith's pytest test suite and ecosystem plugins.
+
+**Why it's in Zenith**: High-assurance engineering requires more than simple unit tests.
+Zenith's test stack integrates `pytest-xdist` for multi-core parallel execution,
+`pytest-randomly` for order-independent test isolation, `syrupy` for snapshot testing,
+and `hypothesis` for property-based fuzz testing.
+
+`tool-pytest` grounds agents in writing assertive tests, using fixtures, debugging test
+failures, and managing test execution parameters.
+
+---
+
+### 100% Branch Coverage Enforcement (`tool-coverage`)
+
+**What it is**: The configuration and enforcement guide for Coverage.py.
+
+**Why it's in Zenith**: Statement coverage is deceptive: a test can execute a line
+without testing both branches of an `if` condition. Zenith enforces **100% branch and
+statement coverage** (`fail_under = 100`) as a mandatory quality gate.
+
+`tool-coverage` helps agents inspect missed branches (`coverage report -m`), understand
+`.coveragerc` exclusion patterns, and write targeted test scenarios to kill uncovered
+branches.
+
+---
+
+### Local AST Mutation Testing (`tool-mutmut`)
+
+**What it is**: The guide for high-speed AST mutation testing with `mutmut`.
+
+**Why it's in Zenith**: 100% test coverage proves that code was executed, but not that
+the tests actually assert anything meaningful. Mutation testing modifies your AST (e.g.,
+changing `>` to `>=`, flipping boolean operators) to see if tests fail.
+
+`tool-mutmut` provides a fast, interactive mutation loop for local development, helping
+developers and agents discover "surviving mutants" and write deeper test assertions.
+
+---
+
+### Cross-Platform Mutation Testing (`tool-cosmic-ray`)
+
+**What it is**: The skill for thorough, cross-platform mutation testing with Cosmic Ray.
+
+**Why it's in Zenith**: While `mutmut` excels at fast local developer loops, Cosmic Ray
+provides comprehensive AST mutation sweeps across all supported platforms, including
+Windows environments.
+
+`tool-cosmic-ray` teaches agents how to initialize SQLite mutation databases, execute
+distributed mutation workers, and analyze survivor summaries.
+
+---
+
+### GitHub Actions CI/CD Security Audit (`tool-zizmor`)
+
+**What it is**: The static security analyzer for GitHub Actions workflows.
+
+**Why it's in Zenith**: CI/CD workflows are frequent targets for supply-chain attacks,
+script injections, unpinned third-party actions, and excessive token permissions.
+
+`tool-zizmor` audits all `.github/workflows/*.yaml` files in pedantic mode, ensuring
+workflows follow least-privilege permissions, pin actions to full commit SHAs, and guard
+against arbitrary script execution.
+
+---
+
+## Documentation, Assets & Formatting
+
+### Modern TOML-Based Documentation (`tool-zensical`)
+
+**What it is**: The operational guide for Zensical, Zenith's modern static documentation
+generator.
+
+**Why it's in Zenith**: Traditional documentation generators often rely on slow builds,
+complex Python configurations, or legacy themes. Zensical is configured entirely via
+TOML (`zensical.toml`) and features instant live-reloading, automatic `llms.txt`
+generation, Lucide icons, and native dark/light mode switching.
+
+`tool-zensical` guides agents in serving documentation locally
+(`uv run poe docs-serve`), organizing navigation hierarchies, and configuring
+`mkdocstrings` for automatic API docs.
+
+---
+
+### Rust-Native Markdown Linter & Formatter (`tool-rumdl`)
+
+**What it is**: The skill for formatting and linting documentation with `rumdl`.
+
+**Why it's in Zenith**: Markdown documentation easily drifts into inconsistent heading
+styles, broken links, and irregular list formatting. `rumdl` formats markdown at Rust
+speeds and features integrated code-block tools that format embedded Python blocks with
+Ruff.
+
+`tool-rumdl` guides agents in validating markdown documentation (`uv run poe lint-md`),
+formatting prose, and resolving rule diagnostics.
+
+---
+
+### Declarative TOML Formatting & Linting (`tool-taplo`)
+
+**What it is**: The formatting and schema validation guide for TOML configuration files.
+
+**Why it's in Zenith**: Zenith organizes configurations into dedicated TOML files
+(`pyproject.toml`, `tach.toml`, `zensical.toml`, `poe_tasks.toml`). Without automated
+formatting, key-value pairs become disorganized and hard to read.
+
+`tool-taplo` enforces aligned keys, 4-space indentation, and valid schemas across all
+TOML manifests via `uv run poe format-check-toml`.
+
+---
+
+### Consistent YAML & CSS Formatting (`tool-prettier`)
+
+**What it is**: The formatting guide for GitHub Actions YAML manifests and custom CSS
+stylesheets using Prettier.
+
+**Why it's in Zenith**: While Ruff and Taplo handle Python and TOML, GitHub Actions
+workflows and Zensical CSS styling require consistent multi-line indentation and quote
+normalization.
+
+`tool-prettier` ensures all YAML files and CSS sheets are formatted cleanly to prevent
+noisy Git diffs.
+
+---
+
+### Vector Logotypes & Asset Generation (`tool-typst`)
+
+**What it is**: The guide for authoring vector SVG logotypes and diagrams using the
+Typst typesetting engine.
+
+**Why it's in Zenith**: Raster images (PNG, JPEG) blur on high-DPI displays and cannot
+be edited in code. Typst compiles human-readable code into crisp, responsive vector SVG
+assets (such as `docs/assets/python-logo.svg`).
+
+`tool-typst` grounds agents in Typst layout markup, mathematical positioning, and SVG
+export workflows.
+
+---
+
+### Animated Terminal Documentation Widgets (`tool-termynal`)
+
+**What it is**: The skill for authoring interactive terminal animations in
+documentation.
+
+**Why it's in Zenith**: Static CLI output in documentation is dry and unengaging.
+Termynal provides lightweight animated terminal widgets that simulate real CLI sessions
+with interactive controls and custom progress delays.
+
+`tool-termynal` teaches agents how to wrap shell sessions in `<div class="termy">` tags
+with appropriate `data-ty` timing attributes.
+
+---
+
+## Adding Custom Tool Skills
+
+When your project introduces major third-party libraries, databases, or cloud tools
+(such as Docker, FastAPI, Alembic, or Playwright), create a matching `tool-*` skill:
 
 ```bash
-mkdir -p .agents/skills/tool-docker
+mkdir -p .agents/skills/tool-docker/{templates,references}
 ```
 
-Common tool skills added to Zenith projects:
-
-- **`tool-docker`**: Multi-stage Dockerfile patterns, buildx caches, and non-root
-  container user hygiene.
-- **`tool-fastapi`**: Pydantic v2 schemas, dependency injection, and OpenAPI response
-  documentation.
-- **`tool-alembic`**: Database migration generation, revision branches, and autocommit
-  transactions.
-- **`tool-playwright`**: End-to-end browser testing, locators, and headless CI
-  verification.
-- **`tool-kubernetes`**: Helm chart templates, pod resource limits, and probe
-  definitions.
+Equipping your agents with dedicated tool skills prevents hallucinated flags, guarantees
+idiomatic usage, and keeps your entire team operating on verified tool patterns.
