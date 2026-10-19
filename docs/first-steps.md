@@ -101,6 +101,18 @@ $ uv run my-awesome-service greet "Developer"
 ✨ Hello, Developer!
 ```
 
+### 4. Check Your Live Documentation
+
+Every project includes a live-reloading documentation website powered by Zensical:
+
+```console
+$ uv run poe docs-serve
+Serving documentation at http://127.0.0.1:8000
+```
+
+Open `http://127.0.0.1:8000` in your browser. Any edits you make to markdown files in
+`docs/` will update live automatically in your browser.
+
 ---
 
 ## Where Do I Actually Write Code

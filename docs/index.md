@@ -44,7 +44,7 @@ foundational pillars:
 
 <div class="grid cards" markdown>
 
--   **[Modern Rust-Native Tooling](tools/index.md)**
+-   **[Modern Rust-Based Tooling](tools/index.md)**
 
     ---
 

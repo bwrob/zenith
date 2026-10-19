@@ -24,9 +24,10 @@ An opinionated Cookiecutter template for modern Python 3.12+ projects, built wit
 Starting a new Python project usually means spending days wiring up linters, formatters, type checkers, test coverage, and documentation generators—or copying decaying configs from older repos and fixing whatever broke.
 
 Zenith scaffolds a production-ready repository in seconds:
-- **⚡ Modern Tooling**: Fast package management with `uv`, linting and formatting with `ruff`, strict type checking with Meta's `pyrefly`, modular boundaries with `tach`, cognitive complexity limits with `complexipy`, and documentation with `zensical`.
+- **⚡ Modern Rust-Based Tooling**: Fast package management with `uv`, linting and formatting with `ruff`, strict type checking with Meta's `pyrefly`, modular boundaries with `tach`, cognitive complexity limits with `complexipy`, and documentation with `zensical`.
 - **🤖 First-Class AI Agent Readiness**: Autonomous agent context discovery (`AGENTS.md`), modular lifecycle skills in `.agents/skills/`, machine-readable `llms.txt`, and clear AI governance policies.
 - **🛡️ Strict Quality Guardrails**: 100% statement and branch test coverage (`fail_under = 100`), strict typing, and automated CI security analysis with `zizmor`.
+- **🚀 Hermetic Delivery & CI/CD**: Matrix testing across Python 3.12–3.15, isolated wheel package smoke tests, and automated PyPI Trusted Publishing.
 
 > [!NOTE]
 > **Project Scope**: Zenith is built for serious production packages, services, and libraries intended for long-term maintenance by teams of humans and AI agents. It is **deliberately not suited** for small two-script throwaway hacks where strict guardrails feel like friction.
@@ -64,7 +65,7 @@ cookiecutter gh:bwrob/zenith
 ### Initializing the Project
 
 ```bash
-cd <project-slug>
+cd my-awesome-service
 uv sync
 uv run poe test             # Runs test suite (100% coverage enforced)
 uv run poe code-quality      # Runs full linter, formatter, type, and complexity gate

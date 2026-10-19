@@ -230,8 +230,8 @@ setting `include_cli = false` in `cookiecutter.json`:
 ## Key Invocations
 
 ```bash
-uv run {{ cookiecutter.project_slug }} --help      # Show auto-generated help
-uv run {{ cookiecutter.project_slug }} greet "Dev" # Run greeting command
+uv run my-awesome-service --help       # Show auto-generated help
+uv run my-awesome-service greet "Dev"  # Run greeting command
 ```
 
 ---
