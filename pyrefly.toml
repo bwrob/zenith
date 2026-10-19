@@ -1,0 +1,31 @@
+# ==============================================================================
+# Pyrefly Configuration (pyrefly.toml)
+#
+# Tool: Pyrefly (https://github.com/facebook/pyrefly)
+# Purpose: Meta's next-generation, high-performance static type checker.
+# Why it's in Zenith: Zenith standardizes on Pyrefly in "strict" preset mode as
+# its sole type checker, delivering rapid type analysis and ensuring that all
+# source and test files adhere to rigorous type contracts.
+# ==============================================================================
+
+enabled-ignores = [ "pyrefly", "type" ]
+infer-with-first-use = false
+preset = "strict"
+project-excludes = [
+    "**/.*",
+    "**/site",
+    "**/dist",
+    "**/build",
+    "**/.venv",
+    "**/{{cookiecutter.project_slug}}",
+]
+project-includes = [ "scripts", "tests", "hooks" ]
+python-version = "3.13.0"
+search-path = [
+    ".",
+    ".agents/skills/guide-ste100/scripts",
+    ".agents/skills/sdd-spec/scripts",
+    ".agents/skills/sdd-review/scripts",
+    ".agents/skills/sdd/scripts",
+    ".agents/skills/workflow-inspect-repo/scripts",
+]

@@ -62,6 +62,9 @@ jobs:
             - name: 📝 Run ASD-STE100 linter
               run: uv run poe lint-ste
 
+            - name: 🐍 Run pyrefly static type check
+              run: uv run poe type-check
+
             - name: 🧮 Run complexipy complexity check
               run: uv run poe complexity
 

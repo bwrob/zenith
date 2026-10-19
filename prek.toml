@@ -69,6 +69,7 @@ fail_fast                  = false
 
 [[repos]]
     hooks = [
+        { id = "pyrefly", name = "🐍 pyrefly · Type check Python code", entry = "uv run pyrefly check", language = "system", pass_filenames = false, files = '(\.(py|pyi)$|(^|/)(pyproject\.toml|uv\.lock|pyrefly\.toml)$)' },
         { id = "complexipy", name = "🧮 complexipy · Cognitive complexity check", entry = "uv run complexipy scripts tests hooks", language = "system", pass_filenames = false, files = '(\.(py|pyi)$|(^|/)complexipy\.toml$)' },
     ]
     repo = "local"

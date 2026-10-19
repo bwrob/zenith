@@ -401,13 +401,12 @@ def test_revert_task_commit_not_in_git(
 
     import subprocess
 
-    monkeypatch.setattr(
-        subprocess,
-        "run",
-        lambda cmd, *args, **kwargs: subprocess.CompletedProcess(
-            cmd, returncode=1, stdout="", stderr="error"
-        ),
-    )
+    def mock_run_fail(
+        cmd: list[str] | str, *args: object, **kwargs: object
+    ) -> subprocess.CompletedProcess[str]:
+        return subprocess.CompletedProcess(cmd, returncode=1, stdout="", stderr="error")
+
+    monkeypatch.setattr(subprocess, "run", mock_run_fail)
     assert revert_task.revert_task("auth", specs_root=specs_root) == 1
 
 
@@ -472,11 +471,12 @@ def test_revert_task_write_error(
 
     import subprocess
 
-    monkeypatch.setattr(
-        subprocess,
-        "run",
-        lambda cmd, *args, **kwargs: subprocess.CompletedProcess(cmd, returncode=0),
-    )
+    def mock_run_ok(
+        cmd: list[str] | str, *args: object, **kwargs: object
+    ) -> subprocess.CompletedProcess[str]:
+        return subprocess.CompletedProcess(cmd, returncode=0)
+
+    monkeypatch.setattr(subprocess, "run", mock_run_ok)
 
     plan_file.chmod(0o444)
     try:
@@ -561,13 +561,12 @@ def test_revert_task_main_cli(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -
 
     import subprocess
 
-    monkeypatch.setattr(
-        subprocess,
-        "run",
-        lambda cmd, *args, **kwargs: subprocess.CompletedProcess(
-            cmd, returncode=0, stdout="abcdef1"
-        ),
-    )
+    def mock_run_commit(
+        cmd: list[str] | str, *args: object, **kwargs: object
+    ) -> subprocess.CompletedProcess[str]:
+        return subprocess.CompletedProcess(cmd, returncode=0, stdout="abcdef1")
+
+    monkeypatch.setattr(subprocess, "run", mock_run_commit)
 
     exit_code = revert_task.main(
         [

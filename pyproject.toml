@@ -29,6 +29,7 @@
         "complexipy>=8.0.0",
         "poethepoet>=0.42.0",
         "prek>=0.5.5",
+        "pyrefly>=1.3.0",
         "pytest>=8.0.0",
         "pytest-cov>=6.0.0",
         "pytest-xdist>=3.8.0",
@@ -55,6 +56,7 @@
         "format-check-toml",
         "format-yaml",
         "format-css",
+        "type-check",
         "sync-skills-check",
         "check-skills",
         "complexity",
@@ -85,6 +87,7 @@
     sync-skills = { cmd = "python scripts/sync_skills.py", help = "Synchronize repo skills as symlinks from template source of truth." }
     sync-skills-check = { cmd = "python scripts/sync_skills.py --check", help = "Check that repo skills are properly symlinked to template source of truth." }
     test = { cmd = "pytest -n auto --dist=worksteal --max-worker-restart=0 --cov --cov-report=term-missing --cov-report=xml", env = { COVERAGE_FILE = "/tmp/.zenith_coverage" }, help = "Run unit test suite in parallel with xdist and 100% coverage." }
+    type-check = { cmd = "pyrefly check", help = "Strict static type checking with Pyrefly." }
 
 [tool.pytest.ini_options]
     norecursedirs = [ "{{cookiecutter.project_slug}}", ".*", "build", "dist" ]
