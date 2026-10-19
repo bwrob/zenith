@@ -61,10 +61,14 @@ Copy the template [templates/review.md](./templates/review.md) to `.specs/<featu
 
 ### Step 3: Construct Traceability Matrix
 
-For every requirement and acceptance scenario in `spec.md`:
-1. Locate the corresponding automated test in `tests/`.
-2. Record the test function name and file path in the traceability table.
-3. Verify that the test asserts observable outcomes rather than private mocks.
+Run the automated traceability validator [scripts/check_traceability.py](./scripts/check_traceability.py):
+
+```bash
+uv run python .agents/skills/workflow-sdd-review/scripts/check_traceability.py .specs/<feature-id>/spec.md
+```
+
+1. Inspect the output to verify that every requirement links to a passing test.
+2. Embed the generated matrix into `.specs/<feature-id>/review.md`.
 
 ### Step 4: Audit Scope Boundaries
 

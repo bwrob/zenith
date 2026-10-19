@@ -58,6 +58,7 @@ mkdir -p .specs/<feature-id>
 ### Step 2: Interview the User
 
 Examine the feature request and existing documentation.
+Consult [references/clarification-matrix.md](./references/clarification-matrix.md) to identify edge cases.
 Formulate 2 to 4 targeted clarification questions for the user:
 - Ask about edge cases and error handling behavior.
 - Ask about boundary conditions and performance expectations.
@@ -89,6 +90,12 @@ Secure explicit user approval before proceeding to `workflow-sdd-plan`.
 ---
 
 ## 4. Verification & Quality Gate
+
+Run the automated specification quality linter [scripts/check_spec.py](./scripts/check_spec.py):
+
+```bash
+uv run python .agents/skills/workflow-sdd-spec/scripts/check_spec.py .specs/<feature-id>/spec.md
+```
 
 Verify that the specification satisfies these criteria:
 

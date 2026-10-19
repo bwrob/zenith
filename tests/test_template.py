@@ -127,6 +127,9 @@ def test_default_generation(temp_output_dir: Path) -> None:
     assert "[tasks.format-css]" in poe_text
     assert '"format-check-toml"' in poe_text
     assert '"taplo format"' in poe_text
+    assert "[tasks.sdd-new]" in poe_text
+    assert "[tasks.sdd-verify]" in poe_text
+    assert "[tasks.sdd-archive]" in poe_text
     for ref in [
         "hypothesis.md",
         "pytest-cov.md",
@@ -216,6 +219,38 @@ def test_default_generation(temp_output_dir: Path) -> None:
         / "workflow-sdd-review"
         / "scripts"
         / "check_public_api.py"
+    ).exists()
+    assert (
+        project_dir
+        / ".agents"
+        / "skills"
+        / "workflow-sdd-review"
+        / "scripts"
+        / "check_traceability.py"
+    ).exists()
+    assert (
+        project_dir
+        / ".agents"
+        / "skills"
+        / "workflow-sdd-spec"
+        / "scripts"
+        / "check_spec.py"
+    ).exists()
+    assert (
+        project_dir
+        / ".agents"
+        / "skills"
+        / "workflow-sdd-spec"
+        / "references"
+        / "clarification-matrix.md"
+    ).exists()
+    assert (
+        project_dir
+        / ".agents"
+        / "skills"
+        / "workflow-sdd"
+        / "scripts"
+        / "archive_feature.py"
     ).exists()
     for subagent in [
         "sdd-specifier.md",

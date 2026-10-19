@@ -141,6 +141,17 @@ uv run poe code-quality
 ```
 After verification tasks pass, submit the pull request following `workflow-git`.
 
+### Step 7: Archive Feature Specification
+
+After pull request approval, archive the specification with [scripts/archive_feature.py](./scripts/archive_feature.py):
+
+```bash
+uv run python .agents/skills/workflow-sdd/scripts/archive_feature.py <feature-id>
+```
+
+This command moves artifacts from `.specs/<feature-id>/` into `docs/specs/<feature-id>/`.
+It registers the feature in `docs/specs/index.md` to preserve permanent project memory.
+
 ---
 
 ## 5. Verification & Quality Gate
