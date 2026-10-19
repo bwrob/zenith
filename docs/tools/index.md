@@ -1,7 +1,7 @@
 # Zenith Tooling Stack
 
-Zenith replaces fragmented, slow Python tooling with an ultra-fast, Rust-powered
-toolchain configured with strict quality guardrails.
+Zenith replaces fragmented Python tooling with a fast, Rust-based toolchain
+configured with automated quality checks.
 
 ---
 

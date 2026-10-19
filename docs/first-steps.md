@@ -44,7 +44,7 @@ Before scaffolding a Zenith project, install `uv` on your machine:
 > [!TIP]
 > **You do not need to install Python 3.13 manually!**
 > `uv` automatically downloads and manages the correct Python version for your project.
-> Furthermore, while Zenith tools are written in Rust for blazing speed, you do **not**
+> Furthermore, while several Zenith tools are written in Rust for performance, you do **not**
 > need to install Rust or Cargo—everything runs as pre-compiled Python tools managed
 > by `uv`.
 

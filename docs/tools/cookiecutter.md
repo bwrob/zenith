@@ -21,7 +21,7 @@ programmatic filesystem adjustments.
 
 Zenith is packaged as a Cookiecutter template to provide instant, zero-install
 scaffolding via `uvx cookiecutter gh:bwrob/zenith`. As the universal standard for
-project templating across the Python community, Cookiecutter ensures seamless
+project templating across the Python community, Cookiecutter ensures broad
 compatibility with existing developer workflows.
 
 Zenith uses post-generation lifecycle hooks (`hooks/post_gen_project.py`) to enforce

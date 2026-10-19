@@ -15,7 +15,7 @@
 [![Complexity: complexipy](https://img.shields.io/badge/complexity-complexipy-crimson.svg)](https://github.com/rohaquinlop/complexipy)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-An opinionated, strict Cookiecutter template for modern Python 3.12+ projects, engineered with next-generation Rust tooling, autonomous AI agent workflows, and ruthless quality guardrails.
+An opinionated Cookiecutter template for modern Python 3.12+ projects, built with Rust-based developer tooling, autonomous AI agent workflows, and automated quality guardrails.
 
 ---
 
@@ -24,9 +24,9 @@ An opinionated, strict Cookiecutter template for modern Python 3.12+ projects, e
 Starting a new Python project usually means spending days wiring up linters, formatters, type checkers, test coverage, and documentation generators—or copying decaying configs from older repos and fixing whatever broke.
 
 Zenith scaffolds a production-ready repository in seconds:
-- **⚡ Modern Rust Tooling**: Lightning-fast package management with `uv`, linting & formatting with `ruff`, strict type checking with Meta's `pyrefly`, modular boundaries with `tach`, cognitive complexity limits with `complexipy`, and documentation with `zensical`.
+- **⚡ Modern Tooling**: Fast package management with `uv`, linting and formatting with `ruff`, strict type checking with Meta's `pyrefly`, modular boundaries with `tach`, cognitive complexity limits with `complexipy`, and documentation with `zensical`.
 - **🤖 First-Class AI Agent Readiness**: Autonomous agent context discovery (`AGENTS.md`), modular lifecycle skills in `.agents/skills/`, machine-readable `llms.txt`, and clear AI governance policies.
-- **🛡️ Ruthless Guardrails**: 100% statement and branch test coverage mandate (`fail_under = 100`), strict typing, and automated CI security analysis with `zizmor`.
+- **🛡️ Strict Quality Guardrails**: 100% statement and branch test coverage (`fail_under = 100`), strict typing, and automated CI security analysis with `zizmor`.
 
 > [!NOTE]
 > **Project Scope**: Zenith is built for serious production packages, services, and libraries intended for long-term maintenance by teams of humans and AI agents. It is **deliberately not suited** for small two-script throwaway hacks where strict guardrails feel like friction.
@@ -38,7 +38,7 @@ Zenith scaffolds a production-ready repository in seconds:
 For full guides, detailed architectural deep-dives, and tool configurations, visit the **[Zenith Documentation Website](https://bwrob.github.io/zenith/)**.
 
 - **[First Steps & Core Concepts](https://bwrob.github.io/zenith/first-steps/)**: Plain-English onboarding for developers new to modern Python tooling.
-- **[Philosophy & Sizing](https://bwrob.github.io/zenith/philosophy/)**: Modern tooling, AI readiness, ruthless guardrails, and project sizing rubric.
+- **[Philosophy & Sizing](https://bwrob.github.io/zenith/philosophy/)**: Modern tooling, AI readiness, quality guardrails, and project sizing rubric.
 - **[CLI Architecture](https://bwrob.github.io/zenith/tools/typer/)**: Typer CLI structure, Rich terminal rendering, and animated Termynal demos.
 - **[Tooling Stack Reference](https://bwrob.github.io/zenith/tools/)**: In-depth explanations, configuration breakdowns, and upstream links for the integrated tool stack.
 - **[Agent Skills Architecture](https://bwrob.github.io/zenith/skills/)**: Lifecycle workflows for autonomous coding assistants in `.agents/skills/`.

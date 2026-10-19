@@ -2,11 +2,11 @@
 
 Zenith is not a generic template. It is an opinionated, strict development system
 crafted for teams of humans and autonomous AI coding agents who build production
-software with high confidence, zero architectural drift, and uncompromising code
+software with high confidence, zero architectural drift, and consistent code
 quality.
 
-Zenith is built on a counter-intuitive principle: **painstaking strictness and ruthless
-guardrails accelerate development rather than hindering it.**
+Zenith is built on a practical principle: **automated, strict quality guardrails
+accelerate development rather than hindering it.**
 
 ---
 
@@ -29,11 +29,11 @@ non-negotiable:
 - **Ambiguity Disappears**: Strict static types serve as living machine contracts.
   Developers and AI agents never have to guess what shape an object takes or what values
   a function accepts.
-- **AI Slop Is Blocked at the Gate**: Autonomous agents cannot commit untyped objects,
-  spaghetti logic, circular dependencies, or fragile hacks. The quality gate rejects
-  substandard code immediately.
+- **Low-Quality AI Code Is Blocked at the Gate**: Autonomous agents cannot commit
+  untyped objects, convoluted logic, circular dependencies, or fragile workarounds. The
+  quality gate rejects non-compliant code immediately.
 
-### The Guardrail Arsenal
+### The Guardrail Stack
 
 <div class="grid cards" markdown>
 
@@ -85,19 +85,18 @@ non-negotiable:
 
 ---
 
-## Sub-Second Feedback Loops Enable Uncompromising Strictness
+## Fast Feedback Loops Make Strict Quality Checks Practical
 
-Painstaking strictness historically carried an intolerable penalty: sluggish linters,
-slow type checkers, and long test suites that broke developer flow and triggered context
+Thorough quality checks historically carried a significant penalty: slow linters,
+sluggish type checkers, and long test suites that broke developer flow and triggered context
 switching. When running quality checks takes 45 seconds, developers look away, check
 messages, and avoid running checks until the end of the day.
 
 This is where modern Rust-native tooling enters the picture. **Speed is not the
-philosophy itself; speed is the enabler that makes painstaking strictness
-frictionless.**
+philosophy itself; speed is what makes thorough quality checks frictionless.**
 
-By standardizing on ultra-fast, Rust-powered tooling, Zenith compresses comprehensive
-quality gates into milliseconds:
+By standardizing on fast, Rust-powered tooling, Zenith compresses comprehensive
+quality checks into seconds:
 
 - Linting, formatting checks, type checks, and markdown audits complete in under 2
   seconds combined.
@@ -197,8 +196,8 @@ For a detailed breakdown of the CI verification pipeline, see
 
 ## Project Sizing & Fit
 
-Zenith is unapologetically opinionated. It is designed for longevity, not disposable
-prototypes.
+Zenith is opinionated. It is designed for longevity and maintainability, not
+disposable prototypes.
 
 ```mermaid
 flowchart TD

@@ -2,7 +2,7 @@
 
 [![Tool: prek](https://img.shields.io/badge/prek-enabled-brightgreen)](https://github.com/j178/prek)
 
-`prek` is a blazing-fast Git hook manager written in Rust. In Zenith, it validates
+`prek` is a fast Git hook runner written in Rust. In Zenith, it validates
 code hygiene, detects secrets, verifies schemas, and enforces formatting before
 commits are created.
 

@@ -2,8 +2,8 @@
 
 [![Tool: Pyrefly](https://img.shields.io/badge/types-pyrefly%20strict-blueviolet.svg)](https://github.com/facebook/pyrefly)
 
-`Pyrefly` is Meta's next-generation static type checker for Python written in Rust. It
-provides high-speed type inference, strict sound type validation, and native support for
+`Pyrefly` is Meta's static type checker for Python written in Rust. It
+provides fast type inference, strict sound type validation, and native support for
 modern Python 3.12+ type system syntax.
 
 ---

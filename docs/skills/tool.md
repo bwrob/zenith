@@ -22,7 +22,7 @@ authoritative, version-pinned knowledge.
 
 **Why it's in Zenith**: Python dependency management historically suffered from sluggish
 resolvers, broken environment isolation, and fragmentation between `pip`, `poetry`, and
-`virtualenv`. `uv` replaces this entire ecosystem with a single, lightning-fast Rust
+`virtualenv`. `uv` replaces this entire ecosystem with a single Rust
 binary that resolves packages in milliseconds and guarantees byte-for-byte reproducible
 environments via `uv.lock`.
 
@@ -53,9 +53,9 @@ composition patterns.
 using `prek`.
 
 **Why it's in Zenith**: Traditional Python `pre-commit` incurs noticeable startup
-latency and requires isolated environments for every hook. `prek` is a blazingly fast,
-Rust-native drop-in alternative that executes configured checks in parallel with zero
-runtime overhead.
+latency and requires isolated environments for every hook. `prek` is a fast,
+Rust-native drop-in alternative that executes configured checks in parallel with minimal
+overhead.
 
 `tool-prek` guides agents through hook installations (`uv run prek install`), manual
 workspace audits (`uv run prek run --all-files`), and `prek.toml` configuration syntax.
@@ -94,7 +94,7 @@ blocks, prompt definitions (`__prompts__`), and multi-platform rendering tests.
 
 ## Code Quality, Static Typing & Architecture
 
-### Blazing-Fast Linting & Formatting (`tool-ruff`)
+### Unified Linting & Formatting (`tool-ruff`)
 
 **What it is**: The operational guide for Astral Ruff, the unified Python linter and
 code formatter.
@@ -169,7 +169,7 @@ strictly intentional.
 
 ---
 
-### Blazing-Fast Typo & Spelling Verification (`tool-typos`)
+### Source Code & Documentation Spelling Verification (`tool-typos`)
 
 **What it is**: The guide for source code and documentation spell checking via `typos`.
 

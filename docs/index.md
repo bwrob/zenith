@@ -63,7 +63,7 @@ foundational pillars:
     [`.agents/skills/`](skills/index.md), transparent review standards, and automated
     `llms.txt`.
 
--   **[Ruthless Quality Guardrails](philosophy.md)**
+-   **[Automated Quality Guardrails](philosophy.md)**
 
     ---
 
