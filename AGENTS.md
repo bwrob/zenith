@@ -36,7 +36,7 @@ Before editing code or executing tasks, ensure an isolated, clean working enviro
   test outputs, always store them in the `.temp/` directory.
 - **Task Runner**: All development tasks are managed through **Poe the Poet**:
   - `uv run poe test` (run unit tests)
-  - `uv run poe code-quality` (run lint, format-check, and tests)
+  - `uv run poe code-quality` (run static quality pipeline: lint, format, types, security, skills)
   - `uv run poe fix` (auto-fix linting and formatting)
 - **Verification Gate**: Before proposing or finalizing changes, always verify your
   work:

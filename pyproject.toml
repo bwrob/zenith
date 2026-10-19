@@ -53,7 +53,7 @@
 
 [tool.poe.tasks]
     check-skills = { cmd = "python scripts/check_skills.py .agents/skills", help = "Validate agent skills structural invariants." }
-    code-quality = { sequence = [
+    code-quality = { ignore_fail = "return_non_zero", sequence = [
         "lint",
         "format-check",
         "format-check-toml",
@@ -65,8 +65,7 @@
         "sync-skills-check",
         "check-skills",
         "complexity",
-        "test",
-    ], help = "Run linting, formatting check, skills check, and test suite." }
+    ], help = "Execute the full code quality verification pipeline." }
     complexity = { cmd = "complexipy scripts tests hooks", help = "Verify cognitive complexity limits with complexipy." }
     docs-build = { cmd = "zensical build --strict --clean", help = "Build static HTML documentation site into site/." }
     docs-logo = { cmd = "typst compile assets/zenith-star.typ assets/zenith-star.svg", help = "Compile documentation logotype SVG with Typst." }
