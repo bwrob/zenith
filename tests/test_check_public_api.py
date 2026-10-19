@@ -174,17 +174,28 @@ def test_extract_planned_symbols(tmp_path: Path) -> None:
     plan_file.write_text(
         "# Plan\n"
         "```python\n"
+        "from dataclasses import dataclass\n"
+        "from typing import Protocol\n"
+        "\n"
+        "@dataclass(frozen=True, slots=True)\n"
         "class PlannedClass:\n"
-        "    pass\n"
+        "    def method_not_top_level(self) -> None:\n"
+        "        pass\n"
+        "\n"
         "class _IgnoredClass:\n"
         "    pass\n"
+        "\n"
         "def planned_func():\n"
         "    pass\n"
+        "\n"
+        "type PlannedTypeAlias = str\n"
         "```\n",
         encoding="utf-8",
     )
     symbols = check_public_api.extract_planned_symbols(plan_file)
-    assert symbols == ["PlannedClass", "planned_func"]
+    assert symbols == ["PlannedClass", "PlannedTypeAlias", "planned_func"]
+    assert "from" not in symbols
+    assert "method_not_top_level" not in symbols
 
 
 def test_analyze_public_api(tmp_path: Path) -> None:

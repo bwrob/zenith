@@ -57,11 +57,48 @@ def extract_requirements_from_spec(spec_path: Path) -> list[RequirementInfo]:
 
     lines = content.splitlines()
     for line in lines:
+        stripped = line.strip()
+
+        # Flush on section boundaries (e.g. ## 5. Non-Functional, ## 6. Acceptance Scenarios)
+        if stripped.startswith("## "):
+            if current_req_id:
+                requirements.append(
+                    RequirementInfo(
+                        req_id=current_req_id,
+                        title=current_title or current_req_id,
+                        scenarios=current_scenarios,
+                    )
+                )
+                current_req_id = None
+                current_title = ""
+                current_scenarios = []
+            continue
+
+        header_match = re.search(r"###?\s*Requirement\s*\d+:\s*(.+)", line, re.IGNORECASE)
         req_match = re.search(r"-\s*\*\*ID\*\*:\s*`?(REQ-\d+)`?", line, re.IGNORECASE)
         if not req_match:
             req_match = re.search(r"###?\s*Requirement\s*\d+:\s*`?(REQ-\d+)`?", line, re.IGNORECASE)
 
-        header_match = re.search(r"###?\s*Requirement\s*\d+:\s*(.+)", line, re.IGNORECASE)
+        if header_match:
+            if current_req_id:
+                requirements.append(
+                    RequirementInfo(
+                        req_id=current_req_id,
+                        title=current_title or current_req_id,
+                        scenarios=current_scenarios,
+                    )
+                )
+                current_req_id = None
+                current_scenarios = []
+
+            raw_title = header_match.group(1).strip()
+            embedded_id_match = re.search(r"\b(REQ-\d+)\b", raw_title, re.IGNORECASE)
+            if embedded_id_match:
+                current_req_id = embedded_id_match.group(1).upper()
+                clean_title = re.sub(r"\(?\bREQ-\d+\)?\s*[:-]?\s*", "", raw_title, flags=re.IGNORECASE).strip()
+                current_title = clean_title or current_req_id
+            else:
+                current_title = raw_title
 
         if req_match:
             new_id = req_match.group(1).upper()
@@ -75,8 +112,6 @@ def extract_requirements_from_spec(spec_path: Path) -> list[RequirementInfo]:
                 )
                 current_scenarios = []
             current_req_id = new_id
-        elif header_match and not current_req_id:
-            current_title = header_match.group(1).strip()
 
         scenario_match = re.search(r"###?\s*Scenario\s*\d+:\s*(.+)", line, re.IGNORECASE)
         if scenario_match and current_req_id:
@@ -126,14 +161,24 @@ def scan_tests_for_requirements(tests_dir: Path) -> dict[str, list[str]]:
                 test_ref = f"{test_file.name}::{node.name}"
                 matched_reqs: set[str] = set()
 
-                # 1. Match from function name (e.g. test_req_001_...)
-                for m in re.finditer(r"req_?(\d+)", node.name, re.IGNORECASE):
+                # 1. Match from function name (e.g. test_req_001_...) with underscore/boundary delimiter
+                for m in re.finditer(r"(?:^|_)req_?(\d+)(?:_|$)", node.name, re.IGNORECASE):
                     matched_reqs.add(f"REQ-{int(m.group(1)):03d}")
 
                 # 2. Match from docstring
                 docstring = ast.get_docstring(node) or ""
                 for m in re.finditer(r"\bREQ-(\d+)\b", docstring, re.IGNORECASE):
                     matched_reqs.add(f"REQ-{int(m.group(1)):03d}")
+
+                # 3. Match from pytest mark decorators (@pytest.mark.req("REQ-001"), etc.)
+                for decorator in node.decorator_list:
+                    if isinstance(decorator, ast.Call):
+                        for arg in decorator.args:
+                            if isinstance(arg, ast.Constant) and isinstance(arg.value, str):
+                                for m in re.finditer(r"\bREQ-(\d+)\b", arg.value, re.IGNORECASE):
+                                    matched_reqs.add(f"REQ-{int(m.group(1)):03d}")
+                                for m in re.finditer(r"^\s*(\d+)\s*$", arg.value):
+                                    matched_reqs.add(f"REQ-{int(m.group(1)):03d}")
 
                 for req_id in matched_reqs:
                     req_to_tests.setdefault(req_id, []).append(test_ref)

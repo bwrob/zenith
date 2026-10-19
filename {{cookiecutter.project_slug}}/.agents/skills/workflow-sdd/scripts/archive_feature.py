@@ -26,7 +26,17 @@ def archive_feature(
     keep_temp: bool = False,
 ) -> int:
     """Archive approved feature specification into permanent documentation."""
-    source_dir = specs_root / feature_id
+    try:
+        resolved_specs = specs_root.resolve()
+        resolved_source = (specs_root / feature_id).resolve()
+        if not resolved_source.is_relative_to(resolved_specs) or resolved_source == resolved_specs:
+            print(f"❌ Security violation: invalid feature identifier '{feature_id}' traverses outside {specs_root}", file=sys.stderr)
+            return 1
+    except (ValueError, RuntimeError):
+        print(f"❌ Invalid path for feature directory: {specs_root / feature_id}", file=sys.stderr)
+        return 1
+
+    source_dir = resolved_source
     if not source_dir.is_dir():
         print(f"❌ Feature directory not found: {source_dir}", file=sys.stderr)
         return 1
@@ -38,7 +48,7 @@ def archive_feature(
             return 1
 
         review_content = review_file.read_text(encoding="utf-8")
-        if not re.search(r"Verdict:\s*Approved", review_content, re.IGNORECASE):
+        if not re.search(r"\*{0,2}Verdict\*{0,2}:\s*Approved(?!\s*\|)", review_content, re.IGNORECASE):
             print("❌ Cannot archive: review.md verdict is not 'Approved'. Pass --force to bypass.", file=sys.stderr)
             return 1
 
@@ -72,6 +82,8 @@ def archive_feature(
 
     if f"`{feature_id}`" not in index_content:
         with open(index_file, "a", encoding="utf-8") as f:
+            if index_content and not index_content.endswith("\n"):
+                f.write("\n")
             f.write(entry_line)
 
     if not keep_temp:

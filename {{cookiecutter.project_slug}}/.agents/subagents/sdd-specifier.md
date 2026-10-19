@@ -3,10 +3,10 @@ name: sdd-specifier
 description: >-
   Elicits, clarifies, and authors functional feature specifications using EARS syntax and boundary scoping.
 role: Requirements Analyst
-mode: read-only
+mode: read-write
 tools:
   read: true
-  write: false
+  write: true
   command: false
 ---
 

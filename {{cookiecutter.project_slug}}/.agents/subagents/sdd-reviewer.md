@@ -3,10 +3,10 @@ name: sdd-reviewer
 description: >-
   Audits implemented code against functional specifications, public API stability with Griffe, and quality invariants.
 role: Quality Auditor
-mode: read-only
+mode: read-write
 tools:
   read: true
-  write: false
+  write: true
   command: true
 ---
 

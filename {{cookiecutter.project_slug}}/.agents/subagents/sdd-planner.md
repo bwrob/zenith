@@ -3,10 +3,10 @@ name: sdd-planner
 description: >-
   Translates approved functional specifications into Python 3.12+ technical architecture and atomic task plans.
 role: Software Architect
-mode: read-only
+mode: read-write
 tools:
   read: true
-  write: false
+  write: true
   command: false
 ---
 

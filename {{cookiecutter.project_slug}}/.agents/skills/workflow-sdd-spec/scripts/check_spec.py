@@ -44,11 +44,27 @@ def validate_spec_content(content: str, spec_path: Path) -> SpecValidationResult
         errors.append("Missing required 'Out-of-Scope' section.")
 
     # 2. Functional Requirements Check
-    req_matches = list(re.finditer(r"(?:REQ-\d+|###?\s*Requirement\s*\d+)", content, re.IGNORECASE))
-    req_count = len(req_matches)
+    req_ids: set[str] = set()
+    for m in re.finditer(r"\bREQ-(\d+)\b", content, re.IGNORECASE):
+        req_ids.add(f"REQ-{int(m.group(1)):03d}")
+    if not req_ids:
+        for m in re.finditer(r"###?\s*Requirement\s*(\d+)", content, re.IGNORECASE):
+            req_ids.add(f"REQ-{int(m.group(1)):03d}")
+    req_count = len(req_ids)
 
     if req_count == 0:
         errors.append("No functional requirements found (expected 'REQ-001' or 'Requirement N').")
+
+    # Placeholder Check
+    placeholder_matches = re.findall(
+        r"\[(?:Describe|Short Title|User Story|Happy Path|Error or Edge|Pending|Reason for|Requirement statement|precondition|action occurs|expected observable|expected handled).*?\]",
+        content,
+    )
+    if placeholder_matches:
+        warnings.append(
+            f"Specification contains {len(placeholder_matches)} unfilled template placeholder marker(s) "
+            f"(e.g. '{placeholder_matches[0]}'). Replace them before development."
+        )
 
     # EARS Pattern Check
     ears_patterns = [
@@ -73,7 +89,11 @@ def validate_spec_content(content: str, spec_path: Path) -> SpecValidationResult
     # 4. Implementation Leakage Check
     code_blocks = re.findall(r"```(?:python|py)?\n(.*?)\n```", content, re.DOTALL)
     for block in code_blocks:
+        if "<!-- allow-code -->" in content:
+            continue
         if re.search(r"\b(?:class\s+\w+|def\s+\w+|@dataclass)\b", block):
+            if "# example" in block.lower() or "# test input" in block.lower():
+                continue
             errors.append(
                 "Premature implementation details detected in spec.md: code block contains class/function definitions. "
                 "Move technical architecture and code skeletons to plan.md."

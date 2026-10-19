@@ -141,16 +141,20 @@ def setup_agent_instructions() -> None:
     # Establish tool-specific discovery links for subagent definitions
     subagents_src = os.path.join(PROJECT_DIR, ".agents", "subagents")
     if os.path.isdir(subagents_src):
-        for tool_name in (".claude", ".gemini"):
-            target_dir = os.path.join(PROJECT_DIR, tool_name, "agents")
-            os.makedirs(target_dir, exist_ok=True)
+        for tool_dir in (
+            os.path.join(PROJECT_DIR, ".claude", "agents"),
+            os.path.join(PROJECT_DIR, ".gemini", "agents"),
+            os.path.join(PROJECT_DIR, ".codex", "agents"),
+            os.path.join(PROJECT_DIR, ".cursor", "agents"),
+        ):
+            os.makedirs(tool_dir, exist_ok=True)
             for agent_filename in sorted(os.listdir(subagents_src)):
                 if not agent_filename.endswith(".md"):
                     continue
                 src_agent_file = os.path.join(subagents_src, agent_filename)
-                target_agent_file = os.path.join(target_dir, agent_filename)
+                target_agent_file = os.path.join(tool_dir, agent_filename)
                 if not os.path.lexists(target_agent_file):
-                    rel_src = os.path.relpath(src_agent_file, target_dir)
+                    rel_src = os.path.relpath(src_agent_file, tool_dir)
                     try:
                         os.symlink(rel_src, target_agent_file)
                     except (OSError, NotImplementedError):

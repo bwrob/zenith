@@ -154,7 +154,19 @@ It registers the feature in `docs/specs/index.md` to preserve permanent project 
 
 ---
 
-## 5. Verification & Quality Gate
+## 5. Fast-Path SDD for Small Changes
+
+For small features or bug fixes under 150 lines of change, use Fast-Path SDD:
+
+1. **Single Artifact**: Combine requirements and task list into `.specs/<feature-id>/spec.md`.
+2. **Omit Heavy Architecture**: Do not draw architecture diagrams or public contract matrices.
+3. **Single Approval Stop**: Present the combined specification and task list to the developer once.
+4. **Direct Implementation**: After developer approval, implement tasks with standard TDD.
+5. **Fast Verification**: Run `uv run poe sdd-verify <feature-id>` before pull request submission.
+
+---
+
+## 6. Verification & Quality Gate
 
 Verify that the feature meets all project quality standards:
 

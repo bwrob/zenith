@@ -77,6 +77,24 @@ def test_validate_spec_content_code_leakage() -> None:
     assert not res.is_valid
     assert any("Premature implementation" in err for err in res.errors)
 
+    # Allowed when tagged with # example or <!-- allow-code -->
+    content_allowed = (
+        "### In-Scope\n- A\n### Out-of-Scope\n- B\nREQ-001\nGiven When Then\n"
+        "```python\n# example of payload\nclass ExampleDto:\n    pass\n```\n"
+    )
+    res_allowed = check_spec.validate_spec_content(content_allowed, Path("spec.md"))
+    assert res_allowed.is_valid
+
+
+def test_validate_spec_content_placeholders() -> None:
+    content = (
+        "### In-Scope\n- A\n### Out-of-Scope\n- B\nREQ-001\nGiven When Then\n"
+        "Problem: [Describe problem here]\n"
+    )
+    res = check_spec.validate_spec_content(content, Path("spec.md"))
+    assert res.is_valid
+    assert any("unfilled template placeholder" in w for w in res.warnings)
+
 
 def test_validate_spec_file_not_found(tmp_path: Path) -> None:
     res = check_spec.validate_spec_file(tmp_path / "nonexistent.md")
@@ -110,17 +128,20 @@ def test_validate_spec_format_report_and_main(tmp_path: Path) -> None:
 def test_extract_requirements_from_spec(tmp_path: Path) -> None:
     spec_file = tmp_path / "spec.md"
     spec_file.write_text(
-        "### Requirement 1: REQ-001\n"
+        "### Requirement 1: User Profile Retrieval\n"
         "- **ID**: `REQ-001`\n"
-        "### Scenario 1: Pass\n"
-        "### Requirement 2: REQ-002\n"
-        "- **ID**: `REQ-002`\n",
+        "### Requirement 2: Profile Update\n"
+        "- **ID**: `REQ-002`\n"
+        "## 6. Acceptance Criteria\n"
+        "### Scenario 1: Pass\n",
         encoding="utf-8",
     )
     reqs = check_traceability.extract_requirements_from_spec(spec_file)
     assert len(reqs) == 2
     assert reqs[0].req_id == "REQ-001"
+    assert reqs[0].title == "User Profile Retrieval"
     assert reqs[1].req_id == "REQ-002"
+    assert reqs[1].title == "Profile Update"
 
 
 def test_extract_requirements_fallback(tmp_path: Path) -> None:
@@ -141,12 +162,29 @@ def test_extract_requirements_missing_file(tmp_path: Path) -> None:
 def test_scan_tests_for_requirements(tmp_path: Path) -> None:
     test_file = tmp_path / "test_feature.py"
     test_file.write_text(
-        'def test_req_001_logic(): pass\n\ndef test_custom():\n    """Docstring REQ-002."""\n    pass\n',
+        "def test_req_001_logic(): pass\n"
+        "\n"
+        "def test_custom():\n"
+        '    """Docstring REQ-002."""\n'
+        "    pass\n"
+        "\n"
+        '@pytest.mark.req("REQ-003")\n'
+        "def test_decorated(): pass\n"
+        "\n"
+        '@pytest.mark.req("004")\n'
+        "def test_decorated_numeric(): pass\n"
+        "\n"
+        "def test_freq_1_false_positive(): pass\n",
         encoding="utf-8",
     )
     mapping = check_traceability.scan_tests_for_requirements(tmp_path)
     assert "REQ-001" in mapping
     assert "REQ-002" in mapping
+    assert "REQ-003" in mapping
+    assert "REQ-004" in mapping
+    assert not any(
+        "test_freq_1_false_positive" in t for t in mapping.get("REQ-001", [])
+    )
 
 
 def test_analyze_traceability_and_main(tmp_path: Path) -> None:
@@ -184,7 +222,13 @@ def test_archive_feature_success(tmp_path: Path) -> None:
     (feat_dir / "spec.md").write_text("# Spec\n", encoding="utf-8")
     (feat_dir / "plan.md").write_text("# Plan\n", encoding="utf-8")
     (feat_dir / "review.md").write_text(
-        "# Review\nVerdict: Approved\n", encoding="utf-8"
+        "# Review\n- **Verdict**: Approved\n", encoding="utf-8"
+    )
+
+    # Pre-create index.md without trailing newline to test clean concatenation
+    docs_root.mkdir(parents=True)
+    (docs_root / "index.md").write_text(
+        "# Registry\n| Col |\n| :--- |\n", encoding="utf-8"
     )
 
     exit_code = archive_feature.archive_feature("my-feat", specs_root, docs_root)
@@ -193,6 +237,8 @@ def test_archive_feature_success(tmp_path: Path) -> None:
     assert (docs_root / "my-feat" / "plan.md").exists()
     assert (docs_root / "my-feat" / "review.md").exists()
     assert (docs_root / "index.md").exists()
+    index_text = (docs_root / "index.md").read_text(encoding="utf-8")
+    assert "\n| `my-feat` |" in index_text
     assert not feat_dir.exists()
 
 
@@ -209,12 +255,28 @@ def test_archive_feature_not_approved_error(tmp_path: Path) -> None:
     exit_code = archive_feature.archive_feature("my-feat", specs_root, docs_root)
     assert exit_code == 1
 
+    # Unedited template must also fail
+    (feat_dir / "review.md").write_text(
+        "- **Verdict**: Approved | Changes Requested\n", encoding="utf-8"
+    )
+    assert archive_feature.archive_feature("my-feat", specs_root, docs_root) == 1
+
     # Bypass with force
     exit_code_force = archive_feature.archive_feature(
         "my-feat", specs_root, docs_root, force=True, keep_temp=True
     )
     assert exit_code_force == 0
     assert feat_dir.exists()
+
+
+def test_archive_feature_path_traversal(tmp_path: Path) -> None:
+    specs_root = tmp_path / ".specs"
+    docs_root = tmp_path / "docs" / "specs"
+    specs_root.mkdir(parents=True)
+
+    # Attempt directory traversal outside specs_root
+    exit_code = archive_feature.archive_feature("../../outside", specs_root, docs_root)
+    assert exit_code == 1
 
 
 def test_archive_feature_missing_dir(tmp_path: Path) -> None:

@@ -16,7 +16,7 @@ template capabilities from project domain logic, Zenith standardizes on a
 
 | Prefix Group | Scope & Purpose | Examples |
 |---|---|---|
-| **[`workflow-*`](workflow.md)** | **Lifecycle & Multi-Step Procedures**<br/>Operational processes, version control, release ceremonies, architecture records, and code review audits. | `workflow-git`, `workflow-code-review`, `workflow-changelog`, `workflow-adr`, `workflow-setup`, `workflow-skill-creator`. |
+| **[`workflow-*`](workflow.md)** | **Lifecycle & Multi-Step Procedures**<br/>Operational processes, version control, release ceremonies, architecture records, code review audits, and Spec-Driven Development. | `workflow-git`, `workflow-code-review`, `workflow-sdd`, `workflow-changelog`, `workflow-adr`, `workflow-setup`, `workflow-skill-creator`. |
 | **[`tool-*`](tool.md)** | **Tool Mechanics & Tooling Reference**<br/>Concrete command syntax, CLI flags, configuration details, and runbooks for specific developer tools and libraries. | `tool-uv`, `tool-ruff`, `tool-pyrefly`, `tool-tach`, `tool-pytest`, `tool-zensical`, etc. |
 | **[`guide-*`](guide.md)** | **Engineering Conventions & Style**<br/>Coding style conventions, architecture invariants, type parameter rules, and technical writing standards. | `guide-python`, `guide-ste100`. |
 | **[`domain-*`](domain.md)** | **Project Domain & Business Rules**<br/>**Reserved exclusively for the author of the instantiated project.** Documents business rules, domain entities, APIs, and workflows. | `domain-billing`, `domain-auth`, `domain-data-pipeline`. |

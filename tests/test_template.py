@@ -128,6 +128,8 @@ def test_default_generation(temp_output_dir: Path) -> None:
     assert '"format-check-toml"' in poe_text
     assert '"taplo format"' in poe_text
     assert "[tasks.sdd-new]" in poe_text
+    assert "[tasks.sdd-plan]" in poe_text
+    assert "[tasks.sdd-review]" in poe_text
     assert "[tasks.sdd-verify]" in poe_text
     assert "[tasks.sdd-archive]" in poe_text
     for ref in [
@@ -261,6 +263,8 @@ def test_default_generation(temp_output_dir: Path) -> None:
         assert (project_dir / ".agents" / "subagents" / subagent).exists()
         assert (project_dir / ".claude" / "agents" / subagent).exists()
         assert (project_dir / ".gemini" / "agents" / subagent).exists()
+        assert (project_dir / ".codex" / "agents" / subagent).exists()
+        assert (project_dir / ".cursor" / "agents" / subagent).exists()
     assert (
         project_dir / ".agents" / "skills" / "guide-ste100" / "scripts" / "ste-lint.py"
     ).exists()

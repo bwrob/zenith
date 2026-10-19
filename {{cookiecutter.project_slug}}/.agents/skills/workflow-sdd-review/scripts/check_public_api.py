@@ -124,11 +124,14 @@ def extract_public_symbols_from_ast(code: str) -> list[str]:
     if has_explicit_all:
         return sorted(set(symbols))
 
-    # Fallback to top-level non-underscored classes and functions
+    # Fallback to top-level non-underscored classes, functions, and PEP 695 type aliases
     for node in tree.body:
         if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
             if not node.name.startswith("_"):
                 symbols.append(node.name)
+        elif hasattr(ast, "TypeAlias") and isinstance(node, ast.TypeAlias):
+            if isinstance(node.name, ast.Name) and not node.name.id.startswith("_"):
+                symbols.append(node.name.id)
 
     return sorted(set(symbols))
 
@@ -142,9 +145,9 @@ def get_package_public_symbols(package_dir: Path) -> list[str]:
         if init_symbols:
             return sorted(set(init_symbols))
 
-    # Scan top-level python files in package
-    for py_file in sorted(package_dir.glob("*.py")):
-        if py_file.name.startswith("_"):
+    # Scan python files in package recursively, skipping private modules and __pycache__
+    for py_file in sorted(package_dir.rglob("*.py")):
+        if py_file.name.startswith("_") or any(p.startswith("_") for p in py_file.parts):
             continue
         try:
             content = py_file.read_text(encoding="utf-8")
@@ -198,7 +201,7 @@ def get_base_public_symbols(base_ref: str, package_name: str, search_dir: str = 
 
 
 def extract_planned_symbols(plan_path: Path) -> list[str]:
-    """Parse .specs/<feature-id>/plan.md to extract declared classes and functions."""
+    """Parse .specs/<feature-id>/plan.md to extract declared classes, functions, and type aliases."""
     if not plan_path.is_file():
         return []
 
@@ -209,19 +212,30 @@ def extract_planned_symbols(plan_path: Path) -> list[str]:
 
     planned: set[str] = set()
 
-    # Match class/function definitions inside code blocks or text
-    class_pattern = re.compile(r"class\s+([A-Za-z0-9_]+)")
-    func_pattern = re.compile(r"def\s+([A-Za-z0-9_]+)")
+    # Prefer parsing inside python code blocks to avoid false positives in prose
+    code_blocks = re.findall(r"```(?:python|py)?\n(.*?)\n```", content, re.DOTALL)
+    search_texts = code_blocks if code_blocks else [content]
 
-    for match in class_pattern.finditer(content):
-        name = match.group(1)
-        if not name.startswith("_"):
-            planned.add(name)
+    class_pattern = re.compile(r"\bclass\s+([A-Za-z0-9_]+)")
+    # Match only unindented top-level defs to prevent capturing methods of classes/protocols
+    func_pattern = re.compile(r"^def\s+([A-Za-z0-9_]+)", re.MULTILINE)
+    type_pattern = re.compile(r"^type\s+([A-Za-z0-9_]+)\s*=", re.MULTILINE)
 
-    for match in func_pattern.finditer(content):
-        name = match.group(1)
-        if not name.startswith("_"):
-            planned.add(name)
+    for text in search_texts:
+        for match in class_pattern.finditer(text):
+            name = match.group(1)
+            if not name.startswith("_"):
+                planned.add(name)
+
+        for match in func_pattern.finditer(text):
+            name = match.group(1)
+            if not name.startswith("_"):
+                planned.add(name)
+
+        for match in type_pattern.finditer(text):
+            name = match.group(1)
+            if not name.startswith("_"):
+                planned.add(name)
 
     return sorted(planned)
 
