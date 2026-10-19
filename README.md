@@ -37,8 +37,9 @@ Zenith scaffolds a production-ready repository in seconds:
 
 For full guides, detailed architectural deep-dives, and tool configurations, visit the **[Zenith Documentation Website](https://bwrob.github.io/zenith/)**.
 
+- **[First Steps & Core Concepts](https://bwrob.github.io/zenith/first-steps/)**: Plain-English onboarding for developers new to modern Python tooling.
 - **[Philosophy & Sizing](https://bwrob.github.io/zenith/philosophy/)**: Modern tooling, AI readiness, ruthless guardrails, and project sizing rubric.
-- **[CLI Architecture](https://bwrob.github.io/zenith/cli/)**: Typer CLI structure, Rich terminal rendering, and animated Termynal demos.
+- **[CLI Architecture](https://bwrob.github.io/zenith/tools/typer/)**: Typer CLI structure, Rich terminal rendering, and animated Termynal demos.
 - **[Tooling Stack Reference](https://bwrob.github.io/zenith/tools/)**: In-depth explanations, configuration breakdowns, and upstream links for the integrated tool stack.
 - **[Agent Skills Architecture](https://bwrob.github.io/zenith/skills/)**: Lifecycle workflows for autonomous coding assistants in `.agents/skills/`.
 - **[CI/CD Pipelines](https://bwrob.github.io/zenith/ci-actions/)**: GitHub Actions test matrix across Python 3.12–3.15, wheel smoke testing, and supply-chain protection.

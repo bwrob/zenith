@@ -12,6 +12,11 @@
 
 ## Quick Start
 
+> [!TIP]
+> **New to modern Python tooling or project templates?**
+> If terms like virtual environments, `uv`, or project scaffolding are unfamiliar, start
+> with the [First Steps & Core Concepts](first-steps.md) guide.
+
 Scaffold a production-grade repository in seconds using `uvx`:
 
 <div class="termy">

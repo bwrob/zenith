@@ -20,6 +20,7 @@
 
     nav = [
         { "Overview" = "index.md" },
+        { "First Steps" = "first-steps.md" },
         { "Philosophy" = "philosophy.md" },
         { "CI/CD Actions" = "ci-actions.md" },
         { "Tooling Stack" = [
@@ -189,6 +190,7 @@
             ]
             "Overview & Philosophy" = [
                 "index.md",
+                "first-steps.md",
                 "philosophy.md",
                 "ci-actions.md",
                 "changelog.md",
