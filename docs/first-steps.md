@@ -80,14 +80,25 @@ all necessary tools.
 If you enabled the command-line interface (CLI) during setup, your project is
 already an executable application:
 
-```shell
-uv run my-awesome-service --help
+```console
+$ uv run my-awesome-service --help
+Usage: my-awesome-service [OPTIONS] COMMAND [ARGS]...
+
+  High performance analytics engine
+
+Options:
+  -v, --version  Show version and exit.
+  --help         Show this message and exit.
+
+Commands:
+  greet  Display a personalized greeting.
 ```
 
-You can also run commands directly with:
+Run the built-in `greet` command:
 
-```shell
-uv run my-awesome-service hello "World"
+```console
+$ uv run my-awesome-service greet "Developer"
+✨ Hello, Developer!
 ```
 
 ---
@@ -165,9 +176,11 @@ If you write a new function without a test, `uv run poe test` stops and highligh
 the un-tested line in red. **Nothing is broken.** The tool is simply reminding you
 to write a test.
 
-### Quick Example: Adding a Function and a Test
+### A Hands-On Experiment: Breaking and Satisfying the Guardrail
 
-1. Add a function in `src/my_awesome_service/calculator.py`:
+Let's see what happens when you write code without a test:
+
+**Step 1: Write an un-tested function** in `src/my_awesome_service/calculator.py`:
 
 ```python
 def add(a: int, b: int) -> int:
@@ -175,7 +188,24 @@ def add(a: int, b: int) -> int:
     return a + b
 ```
 
-2. Add a matching test in `tests/test_calculator.py`:
+**Step 2: Run `uv run poe test` to see the guardrail in action**:
+
+```console
+$ uv run poe test
+================================ tests coverage ================================
+Name                                  Stmts   Miss Branch BrPart  Cover   Missing
+---------------------------------------------------------------------------------
+src/my_awesome_service/calculator.py      2      1      0      0    50%   3
+---------------------------------------------------------------------------------
+TOTAL                                    35      1      4      0    97%
+
+FAIL Required test coverage of 100% not reached. Total coverage: 97.14%
+```
+
+The test runner shows exactly which line is missing test coverage (line 3 in
+`calculator.py`).
+
+**Step 3: Add the matching test** in `tests/test_calculator.py`:
 
 ```python
 from my_awesome_service.calculator import add
@@ -185,13 +215,34 @@ def test_add() -> None:
     assert add(2, 3) == 5
 ```
 
-3. Run the test suite:
+**Step 4: Re-run `uv run poe test`**:
 
-```shell
-uv run poe test
+```console
+$ uv run poe test
+================================ tests coverage ================================
+TOTAL                                    35      0      4      0   100%
+
+Required test coverage of 100.0% reached. Total coverage: 100.00%
+======================== 3 passed in 0.45s ========================
 ```
 
-The test runner passes and reports 100% coverage.
+The gate turns green, confirming that all statements and branches are tested.
+
+---
+
+## Step-by-Step Recap: What Just Happened
+
+Here is the mental model to remember as you build:
+
+1. **`uv` is your engine**: It manages your Python versions and packages inside an
+   isolated sandbox. You never need to worry about broken system Python installs.
+2. **Your code lives in `src/`**: Focus your energy on `src/` and `tests/`. The `.toml`
+   files in the root directory are background guardrails that stay out of your way.
+3. **`uv add` is your `pip install`**: When you need a library, type `uv add <package>`.
+4. **`uv run poe ...` are your project controls**: Run `poe test` to verify your code,
+   `poe fix` to auto-format, and `poe code-quality` to check types and boundaries.
+5. **Red tests are safety nets**: When a quality gate flags an error, it is pointing out
+   an un-tested branch or type mismatch before it reaches production.
 
 ---
 

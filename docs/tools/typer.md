@@ -85,31 +85,70 @@ Display a personalized greeting.
 Configured in `src/<package_name>/cli.py` and registered under `[project.scripts]` in
 `pyproject.toml`:
 
-```python
-from typing import Annotated
+=== "Rendered Code (`my_awesome_service/cli.py`)"
 
-import typer
+    ```python
+    from typing import Annotated
 
-app = typer.Typer(
-    name="{{ cookiecutter.project_slug }}",
-    help="{{ cookiecutter.description }}",
-    no_args_is_help=True,
-    add_completion=False,
-)
+    from rich.console import Console
+    import typer
+
+    from my_awesome_service.core import get_greeting
+
+    app = typer.Typer(
+        name="my-awesome-service",
+        help="High performance analytics engine.",
+        no_args_is_help=True,  # (1)
+        rich_markup_mode="rich",
+    )
+    console = Console()
 
 
-@app.command()
-def greet(
-    name: Annotated[
-        str,
-        typer.Argument(
-            help="Name of the person to greet.",
-        ),
-    ] = "World",
-) -> None:
-    """Display a personalized greeting."""
-    typer.echo(f"Hello, {name}!")
-```
+    @app.command()
+    def greet(
+        name: Annotated[
+            str,
+            typer.Argument(help="The name to greet."),  # (2)
+        ] = "World",
+    ) -> None:
+        """Display a personalized greeting."""
+        greeting = get_greeting(name)
+        console.print(f"[bold green]✨ {greeting}[/bold green]")
+    ```
+
+    1. Displays formatted Rich help automatically when invoked without arguments.
+    2. Combines standard PEP 593 `typing.Annotated` with Typer CLI metadata without breaking static type checkers.
+
+=== "Template Source (`{{ cookiecutter.package_name }}/cli.py`)"
+
+    ```python
+    from typing import Annotated
+
+    from rich.console import Console
+    import typer
+
+    from {{ cookiecutter.package_name }}.core import get_greeting
+
+    app = typer.Typer(
+        name="{{ cookiecutter.project_slug }}",
+        help="{{ cookiecutter.description }}",
+        no_args_is_help=True,
+        rich_markup_mode="rich",
+    )
+    console = Console()
+
+
+    @app.command()
+    def greet(
+        name: Annotated[
+            str,
+            typer.Argument(help="The name to greet."),
+        ] = "World",
+    ) -> None:
+        """Display a personalized greeting."""
+        greeting = get_greeting(name)
+        console.print(f"[bold green]✨ {greeting}[/bold green]")
+    ```
 
 ### Console Script Entry Points
 
@@ -117,14 +156,34 @@ Zenith automatically configures entry points in `pyproject.toml`:
 
 ```toml
 [project.scripts]
-{{ cookiecutter.project_slug }} = "{{ cookiecutter.package_name }}.cli:app"
+my-awesome-service = "my_awesome_service.cli:app"
 ```
 
-Because Zenith manages the environment with `uv`, you can execute the CLI immediately
-with:
+Because Zenith manages the environment with `uv`, you can execute the CLI immediately:
 
-```bash
-uv run {{ cookiecutter.project_slug }} --help
+```console
+$ uv run my-awesome-service --help
+Usage: my-awesome-service [OPTIONS] COMMAND [ARGS]...
+
+  High performance analytics engine.
+
+Options:
+  -v, --version  Show version and exit.
+  --help         Show this message and exit.
+
+Commands:
+  greet  Display a personalized greeting.
+```
+
+### Built-in Error Handling & Validation
+
+When users pass unrecognized options or invalid arguments, Typer catches them and
+formats a helpful error message:
+
+```console
+$ uv run my-awesome-service --unknown-flag
+Error: No such option: --unknown-flag
+Try 'my-awesome-service --help' for help.
 ```
 
 ---
@@ -136,7 +195,8 @@ CLI commands in Zenith projects are verified using `typer.testing.CliRunner` in
 
 ```python
 from typer.testing import CliRunner
-from {{ cookiecutter.package_name }}.cli import app
+
+from my_awesome_service.cli import app
 
 runner = CliRunner()
 

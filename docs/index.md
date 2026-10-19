@@ -99,6 +99,73 @@ my-awesome-service/
     AGENTS.md                   # Canonical AI agent instructions and boundary rules
 ```
 
+### Production-Grade Code by Default
+
+Every generated repository produces strictly typed, immutable, and fully tested
+Python out of the box:
+
+=== "src/my_awesome_service/core.py"
+
+    ```python
+    """Core domain logic with strict typing and immutability."""
+
+    from dataclasses import dataclass
+
+
+    @dataclass(frozen=True, slots=True)
+    class Greeter:
+        """Greeting domain entity."""
+
+        recipient: str
+
+        def format(self) -> str:
+            """Format greeting with recipient."""
+            return f"Hello, {self.recipient}!"
+    ```
+
+=== "src/my_awesome_service/cli.py"
+
+    ```python
+    """Command line interface powered by Typer and Rich."""
+
+    from typing import Annotated
+
+    from rich.console import Console
+    import typer
+
+    from my_awesome_service.core import Greeter
+
+    app = typer.Typer(no_args_is_help=True)
+    console = Console()
+
+
+    @app.command()
+    def greet(
+        name: Annotated[str, typer.Argument(help="Name to greet.")] = "World",
+    ) -> None:
+        """Display a personalized greeting."""
+        greeter = Greeter(recipient=name)
+        console.print(f"[bold green]✨ {greeter.format()}[/bold green]")
+    ```
+
+=== "tests/test_cli.py"
+
+    ```python
+    """Automated CLI test suite with 100% coverage gate."""
+
+    from typer.testing import CliRunner
+
+    from my_awesome_service.cli import app
+
+    runner = CliRunner()
+
+
+    def test_greet() -> None:
+        result = runner.invoke(app, ["greet", "Zenith"])
+        assert result.exit_code == 0
+        assert "✨ Hello, Zenith!" in result.stdout
+    ```
+
 > [!TIP]
 > **Explore the Live Showcase Repository**
 >
