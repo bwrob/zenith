@@ -61,21 +61,17 @@ def to_bool(val: object) -> bool:
     return str(val).lower() in ("true", "yes", "1", "t", "y", "on")
 
 
-def setup_agent_instructions() -> None:
-    """Ensure agent instruction symlinks and configuration directories exist for all AI tools."""
-    agents_path = os.path.join(PROJECT_DIR, "AGENTS.md")
-
-    # Link standard instruction aliases to AGENTS.md
+def _setup_instruction_aliases(agents_path: str) -> None:
     for alias_name in ("CLAUDE.md", ".cursorrules", ".windsurfrules"):
         alias_path = os.path.join(PROJECT_DIR, alias_name)
         if os.path.isfile(agents_path) and not os.path.lexists(alias_path):
             try:
                 os.symlink("AGENTS.md", alias_path)
             except (OSError, NotImplementedError):
-                # Fallback for platforms or environments without symlink privileges
                 shutil.copyfile(agents_path, alias_path)
 
-    # Establish modern Cursor rules directory
+
+def _setup_cursor_rules() -> None:
     cursor_rules_dir = os.path.join(PROJECT_DIR, ".cursor", "rules")
     os.makedirs(cursor_rules_dir, exist_ok=True)
     cursor_rule_file = os.path.join(cursor_rules_dir, "zenith.mdc")
@@ -91,6 +87,8 @@ def setup_agent_instructions() -> None:
                 "Consult [AGENTS.md](../../AGENTS.md) for authoritative operational guidelines, architectural conventions, and development workflows.\n"
             )
 
+
+def _setup_gemini_settings() -> None:
     gemini_dir = os.path.join(PROJECT_DIR, ".gemini")
     os.makedirs(gemini_dir, exist_ok=True)
     gemini_settings = os.path.join(gemini_dir, "settings.json")
@@ -98,6 +96,8 @@ def setup_agent_instructions() -> None:
         with open(gemini_settings, "w", encoding="utf-8") as f:
             f.write('{\n    "contextFileName": "AGENTS.md"\n}\n')
 
+
+def _setup_claude_settings() -> None:
     claude_dir = os.path.join(PROJECT_DIR, ".claude")
     os.makedirs(claude_dir, exist_ok=True)
     claude_settings = os.path.join(claude_dir, "settings.json")
@@ -127,6 +127,8 @@ def setup_agent_instructions() -> None:
                 "}\n"
             )
 
+
+def _setup_codex_config() -> None:
     codex_dir = os.path.join(PROJECT_DIR, ".codex")
     os.makedirs(codex_dir, exist_ok=True)
     codex_config = os.path.join(codex_dir, "config.toml")
@@ -138,27 +140,39 @@ def setup_agent_instructions() -> None:
                 'sandbox_mode                   = "workspace-write"\n'
             )
 
-    # Establish tool-specific discovery links for subagent definitions
-    subagents_src = os.path.join(PROJECT_DIR, ".agents", "subagents")
-    if os.path.isdir(subagents_src):
-        for tool_dir in (
-            os.path.join(PROJECT_DIR, ".claude", "agents"),
-            os.path.join(PROJECT_DIR, ".gemini", "agents"),
-            os.path.join(PROJECT_DIR, ".codex", "agents"),
-            os.path.join(PROJECT_DIR, ".cursor", "agents"),
-        ):
-            os.makedirs(tool_dir, exist_ok=True)
-            for agent_filename in sorted(os.listdir(subagents_src)):
-                if not agent_filename.endswith(".md"):
-                    continue
-                src_agent_file = os.path.join(subagents_src, agent_filename)
-                target_agent_file = os.path.join(tool_dir, agent_filename)
-                if not os.path.lexists(target_agent_file):
-                    rel_src = os.path.relpath(src_agent_file, tool_dir)
-                    try:
-                        os.symlink(rel_src, target_agent_file)
-                    except (OSError, NotImplementedError):
-                        shutil.copyfile(src_agent_file, target_agent_file)
+
+def _link_subagents_to_dir(tool_dir: str, subagents_src: str) -> None:
+    os.makedirs(tool_dir, exist_ok=True)
+    for agent_filename in sorted(os.listdir(subagents_src)):
+        if not agent_filename.endswith(".md"):
+            continue
+        src_agent_file = os.path.join(subagents_src, agent_filename)
+        target_agent_file = os.path.join(tool_dir, agent_filename)
+        if not os.path.lexists(target_agent_file):
+            rel_src = os.path.relpath(src_agent_file, tool_dir)
+            try:
+                os.symlink(rel_src, target_agent_file)
+            except (OSError, NotImplementedError):
+                shutil.copyfile(src_agent_file, target_agent_file)
+
+
+def _setup_subagents(subagents_src: str) -> None:
+    if not os.path.isdir(subagents_src):
+        return
+    for tool_name in (".claude", ".gemini", ".codex", ".cursor"):
+        tool_dir = os.path.join(PROJECT_DIR, tool_name, "agents")
+        _link_subagents_to_dir(tool_dir, subagents_src)
+
+
+def setup_agent_instructions() -> None:
+    """Ensure agent instruction symlinks and configuration directories exist for all AI tools."""
+    agents_path = os.path.join(PROJECT_DIR, "AGENTS.md")
+    _setup_instruction_aliases(agents_path)
+    _setup_cursor_rules()
+    _setup_gemini_settings()
+    _setup_claude_settings()
+    _setup_codex_config()
+    _setup_subagents(os.path.join(PROJECT_DIR, ".agents", "subagents"))
 
 
 def main() -> None:

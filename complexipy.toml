@@ -1,0 +1,20 @@
+# ==============================================================================
+# complexipy Configuration (complexipy.toml)
+#
+# Tool: complexipy (https://github.com/rohaquinlop/complexipy)
+# Purpose: Extremely fast cognitive complexity analyzer for Python code.
+# Why it's in Zenith: Enforces cognitive complexity limits (max = 10) so functions
+# remain small, readable, and easy to maintain, guarding against over-complex logic.
+# ==============================================================================
+
+color                  = "auto"
+failed                 = true
+ignore-complexity      = false
+max-complexity-allowed = 10
+output-csv             = false
+output-json            = false
+paths                  = [ "scripts", "tests", "hooks" ]
+quiet                  = false
+snapshot-create        = false
+snapshot-ignore        = false
+sort                   = "asc"

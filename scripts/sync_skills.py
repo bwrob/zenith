@@ -22,29 +22,66 @@ DEFAULT_SOURCE = Path("{{cookiecutter.project_slug}}/.agents/skills")
 DEFAULT_TARGET = Path(".agents/skills")
 
 
+def _handle_symlink(
+    tgt_skill: Path, rel_target: str, skill_name: str, *, check_only: bool
+) -> str | None:
+    """Handle an existing symlink in target directory."""
+    current_target = os.readlink(tgt_skill)
+    if current_target == rel_target:
+        return None
+    if check_only:
+        return f"{skill_name}: symlink points to '{current_target}', expected '{rel_target}'"
+    tgt_skill.unlink()
+    return ""
+
+
+def _handle_existing(
+    tgt_skill: Path, rel_target: str, skill_name: str, *, check_only: bool
+) -> str | None:
+    """Handle an existing non-symlink file or directory in target directory."""
+    if check_only:
+        return f"{skill_name}: expected symlink to '{rel_target}', but found directory/file"
+    if tgt_skill.is_dir():
+        shutil.rmtree(tgt_skill)
+    else:
+        tgt_skill.unlink()
+    return ""
+
+
+def _sync_skill(
+    src_skill: Path,
+    target_dir: Path,
+    tgt_resolved: Path,
+    *,
+    check_only: bool,
+) -> str | None:
+    """Synchronize a single skill directory to target_dir as a relative symlink."""
+    skill_name = src_skill.name
+    tgt_skill = target_dir / skill_name
+    rel_target = os.path.relpath(src_skill, tgt_resolved)
+
+    if tgt_skill.is_symlink():
+        res = _handle_symlink(tgt_skill, rel_target, skill_name, check_only=check_only)
+        if res is None or check_only:
+            return res
+    elif tgt_skill.exists():
+        res = _handle_existing(tgt_skill, rel_target, skill_name, check_only=check_only)
+        if check_only:
+            return res
+    elif check_only:
+        return f"{skill_name}: missing symlink in {target_dir}"
+
+    tgt_skill.symlink_to(rel_target)
+    return None
+
+
 def sync_skills(
     source_dir: Path,
     target_dir: Path,
     *,
     check_only: bool = False,
 ) -> list[str]:
-    """Ensure skills in target_dir are relative symlinks to source_dir.
-
-    Parameters
-    ----------
-    source_dir : Path
-        Canonical source directory containing template skills.
-    target_dir : Path
-        Target directory where symlinks should reside (.agents/skills).
-    check_only : bool, optional
-        If True, only verify that symlinks are valid and up to date without
-        making disk changes, by default False.
-
-    Returns
-    -------
-    list[str]
-        List of error messages or discrepancies found.
-    """
+    """Ensure skills in target_dir are relative symlinks to source_dir."""
     errors: list[str] = []
 
     src_resolved = source_dir.resolve()
@@ -60,35 +97,9 @@ def sync_skills(
     )
 
     for src_skill in source_skills:
-        skill_name = src_skill.name
-        tgt_skill = target_dir / skill_name
-        rel_target = os.path.relpath(src_skill, tgt_resolved)
-
-        if tgt_skill.is_symlink():
-            current_target = os.readlink(tgt_skill)
-            if current_target == rel_target:
-                continue
-            if check_only:
-                errors.append(
-                    f"{skill_name}: symlink points to '{current_target}', expected '{rel_target}'"
-                )
-                continue
-            tgt_skill.unlink()
-        elif tgt_skill.exists():
-            if check_only:
-                errors.append(
-                    f"{skill_name}: expected symlink to '{rel_target}', but found directory/file"
-                )
-                continue
-            if tgt_skill.is_dir():
-                shutil.rmtree(tgt_skill)
-            else:
-                tgt_skill.unlink()
-        elif check_only:
-            errors.append(f"{skill_name}: missing symlink in {target_dir}")
-            continue
-
-        tgt_skill.symlink_to(rel_target)
+        err = _sync_skill(src_skill, target_dir, tgt_resolved, check_only=check_only)
+        if err:
+            errors.append(err)
 
     return errors
 

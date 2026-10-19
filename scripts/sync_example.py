@@ -31,6 +31,29 @@ SHOWCASE_CONTEXT: dict[str, Any] = {
 }
 
 
+def _clean_target_dir(target_dir: Path) -> None:
+    """Remove all files and directories in target_dir except .git."""
+    for item in target_dir.iterdir():
+        if item.name == ".git":
+            continue
+        if item.is_dir():
+            shutil.rmtree(item)
+        else:
+            item.unlink()
+
+
+def _copy_rendered_files(rendered_path: Path, target_dir: Path) -> None:
+    """Copy all files and directories from rendered_path into target_dir except .git."""
+    for item in rendered_path.iterdir():
+        if item.name == ".git":
+            continue
+        dest = target_dir / item.name
+        if item.is_dir():
+            shutil.copytree(item, dest, symlinks=True)
+        else:
+            shutil.copy2(item, dest, follow_symlinks=False)
+
+
 def sync_example(target_dir: Path, *, lock: bool = True) -> Path:
     """Render the Zenith template into target_dir, preserving its .git directory."""
     resolved_target = target_dir.resolve()
@@ -48,24 +71,8 @@ def sync_example(target_dir: Path, *, lock: bool = True) -> Path:
         )
 
         print(f"Synchronizing rendered files to target: {resolved_target}")
-        # Remove old files in target except .git
-        for item in resolved_target.iterdir():
-            if item.name == ".git":
-                continue
-            if item.is_dir():
-                shutil.rmtree(item)
-            else:
-                item.unlink()
-
-        # Copy new files from rendered project into target
-        for item in rendered_path.iterdir():
-            if item.name == ".git":
-                continue
-            dest = resolved_target / item.name
-            if item.is_dir():
-                shutil.copytree(item, dest, symlinks=True)
-            else:
-                shutil.copy2(item, dest, follow_symlinks=False)
+        _clean_target_dir(resolved_target)
+        _copy_rendered_files(rendered_path, resolved_target)
 
     sub_env = {k: v for k, v in os.environ.items() if k != "VIRTUAL_ENV"}
 
