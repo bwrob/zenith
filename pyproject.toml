@@ -36,6 +36,8 @@
         "ruff>=0.17.0",
         "rumdl>=0.0.8",
         "taplo>=0.9.3",
+        "typos>=1.30.0",
+        "zizmor>=1.23.0",
     ]
     docs = [
         "markdown-exec>=1.12.0",
@@ -57,6 +59,8 @@
         "format-yaml",
         "format-css",
         "type-check",
+        "typos",
+        "zizmor",
         "sync-skills-check",
         "check-skills",
         "complexity",
@@ -73,6 +77,7 @@
         { cmd = "rumdl fmt docs/" },
         { cmd = "prek run prettier --all-files" },
         { cmd = "prek run prettier-css --all-files" },
+        { cmd = "typos -w" },
     ], help = "Auto-fix linting and formatting issues." }
     format = { cmd = "ruff format", help = "Format Python code with Ruff." }
     format-check = { cmd = "ruff format --check", help = "Check formatting with Ruff." }
@@ -88,6 +93,9 @@
     sync-skills-check = { cmd = "python scripts/sync_skills.py --check", help = "Check that repo skills are properly symlinked to template source of truth." }
     test = { cmd = "pytest -n auto --dist=worksteal --max-worker-restart=0 --cov --cov-report=term-missing --cov-report=xml", env = { COVERAGE_FILE = "/tmp/.zenith_coverage" }, help = "Run unit test suite in parallel with xdist and 100% coverage." }
     type-check = { cmd = "pyrefly check", help = "Strict static type checking with Pyrefly." }
+    typos = { cmd = "typos", help = "Check source code and documentation for typos." }
+    typos-fix = { cmd = "typos -w", help = "Automatically fix typos across the codebase." }
+    zizmor = { cmd = "zizmor --config .zizmor.yml --pedantic --min-severity informational .github/workflows", help = "Audit GitHub Actions workflows for security vulnerabilities with zizmor." }
 
 [tool.pytest.ini_options]
     norecursedirs = [ "{{cookiecutter.project_slug}}", ".*", "build", "dist" ]

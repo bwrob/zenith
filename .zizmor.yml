@@ -1,0 +1,12 @@
+# ==============================================================================
+# Zizmor Configuration (.zizmor.yml)
+#
+# Tool: Zizmor (https://github.com/zizmorcore/zizmor)
+# Purpose: High-performance static security analysis for GitHub Actions CI/CD.
+# Why it's in Zenith: Audits CI workflows for script injection vulnerabilities,
+# untrusted code execution, cache poisoning, and dangerous trigger configurations.
+# ==============================================================================
+
+rules:
+    unpinned-uses:
+        disable: true

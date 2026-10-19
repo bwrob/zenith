@@ -1,0 +1,22 @@
+# ==============================================================================
+# Typos Configuration (typos.toml)
+#
+# Tool: Typos (https://github.com/crate-ci/typos)
+# Purpose: Source code and documentation spell checker written in Rust.
+# Why it's in Zenith: Blazingly fast spell checker that catches spelling errors
+# in code, docstrings, markdown, and configs before they reach production.
+# ==============================================================================
+
+[default]
+    extend-ignore-re = [
+        "(?Rm)^.*(#|//)\\s*(spellchecker:disable-line|codespell:ignore)\\s*$",
+    ]
+
+    [default.extend-words]
+        CPY    = "CPY"
+        Ines   = "Ines"
+        ment   = "ment"
+        utiliz = "utiliz"
+
+[files]
+    extend-exclude = [ "*.ambr", "*.min.js", "*.svg", "build", "dist", "site" ]

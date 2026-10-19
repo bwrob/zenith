@@ -68,6 +68,12 @@ jobs:
             - name: 🧮 Run complexipy complexity check
               run: uv run poe complexity
 
+            - name: 🔤 Run typos spell check
+              run: uv run poe typos
+
+            - name: 🛡️ Run zizmor GitHub Actions security audit
+              run: uv run poe zizmor
+
     test:
         name: 🐍 Template Test Suite (${{ matrix.os }}, py${{ matrix.python-version }})
         runs-on: ${{ matrix.os }}
