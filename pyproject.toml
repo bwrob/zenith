@@ -91,7 +91,7 @@
     sync-example = { cmd = "python scripts/sync_example.py", help = "Render and sync showcase repository (zenith-example)." }
     sync-skills = { cmd = "python scripts/sync_skills.py", help = "Synchronize repo skills as symlinks from template source of truth." }
     sync-skills-check = { cmd = "python scripts/sync_skills.py --check", help = "Check that repo skills are properly symlinked to template source of truth." }
-    test = { cmd = "pytest -n auto --dist=worksteal --max-worker-restart=0 --cov --cov-report=term-missing --cov-report=xml", env = { COVERAGE_FILE = "/tmp/.zenith_coverage" }, help = "Run unit test suite in parallel with xdist and 100% coverage." }
+    test = { cmd = "pytest -n auto --dist=worksteal --max-worker-restart=0 --cov --cov-report=term-missing --cov-report=xml", env = { TMPDIR = "/var/tmp" }, help = "Run unit test suite in parallel with xdist and 100% coverage." }
     type-check = { cmd = "pyrefly check", help = "Strict static type checking with Pyrefly." }
     typos = { cmd = "typos", help = "Check source code and documentation for typos." }
     typos-fix = { cmd = "typos -w", help = "Automatically fix typos across the codebase." }

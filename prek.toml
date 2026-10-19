@@ -33,7 +33,9 @@ fail_fast                  = false
 
 [[repos]]
     hooks = [
-        { id = "validate-pyproject", name = "🐍 validate-pyproject · Validate pyproject.toml" },
+        { id = "validate-pyproject", name = "🐍 validate-pyproject · Validate pyproject.toml", additional_dependencies = [
+            "validate-pyproject-schema-store[all]",
+        ] },
     ]
     repo = "https://github.com/abravalheri/validate-pyproject"
     rev = "0.26"
@@ -78,3 +80,8 @@ fail_fast                  = false
         { id = "complexipy", name = "🧮 complexipy · Cognitive complexity check", entry = "uv run complexipy scripts tests hooks", language = "system", pass_filenames = false, files = '(\.(py|pyi)$|(^|/)complexipy\.toml$)' },
     ]
     repo = "local"
+
+[[repos]]
+    hooks = [ { id = "uv-lock", name = "🐍 uv · Lock dependencies" } ]
+    repo  = "https://github.com/astral-sh/uv-pre-commit"
+    rev   = "0.12.7"
