@@ -116,6 +116,8 @@ deterministic procedures without skipping critical quality steps.
     under 150 lines of change.
   - **Permanent Archival**: Folds completed features into `docs/specs/` with
     `poe sdd-archive`.
+  - **Task Rollback**: Cleanly reverts flawed task commits and resets plan checkboxes
+    with `poe sdd-revert`.
 
 ---
 
@@ -156,6 +158,8 @@ deterministic procedures without skipping critical quality steps.
     refactors and runs auto-fixers.
   - **Strict Task Order**: Enforces sequential execution without skipping ahead or
     batching tasks.
+  - **Commit SHA Tracking**: Records Git commit hashes for each completed task directly
+    in `plan.md` for auditability and automated rollback.
 
 ---
 
@@ -168,6 +172,8 @@ deterministic procedures without skipping critical quality steps.
     (`poe sdd-check-api`).
   - **Traceability Matrix**: Enforces requirement-to-test mapping
     (`poe sdd-check-traceability`).
+  - **Remediation Loop**: Appends a structured `Review Fixes` phase to `plan.md` when
+    changes are requested, enabling immediate re-implementation.
 
 ---
 

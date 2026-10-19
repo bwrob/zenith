@@ -132,6 +132,7 @@ def test_default_generation(temp_output_dir: Path) -> None:
     assert "[tasks.sdd-review]" in poe_text
     assert "[tasks.sdd-verify]" in poe_text
     assert "[tasks.sdd-archive]" in poe_text
+    assert "[tasks.sdd-revert]" in poe_text
     for ref in [
         "hypothesis.md",
         "pytest-cov.md",
@@ -253,6 +254,14 @@ def test_default_generation(temp_output_dir: Path) -> None:
         / "workflow-sdd"
         / "scripts"
         / "archive_feature.py"
+    ).exists()
+    assert (
+        project_dir
+        / ".agents"
+        / "skills"
+        / "workflow-sdd"
+        / "scripts"
+        / "revert_task.py"
     ).exists()
     for subagent in [
         "sdd-specifier.md",

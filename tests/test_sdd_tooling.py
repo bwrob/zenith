@@ -5,6 +5,8 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
+import pytest
+
 SCRIPTS_SPEC = (
     Path(__file__).resolve().parent.parent
     / ".agents"
@@ -34,6 +36,7 @@ sys.path.insert(0, str(SCRIPTS_SDD))
 import archive_feature
 import check_spec
 import check_traceability
+import revert_task
 
 # --- check_spec.py tests ---
 
@@ -299,6 +302,284 @@ def test_archive_feature_main(tmp_path: Path) -> None:
             str(specs_root),
             "--docs-dir",
             str(docs_root),
+        ]
+    )
+    assert exit_code == 0
+
+
+# --- revert_task.py tests ---
+
+
+def test_find_revertable_tasks_empty() -> None:
+    plan = "# Plan\n- [ ] Task 1 (no sha)\n- [x] Task 2 without sha\n"
+    targets = revert_task.find_revertable_tasks(plan)
+    assert targets == []
+
+
+def test_find_revertable_tasks_found() -> None:
+    plan = (
+        "# Plan\n"
+        "- [x] **Task 1: Protocol** (a1b2c3d)\n"
+        "- [ ] **Task 2: Service**\n"
+        "  - [x] Subtask A (1234567890abcdef)\n"
+    )
+    targets = revert_task.find_revertable_tasks(plan)
+    assert len(targets) == 2
+    assert targets[0].task_title == "**Task 1: Protocol**"
+    assert targets[0].sha == "a1b2c3d"
+    assert targets[0].reset_line == "- [ ] **Task 1: Protocol**"
+
+    assert targets[1].task_title == "Subtask A"
+    assert targets[1].sha == "1234567890abcdef"
+    assert targets[1].reset_line == "  - [ ] Subtask A"
+
+
+def test_revert_task_security_violation(tmp_path: Path) -> None:
+    specs_root = tmp_path / ".specs"
+    specs_root.mkdir(parents=True)
+    assert revert_task.revert_task("../../outside", specs_root=specs_root) == 1
+    assert revert_task.revert_task(".", specs_root=specs_root) == 1
+
+
+def test_revert_task_path_exception() -> None:
+    class BrokenSpecs:
+        def resolve(self) -> Path:
+            raise RuntimeError("Simulated resolve failure")
+
+        def __truediv__(self, _other: str) -> BrokenSpecs:
+            return self
+
+    assert revert_task.revert_task("any-feat", specs_root=BrokenSpecs()) == 1  # type: ignore[arg-type]
+
+
+def test_revert_task_plan_missing(tmp_path: Path) -> None:
+    specs_root = tmp_path / ".specs"
+    feat_dir = specs_root / "auth"
+    feat_dir.mkdir(parents=True)
+    assert revert_task.revert_task("auth", specs_root=specs_root) == 1
+
+
+def test_revert_task_plan_read_error(tmp_path: Path) -> None:
+    specs_root = tmp_path / ".specs"
+    feat_dir = specs_root / "auth"
+    feat_dir.mkdir(parents=True)
+    plan_file = feat_dir / "plan.md"
+    plan_file.write_text("- [x] Task 1 (abcdef1)\n", encoding="utf-8")
+    plan_file.chmod(0o000)
+    try:
+        assert revert_task.revert_task("auth", specs_root=specs_root) == 1
+    finally:
+        plan_file.chmod(0o644)
+
+
+def test_revert_task_no_revertable_tasks(tmp_path: Path) -> None:
+    specs_root = tmp_path / ".specs"
+    feat_dir = specs_root / "auth"
+    feat_dir.mkdir(parents=True)
+    (feat_dir / "plan.md").write_text("# Plan\n- [ ] Task 1\n", encoding="utf-8")
+    assert revert_task.revert_task("auth", specs_root=specs_root) == 1
+
+
+def test_revert_task_target_sha_not_found(tmp_path: Path) -> None:
+    specs_root = tmp_path / ".specs"
+    feat_dir = specs_root / "auth"
+    feat_dir.mkdir(parents=True)
+    (feat_dir / "plan.md").write_text(
+        "# Plan\n- [x] Task 1 (abcdef1)\n", encoding="utf-8"
+    )
+    assert (
+        revert_task.revert_task("auth", target_sha="9999999", specs_root=specs_root)
+        == 1
+    )
+
+
+def test_revert_task_commit_not_in_git(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    specs_root = tmp_path / ".specs"
+    feat_dir = specs_root / "auth"
+    feat_dir.mkdir(parents=True)
+    (feat_dir / "plan.md").write_text(
+        "# Plan\n- [x] Task 1 (abcdef1)\n", encoding="utf-8"
+    )
+
+    import subprocess
+
+    monkeypatch.setattr(
+        subprocess,
+        "run",
+        lambda cmd, *args, **kwargs: subprocess.CompletedProcess(
+            cmd, returncode=1, stdout="", stderr="error"
+        ),
+    )
+    assert revert_task.revert_task("auth", specs_root=specs_root) == 1
+
+
+def test_revert_task_dry_run(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    specs_root = tmp_path / ".specs"
+    feat_dir = specs_root / "auth"
+    feat_dir.mkdir(parents=True)
+    plan_content = "# Plan\n- [x] Task 1 (abcdef1)\n"
+    (feat_dir / "plan.md").write_text(plan_content, encoding="utf-8")
+
+    import subprocess
+
+    def mock_run(
+        cmd: list[str], *args: object, **kwargs: object
+    ) -> subprocess.CompletedProcess[str]:
+        return subprocess.CompletedProcess(
+            cmd, returncode=0, stdout="abcdef1", stderr=""
+        )
+
+    monkeypatch.setattr(subprocess, "run", mock_run)
+    assert revert_task.revert_task("auth", specs_root=specs_root, dry_run=True) == 0
+    assert (feat_dir / "plan.md").read_text(encoding="utf-8") == plan_content
+
+
+def test_revert_task_revert_conflict(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    specs_root = tmp_path / ".specs"
+    feat_dir = specs_root / "auth"
+    feat_dir.mkdir(parents=True)
+    (feat_dir / "plan.md").write_text(
+        "# Plan\n- [x] Task 1 (abcdef1)\n", encoding="utf-8"
+    )
+
+    import subprocess
+
+    def mock_run(
+        cmd: list[str], *args: object, **kwargs: object
+    ) -> subprocess.CompletedProcess[str]:
+        if "rev-parse" in cmd:
+            return subprocess.CompletedProcess(
+                cmd, returncode=0, stdout="abcdef1", stderr=""
+            )
+        if "revert" in cmd and "--no-edit" in cmd:
+            return subprocess.CompletedProcess(
+                cmd, returncode=1, stdout="", stderr="conflict error"
+            )
+        return subprocess.CompletedProcess(cmd, returncode=0)
+
+    monkeypatch.setattr(subprocess, "run", mock_run)
+    assert revert_task.revert_task("auth", specs_root=specs_root) == 1
+
+
+def test_revert_task_write_error(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    specs_root = tmp_path / ".specs"
+    feat_dir = specs_root / "auth"
+    feat_dir.mkdir(parents=True)
+    plan_file = feat_dir / "plan.md"
+    plan_file.write_text("# Plan\n- [x] Task 1 (abcdef1)\n", encoding="utf-8")
+
+    import subprocess
+
+    monkeypatch.setattr(
+        subprocess,
+        "run",
+        lambda cmd, *args, **kwargs: subprocess.CompletedProcess(cmd, returncode=0),
+    )
+
+    plan_file.chmod(0o444)
+    try:
+        assert revert_task.revert_task("auth", specs_root=specs_root) == 1
+    finally:
+        plan_file.chmod(0o644)
+
+
+def test_revert_task_success(tmp_path: Path) -> None:
+    import subprocess
+
+    subprocess.run(
+        ["git", "init", "-b", "main"], cwd=tmp_path, check=True, capture_output=True
+    )
+    subprocess.run(
+        ["git", "config", "user.name", "Test User"], cwd=tmp_path, check=True
+    )
+    subprocess.run(
+        ["git", "config", "user.email", "test@example.com"], cwd=tmp_path, check=True
+    )
+
+    dummy_file = tmp_path / "hello.txt"
+    dummy_file.write_text("initial\n", encoding="utf-8")
+    subprocess.run(["git", "add", "hello.txt"], cwd=tmp_path, check=True)
+    subprocess.run(["git", "commit", "-m", "chore: initial"], cwd=tmp_path, check=True)
+
+    dummy_file.write_text("task 1 change\n", encoding="utf-8")
+    subprocess.run(["git", "add", "hello.txt"], cwd=tmp_path, check=True)
+    subprocess.run(["git", "commit", "-m", "feat: task 1"], cwd=tmp_path, check=True)
+    sha1 = subprocess.check_output(
+        ["git", "rev-parse", "--short", "HEAD"], cwd=tmp_path, text=True
+    ).strip()
+
+    dummy_file.write_text("task 1 change\ntask 2 change\n", encoding="utf-8")
+    subprocess.run(["git", "add", "hello.txt"], cwd=tmp_path, check=True)
+    subprocess.run(["git", "commit", "-m", "feat: task 2"], cwd=tmp_path, check=True)
+    sha2 = subprocess.check_output(
+        ["git", "rev-parse", "--short", "HEAD"], cwd=tmp_path, text=True
+    ).strip()
+
+    specs_root = tmp_path / ".specs"
+    feat_dir = specs_root / "feat-x"
+    feat_dir.mkdir(parents=True)
+    plan_file = feat_dir / "plan.md"
+    plan_file.write_text(
+        f"# Plan\n\n- [x] **Task 1: Init** ({sha1})\n- [x] **Task 2: Add** ({sha2})\n",
+        encoding="utf-8",
+    )
+    subprocess.run(["git", "add", str(plan_file)], cwd=tmp_path, check=True)
+    subprocess.run(
+        ["git", "commit", "-m", "docs(plan): track tasks"], cwd=tmp_path, check=True
+    )
+
+    # 1. Revert task 2 by default (last completed task)
+    assert (
+        revert_task.revert_task("feat-x", specs_root=specs_root, repo_root=tmp_path)
+        == 0
+    )
+    plan_after_2 = plan_file.read_text(encoding="utf-8")
+    assert "- [ ] **Task 2: Add**\n" in plan_after_2
+    assert f"- [x] **Task 1: Init** ({sha1})" in plan_after_2
+
+    # 2. Revert task 1 by explicit target_sha
+    assert (
+        revert_task.revert_task(
+            "feat-x", target_sha=sha1, specs_root=specs_root, repo_root=tmp_path
+        )
+        == 0
+    )
+    plan_after_1 = plan_file.read_text(encoding="utf-8")
+    assert "- [ ] **Task 1: Init**\n" in plan_after_1
+    assert "- [ ] **Task 2: Add**\n" in plan_after_1
+
+
+def test_revert_task_main_cli(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    specs_root = tmp_path / ".specs"
+    feat_dir = specs_root / "feat-cli"
+    feat_dir.mkdir(parents=True)
+    (feat_dir / "plan.md").write_text(
+        "# Plan\n- [x] Task 1 (abcdef1)\n", encoding="utf-8"
+    )
+
+    import subprocess
+
+    monkeypatch.setattr(
+        subprocess,
+        "run",
+        lambda cmd, *args, **kwargs: subprocess.CompletedProcess(
+            cmd, returncode=0, stdout="abcdef1"
+        ),
+    )
+
+    exit_code = revert_task.main(
+        [
+            "feat-cli",
+            "abcdef1",
+            "--specs-dir",
+            str(specs_root),
+            "--dry-run",
         ]
     )
     assert exit_code == 0
