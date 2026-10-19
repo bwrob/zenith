@@ -94,7 +94,7 @@ def validate_skill(skill_dir: Path) -> list[str]:
 
     # Validate internal file links (e.g. [templates/...](./templates/...))
     link_pattern = re.compile(
-        r"\[([^\]]+)\]\((\./(templates|references|examples)/[^\)]+)\)"
+        r"\[([^\]]+)\]\((\./(templates|references|examples|scripts)/[^\)]+)\)"
     )
     for match in link_pattern.finditer(content):
         rel_target = match.group(2).lstrip("./")

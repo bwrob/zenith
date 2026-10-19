@@ -138,6 +138,24 @@ def setup_agent_instructions() -> None:
                 'sandbox_mode                   = "workspace-write"\n'
             )
 
+    # Establish tool-specific discovery links for subagent definitions
+    subagents_src = os.path.join(PROJECT_DIR, ".agents", "subagents")
+    if os.path.isdir(subagents_src):
+        for tool_name in (".claude", ".gemini"):
+            target_dir = os.path.join(PROJECT_DIR, tool_name, "agents")
+            os.makedirs(target_dir, exist_ok=True)
+            for agent_filename in sorted(os.listdir(subagents_src)):
+                if not agent_filename.endswith(".md"):
+                    continue
+                src_agent_file = os.path.join(subagents_src, agent_filename)
+                target_agent_file = os.path.join(target_dir, agent_filename)
+                if not os.path.lexists(target_agent_file):
+                    rel_src = os.path.relpath(src_agent_file, target_dir)
+                    try:
+                        os.symlink(rel_src, target_agent_file)
+                    except (OSError, NotImplementedError):
+                        shutil.copyfile(src_agent_file, target_agent_file)
+
 
 def main() -> None:
     include_cli = to_bool("{{ cookiecutter.include_cli }}")

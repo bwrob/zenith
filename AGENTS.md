@@ -73,7 +73,7 @@ Before editing code or executing tasks, ensure an isolated, clean working enviro
 - **Scope Hierarchy**: When exploring subdirectories, check for nested `AGENTS.md` or
   `CLAUDE.md` files; localized instructions take precedence within their scope.
 - **Workflow & Tool Guidance**: Consult `.agents/skills/` for lifecycle workflow skills
-  (`workflow-git`, `workflow-code-review`, `workflow-changelog`, `workflow-adr`, `workflow-setup`, `workflow-skill-creator`, `workflow-example-sync`),
+  (`workflow-git`, `workflow-code-review`, `workflow-changelog`, `workflow-adr`, `workflow-setup`, `workflow-skill-creator`, `workflow-example-sync`, `workflow-sdd`, `workflow-sdd-spec`, `workflow-sdd-plan`, `workflow-sdd-implement`, `workflow-sdd-review`),
   engineering guides (`guide-python`, `guide-ste100`), and tool-specific guidance (`tool-*/SKILL.md`).
 
 ## Repository Architecture

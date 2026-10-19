@@ -213,6 +213,7 @@ tempCodeRunnerFile.py
 .pyrefly/
 .tach_cache/
 .temp/
+.specs/
 site/
 
 # PyPI configuration file

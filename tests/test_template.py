@@ -82,6 +82,11 @@ def test_default_generation(temp_output_dir: Path) -> None:
         "workflow-changelog",
         "workflow-code-review",
         "workflow-git",
+        "workflow-sdd",
+        "workflow-sdd-implement",
+        "workflow-sdd-plan",
+        "workflow-sdd-review",
+        "workflow-sdd-spec",
         "workflow-setup",
         "workflow-skill-creator",
         "guide-python",
@@ -180,6 +185,47 @@ def test_default_generation(temp_output_dir: Path) -> None:
     assert (
         project_dir / ".agents" / "skills" / "workflow-adr" / "templates" / "adr.md"
     ).exists()
+    assert (
+        project_dir
+        / ".agents"
+        / "skills"
+        / "workflow-sdd-spec"
+        / "templates"
+        / "spec.md"
+    ).exists()
+    assert (
+        project_dir
+        / ".agents"
+        / "skills"
+        / "workflow-sdd-plan"
+        / "templates"
+        / "plan.md"
+    ).exists()
+    assert (
+        project_dir
+        / ".agents"
+        / "skills"
+        / "workflow-sdd-review"
+        / "templates"
+        / "review.md"
+    ).exists()
+    assert (
+        project_dir
+        / ".agents"
+        / "skills"
+        / "workflow-sdd-review"
+        / "scripts"
+        / "check_public_api.py"
+    ).exists()
+    for subagent in [
+        "sdd-specifier.md",
+        "sdd-planner.md",
+        "sdd-implementer.md",
+        "sdd-reviewer.md",
+    ]:
+        assert (project_dir / ".agents" / "subagents" / subagent).exists()
+        assert (project_dir / ".claude" / "agents" / subagent).exists()
+        assert (project_dir / ".gemini" / "agents" / subagent).exists()
     assert (
         project_dir / ".agents" / "skills" / "guide-ste100" / "scripts" / "ste-lint.py"
     ).exists()
@@ -602,6 +648,7 @@ def test_default_generation(temp_output_dir: Path) -> None:
     assert "`cli` -> `core` -> external dependencies" in agents_text
     assert ".temp/" in agents_text
     assert ".temp/" in (project_dir / ".gitignore").read_text()
+    assert ".specs/" in (project_dir / ".gitignore").read_text()
     assert (project_dir / "CLAUDE.md").read_text() == agents_text
     assert (project_dir / ".cursorrules").read_text() == agents_text
     assert (project_dir / ".windsurfrules").read_text() == agents_text
