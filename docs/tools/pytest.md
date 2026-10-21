@@ -1,12 +1,10 @@
-# pytest: Test Framework
+# Pytest: Test Framework
 
 [![Tool: pytest](https://img.shields.io/badge/tests-pytest-blue.svg)](https://docs.pytest.org/)
 
 `pytest` is the foundational testing framework for Python applications and libraries.
 Zenith enhances pytest with an integrated ecosystem of specialized plugins that enforce
 assertion rigor, prevent state flakiness, and accelerate parallel execution.
-
----
 
 ## What It Does
 
@@ -18,8 +16,6 @@ to target specific subsystems.
 Zenith configures pytest with strict validation flags: tests must declare valid markers,
 configuration files are strictly validated, doctests inside source docstrings are
 automatically discovered and executed, and unused snapshot assertions trigger warnings.
-
----
 
 ## Why It's in Zenith
 
@@ -34,22 +30,18 @@ developer loops fast, randomized ordering eliminates state pollution, and snapsh
 property-based plugins catch edge-case regressions that manual test cases often
 overlook.
 
----
-
-## Integrated pytest Plugins
+## Integrated Pytest Plugins
 
 Zenith integrates a curated set of plugins into the test environment:
 
-| Plugin | Role | Primary Guarantee |
-|---|---|---|
-| **`pytest-cov`** | Coverage Integration | Bridges pytest with **[Coverage.py](coverage.md)** to track execution and enforce 100% statement and branch coverage. |
-| **`pytest-xdist`** | Parallel Execution | Distributes test runs across available CPU cores (`uv run poe test-fast` via `-n auto`), accelerating local and CI feedback loops. |
-| **`pytest-randomly`** | Test Order Shuffling | Randomizes execution sequences on every run to detect global state leakage, unclosed resources, or order-dependent assertions. |
-| **`pytest-sugar`** | Terminal Diagnostics | Replaces default dot progress with an interactive progress meter and surfaces test failures immediately as they occur. |
-| **`syrupy`** | Snapshot Testing | Provides declarative snapshot fixtures (`snapshot`) that assert structured outputs (CLI menus, JSON payloads, AST trees) against versioned `.ambr` files. |
-| **`hypothesis`** | Property-Based Testing | Generates hundreds of pseudo-random inputs to find hidden edge cases, boundary errors, and numeric overflow traps across algorithmic functions. |
-
----
+| Plugin                | Role                   | Primary Guarantee                                                                                                                                         |
+| --------------------- | ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`pytest-cov`**      | Coverage Integration   | Bridges pytest with **[Coverage.py](coverage.md)** to track execution and enforce 100% statement and branch coverage.                                     |
+| **`pytest-xdist`**    | Parallel Execution     | Distributes test runs across available CPU cores (`uv run poe test-fast` via `-n auto`), accelerating local and CI feedback loops.                        |
+| **`pytest-randomly`** | Test Order Shuffling   | Randomizes execution sequences on every run to detect global state leakage, unclosed resources, or order-dependent assertions.                            |
+| **`pytest-sugar`**    | Terminal Diagnostics   | Replaces default dot progress with an interactive progress meter and surfaces test failures immediately as they occur.                                    |
+| **`syrupy`**          | Snapshot Testing       | Provides declarative snapshot fixtures (`snapshot`) that assert structured outputs (CLI menus, JSON payloads, AST trees) against versioned `.ambr` files. |
+| **`hypothesis`**      | Property-Based Testing | Generates hundreds of pseudo-random inputs to find hidden edge cases, boundary errors, and numeric overflow traps across algorithmic functions.           |
 
 ## Configuration in Zenith
 
@@ -64,8 +56,6 @@ if not path.exists():
 print(path.read_text().strip())
 ```
 
----
-
 ## Key Invocations
 
 ```bash
@@ -75,8 +65,6 @@ uv run poe test-lowest          # Verify against lowest-direct dependencies
 uv run poe test-snapshot-update # Update Syrupy snapshots (.ambr files)
 uv run pytest -k "test_filter"  # Run filtered subset of tests
 ```
-
----
 
 ## Upstream Documentation
 

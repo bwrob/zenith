@@ -1,12 +1,10 @@
-# rumdl: Markdown Linter
+# Rumdl: Markdown Linter
 
 [![Tool: rumdl](https://img.shields.io/badge/markdown-rumdl-orange.svg)](https://github.com/rvben/rumdl)
 
 `rumdl` is a high-performance Markdown linter and formatter written in Rust. It enforces
 strict CommonMark and GitHub Flavored Markdown (GFM) standards, and directly checks
 embedded code blocks.
-
----
 
 ## What It Does
 
@@ -18,8 +16,6 @@ Crucially, rumdl integrates with Python linters like Ruff to validate embedded P
 code blocks (` ```python `), ensuring examples never contain broken syntax, invalid
 imports, or outdated conventions.
 
----
-
 ## Why It's in Zenith
 
 Legacy Markdown linters require Node.js or Ruby runtimes. Zenith chooses rumdl to
@@ -28,8 +24,6 @@ Rust and Python binaries.
 
 Automated Markdown formatting (`rumdl fmt`) ensures documentation authored by developers
 and AI agents adheres to identical formatting standards and maintains clean Git diffs.
-
----
 
 ## Configuration in Zenith
 
@@ -44,8 +38,6 @@ if not path.exists():
 print(path.read_text().strip())
 ```
 
----
-
 ## Key Invocations
 
 ```bash
@@ -54,8 +46,6 @@ uv run rumdl fmt             # Auto-format Markdown files
 uv run poe lint-md           # Wired development task in Poe
 uv run poe format-md         # Wired formatting task in Poe
 ```
-
----
 
 ## Upstream Documentation
 

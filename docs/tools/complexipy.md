@@ -1,12 +1,10 @@
-# complexipy: Cognitive Complexity
+# Complexipy: Cognitive Complexity
 
 [![Tool: complexipy](https://img.shields.io/badge/complexity-complexipy-crimson.svg)](https://github.com/rohaquinlop/complexipy)
 
 `complexipy` is an extremely fast cognitive complexity analyzer for Python code written
 in Rust. It measures how difficult functions and methods are for a human or AI agent to
 read and understand.
-
----
 
 ## What It Does
 
@@ -18,8 +16,6 @@ conditional ladders, and convoluted boolean expressions.
 `complexipy` performs this analysis in milliseconds, generating detailed terminal
 reports that pinpoint exact lines where cognitive overhead spikes.
 
----
-
 ## Why It's in Zenith
 
 Deeply nested logic and tangled branching are the primary sources of regression bugs in
@@ -30,8 +26,6 @@ Zenith enforces a hard ceiling of **cognitive complexity <= 10** per function or
 Functions that exceed 10 points fail CI immediately, forcing developers and AI agents to
 refactor logic into small, composable functions with early returns, structural pattern
 matching, or dispatch tables.
-
----
 
 ## Configuration in Zenith
 
@@ -53,16 +47,12 @@ represent acceptable complexity for orchestration or algorithm dispatch. Any sco
 10 is strictly prohibited in Zenith and must be refactored via helper extraction or
 dispatch logic.
 
----
-
 ## Key Invocations
 
 ```bash
 uv run complexipy src tests    # Run cognitive complexity analysis
 uv run poe complexity          # Wired development task in Poe
 ```
-
----
 
 ## Upstream Documentation
 

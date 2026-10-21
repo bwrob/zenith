@@ -162,7 +162,7 @@
         pymdownx.tasklist.custom_checkbox = true
         pymdownx.tilde = {}
         toc.permalink = true
-        zensical.extensions.preview.targets.include = [ "*" ]
+        zensical.extensions.preview.targets.include = ["*"]
 
     [project.plugins.gh-admonitions]
 

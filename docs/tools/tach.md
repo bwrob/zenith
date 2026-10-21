@@ -6,8 +6,6 @@
 written in Rust. It enforces strict layering, prevents circular dependencies, and
 validates third-party dependency declarations.
 
----
-
 ## What It Does
 
 Tach evaluates the import graph of a Python repository to enforce modular boundaries and
@@ -20,8 +18,6 @@ declared dependencies in `pyproject.toml` to prevent undeclared transitive depen
 from leaking into code. It can also generate visual Mermaid diagrams directly from the
 verified import graph.
 
----
-
 ## Why It's in Zenith
 
 Over time, codebases naturally suffer from architectural erosion as developers and AI
@@ -32,8 +28,6 @@ circular references at commit time.
 Enforcing `check_external = true` prevents ghost dependencies that happen to exist in
 the developer environment from slipping into releases, guaranteeing clean installations
 for downstream consumers.
-
----
 
 ## Configuration in Zenith
 
@@ -55,8 +49,6 @@ orchestration layers like `cli`. All cross-module interactions must pass through
 explicit, public interfaces, and `check_external = true` blocks imports of any
 third-party library not explicitly declared in `pyproject.toml`.
 
----
-
 ## Key Invocations
 
 ```bash
@@ -65,8 +57,6 @@ uv run tach check-external                                     # Verify external
 uv run poe dependencies                                        # Wired development task in Poe
 uv run tach show --mermaid -o docs/assets/architecture.mmd    # Export visual Mermaid diagram
 ```
-
----
 
 ## Upstream Documentation
 

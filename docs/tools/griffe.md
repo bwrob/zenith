@@ -7,8 +7,6 @@ parses Python source code into rich Abstract Syntax Trees (AST) without executin
 importing modules, extracting signatures, type annotations, docstrings, and public API
 representations.
 
----
-
 ## What It Does
 
 Griffe powers offline API inspection, automated documentation generation, and API
@@ -21,8 +19,6 @@ generate comprehensive documentation. Through `griffe check`, it compares the ac
 codebase against previous Git revisions or tags to pinpoint breaking public API
 alterations.
 
----
-
 ## Why It's in Zenith
 
 Importing untrusted or complex packages at documentation build time can trigger
@@ -33,8 +29,6 @@ safely.
 To protect library consumers, Zenith wires `griffe check` into continuous integration
 and the `poe check-api` task, ensuring that pull requests cannot accidentally introduce
 breaking API changes in minor or patch releases.
-
----
 
 ## Configuration in Zenith
 
@@ -54,8 +48,6 @@ if "[tasks.check-api]" in content:
     print(content[start : end if end != -1 else len(content)].strip())
 ```
 
----
-
 ## Key Invocations
 
 ```bash
@@ -68,8 +60,6 @@ uv run griffe check my_package --search src --against "origin/main"
 # Dump parsed API representation to JSON
 uv run griffe dump my_package --search src -o api.json
 ```
-
----
 
 ## Upstream Documentation
 

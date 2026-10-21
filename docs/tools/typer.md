@@ -6,8 +6,6 @@
 hints, created by Sebastián Ramírez (tiangolo). It brings the developer ergonomics,
 automatic validation, and modern typing of FastAPI to the command line.
 
----
-
 ## What It Does
 
 Typer parses command-line arguments and options using standard Python type annotations.
@@ -21,8 +19,6 @@ terminal help screens, elegant error dialogs, and progress displays directly fro
 function signatures and docstrings. It also provides automatic tab-completion support
 across all major shells.
 
----
-
 ## Why It's in Zenith
 
 Zenith chooses Typer for projects that require a command-line interface because it
@@ -33,8 +29,6 @@ functions that pass Pyrefly strict analysis without escaping into dynamic reflec
 This design makes CLI commands trivial to unit test via `typer.testing.CliRunner`. As
 applications scale from a single entry point to deep subcommand trees, Typer preserves
 strict type guarantees and clean architectural boundaries.
-
----
 
 ## Terminal Demonstration
 
@@ -78,8 +72,6 @@ Display a personalized greeting.
 
 </div>
 
----
-
 ## Configuration in Zenith
 
 Configured in `src/<package_name>/cli.py` and registered under `[project.scripts]` in
@@ -121,34 +113,34 @@ Configured in `src/<package_name>/cli.py` and registered under `[project.scripts
 
 === "Template Source (`{{ cookiecutter.package_name }}/cli.py`)"
 
-    ```python
-    from typing import Annotated
+```python
+from typing import Annotated
 
-    from rich.console import Console
-    import typer
+from rich.console import Console
+import typer
 
-    from {{ cookiecutter.package_name }}.core import get_greeting
+from {{ cookiecutter.package_name }}.core import get_greeting
 
-    app = typer.Typer(
-        name="{{ cookiecutter.project_slug }}",
-        help="{{ cookiecutter.description }}",
-        no_args_is_help=True,
-        rich_markup_mode="rich",
-    )
-    console = Console()
+app = typer.Typer(
+    name="{{ cookiecutter.project_slug }}",
+    help="{{ cookiecutter.description }}",
+    no_args_is_help=True,
+    rich_markup_mode="rich",
+)
+console = Console()
 
 
-    @app.command()
-    def greet(
-        name: Annotated[
-            str,
-            typer.Argument(help="The name to greet."),
-        ] = "World",
-    ) -> None:
-        """Display a personalized greeting."""
-        greeting = get_greeting(name)
-        console.print(f"[bold green]✨ {greeting}[/bold green]")
-    ```
+@app.command()
+def greet(
+    name: Annotated[
+        str,
+        typer.Argument(help="The name to greet."),
+    ] = "World",
+) -> None:
+    """Display a personalized greeting."""
+    greeting = get_greeting(name)
+    console.print(f"[bold green]✨ {greeting}[/bold green]")
+```
 
 ### Console Script Entry Points
 
@@ -186,8 +178,6 @@ Error: No such option: --unknown-flag
 Try 'my-awesome-service --help' for help.
 ```
 
----
-
 ## Automated CLI Testing
 
 CLI commands in Zenith projects are verified using `typer.testing.CliRunner` in
@@ -213,8 +203,6 @@ def test_greet_custom_name() -> None:
     assert "Hello, Developer!" in result.stdout
 ```
 
----
-
 ## Conditional Scaffolding
 
 If a project is an internal library or data engine without a command-line interface,
@@ -225,16 +213,12 @@ setting `include_cli = false` in `cookiecutter.json`:
 - Removes CLI unit tests from `tests/test_cli.py`.
 - Strips Termynal stylesheets and interactive CLI demos from generated documentation.
 
----
-
 ## Key Invocations
 
 ```bash
 uv run my-awesome-service --help       # Show auto-generated help
 uv run my-awesome-service greet "Dev"  # Run greeting command
 ```
-
----
 
 ## Upstream Documentation
 

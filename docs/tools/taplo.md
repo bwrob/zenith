@@ -5,15 +5,11 @@
 `Taplo` is a versatile TOML toolkit, formatter, and linter written in Rust. It enforces
 strict, clean formatting and schema validation across all TOML configuration files.
 
----
-
 ## What It Does
 
 `Taplo` parses and formats TOML documents with aligned key-value assignments, consistent
 4-space indentation, and alphabetically sorted tables. It verifies TOML syntax and
 validates configuration files against JSON Schema definitions in milliseconds.
-
----
 
 ## Why It's in Zenith
 
@@ -25,8 +21,6 @@ Zenith integrates Taplo to maintain universal formatting harmony across all repo
 manifests. By enabling `align_entries = true`, key-value assignments align vertically
 for visual clarity, while automated format checks prevent unformatted configuration
 files from entering source control.
-
----
 
 ## Configuration in Zenith
 
@@ -41,8 +35,6 @@ if not path.exists():
 print(path.read_text().strip())
 ```
 
----
-
 ## Key Invocations
 
 ```bash
@@ -51,8 +43,6 @@ uv run taplo format          # Auto-format all TOML files
 uv run poe format-check-toml # Wired task in Poe quality sequence
 uv run poe format-toml       # Wired auto-formatting task in Poe
 ```
-
----
 
 ## Upstream Documentation
 

@@ -5,8 +5,6 @@ treating CI as a simple pass/fail script, Zenith organizes automation into two d
 operational lifecycles: a continuous delivery pipeline triggered by developer code
 changes, and a scheduled governance pipeline running background security audits.
 
----
-
 ## Delivery Pipeline
 
 ```mermaid
@@ -42,8 +40,6 @@ lowest-direct resolution proves that declared minimum dependency bounds in
 `pyproject.toml` actually work, and `UV_EXCLUDE_NEWER` establishes an explicit package
 cutoff timestamp to shield builds against upstream supply-chain disruptions.
 
----
-
 ### `test_redistribute.yaml`
 
 Proves that built wheel (`.whl`) and source (`.tar.gz`) distribution packages install
@@ -54,8 +50,6 @@ exist locally on disk. Installing freshly built wheels into a completely isolate
 environment and executing the test suite against the installed artifact eliminates
 "works on my machine" blind spots, guaranteeing that end users installing via `uv add`
 or `pip install` receive a fully functional distribution.
-
----
 
 ### `docs.yaml`
 
@@ -81,8 +75,6 @@ coding tools to consume the library's entire API surface.
 > Without this setting, the `deploy` job in `docs.yaml` will fail with an authorization
 > error when pushing to `main`.
 
----
-
 ### `sync-example.yaml`
 
 Automatically instantiates the template with canonical context on every push to `main`
@@ -94,8 +86,6 @@ isolated unit tests miss. Instantiating and pushing a real repository acts as a
 continuous integration canary for template health, while providing external developers
 with a browsable, tested reference implementation.
 
----
-
 ### `publish.yaml`
 
 Publishes signed wheel and source packages to PyPI with cryptographic build provenance
@@ -105,8 +95,6 @@ PyPI Trusted Publishing (OpenID Connect) authenticates the release without long-
 API tokens or passwords stored in repository secrets. Cryptographic build provenance
 attestations generated via GitHub Attestations give consumers mathematical proof that
 release artifacts were built directly from the verified source commit without tampering.
-
----
 
 ## Scheduled Governance
 

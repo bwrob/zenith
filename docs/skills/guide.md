@@ -11,8 +11,6 @@ inheritance hierarchies, unconstrained `Any` types) and colloquial, ambiguous te
 writing. `guide-*` skills counteract this by grounding agents in Zenith's modern,
 opinionated engineering philosophy.
 
----
-
 ## Core Template Guides
 
 ### Modern Python 3.12+ Engineering (`guide-python`)
@@ -55,8 +53,6 @@ using mutable dataclasses that introduce race conditions.
    requiring explicit `encoding="utf-8"` in all file read/write operations and
    subprocess calls.
 
----
-
 ### Simplified Technical English (`guide-ste100`)
 
 **What it is**: The writing guide and automated linter implementing the international
@@ -79,8 +75,6 @@ ASD-STE100 solves this through controlled language principles:
 - **Automated Verification**: Zenith includes a standalone, standard-library Python
   linter and auto-fixer (`ste-lint.py`). Run `uv run poe lint-ste` to audit skills and
   documentation against STE-100 vocabulary and structure rules.
-
----
 
 ## Authoring Custom Guide Skills
 

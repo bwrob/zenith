@@ -5,8 +5,6 @@
 `Cookiecutter` is a cross-platform command-line utility that creates projects from
 project templates (cookiecutters). Zenith is authored as a Cookiecutter template.
 
----
-
 ## What It Does
 
 Cookiecutter renders directory structures and configuration files using Jinja
@@ -14,8 +12,6 @@ templating. By evaluating user inputs against interactive prompts and choice mat
 defined in `cookiecutter.json`, it dynamically scaffolds complete projects. Lifecycle
 hooks executed before and after file generation validate input parameters and perform
 programmatic filesystem adjustments.
-
----
 
 ## Why It's in Zenith
 
@@ -29,8 +25,6 @@ strict project hygiene: conditionally stripping optional features like CLI code,
 removing explanatory comments from rendered configuration files, and establishing
 symlinks and configuration profiles for AI coding agents.
 
----
-
 ## Configuration in Zenith
 
 Configured in `cookiecutter.json` at the repository root:
@@ -41,8 +35,6 @@ from pathlib import Path
 print(Path("cookiecutter.json").read_text().strip())
 ```
 
----
-
 ## Key Invocations
 
 ```bash
@@ -52,8 +44,6 @@ uvx cookiecutter https://github.com/bwrob/zenith.git
 # Scaffold locally during template development
 cookiecutter .
 ```
-
----
 
 ## Upstream Documentation
 

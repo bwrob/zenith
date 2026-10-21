@@ -6,21 +6,19 @@ Google Gemini CLI, Antigravity, OpenAI Codex, Cursor, Windsurf, Aider).
 Rather than relying on vague prompts or unbounded system prompts, Zenith organizes all
 agent capabilities into **modular, prefixed Agent Skills** located in `.agents/skills/`.
 
----
-
 ## Skill Taxonomy
 
 To prevent naming collisions, maintain predictable agent discovery, and separate
 template capabilities from project domain logic, Zenith standardizes on a
 **standardized set of 5 skill prefixes**:
 
-| Prefix Group | Scope & Purpose | Examples |
-|---|---|---|
-| **[`sdd-*`](sdd.md)** | **Spec-Driven Development Suite**<br/>Authoring specifications, technical planning, TDD implementation, and verification reviews. | `sdd`, `sdd-spec`, `sdd-plan`, `sdd-implement`, `sdd-review`. |
-| **[`workflow-*`](workflow.md)** | **Lifecycle & Multi-Step Procedures**<br/>Operational processes, version control, release ceremonies, architecture records, code review audits, and skill authoring. | `workflow-git`, `workflow-code-review`, `workflow-changelog`, `workflow-adr`, `workflow-setup`, `workflow-skill-creator`. |
-| **[`tool-*`](tool.md)** | **Tool Mechanics & Tooling Reference**<br/>Concrete command syntax, CLI flags, configuration details, and runbooks for specific developer tools and libraries. | `tool-uv`, `tool-ruff`, `tool-pyrefly`, `tool-tach`, `tool-pytest`, `tool-zensical`, etc. |
-| **[`guide-*`](guide.md)** | **Engineering Conventions & Style**<br/>Coding style conventions, architecture invariants, type parameter rules, and technical writing standards. | `guide-python`, `guide-ste100`. |
-| **[`domain-*`](domain.md)** | **Project Domain & Business Rules**<br/>**Reserved exclusively for the author of the instantiated project.** Documents business rules, domain entities, APIs, and workflows. | `domain-billing`, `domain-auth`, `domain-data-pipeline`. |
+| Prefix Group                    | Scope & Purpose                                                                                                                                                              | Examples                                                                                                                  |
+| ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| **[`sdd-*`](sdd.md)**           | **Spec-Driven Development Suite**<br/>Authoring specifications, technical planning, TDD implementation, and verification reviews.                                            | `sdd`, `sdd-spec`, `sdd-plan`, `sdd-implement`, `sdd-review`.                                                             |
+| **[`workflow-*`](workflow.md)** | **Lifecycle & Multi-Step Procedures**<br/>Operational processes, version control, release ceremonies, architecture records, code review audits, and skill authoring.         | `workflow-git`, `workflow-code-review`, `workflow-changelog`, `workflow-adr`, `workflow-setup`, `workflow-skill-creator`. |
+| **[`tool-*`](tool.md)**         | **Tool Mechanics & Tooling Reference**<br/>Concrete command syntax, CLI flags, configuration details, and runbooks for specific developer tools and libraries.               | `tool-uv`, `tool-ruff`, `tool-pyrefly`, `tool-tach`, `tool-pytest`, `tool-zensical`, etc.                                 |
+| **[`guide-*`](guide.md)**       | **Engineering Conventions & Style**<br/>Coding style conventions, architecture invariants, type parameter rules, and technical writing standards.                            | `guide-python`, `guide-ste100`.                                                                                           |
+| **[`domain-*`](domain.md)**     | **Project Domain & Business Rules**<br/>**Reserved exclusively for the author of the instantiated project.** Documents business rules, domain entities, APIs, and workflows. | `domain-billing`, `domain-auth`, `domain-data-pipeline`.                                                                  |
 
 > [!IMPORTANT]
 > **The `domain-*` prefix is strictly reserved for you**: The Zenith template ships with
@@ -28,8 +26,6 @@ template capabilities from project domain logic, Zenith standardizes on a
 > Zenith, you and your team can create `domain-*` skills to codify your business logic,
 > vendor integrations, and proprietary domain models without any risk of colliding with
 > template updates or upstream tooling skills.
-
----
 
 ## Skill Discovery
 
@@ -59,8 +55,6 @@ flowchart TD
    context **only when that skill is activated**.
 3. **Execution Grounding**: The agent follows the skill's step-by-step instructions and
    executes tasks inside the hermetic project environment with `uv run poe <task>`.
-
----
 
 ## Skill Groups
 

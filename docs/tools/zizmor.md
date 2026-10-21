@@ -1,11 +1,9 @@
-# zizmor: CI Security Static Analysis
+# Zizmor: CI Security Static Analysis
 
 [![Tool: zizmor](https://img.shields.io/badge/security-zizmor-red.svg)](https://woodruffw.github.io/zizmor/)
 
 `zizmor` is a static security analysis tool for GitHub Actions CI/CD workflows written
 in Rust by William Woodruff.
-
----
 
 ## What It Does
 
@@ -18,8 +16,6 @@ actions referencing mutable branch heads.
 By checking for patterns where fork pull requests or untrusted triggers could exfiltrate
 secrets, zizmor secures CI pipelines before changes are deployed.
 
----
-
 ## Why It's in Zenith
 
 Continuous integration pipelines represent high-value attack surfaces because they hold
@@ -30,8 +26,6 @@ steps.
 Zenith runs zizmor as an automated security quality gate in both prek hooks and
 scheduled CI pipelines, guaranteeing that infrastructure-as-code remains hardened
 against supply-chain and injection attacks.
-
----
 
 ## Configuration in Zenith
 
@@ -57,16 +51,12 @@ hooks = [
 ]
 ```
 
----
-
 ## Key Invocations
 
 ```bash
 uv run zizmor .github/workflows/   # Run static security audit on CI workflows
 uv run prek run zizmor -a          # Run zizmor via prek
 ```
-
----
 
 ## Upstream Documentation
 

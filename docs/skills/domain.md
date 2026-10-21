@@ -7,8 +7,6 @@
 > ensuring that your application domain namespace remains clean, unpolluted, and free of
 > naming collisions with upstream template updates.
 
----
-
 ## What Are Domain Skills?
 
 While generic AI coding assistants understand Python syntax, pytest fixtures, and
@@ -26,8 +24,6 @@ Without domain guidance, autonomous AI agents tend to:
 **Domain Skills (`domain-*`) solve this by codifying your business rules, domain
 invariants, entity lifecycles, and proprietary service logic into structured runbooks
 that AI agents load when working on domain code.**
-
----
 
 ## Anatomy of a Domain Skill
 
@@ -53,8 +49,6 @@ version: 1.0.0
 ---
 ```
 
----
-
 ## Recommended Patterns
 
 ### Invariant Tables
@@ -62,10 +56,10 @@ version: 1.0.0
 Define core domain constraints in clear, non-negotiable tables:
 
 | Subscription Tier | Seat Limit | API Request Cap | Storage Quota |
-|---|---|---|---|
-| **Starter** | Up to 5 | 10,000 / month | 5 GB |
-| **Professional** | Up to 25 | 100,000 / month | 50 GB |
-| **Enterprise** | Unlimited | Custom | Unlimited |
+| ----------------- | ---------- | --------------- | ------------- |
+| **Starter**       | Up to 5    | 10,000 / month  | 5 GB          |
+| **Professional**  | Up to 25   | 100,000 / month | 50 GB         |
+| **Enterprise**    | Unlimited  | Custom          | Unlimited     |
 
 ### State Machine Lifecycles
 
@@ -86,8 +80,6 @@ stateDiagram-v2
 Document how the domain handles boundary conditions (e.g., Leap year billing, fractional
 cent rounding, concurrent subscription upgrades).
 
----
-
 ## Common Domain Skills
 
 Here are typical domain skills you can scaffold in your Zenith project:
@@ -102,8 +94,6 @@ Here are typical domain skills you can scaffold in your Zenith project:
   invariants, and dead-letter queue routing.
 - **`domain-compliance`**: PII masking protocols, audit log retention requirements, and
   data export contracts.
-
----
 
 ## Authoring Domain Skills
 

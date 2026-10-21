@@ -6,8 +6,6 @@
 monitors program execution during automated test runs, measuring which statements were
 executed and evaluating conditional branch decisions.
 
----
-
 ## What It Does
 
 `Coverage.py` measures both statement execution and branch coverage across Python
@@ -20,8 +18,6 @@ During test runs, `Coverage.py` compiles precise execution statistics into a bin
 numbers (`coverage report -m`), machine-readable XML manifests (`coverage.xml`) for
 continuous integration reporting, and interactive HTML dashboards highlighting exact
 covered and missed branches in source files.
-
----
 
 ## Why It's in Zenith
 
@@ -37,8 +33,6 @@ untested error-handling paths. Mandating full coverage prevents untested code fr
 reaching `main`, while liberating developers to execute major architectural refactors
 without fear of regression.
 
----
-
 ## Configuration in Zenith
 
 Configured in `.coveragerc` at the project root:
@@ -52,8 +46,6 @@ if not path.exists():
 print(path.read_text().strip())
 ```
 
----
-
 ## Key Invocations
 
 ```bash
@@ -66,8 +58,6 @@ uv run coverage report -m
 # Generate interactive HTML dashboard into htmlcov/
 uv run poe coverage
 ```
-
----
 
 ## Upstream Documentation
 

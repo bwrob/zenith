@@ -6,8 +6,6 @@
 It replaces Flake8, Black, isort, pydocstyle, pyupgrade, autoflake, and dozens of Flake8
 plugins.
 
----
-
 ## What It Does
 
 Ruff performs comprehensive static analysis and automatic code formatting on Python
@@ -20,8 +18,6 @@ In addition to drop-in formatting compatibility with Black, Ruff organizes impor
 statements deterministically and applies safe in-place fixes across codebases in tens of
 milliseconds.
 
----
-
 ## Why It's in Zenith
 
 Zenith integrates Ruff with all rule categories and preview rules enabled
@@ -33,8 +29,6 @@ expressions.
 Because Ruff operates at sub-second speeds even across large multi-module repositories,
 formatting and lint checks run before every commit and during CI without introducing
 developer latency or style debates.
-
----
 
 ## Configuration in Zenith
 
@@ -65,8 +59,6 @@ print(path.read_text().strip())
 - **Trailing Comma & Formatter Compatibility**: Disables `COM812` and `ISC001` to
   prevent conflicts between the linter and formatter.
 
----
-
 ## Key Invocations
 
 ```bash
@@ -75,8 +67,6 @@ uv run poe format        # Format code with ruff format
 uv run poe format-check  # Verify code format without mutating files
 uv run poe fix           # Auto-fix lint violations and apply formatting
 ```
-
----
 
 ## Upstream Documentation
 

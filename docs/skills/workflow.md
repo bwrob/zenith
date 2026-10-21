@@ -11,8 +11,6 @@ predictable, repeatable procedures. Rather than prescribing a rigid, robotic scr
 each workflow skill provides clear intent, rationale, and execution steps that both
 human developers and AI agents can execute with confidence.
 
----
-
 ## Core Template Workflows
 
 These skills are included in every project scaffolded from Zenith to guide day-to-day
@@ -39,8 +37,6 @@ policy for indiscriminate staging. It requires:
   into pull request descriptions, documenting which tools were used and confirming local
   test verification.
 
----
-
 ### Pre-Flight Code Review (`workflow-code-review`)
 
 **What it is**: An adversarial self-audit checklist that an agent or developer runs
@@ -61,8 +57,6 @@ Before presenting work for human review, the workflow checks:
    models leverage PEP 695 type parameter syntax and structural protocols.
 4. **Coverage Invariants**: Asserts that 100% branch and statement coverage is intact.
 
----
-
 ### Source-Checked Changelog Curation (`workflow-changelog`)
 
 **What it is**: A disciplined maintenance workflow for `docs/changelog.md` following
@@ -80,8 +74,6 @@ entries. It categorizes changes under standard subsections (`Added`, `Changed`,
 `Deprecated`, `Removed`, `Fixed`, `Security`) and automatically maintains tag comparison
 links at the bottom of the document.
 
----
-
 ### Architecture Decision Records (`workflow-adr`)
 
 **What it is**: A structured decision-logging workflow using the
@@ -98,8 +90,6 @@ repeating past debates.
 `docs/adr/0001-record-architecture-decisions.md`). Each record captures the decision
 status, context, considered options with pros and cons, and the chosen outcome. It also
 automatically updates `docs/adr/index.md` and registers the page in `zensical.toml`.
-
----
 
 ### Environment Bootstrap & Recovery (`workflow-setup`)
 
@@ -119,8 +109,6 @@ uv run prek install          # Installs Rust-native Git pre-commit hooks
 uv run poe test              # Verifies the test suite passes locally
 uv run poe code-quality      # Confirms linting, types, and formatting pass
 ```
-
----
 
 ### Skill Authoring & Standards (`workflow-skill-creator`)
 
@@ -152,8 +140,6 @@ hallucinated tool flags.
 > have been promoted to their own dedicated group. See the
 > [Spec-Driven Development Suite](sdd.md) guide.
 
----
-
 ## Maintainer Workflow Skills
 
 These skills live in the Zenith template repository (`bwrob/zenith`) to support ongoing
@@ -181,8 +167,6 @@ external repositories across 9 engineering pillars:
 
 Findings are synthesized into actionable improvement proposals for Zenith.
 
----
-
 ### Dependency Upgrades & Skill Sync (`workflow-update-tools`)
 
 **What it is**: The maintenance protocol for upgrading tool versions in `pyproject.toml`
@@ -200,8 +184,6 @@ configurations.
 2. Configuration updates across `pyproject.toml`, `ruff.toml`, and `prek.toml`.
 3. Synchronized updates to matching `tool-*` skills to reflect new flags and syntax.
 4. Downstream verification in the showcase repository.
-
----
 
 ### Live Showcase Synchronization (`workflow-example-sync`)
 
@@ -221,8 +203,6 @@ GitHub Actions CI workflows run on real runners.
 - Runs downstream test suites, type checking, and pre-commit hooks.
 - Monitors GitHub Actions CI workflow runs across Linux, macOS, and Windows to guarantee
   that template modifications never break downstream users.
-
----
 
 ## Authoring Custom Workflow Skills
 

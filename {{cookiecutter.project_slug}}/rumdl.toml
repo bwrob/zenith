@@ -8,17 +8,6 @@
 # Python code blocks with Ruff.
 # ==============================================================================
 
-disable = [
-    "MD046",
-    "MD052",
-    "MD060",
-    "MD063",
-    "MD078",
-    "MD082",
-    "MD085",
-    "MD090",
-    "MD093",
-]
 enable = ["ALL"]
 exclude = [
     ".git",
@@ -32,7 +21,7 @@ exclude = [
     "site",
     "dist",
 ]
-extend-enable = ["MD080", "MD083"]
+extend-enable = ["MD063", "MD080", "MD083", "MD085", "MD090", "MD093"]
 flavor = "gfm"
 line-length = 88
 respect-gitignore = true
@@ -158,3 +147,11 @@ respect-gitignore = true
 
 [MD059]
     prohibited-texts = ["click here", "here", "link", "read more"]
+
+[MD060]
+    aligned-delimiter = false
+    column-align      = "left"
+    enabled           = true
+    loose-last-column = false
+    pad-width         = 1
+    style             = "aligned"

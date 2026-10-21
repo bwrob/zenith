@@ -6,8 +6,6 @@ The format is based on [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.
 and this project adheres to
 [Semantic Versioning 2.0.0](https://semver.org/spec/v2.0.0.html).
 
----
-
 ## [Unreleased]
 
 ### Added
@@ -21,8 +19,6 @@ and this project adheres to
 - Deep-dive philosophy guide outlining Modern Rust Tooling, AI-Ready Engineering,
   Ruthless Guardrails, and Project Sizing.
 - GitHub Pages automated deployment workflow (`.github/workflows/docs.yaml`).
-
----
 
 ## [0.1.0] - 2026-10-18
 

@@ -7,8 +7,6 @@ Zenith produces production-grade Python projects. While it uses modern
 standards, you do not need to be an expert in compiler design or DevOps to use it.
 This guide introduces the core concepts and workflows in plain English.
 
----
-
 ## What Zenith Actually Is
 
 Zenith is a **project starter generator** (powered by Cookiecutter).
@@ -21,9 +19,7 @@ Zenith is a **project starter generator** (powered by Cookiecutter).
 Instead of spending days setting up configuration files, Zenith gives you a
 production-grade foundation in seconds.
 
----
-
-## Step 0: Installing uv
+## Step 0: Installing Uv
 
 Modern Python projects use **`uv`** as an all-in-one package and environment manager.
 
@@ -31,24 +27,21 @@ Before scaffolding a Zenith project, install `uv` on your machine:
 
 === "macOS & Linux"
 
-    ```shell
-    curl -LsSf https://astral.sh/uv/install.sh | sh
-    ```
+```shell
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
 
 === "Windows"
 
-    ```powershell
-    powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
-    ```
+```powershell
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+```
 
 > [!TIP]
-> **You do not need to install Python 3.13 manually!**
-> `uv` automatically downloads and manages the correct Python version for your project.
-> Furthermore, while several Zenith tools are written in Rust for performance, you do **not**
-> need to install Rust or Cargo—everything runs as pre-compiled Python tools managed
-> by `uv`.
-
----
+> **You do not need to install Python 3.13 manually!** `uv` automatically downloads and
+> manages the correct Python version for your project. Furthermore, while several Zenith
+> tools are written in Rust for performance, you do **not** need to install Rust or
+> Cargo—everything runs as pre-compiled Python tools managed by `uv`.
 
 ## Your First 5 Minutes: Zero to Running Code
 
@@ -113,8 +106,6 @@ Serving documentation at http://127.0.0.1:8000
 Open `http://127.0.0.1:8000` in your browser. Any edits you make to markdown files in
 `docs/` will update live automatically in your browser.
 
----
-
 ## Where Do I Actually Write Code
 
 A scaffolded Zenith repository has many files, but your daily work happens in only
@@ -137,8 +128,6 @@ my-awesome-service/
 > The files ending in `.toml` in the project root are pre-configured background
 > settings—like the pre-tuned engine in a car. You can safely ignore them. You do not
 > need to open or configure them to write your application.
-
----
 
 ## Everyday Workflows
 
@@ -175,8 +164,6 @@ terminal flags, use these four commands:
 - `uv run poe docs-serve`: Launches your documentation website locally at
   `http://localhost:8000`.
 
----
-
 ## Understanding Quality Gates (Why Are Tests Failing?)
 
 When you run `uv run poe test`, Zenith checks test coverage.
@@ -188,7 +175,7 @@ If you write a new function without a test, `uv run poe test` stops and highligh
 the un-tested line in red. **Nothing is broken.** The tool is simply reminding you
 to write a test.
 
-### A Hands-On Experiment: Breaking and Satisfying the Guardrail
+### A Hands-on Experiment: Breaking and Satisfying the Guardrail
 
 Let's see what happens when you write code without a test:
 
@@ -240,8 +227,6 @@ Required test coverage of 100.0% reached. Total coverage: 100.00%
 
 The gate turns green, confirming that all statements and branches are tested.
 
----
-
 ## Step-by-Step Recap: What Just Happened
 
 Here is the mental model to remember as you build:
@@ -256,26 +241,22 @@ Here is the mental model to remember as you build:
 5. **Red tests are safety nets**: When a quality gate flags an error, it is pointing out
    an un-tested branch or type mismatch before it reaches production.
 
----
-
 ## Plain-English Tool Glossary
 
 Zenith includes several tools that run quietly in the background. Here is what each
 tool does for you:
 
-| Tool | What It Does for You | Why It Is Helpful |
-| --- | --- | --- |
-| **`uv`** | Package & Python Manager | Installs libraries fast and manages Python versions without breaking your computer. |
-| **`ruff`** | Code Cleaner & Formatter | Formats code styling and catches syntax bugs in milliseconds. |
-| **`pyrefly`** | Type Safety Inspector | Analyzes type hints so you do not accidentally pass incompatible data to functions. |
-| **`poe`** | Shortcut Command Runner | Provides easy commands like `uv run poe test` instead of long commands. |
-| **`prek`** | Git Commit Guard | Checks your code automatically when you run `git commit` to keep bad code from being saved. |
-| **`tach`** | Architecture Protector | Prevents circular imports and keeps modules separated cleanly. |
-| **`complexipy`** | Simplicity Checker | Warns you if a function has too many nested loops or branches. |
-| **`zensical`** | Documentation Engine | Turns markdown files in `docs/` into a searchable website. |
-| **`typos`** | Spell Checker | Catches spelling mistakes in your code and documentation. |
-
----
+| Tool             | What It Does for You     | Why It Is Helpful                                                                           |
+| ---------------- | ------------------------ | ------------------------------------------------------------------------------------------- |
+| **`uv`**         | Package & Python Manager | Installs libraries fast and manages Python versions without breaking your computer.         |
+| **`ruff`**       | Code Cleaner & Formatter | Formats code styling and catches syntax bugs in milliseconds.                               |
+| **`pyrefly`**    | Type Safety Inspector    | Analyzes type hints so you do not accidentally pass incompatible data to functions.         |
+| **`poe`**        | Shortcut Command Runner  | Provides easy commands like `uv run poe test` instead of long commands.                     |
+| **`prek`**       | Git Commit Guard         | Checks your code automatically when you run `git commit` to keep bad code from being saved. |
+| **`tach`**       | Architecture Protector   | Prevents circular imports and keeps modules separated cleanly.                              |
+| **`complexipy`** | Simplicity Checker       | Warns you if a function has too many nested loops or branches.                              |
+| **`zensical`**   | Documentation Engine     | Turns markdown files in `docs/` into a searchable website.                                  |
+| **`typos`**      | Spell Checker            | Catches spelling mistakes in your code and documentation.                                   |
 
 ## Where to Go Next
 
