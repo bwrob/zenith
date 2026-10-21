@@ -2,8 +2,8 @@
 # See https://prek.j178.dev for more information.
 #:schema https://www.schemastore.org/prek.json
 
-default_install_hook_types = [ "pre-commit" ]
-default_stages             = [ "pre-commit" ]
+default_install_hook_types = ["pre-commit"]
+default_stages             = ["pre-commit"]
 exclude                    = '^({{cookiecutter\.project_slug}}|templates)/'
 fail_fast                  = false
 
@@ -53,7 +53,7 @@ fail_fast                  = false
     rev = "v0.17.0"
 
 [[repos]]
-    hooks = [ { id = "taplo-format", name = "⚙️ taplo · Format TOML files" } ]
+    hooks = [{ id = "taplo-format", name = "⚙️ taplo · Format TOML files" }]
     repo  = "https://github.com/ComPWA/taplo-pre-commit"
     rev   = "v0.9.3"
 
@@ -70,7 +70,7 @@ fail_fast                  = false
     rev = "v3.1.0"
 
 [[repos]]
-    hooks = [ { id = "typos", name = "🔤 typos · Check for typos" } ]
+    hooks = [{ id = "typos", name = "🔤 typos · Check for typos" }]
     repo  = "https://github.com/crate-ci/typos"
     rev   = "v1.51.1"
 
@@ -82,6 +82,6 @@ fail_fast                  = false
     repo = "local"
 
 [[repos]]
-    hooks = [ { id = "uv-lock", name = "🐍 uv · Lock dependencies" } ]
+    hooks = [{ id = "uv-lock", name = "🐍 uv · Lock dependencies" }]
     repo  = "https://github.com/astral-sh/uv-pre-commit"
     rev   = "0.12.7"

@@ -8,8 +8,18 @@
 # Python code blocks with Ruff.
 # ==============================================================================
 
-disable = [ "MD046", "MD052", "MD060", "MD063", "MD078", "MD082", "MD085", "MD090", "MD093" ]
-enable = [ "ALL" ]
+disable = [
+    "MD046",
+    "MD052",
+    "MD060",
+    "MD063",
+    "MD078",
+    "MD082",
+    "MD085",
+    "MD090",
+    "MD093",
+]
+enable = ["ALL"]
 exclude = [
     ".git",
     ".github",
@@ -22,7 +32,7 @@ exclude = [
     "site",
     "dist",
 ]
-extend-enable = [ "MD080", "MD083" ]
+extend-enable = ["MD080", "MD083"]
 flavor = "gfm"
 line-length = 88
 respect-gitignore = true
@@ -43,14 +53,14 @@ respect-gitignore = true
         "{py}"     = "python"
 
     [code-block-tools.languages.python]
-        format = [ "ruff:format" ]
-        lint   = [ "ruff:check" ]
+        format = ["ruff:format"]
+        lint   = ["ruff:check"]
 
     [code-block-tools.languages.json]
-        format = [ "jq" ]
+        format = ["jq"]
 
     [code-block-tools.tools."ruff:format"]
-        command = [ "ruff", "format", "--line-length=79", "-" ]
+        command = ["ruff", "format", "--line-length=79", "-"]
 
     [code-block-tools.tools."ruff:check"]
         command = [
@@ -147,4 +157,4 @@ respect-gitignore = true
     minimum-before = 1
 
 [MD059]
-    prohibited-texts = [ "click here", "here", "link", "read more" ]
+    prohibited-texts = ["click here", "here", "link", "read more"]

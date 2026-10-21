@@ -1,15 +1,5 @@
-# ==============================================================================
-# rumdl Configuration (rumdl.toml)
-#
-# Tool: rumdl (https://github.com/rvben/rumdl)
-# Purpose: Blazing-fast markdown linter and formatter written in Rust.
-# Why it's in Zenith: Enforces consistent, polished markdown style across READMEs
-# and docs, and features integrated code-block tools that format and lint embedded
-# Python code blocks with Ruff.
-# ==============================================================================
-
 disable = [
-    "MD046",
+    #"MD046",
     "MD052",
     "MD060",
     "MD063",
@@ -37,7 +27,6 @@ flavor = "gfm"
 line-length = 88
 respect-gitignore = true
 
-# --- Code Block Tools (Format & Lint Python & JSON in Markdown) ---
 [code-block-tools]
     enabled                = true
     on-error               = "warn"
@@ -71,7 +60,6 @@ respect-gitignore = true
             "-",
         ]
 
-# --- Rigid Markdown Rules ---
 [MD001]
     front-matter-title = true
 

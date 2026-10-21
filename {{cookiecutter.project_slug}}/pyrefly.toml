@@ -8,9 +8,9 @@
 # source and test files adhere to rigorous type contracts.
 # ==============================================================================
 
-enabled-ignores      = [ "pyrefly" ]
+enabled-ignores      = ["pyrefly"]
 infer-with-first-use = false
 preset               = "strict"
-project-excludes     = [ "**/.*", "**/site", "**/dist", "**/build", "**/.venv" ]
-project-includes     = [ "src", "tests" ]
+project-excludes     = ["**/.*", "**/site", "**/dist", "**/build", "**/.venv"]
+project-includes     = ["src", "tests"]
 python-version       = "{{ cookiecutter.python_version }}.0"

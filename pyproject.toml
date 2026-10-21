@@ -1,5 +1,5 @@
 [project]
-    authors = [ { name = "bwrob", email = "contact@bwrob.dev" } ]
+    authors = [{ name = "bwrob", email = "contact@bwrob.dev" }]
     classifiers = [
         "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
@@ -13,7 +13,7 @@
         "Topic :: Software Development :: Code Generators",
         "Typing :: Typed",
     ]
-    dependencies = [ "cookiecutter>=2.7.0" ]
+    dependencies = ["cookiecutter>=2.7.0"]
     description = "Zenith: An opinionated, strict Cookiecutter template for modern Python projects using uv, ruff, pyrefly, complexipy, zensical, rumdl, tach, and poethepoet."
     name = "zenith"
     readme = "README.md"
@@ -48,7 +48,7 @@
     ]
 
 [tool.uv]
-    default-groups = [ "dev", "docs" ]
+    default-groups = ["dev", "docs"]
     package        = false
 
 [tool.poe.tasks]
@@ -98,9 +98,9 @@
     zizmor = { cmd = "zizmor --config .zizmor.yml --pedantic --min-severity informational .github/workflows", help = "Audit GitHub Actions workflows for security vulnerabilities with zizmor." }
 
 [tool.pytest.ini_options]
-    norecursedirs = [ "{{cookiecutter.project_slug}}", ".*", "build", "dist" ]
-    pythonpath    = [ "." ]
-    testpaths     = [ "tests" ]
+    norecursedirs = ["{{cookiecutter.project_slug}}", ".*", "build", "dist"]
+    pythonpath    = ["."]
+    testpaths     = ["tests"]
 
 [tool.ruff]
-    extend-exclude = [ "*cookiecutter.project_slug*" ]
+    extend-exclude = ["*cookiecutter.project_slug*"]

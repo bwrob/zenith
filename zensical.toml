@@ -1,22 +1,11 @@
-# ==============================================================================
-# Zensical Configuration (zensical.toml)
-#
-# Tool: Zensical (https://github.com/zensical/zensical)
-# Purpose: Modern, fast static documentation site generator configured with TOML.
-# Why it's in Zenith: Provides instant live-reloading documentation with native
-# dark/light/system mode switching, Lucide icons, Mermaid diagrams, client-side
-# MathJax integration for LaTeX math, markdown-exec for dynamic code execution,
-# and mkdocstrings for automated Python API documentation generation.
-# ==============================================================================
-
 [project]
     edit_uri         = "edit/main/docs/"
     repo_name        = "bwrob/zenith"
     repo_url         = "https://github.com/bwrob/zenith"
     site_author      = "bwrob"
-    site_description = "Zenith: An opinionated, strict Cookiecutter template for modern Python projects using uv, ruff, pyrefly, complexipy, zensical, rumdl, tach, and poethepoet."
+    site_description = "Zenith: An opinionated template for modern Python projects."
     site_name        = "Zenith"
-    site_url         = "https://bwrob.github.io/zenith/"
+    site_url         = "https://bwrob.dev/zenith/"
 
     nav = [
         { "Overview" = "index.md" },

@@ -1,8 +1,10 @@
 exclude = [
-    ".agents/skills/**/templates/**",
     ".temp/**",
     ".venv/**",
-    "*cookiecutter*/**",
+    "*cookiecutter.project_slug*/zensical.toml",
+    "*cookiecutter.project_slug*/tach.toml",
+    "*cookiecutter.project_slug*/pyproject.toml",
+    "*cookiecutter.project_slug*/poe_tasks.toml",
     "build/**",
     "dist/**",
     "site/**",
@@ -10,7 +12,7 @@ exclude = [
 
 [formatting]
     align_entries   = true
-    compact_arrays  = false
+    compact_arrays  = true
     compact_entries = false
     indent_entries  = true
     indent_string   = "    "
