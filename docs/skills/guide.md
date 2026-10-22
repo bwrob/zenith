@@ -32,11 +32,14 @@ using mutable dataclasses that introduce race conditions.
    wrappers with clean modern syntax:
 
    ```python
-   # Modern Zenith idiom
-   def transform[T](items: list[T], operation: Callable[[T], T]) -> list[T]: ...
-
+   from typing import Callable
 
    type JsonScalar = str | int | float | bool | None
+   type Json = dict[str, Json] | list[Json] | JsonScalar
+
+
+   # Modern Zenith idiom
+   def transform[T](items: list[T], operation: Callable[[T], T]) -> list[T]: ...
    ```
 
 2. **Composition Over Inheritance**: Avoids rigid inheritance hierarchies in favor of

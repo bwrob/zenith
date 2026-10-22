@@ -15,38 +15,56 @@
 [![Complexity: complexipy](https://img.shields.io/badge/complexity-complexipy-crimson.svg)](https://github.com/rohaquinlop/complexipy)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-An opinionated Cookiecutter template for modern Python 3.12+ projects, built with Rust-based developer tooling, autonomous AI agent workflows, and automated quality guardrails.
-
----
+An opinionated Cookiecutter template for modern Python 3.12+ projects, built with
+Rust-based developer tooling, autonomous AI agent workflows, and automated quality
+guardrails.
 
 ## Elevator Pitch
 
-Starting a new Python project usually means spending days wiring up linters, formatters, type checkers, test coverage, and documentation generators—or copying decaying configs from older repos and fixing whatever broke.
+Starting a new Python project usually means spending days wiring up linters, formatters,
+type checkers, test coverage, and documentation generators—or copying decaying configs
+from older repos and fixing whatever broke.
 
 Zenith scaffolds a production-ready repository in seconds:
-- **⚡ Modern Rust-Based Tooling**: Fast package management with `uv`, linting and formatting with `ruff`, strict type checking with Meta's `pyrefly`, modular boundaries with `tach`, cognitive complexity limits with `complexipy`, and documentation with `zensical`.
-- **🤖 First-Class AI Agent Readiness**: Autonomous agent context discovery (`AGENTS.md`), modular lifecycle skills in `.agents/skills/`, machine-readable `llms.txt`, and clear AI governance policies.
-- **🛡️ Strict Quality Guardrails**: 100% statement and branch test coverage (`fail_under = 100`), strict typing, and automated CI security analysis with `zizmor`.
-- **🚀 Hermetic Delivery & CI/CD**: Matrix testing across Python 3.12–3.15, isolated wheel package smoke tests, and automated PyPI Trusted Publishing.
+
+- **⚡ Modern Rust-Based Tooling**: Fast package management with `uv`, linting and
+  formatting with `ruff`, strict type checking with Meta's `pyrefly`, modular boundaries
+  with `tach`, cognitive complexity limits with `complexipy`, and documentation with
+  `zensical`.
+- **🤖 First-Class AI Agent Readiness**: Autonomous agent context discovery
+  (`AGENTS.md`), modular lifecycle skills in `.agents/skills/`, machine-readable
+  `llms.txt`, and clear AI governance policies.
+- **🛡️ Strict Quality Guardrails**: 100% statement and branch test coverage
+  (`fail_under = 100`), strict typing, and automated CI security analysis with `zizmor`.
+- **🚀 Hermetic Delivery & CI/CD**: Matrix testing across Python 3.12–3.15, isolated
+  wheel package smoke tests, and automated PyPI Trusted Publishing.
 
 > [!NOTE]
-> **Project Scope**: Zenith is built for serious production packages, services, and libraries intended for long-term maintenance by teams of humans and AI agents. It is **deliberately not suited** for small two-script throwaway hacks where strict guardrails feel like friction.
-
----
+> **Project Scope**: Zenith is built for serious production packages, services, and
+> libraries intended for long-term maintenance by teams of humans and AI agents. It is
+> **deliberately not suited** for small two-script throwaway hacks where strict
+> guardrails feel like friction.
 
 ## 📖 Documentation
 
-For full guides, detailed architectural deep-dives, and tool configurations, visit the **[Zenith Documentation Website](https://bwrob.github.io/zenith/)**.
+For full guides, detailed architectural deep-dives, and tool configurations, visit the
+**[Zenith Documentation Website](https://bwrob.github.io/zenith/)**.
 
-- **[First Steps & Core Concepts](https://bwrob.github.io/zenith/first-steps/)**: Plain-English onboarding for developers new to modern Python tooling.
-- **[Philosophy & Sizing](https://bwrob.github.io/zenith/philosophy/)**: Modern tooling, AI readiness, quality guardrails, and project sizing rubric.
-- **[CLI Architecture](https://bwrob.github.io/zenith/tools/typer/)**: Typer CLI structure, Rich terminal rendering, and animated Termynal demos.
-- **[Tooling Stack Reference](https://bwrob.github.io/zenith/tools/)**: In-depth explanations, configuration breakdowns, and upstream links for the integrated tool stack.
-- **[Agent Skills Architecture](https://bwrob.github.io/zenith/skills/)**: Lifecycle workflows for autonomous coding assistants in `.agents/skills/`.
-- **[CI/CD Pipelines](https://bwrob.github.io/zenith/ci-actions/)**: GitHub Actions test matrix across Python 3.12–3.15, wheel smoke testing, and supply-chain protection.
-- **[Changelog](https://bwrob.github.io/zenith/changelog/)**: Release history and version notes.
-
----
+- **[First Steps & Core Concepts](https://bwrob.github.io/zenith/first-steps/)**:
+  Plain-English onboarding for developers new to modern Python tooling.
+- **[Philosophy & Sizing](https://bwrob.github.io/zenith/philosophy/)**: Modern tooling,
+  AI readiness, quality guardrails, and project sizing rubric.
+- **[CLI Architecture](https://bwrob.github.io/zenith/tools/typer/)**: Typer CLI
+  structure, Rich terminal rendering, and animated Termynal demos.
+- **[Tooling Stack Reference](https://bwrob.github.io/zenith/tools/)**: In-depth
+  explanations, configuration breakdowns, and upstream links for the integrated tool
+  stack.
+- **[Agent Skills Architecture](https://bwrob.github.io/zenith/skills/)**: Lifecycle
+  workflows for autonomous coding assistants in `.agents/skills/`.
+- **[CI/CD Pipelines](https://bwrob.github.io/zenith/ci-actions/)**: GitHub Actions test
+  matrix across Python 3.12–3.15, wheel smoke testing, and supply-chain protection.
+- **[Changelog](https://bwrob.github.io/zenith/changelog/)**: Release history and
+  version notes.
 
 ## Quick Start
 
@@ -72,22 +90,18 @@ uv run poe code-quality      # Runs full linter, formatter, type, and complexity
 uv run poe docs-serve        # Starts live-reloading documentation server
 ```
 
----
-
 ## Essential Tasks
 
 Every workflow in Zenith is codified through **Poe the Poet** (`uv run poe <task>`):
 
-| Task | What it does |
-|---|---|
-| `uv run poe test` | Runs pytest suite enforcing 100% statement and branch coverage |
-| `uv run poe test-fast` | Runs tests in parallel across CPU cores with `pytest-xdist` |
+| Task                      | What it does                                                                       |
+| ------------------------- | ---------------------------------------------------------------------------------- |
+| `uv run poe test`         | Runs pytest suite enforcing 100% statement and branch coverage                     |
+| `uv run poe test-fast`    | Runs tests in parallel across CPU cores with `pytest-xdist`                        |
 | `uv run poe code-quality` | Complete quality check: lint, format, TOML/YAML/CSS, types, complexity, boundaries |
-| `uv run poe fix` | Auto-fixes lint violations, formatting, markdown, and typos |
-| `uv run poe docs-serve` | Starts local Zensical live-reloading documentation dev server |
-| `uv run poe docs-build` | Builds production static HTML documentation site into `site/` with strict checks |
-
----
+| `uv run poe fix`          | Auto-fixes lint violations, formatting, markdown, and typos                        |
+| `uv run poe docs-serve`   | Starts local Zensical live-reloading documentation dev server                      |
+| `uv run poe docs-build`   | Builds production static HTML documentation site into `site/` with strict checks   |
 
 ## License
 

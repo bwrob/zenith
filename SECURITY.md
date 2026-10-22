@@ -2,7 +2,8 @@
 
 ## Supported Versions
 
-Only the latest release of **Zenith** receives active security updates and vulnerability patches.
+Only the latest release of **Zenith** receives active security updates and vulnerability
+patches.
 
 | Version | Supported          |
 | :------ | :----------------- |
@@ -12,10 +13,12 @@ We officially support Python 3.12 and later.
 
 ## Reporting a Vulnerability
 
-The **Zenith** project takes security seriously. If you believe you have discovered a vulnerability, please report it responsibly:
+The **Zenith** project takes security seriously. If you believe you have discovered a
+vulnerability, please report it responsibly:
 
 > [!CAUTION]
-> **Do not report security vulnerabilities through public GitHub issues or discussions.**
+> **Do not report security vulnerabilities through public GitHub issues or
+> discussions.**
 
 ### Preferred Reporting Method
 
@@ -25,7 +28,8 @@ The **Zenith** project takes security seriously. If you believe you have discove
    - Provide reproduction details and impact analysis.
 
 2. **Direct Security Contact**:
-   - Send an email to **bwrob** at [contact@bwrob.dev](mailto:contact@bwrob.dev) with the subject line `[SECURITY] Zenith Vulnerability Report`.
+   - Send an email to **bwrob** at [contact@bwrob.dev](mailto:contact@bwrob.dev) with
+     the subject line `[SECURITY] Zenith Vulnerability Report`.
 
 ## Vulnerability Handling & Response Timeline
 

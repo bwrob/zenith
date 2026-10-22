@@ -38,16 +38,10 @@ respect-gitignore = true
         format = ["jq"]
 
     [code-block-tools.tools."ruff:format"]
-        command = ["ruff", "format", "--line-length=79", "-"]
+        command = ["ruff", "format", "-"]
 
     [code-block-tools.tools."ruff:check"]
-        command = [
-            "ruff",
-            "check",
-            "--output-format=concise",
-            "--ignore=INP001,F821,D,ANN,FBT,E402,B018,S101,TRY,EM,PL,N,ERA,S,EXE,RET,SIM,PTH,F841,B,E501,C4,FURB,PIE,RUF,UP,F401,F403,I,SLF,T201,T203,TC,CPY",
-            "-",
-        ]
+        command = ["ruff", "check", "--output-format=concise", "-"]
 
 [MD001]
     front-matter-title = true
@@ -71,7 +65,7 @@ respect-gitignore = true
     maximum = 1
 
 [MD013]
-    code-block-line-length = 79
+    code-block-line-length = 88
     code-blocks            = true
     headings               = false
     line-length            = 88

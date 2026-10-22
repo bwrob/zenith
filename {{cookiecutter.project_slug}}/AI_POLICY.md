@@ -37,8 +37,8 @@ maintainer time, all contributors must adhere to the following principles:
   be closed without review.
 - **Search Before Opening (No Duplicates)**: Before opening a pull request, search open
   and closed pull requests, issues, and discussions. Do not open a pull request when the
-  same change has already been proposed or is currently in progress. Submitting duplicate
-  pull requests wastes maintainer bandwidth.
+  same change has already been proposed or is currently in progress. Submitting
+  duplicate pull requests wastes maintainer bandwidth.
 - **Contribute at Human Speed, Not AI Speed**: AI tools make it trivial to generate
   large volumes of code and prose quickly, but open source review bandwidth moves at
   human speed. Do not post rapid-fire pull requests, mass-claim open issues, or flood
