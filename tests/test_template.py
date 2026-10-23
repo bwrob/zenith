@@ -720,8 +720,9 @@ def test_default_generation(temp_output_dir: Path) -> None:
 def test_rendered_docs_pass_strict_build(temp_output_dir: Path) -> None:
     """Bug: a repo-relative ADR skill link failed after docs deployment.
 
-    Root cause: the generated docs linked to a file outside the published site.
-    Fix: build a rendered project with Zensical strict validation in template CI.
+    Root cause: the generated docs linked outside the published site and carried
+    a source-only Rumdl suppression into the generated project.
+    Fix: validate rendered docs with Zensical and Rumdl in template CI.
     """
     project_dir = Path(
         cookiecutter(
@@ -753,6 +754,19 @@ def test_rendered_docs_pass_strict_build(temp_output_dir: Path) -> None:
         text=True,
     )
     assert build.returncode == 0, f"{build.stdout}\n{build.stderr}"
+
+    rumdl = shutil.which("rumdl")
+    assert rumdl is not None
+    markdown_check = subprocess.run(
+        [rumdl, "check", "docs/adr/index.md"],
+        capture_output=True,
+        check=False,
+        cwd=project_dir,
+        text=True,
+    )
+    assert markdown_check.returncode == 0, (
+        f"{markdown_check.stdout}\n{markdown_check.stderr}"
+    )
 
 
 def test_python_315_generation(temp_output_dir: Path) -> None:

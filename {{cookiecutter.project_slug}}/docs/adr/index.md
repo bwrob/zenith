@@ -34,6 +34,4 @@ To propose a new decision:
 3. Submit a pull request detailing Context, Decision Drivers, Evaluated Options, and
    Consequences.
 
-<!-- rumdl-disable MD013 -->
 [adr-skill]: <https://github.com/{{ cookiecutter.github_username }}/{{ cookiecutter.project_slug }}/blob/main/.agents/skills/workflow-adr/SKILL.md>
-<!-- rumdl-enable MD013 -->
