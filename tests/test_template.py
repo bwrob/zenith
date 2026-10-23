@@ -1,6 +1,8 @@
 """Tests for the Zenith template."""
 
 import re
+import shutil
+import subprocess
 import tempfile
 import tomllib
 from pathlib import Path
@@ -713,6 +715,44 @@ def test_default_generation(temp_output_dir: Path) -> None:
         "AGENTS.md" in (project_dir / ".github" / "copilot-instructions.md").read_text()
     )
     assert "comment: off" in (project_dir / ".github" / "codecov.yml").read_text()
+
+
+def test_rendered_docs_pass_strict_build(temp_output_dir: Path) -> None:
+    """Bug: a repo-relative ADR skill link failed after docs deployment.
+
+    Root cause: the generated docs linked to a file outside the published site.
+    Fix: build a rendered project with Zensical strict validation in template CI.
+    """
+    project_dir = Path(
+        cookiecutter(
+            str(TEMPLATE_ROOT),
+            no_input=True,
+            output_dir=str(temp_output_dir),
+            extra_context={
+                "project_name": "Docs Gate Test",
+                "github_username": "zenith-template-tests",
+                "python_version": "3.13",
+                "include_cli": "yes",
+            },
+        )
+    )
+
+    adr_text = (project_dir / "docs" / "adr" / "index.md").read_text()
+    assert (
+        "https://github.com/zenith-template-tests/docs-gate-test/blob/main/"
+        ".agents/skills/workflow-adr/SKILL.md" in adr_text
+    )
+
+    zensical = shutil.which("zensical")
+    assert zensical is not None
+    build = subprocess.run(
+        [zensical, "build", "--clean", "--strict"],
+        capture_output=True,
+        check=False,
+        cwd=project_dir,
+        text=True,
+    )
+    assert build.returncode == 0, f"{build.stdout}\n{build.stderr}"
 
 
 def test_python_315_generation(temp_output_dir: Path) -> None:

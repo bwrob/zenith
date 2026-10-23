@@ -420,6 +420,18 @@ wheels = [
 ]
 
 [[package]]
+name = "griffe-warnings-deprecated"
+version = "1.1.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "griffelib" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/63/7b/7b1cf0e858e9370a957e50f59f5123b0188e0a5dba17b22cf6adac044a71/griffe_warnings_deprecated-1.1.2.tar.gz", hash = "sha256:3d57519749cd3225a483780c325cda242f7ac3dd8af70bfed0b4d0e2e20a15df", size = 32060, upload-time = "2026-10-06T09:10:20.816Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/55/61/4f63b56a06ca2b85834fef891231ad78c55a65cd8145afe19d43764bb393/griffe_warnings_deprecated-1.1.2-py3-none-any.whl", hash = "sha256:a49ff05e057694ae5a141d0bc1bb30d1a06694abc7cf0c3f3504aa8a0e9313f2", size = 10744, upload-time = "2026-10-06T09:10:19.734Z" },
+]
+
+[[package]]
 name = "griffelib"
 version = "2.3.2"
 source = { registry = "https://pypi.org/simple" }
@@ -1227,6 +1239,7 @@ dev = [
     { name = "zizmor" },
 ]
 docs = [
+    { name = "griffe-warnings-deprecated" },
     { name = "markdown-exec" },
     { name = "mkdocstrings", extra = ["python"] },
     { name = "pymdown-extensions" },
@@ -1257,6 +1270,7 @@ dev = [
     { name = "zizmor", specifier = ">=1.23.0" },
 ]
 docs = [
+    { name = "griffe-warnings-deprecated", specifier = ">=1.1.0" },
     { name = "markdown-exec", specifier = ">=1.12.0" },
     { name = "mkdocstrings", extras = ["python"], specifier = ">=1.0.7" },
     { name = "pymdown-extensions", specifier = ">=10.14.0" },
