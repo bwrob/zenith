@@ -37,8 +37,9 @@ respect-gitignore = true
     "??cookiecutter.project_slug??/AGENTS.md" = ["MD032"]
 
     # Jinja source values create generated-only Markdown differences.
-    "??cookiecutter.project_slug??/SECURITY.md"             = ["MD060"]
-    "??cookiecutter.project_slug??/docs/adr/index.md"       = ["MD060"]
+    "??cookiecutter.project_slug??/SECURITY.md" = ["MD060"]
+    # Unrendered Jinja prevents MD013 from recognizing the final URL as a link.
+    "??cookiecutter.project_slug??/docs/adr/index.md"       = ["MD013", "MD060"]
     "??cookiecutter.project_slug??/docs/changelog.md"       = ["MD013", "MD082"]
     "??cookiecutter.project_slug??/docs/getting-started.md" = ["MD046"]
 
