@@ -8,7 +8,7 @@
 # source and test files adhere to rigorous type contracts.
 # ==============================================================================
 
-enabled-ignores = [ "pyrefly", "type" ]
+enabled-ignores = ["pyrefly", "type"]
 infer-with-first-use = false
 preset = "strict"
 project-excludes = [
@@ -19,7 +19,7 @@ project-excludes = [
     "**/.venv",
     "**/{{cookiecutter.project_slug}}",
 ]
-project-includes = [ "scripts", "tests", "hooks" ]
+project-includes = ["scripts", "tests", "hooks"]
 python-version = "3.13.0"
 search-path = [
     ".",

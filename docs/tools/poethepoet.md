@@ -5,8 +5,6 @@
 `Poe the Poet` (`poe`) is a declarative, cross-platform task runner designed for Python
 and virtual environment managers like `uv`.
 
----
-
 ## What It Does
 
 Poe the Poet codifies project operations into declarative, cross-platform command
@@ -15,8 +13,6 @@ multi-step scripts, and sequential composite workflows that execute reliably acr
 Linux, macOS, and Windows without requiring fragile shell scripts or Makefiles. When
 commands are executed, Poe automatically forwards command-line flags and positional
 arguments transparently to the underlying tools.
-
----
 
 ## Why It's in Zenith
 
@@ -31,8 +27,6 @@ warning traps. By composing individual linters, formatters, type checkers, and t
 runners into unified compound tasks, Poe provides a single, unambiguous interface for
 repository maintenance.
 
----
-
 ## Configuration in Zenith
 
 Configured in `poe_tasks.toml` (or `[tool.poe.tasks]` in `pyproject.toml`):
@@ -46,8 +40,6 @@ if not path.exists():
 print(path.read_text().strip())
 ```
 
----
-
 ## Key Invocations
 
 ```bash
@@ -57,8 +49,6 @@ uv run poe fix               # Auto-fix all format, lint, and typo issues
 uv run poe docs-serve        # Serve documentation locally
 uv run poe test -- -k "math" # Forward filter argument to pytest
 ```
-
----
 
 ## Upstream Documentation
 

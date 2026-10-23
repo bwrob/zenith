@@ -1,8 +1,8 @@
 {
-  "recommendations": [
-    "charliermarsh.ruff",
-    "tamasfe.even-better-toml",
-    "DavidAnson.vscode-markdownlint",
-    "typos.typos-vscode"
-  ]
+    "recommendations": [
+        "charliermarsh.ruff",
+        "tamasfe.even-better-toml",
+        "typos.typos-vscode",
+        "rvben.rumdl"
+    ]
 }

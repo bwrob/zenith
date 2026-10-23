@@ -14,7 +14,8 @@ flowchart LR
     B --> C["Core Engine"]
     B --> D["Zensical Docs"]
 ```
-{% if cookiecutter.include_cli in [True, "yes", "true", "True", "1"] %}
+
+{% if cookiecutter.include_cli in [True, "yes", "true", "True", "1"] -%}
 
 ## Quick Start CLI
 
@@ -41,30 +42,31 @@ $ uv run {{ cookiecutter.project_slug }} --help
 ```
 
 </div>
-{% endif %}
+
+{% endif -%}
 
 ## Installation
 
 === "uv (Recommended)"
 
-    ```bash
-    uv add {{ cookiecutter.project_slug }}
-    ```
+```bash
+uv add {{ cookiecutter.project_slug }}
+```
 
 === "pip"
 
-    ```bash
-    pip install {{ cookiecutter.project_slug }}
-    ```
+```bash
+pip install {{ cookiecutter.project_slug }}
+```
 
 > [!TIP]
-> Always run project commands via `uv run poe <task>` or `uv run <command>`.
-> This guarantees hermetic execution inside the managed virtual environment without manual activation.
+> Always run project commands via `uv run poe <task>` or `uv run <command>`. This
+> guarantees hermetic execution inside the managed virtual environment without manual
+> activation.
 
 ## Highlights
 
 {% include "docs/_tool_stack.md" %}
-
 ## Architecture & Project Layout
 
 ```python exec="on"

@@ -7,8 +7,6 @@
 > ensuring that your application domain namespace remains clean, unpolluted, and free of
 > naming collisions with upstream template updates.
 
----
-
 ## What Are Domain Skills?
 
 While generic AI coding assistants understand Python syntax, pytest fixtures, and
@@ -27,8 +25,6 @@ Without domain guidance, autonomous AI agents tend to:
 invariants, entity lifecycles, and proprietary service logic into structured runbooks
 that AI agents load when working on domain code.**
 
----
-
 ## Anatomy of a Domain Skill
 
 Domain skills follow the standard Zenith progressive disclosure architecture:
@@ -46,26 +42,27 @@ Domain skills follow the standard Zenith progressive disclosure architecture:
 ---
 name: domain-billing
 description: >-
-  Business logic, subscription tiers, prorating calculations, and webhook processing for customer billing.
-  Use when modifying subscription models, invoice generators, Stripe webhook handlers, or pricing logic.
+  Business logic, subscription tiers, prorating calculations, and webhook processing
+  for customer billing. Use when modifying subscription models, invoice generators,
+  Stripe webhook handlers, or pricing logic.
   Triggers: billing, subscription, invoice, stripe, pricing, prorate, refund, payment.
 version: 1.0.0
 ---
 ```
 
----
-
 ## Recommended Patterns
+
+Use tables and state diagrams to make domain rules easy for agents to apply.
 
 ### Invariant Tables
 
 Define core domain constraints in clear, non-negotiable tables:
 
 | Subscription Tier | Seat Limit | API Request Cap | Storage Quota |
-|---|---|---|---|
-| **Starter** | Up to 5 | 10,000 / month | 5 GB |
-| **Professional** | Up to 25 | 100,000 / month | 50 GB |
-| **Enterprise** | Unlimited | Custom | Unlimited |
+| ----------------- | ---------- | --------------- | ------------- |
+| **Starter**       | Up to 5    | 10,000 / month  | 5 GB          |
+| **Professional**  | Up to 25   | 100,000 / month | 50 GB         |
+| **Enterprise**    | Unlimited  | Custom          | Unlimited     |
 
 ### State Machine Lifecycles
 
@@ -86,8 +83,6 @@ stateDiagram-v2
 Document how the domain handles boundary conditions (e.g., Leap year billing, fractional
 cent rounding, concurrent subscription upgrades).
 
----
-
 ## Common Domain Skills
 
 Here are typical domain skills you can scaffold in your Zenith project:
@@ -103,12 +98,10 @@ Here are typical domain skills you can scaffold in your Zenith project:
 - **`domain-compliance`**: PII masking protocols, audit log retention requirements, and
   data export contracts.
 
----
-
 ## Authoring Domain Skills
 
 Use the
-[Skill Creator (`workflow-skill-creator`)](workflow.md#skill-authoring-standards-workflow-skill-creator)
+[Skill Creator (workflow-skill-creator)](workflow.md)
 workflow:
 
 1. Create the skill directory:

@@ -19,12 +19,15 @@ uv add {{ cookiecutter.project_slug }}
 Import the primary functions into your application:
 
 ```python
-from {{ cookiecutter.package_name }} import get_greeting
+from your_package import get_greeting
 
 message = get_greeting("Developer")
 print(message)
 ```
-{% if cookiecutter.include_cli in [True, "yes", "true", "True", "1"] %}
+
+Replace `your_package` with the generated package name.
+
+{% if cookiecutter.include_cli in [True, "yes", "true", "True", "1"] -%}
 
 ## CLI Usage
 
@@ -53,14 +56,16 @@ $ uv run {{ cookiecutter.project_slug }} --help
 ```
 
 </div>
-{% endif %}
+
+{% endif -%}
 
 ## Development Workflow
 
 Clone the project and synchronize development dependencies:
 
 ```bash
-git clone https://github.com/{{ cookiecutter.github_username }}/{{ cookiecutter.project_slug }}.git
+git clone \
+  https://github.com/{{ cookiecutter.github_username }}/{{ cookiecutter.project_slug }}.git
 cd {{ cookiecutter.project_slug }}
 uv sync
 ```
@@ -77,9 +82,11 @@ uv run poe code-quality
 
 ???+ tip "Hermetic Task Execution"
 
-    Always invoke tasks using `uv run poe <task>`. Tasks inherit project
-    environment flags, strict encoding checks (`PYTHONUTF8=1`), and hermetic
-    virtual environments.
+```text
+Always invoke tasks using `uv run poe <task>`. Tasks inherit project
+environment flags, strict encoding checks (`PYTHONUTF8=1`), and hermetic
+virtual environments.
+```
 
 ??? example "Advanced Testing & Marker Options"
 
@@ -99,15 +106,19 @@ uv run poe code-quality
 - [ ] Preview documentation with `uv run poe docs-serve`
 
 > [!NOTE]
-> To enable automated documentation deployment to GitHub Pages via `.github/workflows/docs.yaml`, open your GitHub repository, navigate to **Settings** → **Pages**, and set **Build and deployment** → **Source** to **GitHub Actions**.
+> To enable automated documentation deployment to GitHub Pages via
+> `.github/workflows/docs.yaml`, open your GitHub repository, navigate to **Settings** →
+> **Pages**, and set **Build and deployment** → **Source** to **GitHub Actions**.
 
 > [!TIP]
-> When browsing docs, press ++slash++ or ++cmd+k++ (or ++ctrl+k++ on Linux/Windows) to instantly search documentation symbols and pages.
-> Hovering internal links like [API Reference](reference.md) activates floating link previews.
+> When browsing docs, press ++slash++ or ++cmd+k++ (or ++ctrl+k++ on Linux/Windows) to
+> instantly search documentation symbols and pages. Hovering internal links like
+> [API Reference](reference.md) activates floating link previews.
 
 ### Tested Code Snippets
 
-Code snippets can be embedded directly from verified tests or source files using `--8<--`:
+Code snippets can be embedded directly from verified tests or source files using
+`--8<--`:
 
 ```markdown
 --8<-- "tests/test_core.py:10:14"

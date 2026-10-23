@@ -1,11 +1,9 @@
-# typos: Spell Checker
+# Typos: Spell Checker
 
 [![Tool: typos](https://img.shields.io/badge/spelling-typos-blue.svg)](https://github.com/crate-ci/typos)
 
 `typos` is an extremely fast source code and documentation spell checker written in Rust
 by the crate-ci team.
-
----
 
 ## What It Does
 
@@ -17,8 +15,6 @@ positives.
 It scans source files, docstrings, markdown guides, configuration manifests, and commit
 messages across the entire tree, applying automated in-place fixes via `typos -w`.
 
----
-
 ## Why It's in Zenith
 
 Spelling errors in public API identifiers, command-line arguments, or documentation
@@ -28,8 +24,6 @@ repository assets.
 Because `typos` scans the entire repository in under 50 milliseconds, it runs on every
 pre-commit check and CI workflow without noticeable overhead or the false-positive noise
 common in legacy spell checkers.
-
----
 
 ## Configuration in Zenith
 
@@ -44,8 +38,6 @@ if not path.exists():
 print(path.read_text().strip())
 ```
 
----
-
 ## Key Invocations
 
 ```bash
@@ -54,8 +46,6 @@ uv run typos -w              # Automatically fix detected typos in place
 uv run poe typos             # Wired quality check task in Poe
 uv run poe typos-fix         # Wired auto-fixing task in Poe
 ```
-
----
 
 ## Upstream Documentation
 

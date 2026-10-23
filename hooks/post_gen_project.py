@@ -1,7 +1,10 @@
+import json
 import os
 import re
 import shutil
 import subprocess
+
+import yaml
 
 PROJECT_DIR = os.path.realpath(os.path.curdir)
 
@@ -156,12 +159,66 @@ def _link_subagents_to_dir(tool_dir: str, subagents_src: str) -> None:
                 shutil.copyfile(src_agent_file, target_agent_file)
 
 
+def _codex_subagent_definition(agent_path: str) -> tuple[str, str, str]:
+    with open(agent_path, "r", encoding="utf-8") as agent_file:
+        content = agent_file.read()
+
+    frontmatter_match = re.match(
+        r"\A---\r?\n(?P<metadata>.*?)\r?\n---\r?\n(?P<instructions>.*)\Z",
+        content,
+        re.DOTALL,
+    )
+    if frontmatter_match is None:
+        raise ValueError(f"Subagent file is missing YAML front matter: {agent_path}")
+
+    metadata: object = yaml.safe_load(frontmatter_match.group("metadata"))
+    if not isinstance(metadata, dict):
+        raise TypeError(f"Subagent front matter must be a mapping: {agent_path}")
+
+    name: object = metadata.get("name")
+    description: object = metadata.get("description")
+    instructions = frontmatter_match.group("instructions").strip()
+    if not isinstance(name, str) or not isinstance(description, str):
+        raise TypeError(f"Subagent name and description must be strings: {agent_path}")
+    if not instructions:
+        raise ValueError(f"Subagent metadata is incomplete: {agent_path}")
+
+    return name, description, instructions
+
+
+def _setup_codex_subagents(subagents_src: str) -> None:
+    codex_agents_dir = os.path.join(PROJECT_DIR, ".codex", "agents")
+    os.makedirs(codex_agents_dir, exist_ok=True)
+
+    for agent_filename in sorted(os.listdir(subagents_src)):
+        if not agent_filename.endswith(".md"):
+            continue
+
+        agent_path = os.path.join(subagents_src, agent_filename)
+        agent_name, description, instructions = _codex_subagent_definition(agent_path)
+        codex_agent_path = os.path.join(
+            codex_agents_dir,
+            f"{os.path.splitext(agent_filename)[0]}.toml",
+        )
+        if os.path.lexists(codex_agent_path):
+            continue
+
+        with open(codex_agent_path, "w", encoding="utf-8") as codex_agent_file:
+            codex_agent_file.write(
+                f"name = {json.dumps(agent_name, ensure_ascii=False)}\n"
+                f"description = {json.dumps(description, ensure_ascii=False)}\n"
+                "developer_instructions = "
+                f"{json.dumps(instructions, ensure_ascii=False)}\n"
+            )
+
+
 def _setup_subagents(subagents_src: str) -> None:
     if not os.path.isdir(subagents_src):
         return
-    for tool_name in (".claude", ".gemini", ".codex", ".cursor"):
+    for tool_name in (".claude", ".gemini", ".cursor"):
         tool_dir = os.path.join(PROJECT_DIR, tool_name, "agents")
         _link_subagents_to_dir(tool_dir, subagents_src)
+    _setup_codex_subagents(subagents_src)
 
 
 def setup_agent_instructions() -> None:

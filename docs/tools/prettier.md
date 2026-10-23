@@ -6,8 +6,6 @@
 through `prek` to format GitHub Actions YAML manifests, issue templates, and
 custom CSS stylesheets.
 
----
-
 ## What It Does
 
 Prettier parses configuration files and stylesheets, re-printing them to adhere to
@@ -18,8 +16,6 @@ formatting, key-value spacing, and scalar wrapping across GitHub Actions workflo
 By formatting files automatically, Prettier completely eliminates stylistic noise from
 pull request reviews and version control diffs.
 
----
-
 ## Why It's in Zenith
 
 Zenith enforces consistent 4-space indentation across all languages in the project
@@ -29,8 +25,6 @@ manifests in the Python repository.
 
 It integrates directly into dedicated task runners (`poe format-yaml`, `poe format-css`)
 and the overarching `poe code-quality` verification pipeline.
-
----
 
 ## Configuration in Zenith
 
@@ -57,8 +51,6 @@ hooks = [
 ]
 ```
 
----
-
 ## Key Invocations
 
 ```bash
@@ -66,8 +58,6 @@ uv run poe format-yaml       # Format YAML configuration files
 uv run poe format-css        # Format CSS stylesheets
 uv run poe fix               # Auto-fix all files including YAML and CSS
 ```
-
----
 
 ## Upstream Documentation
 

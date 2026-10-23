@@ -6,8 +6,6 @@
 In Zenith projects, Typst is used to programmatically generate clean,
 resolution-independent vector SVG logotypes for documentation.
 
----
-
 ## What It Does
 
 Typst pairs the document layout power of LaTeX with a modern, ergonomic scripting
@@ -18,8 +16,6 @@ In Zenith projects, visual emblems, icons, and logotypes are constructed
 programmatically with Typst's canvas shapes, gradients, and typography engines—treating
 design assets as version-controlled code rather than binary image blobs.
 
----
-
 ## Why It's in Zenith
 
 Zenith enforces a "code-as-asset" philosophy: all project assets, including branding and
@@ -29,8 +25,6 @@ agents, diffed in Git, and built deterministically.
 The Typst logotype source directly defines the celestial Python hues (`#387eb8` blue and
 `#ffc331` gold) used throughout documentation stylesheets, eliminating binary media
 tracking from the repository.
-
----
 
 ## Configuration in Zenith
 
@@ -54,16 +48,12 @@ cmd = "typst compile docs/assets/python-logo.typ docs/assets/python-logo.svg"
 help = "Compile documentation logotype SVG with Typst."
 ```
 
----
-
 ## Key Invocations
 
 ```bash
 uv run poe docs-logo         # Re-compile SVG logotype from Typst source
 uv run typst compile file.typ file.svg
 ```
-
----
 
 ## Upstream Documentation
 

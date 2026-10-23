@@ -8,8 +8,6 @@ quality.
 Zenith is built on a practical principle: **automated, strict quality guardrails
 accelerate development rather than hindering it.**
 
----
-
 ## Strict Guardrails Accelerate Development
 
 Conventional engineering wisdom often treats guardrails as overhead—bureaucratic speed
@@ -83,14 +81,12 @@ non-negotiable:
 
 </div>
 
----
-
 ## Fast Feedback Loops Make Strict Quality Checks Practical
 
 Thorough quality checks historically carried a significant penalty: slow linters,
-sluggish type checkers, and long test suites that broke developer flow and triggered context
-switching. When running quality checks takes 45 seconds, developers look away, check
-messages, and avoid running checks until the end of the day.
+sluggish type checkers, and long test suites that broke developer flow and triggered
+context switching. When running quality checks takes 45 seconds, developers look away,
+check messages, and avoid running checks until the end of the day.
 
 This is where modern Rust-native tooling enters the picture. **Speed is not the
 philosophy itself; speed is what makes thorough quality checks frictionless.**
@@ -105,8 +101,6 @@ quality checks into seconds:
 - Local pre-commit hooks and live documentation previews run instantaneously.
 
 Strictness provides the safety; sub-second performance provides the velocity.
-
----
 
 ## AI-Ready Architecture
 
@@ -150,8 +144,6 @@ Documentation builds automatically compile plain-text `site/llms.txt` and
 `site/llms-full.txt` feeds, allowing AI coding assistants to consume the entire API
 surface in a clean, high-signal format.
 
----
-
 ## Architectural Workflow
 
 Zenith connects human developers, autonomous AI agents, local hermetic automation, and
@@ -191,8 +183,6 @@ flowchart LR
 
 For a detailed breakdown of the CI verification pipeline, see
 [CI/CD Actions](ci-actions.md).
-
----
 
 ## Project Sizing & Fit
 

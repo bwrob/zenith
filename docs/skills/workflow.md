@@ -11,14 +11,12 @@ predictable, repeatable procedures. Rather than prescribing a rigid, robotic scr
 each workflow skill provides clear intent, rationale, and execution steps that both
 human developers and AI agents can execute with confidence.
 
----
-
 ## Core Template Workflows
 
 These skills are included in every project scaffolded from Zenith to guide day-to-day
 development.
 
-### Git Hygiene & Commit Governance (`workflow-git`)
+### Git Hygiene & Commit Governance (workflow-git)
 
 **What it is**: The version control protocol governing how code changes are inspected,
 staged, committed, and submitted as pull requests.
@@ -39,9 +37,7 @@ policy for indiscriminate staging. It requires:
   into pull request descriptions, documenting which tools were used and confirming local
   test verification.
 
----
-
-### Pre-Flight Code Review (`workflow-code-review`)
+### Pre-Flight Code Review (workflow-code-review)
 
 **What it is**: An adversarial self-audit checklist that an agent or developer runs
 before submitting changes or opening a pull request.
@@ -61,9 +57,7 @@ Before presenting work for human review, the workflow checks:
    models leverage PEP 695 type parameter syntax and structural protocols.
 4. **Coverage Invariants**: Asserts that 100% branch and statement coverage is intact.
 
----
-
-### Source-Checked Changelog Curation (`workflow-changelog`)
+### Source-Checked Changelog Curation (workflow-changelog)
 
 **What it is**: A disciplined maintenance workflow for `docs/changelog.md` following
 [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/) and
@@ -80,9 +74,7 @@ entries. It categorizes changes under standard subsections (`Added`, `Changed`,
 `Deprecated`, `Removed`, `Fixed`, `Security`) and automatically maintains tag comparison
 links at the bottom of the document.
 
----
-
-### Architecture Decision Records (`workflow-adr`)
+### Architecture Decision Records (workflow-adr)
 
 **What it is**: A structured decision-logging workflow using the
 [MADR 3.0.0](https://adr.github.io/madr/) (Markdown Architectural Decision Records)
@@ -99,9 +91,7 @@ repeating past debates.
 status, context, considered options with pros and cons, and the chosen outcome. It also
 automatically updates `docs/adr/index.md` and registers the page in `zensical.toml`.
 
----
-
-### Environment Bootstrap & Recovery (`workflow-setup`)
+### Environment Bootstrap & Recovery (workflow-setup)
 
 **What it is**: A zero-friction runbook for bootstrapping a clean development
 environment or recovering from a corrupted virtual environment.
@@ -120,9 +110,7 @@ uv run poe test              # Verifies the test suite passes locally
 uv run poe code-quality      # Confirms linting, types, and formatting pass
 ```
 
----
-
-### Skill Authoring & Standards (`workflow-skill-creator`)
+### Skill Authoring & Standards (workflow-skill-creator)
 
 **What it is**: The meta-skill that governs how new agent capabilities are designed,
 structured, and maintained in Zenith repositories.
@@ -152,14 +140,12 @@ hallucinated tool flags.
 > have been promoted to their own dedicated group. See the
 > [Spec-Driven Development Suite](sdd.md) guide.
 
----
-
 ## Maintainer Workflow Skills
 
 These skills live in the Zenith template repository (`bwrob/zenith`) to support ongoing
 maintenance, upstream tool tracking, and downstream showcase verification.
 
-### External Repository Benchmarking (`workflow-inspect-repo`)
+### External Repository Benchmarking (workflow-inspect-repo)
 
 **What it is**: A 9-pillar audit framework for benchmarking mature open-source Python
 projects to identify industry best practices.
@@ -181,9 +167,7 @@ external repositories across 9 engineering pillars:
 
 Findings are synthesized into actionable improvement proposals for Zenith.
 
----
-
-### Dependency Upgrades & Skill Sync (`workflow-update-tools`)
+### Dependency Upgrades & Skill Sync (workflow-update-tools)
 
 **What it is**: The maintenance protocol for upgrading tool versions in `pyproject.toml`
 and synchronizing matching agent skills.
@@ -201,9 +185,7 @@ configurations.
 3. Synchronized updates to matching `tool-*` skills to reflect new flags and syntax.
 4. Downstream verification in the showcase repository.
 
----
-
-### Live Showcase Synchronization (`workflow-example-sync`)
+### Live Showcase Synchronization (workflow-example-sync)
 
 **What it is**: The synchronization bridge and downstream canary verification protocol
 between Zenith and the live showcase repository `bwrob/zenith-example`.
@@ -221,8 +203,6 @@ GitHub Actions CI workflows run on real runners.
 - Runs downstream test suites, type checking, and pre-commit hooks.
 - Monitors GitHub Actions CI workflow runs across Linux, macOS, and Windows to guarantee
   that template modifications never break downstream users.
-
----
 
 ## Authoring Custom Workflow Skills
 

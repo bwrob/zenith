@@ -6,8 +6,6 @@
 and CSS by Ines Montani. It renders typing animations and interactive CLI outputs
 directly in documentation pages without requiring video recordings or animated GIFs.
 
----
-
 ## What It Does
 
 `Termynal` simulates an authentic interactive shell session directly inside
@@ -17,8 +15,6 @@ prompts, user input, and console outputs.
 
 Unlike video recordings or animated GIFs, Termynal renders text as pure, accessible HTML
 and CSS without heavy media assets.
-
----
 
 ## Why It's in Zenith
 
@@ -30,8 +26,6 @@ Unlike recorded videos, visitors can pause animations, select text, and copy com
 directly from the terminal widget. Zenith wraps this functionality so any standard
 markdown ` ```console ` block contained within `<div class="termy">` automatically
 animates.
-
----
 
 ## Configuration in Zenith
 
@@ -61,8 +55,6 @@ $ uv run my-app greet "World"
 
 </div>
 ````
-
----
 
 ## Upstream Documentation
 

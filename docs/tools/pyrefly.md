@@ -6,8 +6,6 @@
 provides fast type inference, strict sound type validation, and native support for
 modern Python 3.12+ type system syntax.
 
----
-
 ## What It Does
 
 Pyrefly validates type soundness across Python codebases by evaluating Abstract Syntax
@@ -17,8 +15,6 @@ subtyping through `typing.Protocol` without requiring inheritance.
 
 By validating function boundaries at compile time, Pyrefly catches missing type
 annotations, implicit dynamic conversions, and unsafe coercions with instant feedback.
-
----
 
 ## Why It's in Zenith
 
@@ -30,8 +26,6 @@ Autonomous AI agents frequently introduce loose type annotations or unconstraine
 generics when generating code. Operating Pyrefly in strict mode acts as an automated
 anti-hallucination guardrail, blocking untyped code from passing quality gates before
 human review.
-
----
 
 ## Configuration in Zenith
 
@@ -53,8 +47,6 @@ Implicit `Any` inference is strictly prohibited, structural protocols are valida
 call sites, and any untyped third-party libraries require explicit stub declarations or
 typed wrappers.
 
----
-
 ## Type Coverage & Completeness Enforcement
 
 Beyond checking type correctness, Pyrefly provides native type coverage and completeness
@@ -70,20 +62,27 @@ measurement via `pyrefly coverage`:
   (`pyrefly coverage check src --fail-under 100 --strict`) directly into
   `poe code-quality` and CI pipelines.
 
----
-
 ## Key Invocations
 
 ```bash
-uv run pyrefly check                                         # Run static type analysis across project
-uv run pyrefly coverage check src --fail-under 100 --strict  # Enforce 100% strict type coverage
-uv run pyrefly coverage check src --public-only              # Check public API completeness
-uv run pyrefly coverage report src                           # Generate detailed JSON coverage report
-uv run poe type-check                                        # Strict type checking task in Poe pipeline
-uv run poe type-coverage                                     # Type coverage gate in poe code-quality
-```
+# Run static type analysis across project.
+uv run pyrefly check
 
----
+# Enforce 100% strict type coverage.
+uv run pyrefly coverage check src --fail-under 100 --strict
+
+# Check public API completeness.
+uv run pyrefly coverage check src --public-only
+
+# Generate detailed JSON coverage report.
+uv run pyrefly coverage report src
+
+# Run the strict type-checking task in Poe.
+uv run poe type-check
+
+# Run the type-coverage gate in Poe.
+uv run poe type-coverage
+```
 
 ## Upstream Documentation
 

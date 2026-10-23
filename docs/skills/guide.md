@@ -11,11 +11,12 @@ inheritance hierarchies, unconstrained `Any` types) and colloquial, ambiguous te
 writing. `guide-*` skills counteract this by grounding agents in Zenith's modern,
 opinionated engineering philosophy.
 
----
-
 ## Core Template Guides
 
-### Modern Python 3.12+ Engineering (`guide-python`)
+These guides define the default engineering and writing standards for generated
+projects.
+
+### Modern Python 3.12+ Engineering (guide-python)
 
 **What it is**: The definitive engineering style guide for Python 3.12+ code in Zenith.
 It codifies architectural invariants around type parameter syntax, structural subtyping,
@@ -34,11 +35,14 @@ using mutable dataclasses that introduce race conditions.
    wrappers with clean modern syntax:
 
    ```python
-   # Modern Zenith idiom
-   def transform[T](items: list[T], operation: Callable[[T], T]) -> list[T]: ...
-
+   from collections.abc import Callable
 
    type JsonScalar = str | int | float | bool | None
+   type Json = dict[str, Json] | list[Json] | JsonScalar
+
+
+   # Modern Zenith idiom
+   def transform[T](items: list[T], operation: Callable[[T], T]) -> list[T]: ...
    ```
 
 2. **Composition Over Inheritance**: Avoids rigid inheritance hierarchies in favor of
@@ -55,9 +59,7 @@ using mutable dataclasses that introduce race conditions.
    requiring explicit `encoding="utf-8"` in all file read/write operations and
    subprocess calls.
 
----
-
-### Simplified Technical English (`guide-ste100`)
+### Simplified Technical English (guide-ste100)
 
 **What it is**: The writing guide and automated linter implementing the international
 Simplified Technical English standard (ASD-STE100 Issue 8).
@@ -79,8 +81,6 @@ ASD-STE100 solves this through controlled language principles:
 - **Automated Verification**: Zenith includes a standalone, standard-library Python
   linter and auto-fixer (`ste-lint.py`). Run `uv run poe lint-ste` to audit skills and
   documentation against STE-100 vocabulary and structure rules.
-
----
 
 ## Authoring Custom Guide Skills
 

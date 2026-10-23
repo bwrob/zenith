@@ -2,15 +2,14 @@
 
 Thank you for helping improve the **Zenith** template repository!
 
----
-
 ## 1. Principles & Policies
 
-- **AI Policy**: Read and adhere to [AI_POLICY.md](AI_POLICY.md). All AI-generated contributions require local verification, human accountability, and transparent disclosure.
+- **AI Policy**: Read and adhere to [AI_POLICY.md](AI_POLICY.md). All AI-generated
+  contributions require local verification, human accountability, and transparent
+  disclosure.
 - **Agent Instructions**: Coding assistants must follow [AGENTS.md](AGENTS.md).
-- **Code of Conduct**: Treat all contributors respectfully in accordance with our [Code of Conduct](CODE_OF_CONDUCT.md).
-
----
+- **Code of Conduct**: Treat all contributors respectfully in accordance with our
+  [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ## 2. Environment & Testing
 
@@ -31,8 +30,6 @@ uv run poe code-quality
 # Auto-fix formatting and linting
 uv run poe fix
 ```
-
----
 
 ## 3. Pull Requests
 

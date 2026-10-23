@@ -1,12 +1,10 @@
-# prek: Git Hook Automation
+# Prek: Git Hook Automation
 
 [![Tool: prek](https://img.shields.io/badge/prek-enabled-brightgreen)](https://github.com/j178/prek)
 
 `prek` is a fast Git hook runner written in Rust. In Zenith, it validates
 code hygiene, detects secrets, verifies schemas, and enforces formatting before
 commits are created.
-
----
 
 ## What It Does
 
@@ -27,8 +25,6 @@ Zenith configures `prek` through `prek.toml` with multiple validation layers:
   code meets strict typing, cognitive complexity, and layer boundary standards before
   leaving the workstation.
 
----
-
 ## Why It's in Zenith
 
 Zenith standardizes on modern, ultra-fast, Rust-native developer tooling. Unlike
@@ -38,8 +34,6 @@ Python interpreter startup latency or global virtual environment overhead.
 `prek` establishes an automated local barrier that prevents defective code,
 unformatted files, and accidental secret disclosures from ever entering the Git
 commit history.
-
----
 
 ## Configuration in Zenith
 
@@ -54,11 +48,12 @@ if not path.exists():
 print(path.read_text().strip())
 ```
 
----
-
 ## Architectural Rationale
 
-### Direct Invocations vs. Poe Tasks
+Local hooks call tools directly so they can process staged file paths and return
+reliable exit codes.
+
+### Direct Invocations Vs. Poe Tasks
 
 In Zenith, local hooks in `prek.toml` invoke tools directly using `uv run <tool>`
 (for example, `uv run pyrefly check` or `uv run tach check`) rather than delegating
@@ -74,8 +69,6 @@ to task aliases (`uv run poe check-types`):
 3. **Deterministic Exit Codes**: Direct commands propagate exit codes straight to
    Git without an intermediate task runner layer.
 
----
-
 ## Key Invocations
 
 ```bash
@@ -85,8 +78,6 @@ uv run prek run <hook_id> -a    # Execute a specific hook across all files
 uv run prek update              # Update hook repositories to their latest revs
 uv run prek validate-config     # Validate configuration syntax
 ```
-
----
 
 ## Upstream Documentation
 

@@ -6,8 +6,6 @@ The format is based on [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.
 and this project adheres to
 [Semantic Versioning 2.0.0](https://semver.org/spec/v2.0.0.html).
 
----
-
 ## [Unreleased]
 
 ### Added
@@ -15,14 +13,12 @@ and this project adheres to
 - Dedicated Zenith documentation website configured with Zensical, Catppuccin hue-based
   theming, MathJax, and Termynal terminal animations.
 - Comprehensive tooling guides for the integrated tools (uv, Ruff, Pyrefly, complexipy,
-  Tach, Griffe, Poe the Poet, Zensical, rumdl, typos, pytest, Coverage.py, mutmut,
-  Cosmic Ray, Prettier, Taplo, zizmor, Typst, Termynal, Typer, Cookiecutter).
+  Tach, Deptry, Griffe, Poe the Poet, Zensical, rumdl, typos, pytest, Coverage.py,
+  mutmut, Cosmic Ray, Prettier, Taplo, zizmor, Typst, Termynal, Typer, Cookiecutter).
 - Detailed agent skill architecture guides for lifecycle workflows in `.agents/skills/`.
 - Deep-dive philosophy guide outlining Modern Rust Tooling, AI-Ready Engineering,
   Ruthless Guardrails, and Project Sizing.
 - GitHub Pages automated deployment workflow (`.github/workflows/docs.yaml`).
-
----
 
 ## [0.1.0] - 2026-10-18
 
@@ -37,8 +33,8 @@ and this project adheres to
     generics).
   - Cognitive complexity enforcement with **complexipy** (ceiling of <= 10 per
     function/method).
-  - Modular boundary enforcement and external dependency hygiene via **Tach**
-    (`tach check` and `tach check-external`).
+  - Modular boundary enforcement via **Tach** and declared dependency checks via
+    **Deptry**.
   - Declarative task runner integration with **Poe the Poet** (`uv run poe <task>`).
   - High-performance Markdown linting and embedded code verification with **rumdl**.
   - Blazing-fast source code and documentation spell checking with **typos**.

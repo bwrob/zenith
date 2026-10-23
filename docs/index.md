@@ -8,8 +8,6 @@
   An opinionated template for modern Python 3.12+ services, packages, and autonomous AI agents.
 </p>
 
----
-
 ## Quick Start
 
 > [!TIP]
@@ -35,8 +33,6 @@ Serving documentation at http://127.0.0.1:8000
 
 </div>
 
----
-
 ## The Four Pillars
 
 Zenith eliminates scaffolding debt and quality decay from commit zero across four
@@ -50,7 +46,8 @@ foundational pillars:
 
     Sub-second developer loops powered by **[uv](tools/uv.md)**,
     **[Ruff](tools/ruff.md)**, **[Pyrefly](tools/pyrefly.md)**,
-    **[Tach](tools/tach.md)**, **[complexipy](tools/complexipy.md)**, and
+    **[Tach](tools/tach.md)**, **[Deptry](tools/deptry.md)**,
+    **[complexipy](tools/complexipy.md)**, and
     **[Zensical](tools/zensical.md)**. All tasks run through
     **[Poe the Poet](tools/poethepoet.md)** for identical local and CI execution.
 
@@ -81,8 +78,6 @@ foundational pillars:
 
 </div>
 
----
-
 ## Architecture at a Glance
 
 Scaffolded projects enforce strict separation between domain logic, public interfaces,
@@ -106,65 +101,63 @@ Python out of the box:
 
 === "src/my_awesome_service/core.py"
 
-    ```python
-    """Core domain logic with strict typing and immutability."""
+```python
+"""Core domain logic with strict typing and immutability."""
 
-    from dataclasses import dataclass
+from dataclasses import dataclass
 
 
-    @dataclass(frozen=True, slots=True)
-    class Greeter:
-        """Greeting domain entity."""
+@dataclass(frozen=True, slots=True)
+class Greeter:
+    """Greeting domain entity."""
 
-        recipient: str
+    recipient: str
 
-        def format(self) -> str:
-            """Format greeting with recipient."""
-            return f"Hello, {self.recipient}!"
-    ```
+    def format(self) -> str:
+        """Format greeting with recipient."""
+        return f"Hello, {self.recipient}!"
+```
 
 === "src/my_awesome_service/cli.py"
 
-    ```python
-    """Command line interface powered by Typer and Rich."""
+```python
+"""Command line interface powered by Typer and Rich."""
 
-    from typing import Annotated
+from typing import Annotated
 
-    from rich.console import Console
-    import typer
+import typer
+from my_awesome_service.core import Greeter
+from rich.console import Console
 
-    from my_awesome_service.core import Greeter
-
-    app = typer.Typer(no_args_is_help=True)
-    console = Console()
+app = typer.Typer(no_args_is_help=True)
+console = Console()
 
 
-    @app.command()
-    def greet(
-        name: Annotated[str, typer.Argument(help="Name to greet.")] = "World",
-    ) -> None:
-        """Display a personalized greeting."""
-        greeter = Greeter(recipient=name)
-        console.print(f"[bold green]✨ {greeter.format()}[/bold green]")
-    ```
+@app.command()
+def greet(
+    name: Annotated[str, typer.Argument(help="Name to greet.")] = "World",
+) -> None:
+    """Display a personalized greeting."""
+    greeter = Greeter(recipient=name)
+    console.print(f"[bold green]✨ {greeter.format()}[/bold green]")
+```
 
 === "tests/test_cli.py"
 
-    ```python
-    """Automated CLI test suite with 100% coverage gate."""
+```python
+"""Automated CLI test suite with 100% coverage gate."""
 
-    from typer.testing import CliRunner
+from my_awesome_service.cli import app
+from typer.testing import CliRunner
 
-    from my_awesome_service.cli import app
-
-    runner = CliRunner()
+runner = CliRunner()
 
 
-    def test_greet() -> None:
-        result = runner.invoke(app, ["greet", "Zenith"])
-        assert result.exit_code == 0
-        assert "✨ Hello, Zenith!" in result.stdout
-    ```
+def test_greet() -> None:
+    result = runner.invoke(app, ["greet", "Zenith"])
+    assert result.exit_code == 0
+    assert "✨ Hello, Zenith!" in result.stdout
+```
 
 > [!TIP]
 > **Explore the Live Showcase Repository**

@@ -9,8 +9,6 @@ parties spend hours playing conversational whack-a-mole. In contrast, SDD treats
 **specifications as authoritative, versioned contracts**. Code is merely a downstream
 artifact generated from approved specifications.
 
----
-
 ## The SDD Lifecycle & Invariants
 
 ```mermaid
@@ -42,11 +40,11 @@ SDD enforces four non-negotiable architectural invariants:
    `poe sdd-revert` cleanly rolls back the commit and resets the plan checkbox without
    leaving dirty working trees.
 
----
-
 ## The Five SDD Skills
 
-### Master Orchestrator (`sdd`)
+Each skill owns one stage of the specification-driven development lifecycle.
+
+### Master Orchestrator (sdd)
 
 **What it is**: The high-level workflow director that guides a feature from initial
 concept to final archival across the entire SDD lifecycle.
@@ -70,9 +68,7 @@ Key capabilities include:
   `uv run poe sdd-revert <feature-id>` performs a non-destructive Git revert and
   restores the task checkbox in `plan.md`.
 
----
-
-### Specification Authoring (`sdd-spec`)
+### Specification Authoring (sdd-spec)
 
 **What it is**: The requirements elicitation and specification drafting skill that
 captures user needs before any code is written.
@@ -95,9 +91,7 @@ Core practices enforced by `sdd-spec`:
 - **Automated Spec Linter**: Validates document structure and requirements syntax via
   `uv run poe sdd-check-spec <feature-id>`.
 
----
-
-### Technical Planning & Architecture (`sdd-plan`)
+### Technical Planning & Architecture (sdd-plan)
 
 **What it is**: The architectural planning skill that translates approved specifications
 into typed Python 3.12+ component designs and atomic implementation tasks.
@@ -117,9 +111,7 @@ Key architectural guardrails:
 - **Phase Milestones & Verification Recipes**: Groups tasks into logical phases with
   explicit checkpoints and manual test commands.
 
----
-
-### Test-Driven Implementation (`sdd-implement`)
+### Test-Driven Implementation (sdd-implement)
 
 **What it is**: The sequential execution engine that implements plan tasks using strict
 Test-Driven Development (TDD).
@@ -140,9 +132,7 @@ Implementation protocol:
 5. **Phase Checkpoints**: At phase boundaries, verifies 1:1 file-to-test coverage,
    executes manual verification commands, and stops for confirmation.
 
----
-
-### Adversarial Verification & Review (`sdd-review`)
+### Adversarial Verification & Review (sdd-review)
 
 **What it is**: The independent quality gate that audits implemented code against the
 original specification before merging.
@@ -166,20 +156,18 @@ Review capabilities:
 - **Remediation Loop**: If issues are found, appends a structured `Review Fixes` phase
   to `plan.md`, returning the feature to `sdd-implement` for targeted resolution.
 
----
-
 ## SDD Task Runner Quick Reference
 
 The SDD workflow is driven entirely through hermetic Poe tasks:
 
-| Command | Lifecycle Stage | Action |
-|---|---|---|
-| `uv run poe sdd-new <feature-id>` | Specification | Creates feature branch and initializes `.specs/<feature-id>/spec.md` |
-| `uv run poe sdd-check-spec <feature-id>` | Specification | Lints `spec.md` for EARS syntax and required sections |
-| `uv run poe sdd-plan <feature-id>` | Planning | Scaffolds `.specs/<feature-id>/plan.md` from the architectural template |
-| `uv run poe sdd-review <feature-id>` | Review | Initializes `.specs/<feature-id>/review.md` for adversarial audit |
-| `uv run poe sdd-check-api <feature-id>` | Review | Audits public API changes against planned symbols via Griffe |
-| `uv run poe sdd-check-traceability <feature-id>` | Review | Verifies that all `REQ-XXX` IDs map to passing unit tests |
-| `uv run poe sdd-verify <feature-id>` | Verification | Full convergence gate: spec lint + API diff + traceability + tests |
-| `uv run poe sdd-revert <feature-id> [sha]` | Rollback | Cleanly reverts a task commit and unchecks its plan checkbox |
-| `uv run poe sdd-archive <feature-id>` | Archival | Folds completed specification into permanent `docs/specs/` |
+| Command                                          | Lifecycle Stage | Action                                                                  |
+| ------------------------------------------------ | --------------- | ----------------------------------------------------------------------- |
+| `uv run poe sdd-new <feature-id>`                | Specification   | Creates feature branch and initializes `.specs/<feature-id>/spec.md`    |
+| `uv run poe sdd-check-spec <feature-id>`         | Specification   | Lints `spec.md` for EARS syntax and required sections                   |
+| `uv run poe sdd-plan <feature-id>`               | Planning        | Scaffolds `.specs/<feature-id>/plan.md` from the architectural template |
+| `uv run poe sdd-review <feature-id>`             | Review          | Initializes `.specs/<feature-id>/review.md` for adversarial audit       |
+| `uv run poe sdd-check-api <feature-id>`          | Review          | Audits public API changes against planned symbols via Griffe            |
+| `uv run poe sdd-check-traceability <feature-id>` | Review          | Verifies that all `REQ-XXX` IDs map to passing unit tests               |
+| `uv run poe sdd-verify <feature-id>`             | Verification    | Full convergence gate: spec lint + API diff + traceability + tests      |
+| `uv run poe sdd-revert <feature-id> [sha]`       | Rollback        | Cleanly reverts a task commit and unchecks its plan checkbox            |
+| `uv run poe sdd-archive <feature-id>`            | Archival        | Folds completed specification into permanent `docs/specs/`              |

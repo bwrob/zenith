@@ -6,8 +6,6 @@
 and true quality of a test suite by introducing deliberate mutations (faults) into the
 Abstract Syntax Tree (AST) of the production code.
 
----
-
 ## What It Does
 
 Mutation testing answers a critical question that traditional code coverage cannot:
@@ -19,8 +17,6 @@ introduces microscopic mutations, such as inverting boolean logic, replacing ope
 or deleting statements. It then executes the test suite against each mutant. If a test
 fails, the mutant is killed, proving the test suite actively caught the regression; if
 all tests pass, the mutant survives, exposing a blind spot in test assertion depth.
-
----
 
 ## Why It's in Zenith
 
@@ -38,8 +34,6 @@ Mutation session results are stored in an SQLite database, allowing deep asserti
 audits to be distributed across worker processes, paused, or resumed incrementally
 without losing progress.
 
----
-
 ## Configuration in Zenith
 
 Configured in `cosmic-ray.toml` at the project root:
@@ -53,8 +47,6 @@ if not path.exists():
 print(path.read_text().strip())
 ```
 
----
-
 ## Key Invocations
 
 ```bash
@@ -67,8 +59,6 @@ uv run cosmic-ray exec session.sqlite
 # Generate survival and mutation summary report
 uv run cr-report session.sqlite
 ```
-
----
 
 ## Upstream Documentation
 

@@ -5,16 +5,26 @@ assistants working in **{{ cookiecutter.project_name }}**.
 
 ## Project Stewardship
 
-When working in this repository, your primary responsibility is to the long-term health of the project, its users (both human and agent), and its maintainers—not merely satisfying the immediate prompt with the shortest possible patch. Act as the first line of defense against technical debt, architectural drift, and low-quality contributions by enforcing end-to-end type safety, clean public abstractions, comprehensive test coverage, and accurate documentation.
+When working in this repository, your primary responsibility is to the long-term health
+of the project, its users (both human and agent), and its maintainers—not merely
+satisfying the immediate prompt with the shortest possible patch. Act as the first line
+of defense against technical debt, architectural drift, and low-quality contributions by
+enforcing end-to-end type safety, clean public abstractions, comprehensive test
+coverage, and accurate documentation.
 
-## Pre-flight Checks
+## Pre-Flight Checks
 
 Before editing code or running tasks, ensure a clean, isolated environment:
 
-1. Check repository status with `git status`. Do not make edits when uncommitted changes exist without explicit user consent.
-2. Confirm remotes and branches before committing or pushing changes. Use git worktrees or dedicated feature branches for non-trivial tasks.
-3. Run all commands inside the hermetic project environment using `uv run <command>` or `uv run poe <task>`. Never use global or system Python environments directly.
-4. When creating temporary or scratch files, always place them in the `.temp/` directory. Never pollute the workspace root or tracked directories with temporary files.
+1. Check repository status with `git status`. Do not make edits when uncommitted changes
+   exist without explicit user consent.
+2. Confirm remotes and branches before committing or pushing changes. Use git worktrees
+   or dedicated feature branches for non-trivial tasks.
+3. Run all commands inside the hermetic project environment using `uv run <command>` or
+   `uv run poe <task>`. Never use global or system Python environments directly.
+4. When creating temporary or scratch files, always place them in the `.temp/`
+   directory. Never pollute the workspace root or tracked directories with temporary
+   files.
 
 ## Operational Workflows
 
@@ -23,7 +33,8 @@ Before editing code or running tasks, ensure a clean, isolated environment:
   - Sync environment: `uv sync`
   - Add dependency: `uv add <package>` or `uv add --group <group> <package>`
   - Run commands in environment: `uv run <command>`
-- **Temporary Files**: When creating temporary files, scratch scripts, or intermediate test outputs, always store them in the `.temp/` directory.
+- **Temporary Files**: When creating temporary files, scratch scripts, or intermediate
+  test outputs, always store them in the `.temp/` directory.
 - **Task Runner**: All development tasks are managed through **Poe the Poet**.
   Do not guess command flags or invoke linters directly. Run:
 
@@ -35,7 +46,8 @@ Before editing code or running tasks, ensure a clean, isolated environment:
   your work using:
   - `uv run poe test` (or `uv run poe test-fast`)
   - `uv run poe code-quality`
-  - `uv run poe fix` (to auto-fix formatting and spelling where applicable; always re-read files modified by `poe fix` or `prek` before making further edits)
+  - `uv run poe fix` (to auto-fix formatting and spelling where applicable; always
+    re-read files modified by `poe fix` or `prek` before making further edits)
   - `uv run poe clean` (to purge build artifacts and stale caches)
 - **Tool Guidance**: For tool usage and common configuration changes,
   consult the corresponding skill in `.agents/skills/tool-*/SKILL.md`.
@@ -50,22 +62,36 @@ Before editing code or running tasks, ensure a clean, isolated environment:
 
 ## Project Instructions Discovery & Compatibility
 
-- **Multi-Agent Discovery & Settings**: Instruction files and configuration profiles are maintained in the repository root for seamless compatibility across modern AI coding tools:
-  - **Claude Code**: `CLAUDE.md` symlink (`ln -s AGENTS.md CLAUDE.md`) and `.claude/settings.json` (pre-authorizing hermetic `uv run poe:*` commands).
-  - **OpenAI Codex CLI**: `.codex/config.toml` (auto-discovering `AGENTS.md` and setting `workspace-write` sandbox).
-  - **Google Gemini CLI & Antigravity**: `.gemini/settings.json` (`contextFileName: "AGENTS.md"`).
+- **Multi-Agent Discovery & Settings**: Instruction files and configuration profiles are
+  maintained in the repository root for seamless compatibility across modern AI coding
+  tools:
+  - **Claude Code**: `CLAUDE.md` symlink (`ln -s AGENTS.md CLAUDE.md`) and
+    `.claude/settings.json` (pre-authorizing hermetic `uv run poe:*` commands).
+  - **OpenAI Codex CLI**: `.codex/config.toml` (auto-discovering `AGENTS.md` and setting
+    the `workspace-write` sandbox) and `.codex/agents/*.toml` (project subagents).
+  - **Google Gemini CLI & Antigravity**: `.gemini/settings.json`
+    (`contextFileName: "AGENTS.md"`).
   - **GitHub Copilot**: `.github/copilot-instructions.md` referencing `AGENTS.md`.
-  - **Cursor & Windsurf**: `.cursorrules` and `.windsurfrules` symlinks (`ln -s AGENTS.md .cursorrules`) and `.cursor/rules/zenith.mdc`.
-  - **Aider**: `.aider.conf.yml` (auto-loading `AGENTS.md`, wiring `lint-cmd` and `test-cmd` to Poe tasks).
-- **Scope Hierarchy**: When exploring subdirectories, check for nested `AGENTS.md` or `CLAUDE.md` files; localized instructions take precedence within their scope.
-- **Workflow & Tool Guidance**: Consult `.agents/skills/` for lifecycle workflow skills (`workflow-git`, `workflow-code-review`, `workflow-changelog`, `workflow-adr`, `workflow-setup`, `workflow-skill-creator`), Spec-Driven Development suite (`sdd`, `sdd-spec`, `sdd-plan`, `sdd-implement`, `sdd-review`), engineering guides (`guide-python`, `guide-ste100`), and tool-specific guidance (`tool-*/SKILL.md`).
+  - **Cursor & Windsurf**: `.cursorrules` and `.windsurfrules` symlinks
+    (`ln -s AGENTS.md .cursorrules`) and `.cursor/rules/zenith.mdc`.
+  - **Aider**: `.aider.conf.yml` (auto-loading `AGENTS.md`, wiring `lint-cmd` and
+    `test-cmd` to Poe tasks).
+- **Scope Hierarchy**: When exploring subdirectories, check for nested `AGENTS.md` or
+  `CLAUDE.md` files; localized instructions take precedence within their scope.
+- **Workflow & Tool Guidance**: Consult `.agents/skills/` for lifecycle workflow skills
+  (`workflow-git`, `workflow-code-review`, `workflow-changelog`, `workflow-adr`,
+  `workflow-setup`, `workflow-skill-creator`), Spec-Driven Development suite (`sdd`,
+  `sdd-spec`, `sdd-plan`, `sdd-implement`, `sdd-review`), engineering guides
+  (`guide-python`, `guide-ste100`), and tool-specific guidance (`tool-*/SKILL.md`).
 
 ## Architecture & Code Design
 
 Refer to `.agents/skills/guide-python/SKILL.md` for complete guidelines.
 
 - **Python Version**: Python {{ cookiecutter.python_version }}+.
-- **Imports**: Use canonical absolute imports exclusively (`from {{ cookiecutter.package_name }}.module import ...`). Relative imports are strictly banned via Ruff (`ban-relative-imports = "all"`).
+- **Imports**: Use canonical absolute imports exclusively
+  (`from {{ cookiecutter.package_name }}.module import ...`). Relative imports are
+  strictly banned via Ruff (`ban-relative-imports = "all"`).
 - **Type Annotations**: Use modern PEP 695 type parameter syntax exclusively
   (`type Alias = ...`, `def func[T](...)`). Never use legacy `TypeVar` or
   `Optional`. Import collection abstractions from `collections.abc`.
@@ -80,21 +106,23 @@ Refer to `.agents/skills/guide-python/SKILL.md` for complete guidelines.
   or CLI tools. Never use `argparse`, `click`, or manual `sys.argv` parsing.
   Always declare CLI parameters using PEP 593 `typing.Annotated` and explicit
   `typer.Typer()` applications (consult `.agents/skills/tool-typer/SKILL.md`).
-{% if cookiecutter.include_cli in [True, "yes", "true", "True", "1"] %}
+{% if cookiecutter.include_cli in [True, "yes", "true", "True", "1"] -%}
 - **Layer Boundaries**: The application follows strict layer boundaries:
   `cli` -> `core` -> external dependencies. The `core` module must never import
   from `cli`.
-{% else %}
+
+{% else -%}
 - **Layer Boundaries**: The application follows strict layer boundaries:
   `core` -> external dependencies.
-{% endif %}
+
+{% endif -%}
 
 ## Testing & Documentation
 
 - **Testing**: Write unit tests with `pytest`. Use `hypothesis` for property-based
   exploration and `syrupy` for snapshot assertions. `pytest.ini` enforces zero-tolerance
-  warning gates (`filterwarnings = error`), import isolation (`--import-mode=importlib`),
-  and strict marker validation (`--strict-markers`).
+  warning gates (`filterwarnings = error`), import isolation
+  (`--import-mode=importlib`), and strict marker validation (`--strict-markers`).
 - **Documentation**: Site is built with Zensical. API references are generated
   automatically from docstrings with `mkdocstrings`. Docstrings are rendered as
   Markdown, not reStructuredText: use single backticks for inline code
@@ -109,5 +137,5 @@ When diagnosing GitHub Actions failures:
 
 1. Enumerate recent runs: `gh run list --limit 5`
 2. Inspect failing step logs directly: `gh run view <run-id> --log-failed`
-3. Avoid downloading full job logs when annotations and failed step summaries are sufficient.
-
+3. Avoid downloading full job logs when annotations and failed step summaries are
+   sufficient.

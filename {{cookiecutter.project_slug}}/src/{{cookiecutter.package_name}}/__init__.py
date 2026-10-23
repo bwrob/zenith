@@ -20,7 +20,7 @@ _LAZY_MEMBERS: dict[str, str] = {
 }
 
 __getattr__, __dir__ = accessors(globals(), _LAZY_MEMBERS)
-{%- else %}
+{%- else -%}
 from {{ cookiecutter.package_name }}.core import get_greeting
 
 __version__ = "{{ cookiecutter.version }}"

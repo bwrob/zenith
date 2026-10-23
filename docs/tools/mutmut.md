@@ -1,4 +1,4 @@
-# mutmut: Fast Mutation Testing
+# Mutmut: Fast Mutation Testing
 
 [![Tool: mutmut](https://img.shields.io/badge/mutation-mutmut-orange.svg)](https://mutmut.readthedocs.io/)
 
@@ -6,8 +6,6 @@
 modifications into the Abstract Syntax Tree (AST) of source code and executes the test
 suite against each mutation to verify whether existing tests actively catch the
 introduced defects.
-
----
 
 ## What It Does
 
@@ -21,8 +19,6 @@ boolean constants, mutating numbers, or removing function calls. It then runs ta
 `pytest` executions against each mutant. When a mutant causes a test failure, it is
 marked as killed; when all tests pass despite the mutation, the mutant is flagged as
 surviving, revealing an untested boundary condition.
-
----
 
 ## Why It's in Zenith
 
@@ -47,23 +43,19 @@ strengthen assertions before opening a pull request.
 > **[Cosmic Ray](cosmic-ray.md)** via `uv run poe test-mutation-cosmic`. On macOS and
 > Linux, `mutmut` provides the fastest local mutation feedback loop.
 
----
-
-## Dual Mutation Strategy: mutmut vs Cosmic Ray
+## Dual Mutation Strategy: Mutmut Vs Cosmic Ray
 
 Zenith includes both `mutmut` and `cosmic-ray` because they serve complementary roles
 across developer workflows and platforms:
 
-| Capability | `mutmut` | `cosmic-ray` |
-|---|---|---|
-| **Primary Role** | Fast local developer TDD loops | Exhaustive distributed CI campaigns |
-| **Execution Model** | Direct AST mutation with local cache | SQLite-backed task distribution |
-| **Windows Support** | ❌ Not supported (fails on Windows) | ✅ Fully supported across all OS platforms |
-| **Execution Speed** | Sub-second to minutes | Minutes to hours (deep matrix runs) |
-| **Task Runner Command** | `uv run poe test-mutation` | `uv run poe test-mutation-cosmic` |
-| **Best Used By** | Developers & AI agents pre-commit (macOS/Linux) | Scheduled CI governance & Windows developers |
-
----
+| Capability              | `mutmut`                                        | `cosmic-ray`                                 |
+| ----------------------- | ----------------------------------------------- | -------------------------------------------- |
+| **Primary Role**        | Fast local developer TDD loops                  | Exhaustive distributed CI campaigns          |
+| **Execution Model**     | Direct AST mutation with local cache            | SQLite-backed task distribution              |
+| **Windows Support**     | ❌ Not supported (fails on Windows)             | ✅ Fully supported across all OS platforms   |
+| **Execution Speed**     | Sub-second to minutes                           | Minutes to hours (deep matrix runs)          |
+| **Task Runner Command** | `uv run poe test-mutation`                      | `uv run poe test-mutation-cosmic`            |
+| **Best Used By**        | Developers & AI agents pre-commit (macOS/Linux) | Scheduled CI governance & Windows developers |
 
 ## Configuration in Zenith
 
@@ -82,8 +74,6 @@ if "[tool.mutmut]" in content:
     print(content[start : end if end != -1 else len(content)].strip())
 ```
 
----
-
 ## Key Invocations
 
 ```bash
@@ -96,8 +86,6 @@ uv run mutmut show <mutant_id>
 # Generate interactive HTML report of mutation coverage
 uv run mutmut html
 ```
-
----
 
 ## Upstream Documentation
 

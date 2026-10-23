@@ -5,8 +5,6 @@ treating CI as a simple pass/fail script, Zenith organizes automation into two d
 operational lifecycles: a continuous delivery pipeline triggered by developer code
 changes, and a scheduled governance pipeline running background security audits.
 
----
-
 ## Delivery Pipeline
 
 ```mermaid
@@ -30,7 +28,7 @@ flowchart LR
     end
 ```
 
-### `python_tests.yaml`
+### Python Test Workflow
 
 Guarantees code correctness, strict typing, architectural boundaries, and cross-version
 compatibility across Python 3.12 through 3.15.
@@ -42,9 +40,7 @@ lowest-direct resolution proves that declared minimum dependency bounds in
 `pyproject.toml` actually work, and `UV_EXCLUDE_NEWER` establishes an explicit package
 cutoff timestamp to shield builds against upstream supply-chain disruptions.
 
----
-
-### `test_redistribute.yaml`
+### Test Redistribution Workflow
 
 Proves that built wheel (`.whl`) and source (`.tar.gz`) distribution packages install
 and execute cleanly in isolated user environments.
@@ -55,9 +51,7 @@ environment and executing the test suite against the installed artifact eliminat
 "works on my machine" blind spots, guaranteeing that end users installing via `uv add`
 or `pip install` receive a fully functional distribution.
 
----
-
-### `docs.yaml`
+### Documentation Workflow
 
 Builds and deploys verified documentation to GitHub Pages while compiling
 machine-readable `llms.txt` feeds for AI assistants.
@@ -81,9 +75,7 @@ coding tools to consume the library's entire API surface.
 > Without this setting, the `deploy` job in `docs.yaml` will fail with an authorization
 > error when pushing to `main`.
 
----
-
-### `sync-example.yaml`
+### Showcase Synchronization Workflow
 
 Automatically instantiates the template with canonical context on every push to `main`
 and synchronizes the rendered project to the live downstream repository
@@ -94,9 +86,7 @@ isolated unit tests miss. Instantiating and pushing a real repository acts as a
 continuous integration canary for template health, while providing external developers
 with a browsable, tested reference implementation.
 
----
-
-### `publish.yaml`
+### Publishing Workflow
 
 Publishes signed wheel and source packages to PyPI with cryptographic build provenance
 attestations whenever a release tag is pushed.
@@ -105,8 +95,6 @@ PyPI Trusted Publishing (OpenID Connect) authenticates the release without long-
 API tokens or passwords stored in repository secrets. Cryptographic build provenance
 attestations generated via GitHub Attestations give consumers mathematical proof that
 release artifacts were built directly from the verified source commit without tampering.
-
----
 
 ## Scheduled Governance
 
@@ -122,7 +110,7 @@ flowchart LR
     end
 ```
 
-### `guard-dependencies.yaml`
+### Dependency Guard Workflow
 
 Continuously audits locked transitive dependencies against published CVE vulnerability
 databases on a recurring schedule.

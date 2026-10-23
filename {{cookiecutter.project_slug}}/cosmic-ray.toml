@@ -8,7 +8,7 @@
 # ==============================================================================
 
 [cosmic-ray]
-    excluded-modules = [  ]
+    excluded-modules = []
     module-path      = "src/{{ cookiecutter.package_name }}"
     test-command     = "pytest"
     timeout          = 15.0

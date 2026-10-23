@@ -1,12 +1,10 @@
-# uv: Packaging & Environments
+# Uv: Packaging & Environments
 
 [![Tool: uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
 
 `uv` is an extremely fast Python package and project manager written in Rust by Astral.
 It serves as a unified replacement for `pip`, `pip-tools`, `virtualenv`, `poetry`, and
 `pyenv`.
-
----
 
 ## What It Does
 
@@ -22,8 +20,6 @@ automatically, compiles production-ready wheels and source distributions through
 native `uv_build` backend, and executes ephemeral command-line tools via `uvx` without
 polluting the global system.
 
----
-
 ## Why It's in Zenith
 
 Zenith adopts `uv` as its foundational environment engine to eliminate latency from
@@ -35,8 +31,6 @@ tools run against pinned project dependencies rather than system Python, prevent
 environment contamination. Combined with declarative dependency groups (`dev`, `test`,
 `docs`) and native PEP 517 packaging, `uv` provides a unified, zero-drift foundation for
 modern Python engineering.
-
----
 
 ## Configuration in Zenith
 
@@ -94,8 +88,6 @@ This prevents newly released upstream dependencies or malicious zero-day supply-
 packages from breaking continuous integration builds until maintainers intentionally
 update locks.
 
----
-
 ## Key Invocations
 
 ```bash
@@ -105,8 +97,6 @@ uv run poe test               # Run Poe tasks inside managed environment
 uv build                      # Build sdist and wheel distributions
 uv lock --upgrade             # Upgrade dependency pins in uv.lock
 ```
-
----
 
 ## Upstream Documentation
 
