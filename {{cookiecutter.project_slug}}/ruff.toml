@@ -49,7 +49,7 @@ line-length = 88
         required-imports   = ["from __future__ import annotations"]
 
     [lint.per-file-ignores]
-        "**/*.pyi" = ["I002", "PYI044"]
+        "**/*.pyi" = ["missing-required-import", "future-annotations-in-stub"]
         "src/*/__init__.py" = ["non-empty-init-module"]
         "src/*/cli.py" = [
             "boolean-default-value-positional-argument",
@@ -58,8 +58,8 @@ line-length = 88
             "line-too-long",
         ]
         "tests/**/*" = [
-            "PLC2701",
-            "SLF001",
+            "import-private-name",
+            "private-member-access",
             "assert",
             "docstring-missing-returns",
             "print",

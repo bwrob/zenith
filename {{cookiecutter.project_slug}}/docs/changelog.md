@@ -12,4 +12,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial project scaffolding created with [Zenith](https://github.com/bwrob/zenith).
 
-[unreleased]: https://github.com/{{ cookiecutter.github_username }}/{{ cookiecutter.project_slug }}/compare/v{{ cookiecutter.version }}...HEAD
+[unreleased]: <https://github.com/{{ cookiecutter.github_username }}/{{ cookiecutter.project_slug }}/compare/v{{ cookiecutter.version }}...HEAD>

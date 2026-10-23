@@ -2,9 +2,9 @@
 
 [![Tool: Tach](https://img.shields.io/badge/architecture-tach-purple.svg)](https://github.com/gauge-sh/tach)
 
-`Tach` is an architectural boundary and modular dependency management tool for Python
-written in Rust. It enforces strict layering, prevents circular dependencies, and
-validates third-party dependency declarations.
+`Tach` is an architectural boundary tool for Python written in Rust. It enforces
+strict layering and prevents circular dependencies. Deptry checks third-party
+dependency declarations.
 
 ## What It Does
 
@@ -13,21 +13,17 @@ eliminate circular dependencies. It defines explicit, unidirectional boundaries 
 layers—preventing low-level models and core logic from coupling to high-level CLI or API
 orchestrators.
 
-Tach also includes `tach check-external`, which audits all source imports against
-declared dependencies in `pyproject.toml` to prevent undeclared transitive dependencies
-from leaking into code. It can also generate visual Mermaid diagrams directly from the
-verified import graph.
+Tach can generate visual Mermaid diagrams directly from the verified import graph.
+The `dependencies` Poe task runs `tach check` for internal boundaries and `deptry src`
+for declared dependencies.
 
 ## Why It's in Zenith
 
 Over time, codebases naturally suffer from architectural erosion as developers and AI
 assistants import utilities opportunistically across modules, eventually creating an
 untestable monolith. Zenith integrates Tach to enforce clear layer boundaries and catch
-circular references at commit time.
-
-Enforcing `check_external = true` prevents ghost dependencies that happen to exist in
-the developer environment from slipping into releases, guaranteeing clean installations
-for downstream consumers.
+circular references at commit time. Deptry checks that package imports match declared
+dependencies.
 
 ## Configuration in Zenith
 
@@ -46,19 +42,26 @@ print(path.read_text().strip())
 
 Lower-level domains such as `core` and `models` must never import higher-level
 orchestration layers like `cli`. All cross-module interactions must pass through
-explicit, public interfaces, and `check_external = true` blocks imports of any
-third-party library not explicitly declared in `pyproject.toml`.
+explicit, public interfaces.
 
 ## Key Invocations
 
 ```bash
-uv run tach check                                              # Verify module architecture boundaries
-uv run tach check-external                                     # Verify external dependencies
-uv run poe dependencies                                        # Wired development task in Poe
-uv run tach show --mermaid -o docs/assets/architecture.mmd    # Export visual Mermaid diagram
+# Verify module architecture boundaries.
+uv run tach check
+
+# Verify declared dependencies.
+uv run deptry src
+
+# Run the configured architecture task.
+uv run poe dependencies
+
+# Export a Mermaid architecture diagram.
+uv run tach show --mermaid -o docs/assets/architecture.mmd
 ```
 
 ## Upstream Documentation
 
 - [Tach Official Documentation](https://docs.tach.sh/)
 - [Tach GitHub Repository](https://github.com/gauge-sh/tach)
+- [Deptry Usage](https://github.com/osprey-oss/deptry/blob/main/docs/usage.md)

@@ -19,13 +19,15 @@ uv add {{ cookiecutter.project_slug }}
 Import the primary functions into your application:
 
 ```python
-from {{ cookiecutter.package_name }} import get_greeting
+from your_package import get_greeting
 
 message = get_greeting("Developer")
 print(message)
 ```
 
-{% if cookiecutter.include_cli in [True, "yes", "true", "True", "1"] %}
+Replace `your_package` with the generated package name.
+
+{% if cookiecutter.include_cli in [True, "yes", "true", "True", "1"] -%}
 
 ## CLI Usage
 
@@ -54,14 +56,16 @@ $ uv run {{ cookiecutter.project_slug }} --help
 ```
 
 </div>
-{% endif %}
+
+{% endif -%}
 
 ## Development Workflow
 
 Clone the project and synchronize development dependencies:
 
 ```bash
-git clone https://github.com/{{ cookiecutter.github_username }}/{{ cookiecutter.project_slug }}.git
+git clone \
+  https://github.com/{{ cookiecutter.github_username }}/{{ cookiecutter.project_slug }}.git
 cd {{ cookiecutter.project_slug }}
 uv sync
 ```

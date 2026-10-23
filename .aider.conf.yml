@@ -3,14 +3,14 @@
 #
 # Tool: Aider (https://aider.chat/)
 # Purpose: AI pair programming terminal tool settings.
-# Why it's in Zenith: Auto-loads AGENTS.md and delegates lint/test to uv commands.
+# Why it's in Zenith: Auto-loads AGENTS.md and delegates lint/test to Poe tasks.
 # ==============================================================================
 
 read:
     - AGENTS.md
 
-lint-cmd: "uv run ruff check --fix"
+lint-cmd: "uv run poe fix"
 auto-lint: true
 
-test-cmd: "uv run pytest"
+test-cmd: "uv run poe test"
 auto-test: false

@@ -28,7 +28,8 @@ We standardize on **`uv`** for dependency and environment management.
 
 ```bash
 # Clone repository
-git clone https://github.com/{{ cookiecutter.github_username }}/{{ cookiecutter.project_slug }}.git
+git clone \
+  https://github.com/{{ cookiecutter.github_username }}/{{ cookiecutter.project_slug }}.git
 cd {{ cookiecutter.project_slug }}
 
 # Synchronize all dependency groups inside managed virtual environment

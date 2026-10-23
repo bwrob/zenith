@@ -42,14 +42,17 @@ Domain skills follow the standard Zenith progressive disclosure architecture:
 ---
 name: domain-billing
 description: >-
-  Business logic, subscription tiers, prorating calculations, and webhook processing for customer billing.
-  Use when modifying subscription models, invoice generators, Stripe webhook handlers, or pricing logic.
+  Business logic, subscription tiers, prorating calculations, and webhook processing
+  for customer billing. Use when modifying subscription models, invoice generators,
+  Stripe webhook handlers, or pricing logic.
   Triggers: billing, subscription, invoice, stripe, pricing, prorate, refund, payment.
 version: 1.0.0
 ---
 ```
 
 ## Recommended Patterns
+
+Use tables and state diagrams to make domain rules easy for agents to apply.
 
 ### Invariant Tables
 
@@ -98,7 +101,7 @@ Here are typical domain skills you can scaffold in your Zenith project:
 ## Authoring Domain Skills
 
 Use the
-[Skill Creator (`workflow-skill-creator`)](workflow.md#skill-authoring-standards-workflow-skill-creator)
+[Skill Creator (workflow-skill-creator)](workflow.md)
 workflow:
 
 1. Create the skill directory:

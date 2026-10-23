@@ -11,12 +11,14 @@ render collapsible backlink trees indicating which pages reference each symbol.
 ## Core Module
 
 ::: {{ cookiecutter.package_name }}.core
-{% if cookiecutter.include_cli in [True, "yes", "true", "True", "1"] %}
+
+{% if cookiecutter.include_cli in [True, "yes", "true", "True", "1"] -%}
 
 ## CLI Module
 
 ::: {{ cookiecutter.package_name }}.cli
-{% endif %}
+
+{% endif -%}
 
 ## AI & LLM Documentation Indexing
 

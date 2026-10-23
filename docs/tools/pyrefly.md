@@ -65,12 +65,23 @@ measurement via `pyrefly coverage`:
 ## Key Invocations
 
 ```bash
-uv run pyrefly check                                         # Run static type analysis across project
-uv run pyrefly coverage check src --fail-under 100 --strict  # Enforce 100% strict type coverage
-uv run pyrefly coverage check src --public-only              # Check public API completeness
-uv run pyrefly coverage report src                           # Generate detailed JSON coverage report
-uv run poe type-check                                        # Strict type checking task in Poe pipeline
-uv run poe type-coverage                                     # Type coverage gate in poe code-quality
+# Run static type analysis across project.
+uv run pyrefly check
+
+# Enforce 100% strict type coverage.
+uv run pyrefly coverage check src --fail-under 100 --strict
+
+# Check public API completeness.
+uv run pyrefly coverage check src --public-only
+
+# Generate detailed JSON coverage report.
+uv run pyrefly coverage report src
+
+# Run the strict type-checking task in Poe.
+uv run poe type-check
+
+# Run the type-coverage gate in Poe.
+uv run poe type-coverage
 ```
 
 ## Upstream Documentation

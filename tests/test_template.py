@@ -2,6 +2,7 @@
 
 import re
 import tempfile
+import tomllib
 from pathlib import Path
 
 import pytest
@@ -240,10 +241,33 @@ def test_default_generation(temp_output_dir: Path) -> None:
         "sdd-reviewer.md",
     ]:
         assert (project_dir / ".agents" / "subagents" / subagent).exists()
-        assert (project_dir / ".claude" / "agents" / subagent).exists()
-        assert (project_dir / ".gemini" / "agents" / subagent).exists()
-        assert (project_dir / ".codex" / "agents" / subagent).exists()
-        assert (project_dir / ".cursor" / "agents" / subagent).exists()
+        for tool_dir in (".claude", ".gemini", ".cursor"):
+            generated_agent = project_dir / tool_dir / "agents" / subagent
+            template_agent = TEMPLATE_ROOT / tool_dir / "agents" / subagent
+            assert generated_agent.exists()
+            assert template_agent.exists()
+            assert generated_agent.read_text() == template_agent.read_text()
+
+        agent_name = Path(subagent).stem
+        generated_codex_agent = project_dir / ".codex" / "agents" / f"{agent_name}.toml"
+        template_codex_agent = (
+            TEMPLATE_ROOT / ".codex" / "agents" / f"{agent_name}.toml"
+        )
+        assert generated_codex_agent.exists()
+        assert template_codex_agent.exists()
+        generated_codex_config = tomllib.loads(generated_codex_agent.read_text())
+        template_codex_config = tomllib.loads(template_codex_agent.read_text())
+        assert generated_codex_config == template_codex_config
+        assert {"name", "description", "developer_instructions"} <= set(
+            generated_codex_config
+        )
+        assert generated_codex_config["name"] == agent_name
+
+        source_text = (project_dir / ".agents" / "subagents" / subagent).read_text()
+        _, delimiter, instructions = source_text.partition("\n---\n")
+        assert delimiter
+        assert generated_codex_config["developer_instructions"] == instructions.strip()
+        assert not (project_dir / ".codex" / "agents" / subagent).exists()
     assert (
         project_dir / ".agents" / "skills" / "guide-ste100" / "scripts" / "ste-lint.py"
     ).exists()
@@ -359,7 +383,9 @@ def test_default_generation(temp_output_dir: Path) -> None:
     assert "uv audit" in poe_text
     assert "tasks.check-api" in poe_text
     assert "griffe check demo_app --search src" in poe_text
-    assert "tach check-external" in poe_text
+    assert '"deptry src"' in poe_text
+    assert "tach check-external" not in poe_text
+    assert "deptry>=0.25.1" in (project_dir / "pyproject.toml").read_text()
     assert "tasks.sync-skills" in poe_text
     assert "tasks.docs-logo" in poe_text
     assert "tasks.clean" in poe_text
@@ -533,7 +559,8 @@ def test_default_generation(temp_output_dir: Path) -> None:
     assert "DONT_ACCEPT_TRUE_FOR_1" in pytest_ini_text
 
     pyrefly_text = (project_dir / "pyrefly.toml").read_text()
-    assert 'enabled-ignores      = [ "pyrefly" ]' in pyrefly_text
+    pyrefly_config = tomllib.loads(pyrefly_text)
+    assert pyrefly_config["enabled-ignores"] == ["pyrefly"]
 
     ruff_toml_text = (project_dir / "ruff.toml").read_text()
     assert "combine-as-imports = true" in ruff_toml_text
@@ -618,7 +645,8 @@ def test_default_generation(temp_output_dir: Path) -> None:
 
     # Verify Tach setup
     tach_text = (project_dir / "tach.toml").read_text()
-    assert 'source_roots = [ "src" ]' in tach_text
+    tach_config = tomllib.loads(tach_text)
+    assert tach_config["source_roots"] == ["src"]
     assert 'path       = "demo_app"' in tach_text
     assert 'path       = "demo_app.__main__"' in tach_text
     assert "ignore_type_checking_imports = true" in tach_text
@@ -953,6 +981,7 @@ def test_slugify_special_characters(temp_output_dir: Path) -> None:
 
 def test_verify_wheel_execution(temp_output_dir: Path) -> None:
     """Test that scripts/verify_wheel.py builds and verifies the wheel in an isolated venv."""
+    import os
     import subprocess
     import sys
 
@@ -971,11 +1000,14 @@ def test_verify_wheel_execution(temp_output_dir: Path) -> None:
 
     verify_script = project_dir / "scripts" / "verify_wheel.py"
     assert verify_script.exists()
+    subprocess_env = os.environ.copy()
+    subprocess_env.pop("COVERAGE_FILE", None)
 
     # Execute verify_wheel.py directly inside the generated project
     result = subprocess.run(
         [sys.executable, str(verify_script)],
         cwd=str(project_dir),
+        env=subprocess_env,
         capture_output=True,
         text=True,
         encoding="utf-8",
@@ -990,6 +1022,7 @@ def test_verify_wheel_execution(temp_output_dir: Path) -> None:
     result_tests = subprocess.run(
         [sys.executable, str(verify_script), "--run-tests"],
         cwd=str(project_dir),
+        env=subprocess_env,
         capture_output=True,
         text=True,
         encoding="utf-8",

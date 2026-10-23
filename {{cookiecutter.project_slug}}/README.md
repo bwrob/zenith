@@ -5,7 +5,6 @@
 </p>
 
 {% include "_badges.md" %}
-
 {{ cookiecutter.description }}
 
 ## 🎯 Elevator Pitch
@@ -23,7 +22,6 @@
 stack designed for reliability, speed, and clean architecture:
 
 {% include "docs/_tool_stack.md" %}
-
 ## Quick Start
 
 > [!TIP]
@@ -49,13 +47,15 @@ pip install {{ cookiecutter.project_slug }}
 ### 2. Library Usage
 
 ```python
-from {{ cookiecutter.package_name }} import get_greeting
+from your_package import get_greeting
 
 message = get_greeting("World")
 print(message)
 ```
 
-{% if cookiecutter.include_cli in [True, "yes", "true", "True", "1"] %}
+Replace `your_package` with the generated package name.
+
+{% if cookiecutter.include_cli in [True, "yes", "true", "True", "1"] -%}
 
 ### 3. Command Line Interface
 
@@ -69,7 +69,7 @@ uv run {{ cookiecutter.project_slug }} --help
 uv run {{ cookiecutter.project_slug }} greet "Developer"
 ```
 
-{% endif %}
+{% endif -%}
 
 ## Development Setup
 
@@ -78,7 +78,8 @@ Get your local development environment ready in three steps:
 ### 1. Install Dependencies
 
 ```bash
-git clone https://github.com/{{ cookiecutter.github_username }}/{{ cookiecutter.project_slug }}.git
+git clone \
+  https://github.com/{{ cookiecutter.github_username }}/{{ cookiecutter.project_slug }}.git
 cd {{ cookiecutter.project_slug }}
 uv sync
 ```
@@ -118,7 +119,7 @@ uv run poe docs-serve
 
 Architecture rules are defined and enforced with **Tach**:
 
-{% if cookiecutter.include_cli in [True, "yes", "true", "True", "1"] %}
+{% if cookiecutter.include_cli in [True, "yes", "true", "True", "1"] -%}
 
 ```mermaid
 flowchart TD
@@ -128,7 +129,7 @@ flowchart TD
     CORE --> EXT["External Dependencies"]
 ```
 
-{% else %}
+{% else -%}
 
 ```mermaid
 flowchart TD
@@ -136,7 +137,7 @@ flowchart TD
     CORE --> EXT["External Dependencies"]
 ```
 
-{% endif %}
+{% endif -%}
 
 Run `uv run poe dependencies` to validate that no layer violations or circular
 dependencies occur.
@@ -204,12 +205,14 @@ Inline equations like $E = mc^2$ and $\Omega(n)$ are supported out of the box.
 
 ## License
 
-{% if cookiecutter.license != "None" %}
+{% if cookiecutter.license != "None" -%}
 Distributed under the {{ cookiecutter.license }} License. See [LICENSE](LICENSE) for
 details.
-{% else %}
+
+{% else -%}
 All rights reserved.
-{% endif %}
+
+{% endif -%}
 
 ---
 

@@ -24,6 +24,7 @@ flowchart TB
         ruff["Ruff<br/><i>Linter & Formatter</i>"]
         pyrefly["Pyrefly<br/><i>Strict Type Checker</i>"]
         tach["Tach<br/><i>Boundary Enforcer</i>"]
+        deptry["Deptry<br/><i>Dependency Checker</i>"]
         complex["complexipy<br/><i>Complexity Ceiling</i>"]
         griffe["Griffe<br/><i>API Change Detector</i>"]
         typos["typos<br/><i>Source Spell Checker</i>"]
@@ -56,6 +57,7 @@ flowchart TB
     click ruff "ruff/" "Explore Ruff documentation"
     click pyrefly "pyrefly/" "Explore Pyrefly documentation"
     click tach "tach/" "Explore Tach documentation"
+    click deptry "deptry/" "Explore Deptry documentation"
     click complex "complexipy/" "Explore complexipy documentation"
     click griffe "griffe/" "Explore Griffe documentation"
     click typos "typos/" "Explore typos documentation"
@@ -75,7 +77,7 @@ flowchart TB
 Click any tool above to view its technical specifications, architectural rationale in
 Zenith, configuration showcases, and upstream references.
 
-## Dedicated Configuration Files Vs. `pyproject.toml`
+## Dedicated Configuration Files
 
 Most modern Python tools—such as Ruff, Pytest, Coverage, and Taplo—support defining
 configuration directly inside `pyproject.toml` using `[tool.*]` tables. While
@@ -111,6 +113,7 @@ standardizes on **separate, dedicated configuration files per tool** whenever po
 | **[Ruff](ruff.md)**                 | Code Quality               | Blazing-fast Python linter and formatter with preview rules                | [docs.astral.sh/ruff](https://docs.astral.sh/ruff/)                            |
 | **[Pyrefly](pyrefly.md)**           | Code Quality               | Meta's strict type checker and 100% type coverage engine                   | [github.com/facebook/pyrefly](https://github.com/facebook/pyrefly)             |
 | **[Tach](tach.md)**                 | Code Quality               | Modular boundary enforcement, circular dependency blocker                  | [github.com/gauge-sh/tach](https://github.com/gauge-sh/tach)                   |
+| **[Deptry](deptry.md)**             | Code Quality               | Detect missing, unused, and transitive package dependencies                | [github.com/osprey-oss/deptry](https://github.com/osprey-oss/deptry)           |
 | **[complexipy](complexipy.md)**     | Code Quality               | Fast cognitive complexity analyzer enforcing max <= 10                     | [github.com/rohaquinlop/complexipy](https://github.com/rohaquinlop/complexipy) |
 | **[Griffe](griffe.md)**             | Code Quality               | Static AST analysis and breaking public API change detector                | [mkdocstrings.github.io/griffe](https://mkdocstrings.github.io/griffe/)        |
 | **[typos](typos.md)**               | Code Quality               | High-performance source code and doc spell checker                         | [github.com/crate-ci/typos](https://github.com/crate-ci/typos)                 |

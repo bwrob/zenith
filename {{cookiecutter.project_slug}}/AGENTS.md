@@ -68,7 +68,7 @@ Before editing code or running tasks, ensure a clean, isolated environment:
   - **Claude Code**: `CLAUDE.md` symlink (`ln -s AGENTS.md CLAUDE.md`) and
     `.claude/settings.json` (pre-authorizing hermetic `uv run poe:*` commands).
   - **OpenAI Codex CLI**: `.codex/config.toml` (auto-discovering `AGENTS.md` and setting
-    `workspace-write` sandbox).
+    the `workspace-write` sandbox) and `.codex/agents/*.toml` (project subagents).
   - **Google Gemini CLI & Antigravity**: `.gemini/settings.json`
     (`contextFileName: "AGENTS.md"`).
   - **GitHub Copilot**: `.github/copilot-instructions.md` referencing `AGENTS.md`.
@@ -106,14 +106,16 @@ Refer to `.agents/skills/guide-python/SKILL.md` for complete guidelines.
   or CLI tools. Never use `argparse`, `click`, or manual `sys.argv` parsing.
   Always declare CLI parameters using PEP 593 `typing.Annotated` and explicit
   `typer.Typer()` applications (consult `.agents/skills/tool-typer/SKILL.md`).
-{% if cookiecutter.include_cli in [True, "yes", "true", "True", "1"] %}
+{% if cookiecutter.include_cli in [True, "yes", "true", "True", "1"] -%}
 - **Layer Boundaries**: The application follows strict layer boundaries:
   `cli` -> `core` -> external dependencies. The `core` module must never import
   from `cli`.
-{% else %}
+
+{% else -%}
 - **Layer Boundaries**: The application follows strict layer boundaries:
   `core` -> external dependencies.
-{% endif %}
+
+{% endif -%}
 
 ## Testing & Documentation
 

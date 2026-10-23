@@ -50,6 +50,9 @@ print(path.read_text().strip())
 
 ## Architectural Rationale
 
+Local hooks call tools directly so they can process staged file paths and return
+reliable exit codes.
+
 ### Direct Invocations Vs. Poe Tasks
 
 In Zenith, local hooks in `prek.toml` invoke tools directly using `uv run <tool>`

@@ -1,4 +1,4 @@
-# ADR-XXXX: *Short Imperative Title*
+# ADR-XXXX: Short Imperative Title
 
 - **Status**:
   Proposed <!-- Proposed | Accepted | Rejected | Deprecated | Superseded by ADR-XXXX -->
@@ -26,13 +26,15 @@ trade-off requires resolution? What forces, requirements, and constraints apply?
 
 ## Pros and Cons of the Options
 
-### Option 1: *Name*
+The options below summarize the trade-offs considered for this decision.
+
+### Option 1: Name
 
 - :white_check_mark: **Good**: *Argument*
 - :white_check_mark: **Good**: *Argument*
 - :x: **Bad**: *Argument*
 
-### Option 2: *Name*
+### Option 2: Name
 
 - :white_check_mark: **Good**: *Argument*
 - :x: **Bad**: *Argument*

@@ -15,7 +15,7 @@ flowchart LR
     B --> D["Zensical Docs"]
 ```
 
-{% if cookiecutter.include_cli in [True, "yes", "true", "True", "1"] %}
+{% if cookiecutter.include_cli in [True, "yes", "true", "True", "1"] -%}
 
 ## Quick Start CLI
 
@@ -42,7 +42,8 @@ $ uv run {{ cookiecutter.project_slug }} --help
 ```
 
 </div>
-{% endif %}
+
+{% endif -%}
 
 ## Installation
 
@@ -66,7 +67,6 @@ pip install {{ cookiecutter.project_slug }}
 ## Highlights
 
 {% include "docs/_tool_stack.md" %}
-
 ## Architecture & Project Layout
 
 ```python exec="on"

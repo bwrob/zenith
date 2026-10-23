@@ -109,17 +109,17 @@ Configured in `src/<package_name>/cli.py` and registered under `[project.scripts
     ```
 
     1. Displays formatted Rich help automatically when invoked without arguments.
-    2. Combines standard PEP 593 `typing.Annotated` with Typer CLI metadata without breaking static type checkers.
+    2. Combines PEP 593 `typing.Annotated` with Typer metadata while keeping
+       static type checking intact.
 
 === "Template Source (`{{ cookiecutter.package_name }}/cli.py`)"
 
 ```python
 from typing import Annotated
 
-from rich.console import Console
 import typer
-
-from {{ cookiecutter.package_name }}.core import get_greeting
+from my_package.core import get_greeting
+from rich.console import Console
 
 app = typer.Typer(
     name="{{ cookiecutter.project_slug }}",
@@ -184,9 +184,8 @@ CLI commands in Zenith projects are verified using `typer.testing.CliRunner` in
 `tests/test_cli.py`:
 
 ```python
-from typer.testing import CliRunner
-
 from my_awesome_service.cli import app
+from typer.testing import CliRunner
 
 runner = CliRunner()
 

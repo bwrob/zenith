@@ -46,7 +46,8 @@ foundational pillars:
 
     Sub-second developer loops powered by **[uv](tools/uv.md)**,
     **[Ruff](tools/ruff.md)**, **[Pyrefly](tools/pyrefly.md)**,
-    **[Tach](tools/tach.md)**, **[complexipy](tools/complexipy.md)**, and
+    **[Tach](tools/tach.md)**, **[Deptry](tools/deptry.md)**,
+    **[complexipy](tools/complexipy.md)**, and
     **[Zensical](tools/zensical.md)**. All tasks run through
     **[Poe the Poet](tools/poethepoet.md)** for identical local and CI execution.
 
@@ -124,10 +125,9 @@ class Greeter:
 
 from typing import Annotated
 
-from rich.console import Console
 import typer
-
 from my_awesome_service.core import Greeter
+from rich.console import Console
 
 app = typer.Typer(no_args_is_help=True)
 console = Console()
@@ -147,9 +147,8 @@ def greet(
 ```python
 """Automated CLI test suite with 100% coverage gate."""
 
-from typer.testing import CliRunner
-
 from my_awesome_service.cli import app
+from typer.testing import CliRunner
 
 runner = CliRunner()
 

@@ -63,7 +63,7 @@ Before editing code or executing tasks, ensure an isolated, clean working enviro
   - **Claude Code**: `CLAUDE.md` symlink (`ln -s AGENTS.md CLAUDE.md`) and
     `.claude/settings.json` (pre-authorizing hermetic `uv run poe:*` commands).
   - **OpenAI Codex CLI**: `.codex/config.toml` (auto-discovering `AGENTS.md` and setting
-    `workspace-write` sandbox).
+    the `workspace-write` sandbox) and `.codex/agents/*.toml` (project subagents).
   - **Google Gemini CLI & Antigravity**: `.gemini/settings.json`
     (`contextFileName: "AGENTS.md"`).
   - **GitHub Copilot**: `.github/copilot-instructions.md` referencing `AGENTS.md`.

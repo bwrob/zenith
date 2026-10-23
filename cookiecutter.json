@@ -1,53 +1,63 @@
 {
-  "project_name": "Zenith",
-  "project_slug": "{{ cookiecutter.project_name | slugify }}",
-  "package_name": "{{ cookiecutter.project_slug | slugify(separator='_') }}",
-  "description": "An opinionated, strict Python project powered by uv, ruff, pyrefly, and zensical.",
-  "author_name": "bwrob",
-  "author_email": "contact@bwrob.dev",
-  "github_username": "bwrob",
-  "version": "0.1.0",
-  "python_version": ["3.13", "3.12", "3.14", "3.15"],
-  "license": ["MIT", "Apache-2.0", "BSD-3-Clause", "None"],
-  "include_cli": true,
-  "include_ci_testing": true,
-  "include_ci_publishing": true,
-  "__year": "{% now 'utc', '%Y' %}",
-  "_new_lines": "\n",
-  "_jinja2_env_vars": {
-    "lstrip_blocks": true
-  },
-  "_copy_without_render": [
-    "docs/assets/*",
-    "*.svg",
-    "*.png",
-    "*.ico"
-  ],
-  "__prompts__": {
-    "project_name": "Project Name (Human-readable title)",
-    "project_slug": "Project Slug (Repository and PyPI distribution name)",
-    "package_name": "Python Package Name (Import identifier in src/)",
-    "description": "Short Project Description",
-    "author_name": "Author Full Name",
-    "author_email": "Author Email",
-    "github_username": "GitHub Username or Organization",
-    "version": "Initial Project Version",
-    "python_version": {
-      "__prompt__": "Target Python Version:",
-      "3.13": "Python 3.13 (Current stable, recommended)",
-      "3.12": "Python 3.12 (LTS baseline)",
-      "3.14": "Python 3.14 (Bleeding edge)",
-      "3.15": "Python 3.15 (Future / experimental)"
+    "project_name": "Zenith",
+    "project_slug": "{{ cookiecutter.project_name | slugify }}",
+    "package_name": "{{ cookiecutter.project_slug | slugify(separator='_') }}",
+    "description": "An opinionated, strict Python project powered by uv, ruff, pyrefly, and zensical.",
+    "author_name": "bwrob",
+    "author_email": "contact@bwrob.dev",
+    "github_username": "bwrob",
+    "version": "0.1.0",
+    "python_version": [
+        "3.13",
+        "3.12",
+        "3.14",
+        "3.15"
+    ],
+    "license": [
+        "MIT",
+        "Apache-2.0",
+        "BSD-3-Clause",
+        "None"
+    ],
+    "include_cli": true,
+    "include_ci_testing": true,
+    "include_ci_publishing": true,
+    "__year": "{% now 'utc', '%Y' %}",
+    "_new_lines": "\n",
+    "_jinja2_env_vars": {
+        "lstrip_blocks": true
     },
-    "license": {
-      "__prompt__": "Select Open Source License:",
-      "MIT": "MIT License (Permissive, widely adopted)",
-      "Apache-2.0": "Apache 2.0 (Permissive with patent grant)",
-      "BSD-3-Clause": "BSD 3-Clause (Permissive with attribution)",
-      "None": "Proprietary / No License (All Rights Reserved)"
-    },
-    "include_cli": "Scaffold Typer/Rich command-line interface?",
-    "include_ci_testing": "Generate GitHub Actions workflows for CI testing and code quality?",
-    "include_ci_publishing": "Generate GitHub Actions workflow for PyPI Trusted Publishing and documentation deployment?"
-  }
+    "_copy_without_render": [
+        "docs/assets/*",
+        "*.svg",
+        "*.png",
+        "*.ico"
+    ],
+    "__prompts__": {
+        "project_name": "Project Name (Human-readable title)",
+        "project_slug": "Project Slug (Repository and PyPI distribution name)",
+        "package_name": "Python Package Name (Import identifier in src/)",
+        "description": "Short Project Description",
+        "author_name": "Author Full Name",
+        "author_email": "Author Email",
+        "github_username": "GitHub Username or Organization",
+        "version": "Initial Project Version",
+        "python_version": {
+            "__prompt__": "Target Python Version:",
+            "3.13": "Python 3.13 (Current stable, recommended)",
+            "3.12": "Python 3.12 (LTS baseline)",
+            "3.14": "Python 3.14 (Bleeding edge)",
+            "3.15": "Python 3.15 (Future / experimental)"
+        },
+        "license": {
+            "__prompt__": "Select Open Source License:",
+            "MIT": "MIT License (Permissive, widely adopted)",
+            "Apache-2.0": "Apache 2.0 (Permissive with patent grant)",
+            "BSD-3-Clause": "BSD 3-Clause (Permissive with attribution)",
+            "None": "Proprietary / No License (All Rights Reserved)"
+        },
+        "include_cli": "Scaffold Typer/Rich command-line interface?",
+        "include_ci_testing": "Generate GitHub Actions workflows for CI testing and code quality?",
+        "include_ci_publishing": "Generate GitHub Actions workflow for PyPI Trusted Publishing and documentation deployment?"
+    }
 }

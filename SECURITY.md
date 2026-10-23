@@ -1,5 +1,8 @@
 # Security Policy
 
+This policy explains which Zenith versions receive security fixes and how to report a
+vulnerability.
+
 ## Supported Versions
 
 Only the latest release of **Zenith** receives active security updates and vulnerability

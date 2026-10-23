@@ -45,6 +45,8 @@ powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | ie
 
 ## Your First 5 Minutes: Zero to Running Code
 
+Follow these steps to create a project and run its first commands.
+
 ### 1. Scaffold Your Project
 
 Run Cookiecutter directly through `uvx` (which runs tools without permanent
@@ -130,6 +132,8 @@ my-awesome-service/
 > need to open or configure them to write your application.
 
 ## Everyday Workflows
+
+Use these tasks for common development work after setup.
 
 ### How to Add a New Package
 

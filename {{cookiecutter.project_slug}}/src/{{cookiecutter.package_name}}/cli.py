@@ -30,8 +30,7 @@ def version_callback(value: bool) -> None:
     """
     if value:
         console.print(
-            f"[bold cyan]{{ cookiecutter.project_slug }}[/bold cyan]"
-            f" version [green]{__version__}[/green]"
+            f"[bold cyan]{{ cookiecutter.project_slug }}[/bold cyan] version [green]{__version__}[/green]"
         )
         raise typer.Exit
 

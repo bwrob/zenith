@@ -16,6 +16,36 @@ flavor = "gfm"
 line-length = 88
 respect-gitignore = true
 
+[per-file-ignores]
+    # Keep standard Keep a Changelog headings and duplicate release categories.
+    "docs/changelog.md" = ["MD080", "MD082"]
+
+    # Preserve lowercase skill IDs embedded in descriptive headings.
+    "docs/skills/guide.md"    = ["MD063"]
+    "docs/skills/sdd.md"      = ["MD063"]
+    "docs/skills/tool.md"     = ["MD063"]
+    "docs/skills/workflow.md" = ["MD063"]
+
+    # GFM treats Zensical tabs and admonitions as indented code blocks.
+    "docs/tools/typer.md" = ["MD046"]
+
+    # Jinja partials render their own blank lines after generation.
+    "??cookiecutter.project_slug??/README.md"     = ["MD022"]
+    "??cookiecutter.project_slug??/docs/index.md" = ["MD022"]
+
+    # Conditional list branches create false positives before generation.
+    "??cookiecutter.project_slug??/AGENTS.md" = ["MD032"]
+
+    # Jinja source values create generated-only Markdown differences.
+    "??cookiecutter.project_slug??/SECURITY.md"             = ["MD060"]
+    "??cookiecutter.project_slug??/docs/adr/index.md"       = ["MD060"]
+    "??cookiecutter.project_slug??/docs/changelog.md"       = ["MD013", "MD082"]
+    "??cookiecutter.project_slug??/docs/getting-started.md" = ["MD046"]
+
+    # These files are rendered partials with Jinja URLs and conditional badges.
+    "templates/_badges.md"          = ["MD034", "MD041", "MD057"]
+    "templates/docs/_tool_stack.md" = ["MD041"]
+
 [code-block-tools]
     enabled                = true
     on-error               = "warn"
@@ -41,7 +71,14 @@ respect-gitignore = true
         command = ["ruff", "format", "-"]
 
     [code-block-tools.tools."ruff:check"]
-        command = ["ruff", "check", "--output-format=concise", "-"]
+        command = [
+            "ruff",
+            "check",
+            "--preview",
+            "--output-format=concise",
+            "--ignore=D,T201,missing-required-import",
+            "-",
+        ]
 
 [MD001]
     front-matter-title = true

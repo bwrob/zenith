@@ -33,7 +33,9 @@ decisions.
 
 ## Pros and Cons of the Options
 
-### Option 1: Architecture Decision Records (MADR) in `docs/adr/`
+The options below summarize the trade-offs considered for this decision.
+
+### Option 1: Architecture Decision Records (MADR)
 
 - :white_check_mark: **Good**: Version-controlled alongside source code in Git.
 - :white_check_mark: **Good**: Automatically integrated into Zensical documentation

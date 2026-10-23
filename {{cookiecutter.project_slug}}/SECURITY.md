@@ -1,5 +1,8 @@
 # Security Policy
 
+This policy explains which project versions receive security fixes and how to report a
+vulnerability.
+
 ## Supported Versions
 
 Only the latest release of **{{ cookiecutter.project_name }}** receives active security

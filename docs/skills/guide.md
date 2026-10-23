@@ -13,7 +13,10 @@ opinionated engineering philosophy.
 
 ## Core Template Guides
 
-### Modern Python 3.12+ Engineering (`guide-python`)
+These guides define the default engineering and writing standards for generated
+projects.
+
+### Modern Python 3.12+ Engineering (guide-python)
 
 **What it is**: The definitive engineering style guide for Python 3.12+ code in Zenith.
 It codifies architectural invariants around type parameter syntax, structural subtyping,
@@ -32,7 +35,7 @@ using mutable dataclasses that introduce race conditions.
    wrappers with clean modern syntax:
 
    ```python
-   from typing import Callable
+   from collections.abc import Callable
 
    type JsonScalar = str | int | float | bool | None
    type Json = dict[str, Json] | list[Json] | JsonScalar
@@ -56,7 +59,7 @@ using mutable dataclasses that introduce race conditions.
    requiring explicit `encoding="utf-8"` in all file read/write operations and
    subprocess calls.
 
-### Simplified Technical English (`guide-ste100`)
+### Simplified Technical English (guide-ste100)
 
 **What it is**: The writing guide and automated linter implementing the international
 Simplified Technical English standard (ASD-STE100 Issue 8).

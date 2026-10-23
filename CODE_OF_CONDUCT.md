@@ -1,5 +1,7 @@
 # Contributor Covenant Code of Conduct
 
+This code of conduct describes the standards for everyone who participates in Zenith.
+
 ## Our Pledge
 
 We as members, contributors, and leaders pledge to make participation in our
