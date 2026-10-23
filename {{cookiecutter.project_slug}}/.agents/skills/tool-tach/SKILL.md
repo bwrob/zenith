@@ -76,7 +76,7 @@ layer = "core"
 ## 3. Common Configuration Changes During Development
 
 Manage architectural layers, module dependencies, and public interfaces with these
-patterns. Use Deptry for `pyproject.toml` dependency hygiene; the `dependencies` Poe
+patterns. Use Deptry for `pyproject.toml` dependency hygiene. The `dependencies` Poe
 task runs both Tach and Deptry.
 
 ### A. Adding a New Architectural Layer
