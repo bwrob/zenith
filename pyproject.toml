@@ -41,6 +41,7 @@
         "zizmor>=1.23.0",
     ]
     docs = [
+        "griffe-warnings-deprecated>=1.1.0",
         "markdown-exec>=1.12.0",
         "mkdocstrings[python]>=1.0.7",
         "pymdown-extensions>=10.14.0",
