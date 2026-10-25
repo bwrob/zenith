@@ -129,7 +129,7 @@ dumps overwhelm LLM context windows and cause hallucinated tool flags.
   templates, and code recipes in dedicated subdirectories (`references/`, `templates/`,
   `examples/`, `scripts/`). The runner loads full text into context only when needed.
 - **Simplified Technical English (ASD-STE100)**: Enforces clear, unambiguous language
-  verified by an automated linter.
+  verified by an automated linter across agent skills and Python docstrings.
 - **Template Synchronization**: Automatically handles symlink wiring between template
   sources and repository links via `uv run poe sync-skills`.
 
@@ -145,6 +145,10 @@ out of sync.
 
 `workflow-docs-authoring` enforces core architectural and writing rules:
 
+- **Human-First Prose Without Rigid STE Enforcement**: User documentation in `docs/`
+  prioritizes natural, human-centered readability. While STE-100 principles serve as
+  helpful suggestions for clarity, STE-100 is not enforced as a rigid rule in docs.
+  Strict STE-100 compliance is reserved for agent skills and code docstrings.
 - **Diátaxis Information Architecture**: Classifies every page into one of four intent
   quadrants (*Tutorials*, *How-To Guides*, *Reference*, *Explanation*). Enforces scope
   through a mandatory non-renderable YAML frontmatter preamble (`diataxis:` and

@@ -79,8 +79,10 @@ ASD-STE100 solves this through controlled language principles:
 - **Strict Sentence Length Limits**: Caps procedural instructions at 20 words and
   descriptive sentences at 25 words to prevent model attention degradation.
 - **Automated Verification**: Zenith includes a standalone, standard-library Python
-  linter and auto-fixer (`ste-lint.py`). Run `uv run poe lint-ste` to audit skills and
-  documentation against STE-100 vocabulary and structure rules.
+  linter and auto-fixer (`ste-lint.py`). Run `uv run poe lint-ste` to audit agent skills
+  and Python docstrings against STE-100 vocabulary and structure rules. STE-100 is not
+  enforced as a rule in user-facing documentation (`docs/`), where it serves only as a
+  suggestion for clear phrasing.
 
 ## Authoring Custom Guide Skills
 
