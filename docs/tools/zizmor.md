@@ -14,23 +14,22 @@ in Rust by William Woodruff.
 
 `zizmor` parses GitHub Actions YAML workflow manifests to detect security
 vulnerabilities, insecure patterns, and potential attack vectors. It identifies
-unescaped context interpolations that expose steps to script injection, flags workflows
-lacking explicit minimal permission blocks, and warns against unpinned third-party
-actions referencing mutable branch heads.
+unescaped context interpolations that expose steps to script injection. It flags
+missing permission blocks and warns against unpinned third-party actions.
 
-By checking for patterns where fork pull requests or untrusted triggers could exfiltrate
-secrets, zizmor secures CI pipelines before changes are deployed.
+zizmor detects patterns where fork pull requests or untrusted triggers could
+exfiltrate secrets. This secures CI pipelines before deployment.
 
-## Why It's in Zenith
+## Why It Is in Zenith
 
 Continuous integration pipelines represent high-value attack surfaces because they hold
 deployment credentials, PyPI release tokens, and code signing keys. AI coding assistants
 frequently introduce insecure CI patterns, such as unquoted GitHub event contexts in run
 steps.
 
-Zenith runs zizmor as an automated security quality gate in both prek hooks and
-scheduled CI pipelines, guaranteeing that infrastructure-as-code remains hardened
-against supply-chain and injection attacks.
+Zenith runs zizmor as an automated security quality gate in prek hooks and CI
+pipelines. This keeps infrastructure-as-code hardened against supply-chain and
+injection attacks.
 
 ## Configuration in Zenith
 

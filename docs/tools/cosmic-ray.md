@@ -1,29 +1,31 @@
 ---
 diataxis: reference
-purpose: Document comprehensive mutation testing and database-backed test suite verification with Cosmic Ray.
+purpose: Document mutation testing and database-backed test suite verification with Cosmic Ray.
 ---
 
 # Cosmic Ray: Mutation Testing
 
 [![Tool: Cosmic Ray](https://img.shields.io/badge/testing-cosmic--ray-darkred.svg)](https://cosmic-ray.readthedocs.io/)
 
-`Cosmic Ray` is a mutation testing framework for Python. It measures the assertiveness
-and true quality of a test suite by introducing deliberate mutations (faults) into the
-Abstract Syntax Tree (AST) of the production code.
+`Cosmic Ray` is a mutation testing framework for Python. It measures test suite
+quality by introducing deliberate faults into the production code Abstract
+Syntax Tree.
 
 ## What It Does
 
 Mutation testing answers a critical question that traditional code coverage cannot:
-**"Do your tests actually verify correctness, or do they merely execute lines of code
-without asserting their behavior?"**
+**"Do your tests verify correctness, or do they execute code without asserting
+behavior?"**
 
-Cosmic Ray parses production Python source files into an Abstract Syntax Tree and
-introduces microscopic mutations, such as inverting boolean logic, replacing operators,
-or deleting statements. It then executes the test suite against each mutant. If a test
-fails, the mutant is killed, proving the test suite actively caught the regression; if
-all tests pass, the mutant survives, exposing a blind spot in test assertion depth.
+Cosmic Ray parses Python source files into an Abstract Syntax Tree. It introduces
+small mutations, such as inverting boolean logic, replacing operators, or deleting
+statements. It then executes the test suite against each mutant.
 
-## Why It's in Zenith
+When a test fails, the test suite kills the mutant. This verifies that the
+test caught the regression. When all tests pass, the mutant survives. This exposes
+a blind spot in test assertion depth.
+
+## Why It Is in Zenith
 
 Achieving 100% line coverage is straightforward even with weak test assertions. AI
 coding assistants frequently generate tests that reach full line execution without
@@ -35,9 +37,9 @@ verification. Because `mutmut` does not support Windows, Cosmic Ray serves as th
 universal cross-platform mutation engine, executing reliably across macOS, Linux, and
 Windows runners.
 
-Mutation session results are stored in an SQLite database, allowing deep assertion
-audits to be distributed across worker processes, paused, or resumed incrementally
-without losing progress.
+Cosmic Ray stores mutation session results in an SQLite database. You can pause,
+resume, or distribute assertion audits across worker processes without losing
+progress.
 
 ## Configuration in Zenith
 

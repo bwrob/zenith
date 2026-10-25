@@ -7,30 +7,28 @@ purpose: Document 100% statement and branch coverage enforcement and report anal
 
 [![Tool: Coverage.py](https://img.shields.io/badge/coverage-100%25-brightgreen.svg)](https://coverage.readthedocs.io/)
 
-`Coverage.py` is the industry-standard code coverage measurement engine for Python. It
-monitors program execution during automated test runs, measuring which statements were
-executed and evaluating conditional branch decisions.
+`Coverage.py` measures code coverage for Python. It monitors program execution
+during automated test runs, tracks executed statements, and evaluates conditional
+branch decisions.
 
 ## What It Does
 
-`Coverage.py` measures both statement execution and branch coverage across Python
-packages. Rather than merely recording which lines were executed, branch analysis
-determines whether every conditional path (`if`, `elif`, `else`, `while`, and exception
-clauses) was evaluated for both true and false outcomes.
+`Coverage.py` measures statement execution and branch coverage across Python packages.
+Branch analysis determines whether tests evaluated every conditional path for both
+true and false outcomes. This includes `if`, `elif`, `else`, `while`, and exception
+clauses.
 
-During test runs, `Coverage.py` compiles precise execution statistics into a binary
-`.coverage` database. It produces detailed terminal reports pinpointing missing line
-numbers (`coverage report -m`), machine-readable XML manifests (`coverage.xml`) for
-continuous integration reporting, and interactive HTML dashboards highlighting exact
-covered and missed branches in source files.
+During test runs, `Coverage.py` compiles execution statistics into a `.coverage`
+database. It produces terminal reports that pinpoint missing lines
+(`coverage report -m`). It also generates XML manifests for CI reporting and
+interactive HTML dashboards.
 
-## Why It's in Zenith
+## Why It Is in Zenith
 
 Zenith establishes a non-negotiable engineering standard:
 **100% mandatory statement and branch test coverage** (`fail_under = 100` and
-`branch = true`). In Zenith, untested code is considered uncommitted code. If a single
-statement or conditional branch is missed, continuous integration pipelines fail
-immediately.
+`branch = true`). In Zenith, you must test all code before you commit it. When a test
+run misses a statement or branch, CI pipelines fail immediately.
 
 In AI-native workflows, 100% coverage provides a critical structural invariant.
 Autonomous coding agents frequently introduce partial implementations, dead branches, or

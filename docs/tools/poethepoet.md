@@ -12,14 +12,12 @@ and virtual environment managers like `uv`.
 
 ## What It Does
 
-Poe the Poet codifies project operations into declarative, cross-platform command
-sequences. Tasks are defined directly in TOML files, supporting single commands,
-multi-step scripts, and sequential composite workflows that execute reliably across
-Linux, macOS, and Windows without requiring fragile shell scripts or Makefiles. When
-commands are executed, Poe automatically forwards command-line flags and positional
-arguments transparently to the underlying tools.
+Poe the Poet codifies operations into declarative command sequences. Developers
+define tasks in TOML files. Tasks run reliably across Linux, macOS, and Windows
+without fragile shell scripts. Poe forwards flags and positional arguments
+transparently to underlying tools.
 
-## Why It's in Zenith
+## Why It Is in Zenith
 
 Zenith chooses Poe the Poet to guarantee zero behavioral drift between developer
 workstations and CI runners. Instead of maintaining separate script files or relying on

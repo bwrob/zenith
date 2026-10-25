@@ -13,12 +13,9 @@ purpose: Record the architectural decision to document design choices using Arch
 
 ## Context & Problem Statement
 
-As **{{ cookiecutter.project_name }}** evolves, contributors and AI coding assistants
-make architectural and technical choices (e.g., modular layer boundaries, static type
-checking rules, dependency management, serialization contracts). Without a persistent
-record of the *context*, *alternatives evaluated*, and *trade-offs accepted*, future
-maintainers face technical drift or may inadvertently reverse intentional design
-decisions.
+As **{{ cookiecutter.project_name }}** evolves, contributors and AI assistants make
+architectural choices. Without a persistent record of context and trade-offs, future
+maintainers face technical drift. They risk reversing intentional design decisions.
 
 ## Decision Drivers
 
@@ -65,9 +62,8 @@ The options below summarize the trade-offs considered for this decision.
 ## Decision Outcome
 
 Chosen option: **"Option 1: Michael Nygard Architecture Decision Records (MADR) in
-Markdown under `docs/adr/`"**, because storing version-controlled Markdown records
-directly in the repository ensures that architectural intent remains permanently coupled
-with codebase evolution.
+Markdown under `docs/adr/`"**. Storing version-controlled records in the repository
+ensures that architectural intent remains permanently coupled with codebase evolution.
 
 ### Positive Consequences
 
@@ -78,7 +74,7 @@ with codebase evolution.
 
 ### Negative Consequences / Trade-Offs
 
-- Maintainers must ensure new architectural paradigms are accompanied by an ADR.
+- Maintainers must document new architectural choices with an ADR.
 
 ## Architecture & Boundary Compliance
 

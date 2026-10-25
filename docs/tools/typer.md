@@ -14,7 +14,7 @@ automatic validation, and modern typing of FastAPI to the command line.
 ## What It Does
 
 Typer parses command-line arguments and options using standard Python type annotations.
-Utilizing modern `typing.Annotated` metadata, parameter definitions cleanly decouple
+Using modern `typing.Annotated` metadata, parameter definitions cleanly decouple
 argument validation from descriptive help text, flags, and environment fallbacks. String
 inputs are automatically converted into native Python types including numbers, paths,
 booleans, enums, and UUIDs.
@@ -24,7 +24,7 @@ terminal help screens, elegant error dialogs, and progress displays directly fro
 function signatures and docstrings. It also provides automatic tab-completion support
 across all major shells.
 
-## Why It's in Zenith
+## Why It Is in Zenith
 
 Zenith chooses Typer for projects that require a command-line interface because it
 harmonizes completely with strict static type checking. Unlike legacy `argparse` or
@@ -185,8 +185,7 @@ Try 'my-awesome-service --help' for help.
 
 ## Automated CLI Testing
 
-CLI commands in Zenith projects are verified using `typer.testing.CliRunner` in
-`tests/test_cli.py`:
+Tests in `tests/test_cli.py` check CLI commands using `typer.testing.CliRunner`:
 
 ```python
 from my_awesome_service.cli import app

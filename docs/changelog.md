@@ -15,18 +15,16 @@ and this project adheres to
 
 ### Added
 
-- New `workflow-docs-authoring` agent skill enforcing human-first technical writing,
-  Documentation-Driven Design (DDD as an API interface smell test), the golden source of
-  truth rule ("do not repeat, link"), continuous tested snippet transclusion in CI,
-  progressive disclosure, editor ergonomics, the Diátaxis architecture, the Google
-  condition-before-instruction rule, and the Troubleshooting Triad formula.
+- New `workflow-docs-authoring` agent skill. The skill enforces human-first technical
+  writing, Documentation-Driven Design, the golden source of truth rule ("do not
+  repeat, link"), and tested snippet transclusion in CI. It also enforces
+  progressive disclosure, editor ergonomics, Diátaxis, Google condition rules,
+  and the Troubleshooting Triad.
 - Standardized non-renderable Diátaxis YAML frontmatter preambles across all
   documentation pages in the repository and template.
 - Dedicated Zenith documentation website configured with Zensical, Catppuccin hue-based
   theming, MathJax, and Termynal terminal animations.
-- Comprehensive tooling guides for the integrated tools (uv, Ruff, Pyrefly, complexipy,
-  Tach, Deptry, Griffe, Poe the Poet, Zensical, rumdl, typos, pytest, Coverage.py,
-  mutmut, Cosmic Ray, Prettier, Taplo, zizmor, Typst, Termynal, Typer, Cookiecutter).
+- Tooling guides for all 22 integrated tools.
 - Detailed agent skill architecture guides for lifecycle workflows in `.agents/skills/`.
 - Deep-dive philosophy guide outlining Modern Rust Tooling, AI-Ready Engineering,
   Ruthless Guardrails, and Project Sizing.
@@ -39,8 +37,8 @@ and this project adheres to
 - **Modern Rust Toolchain**:
   - Full integration of **uv** for fast package resolution, deterministic `uv.lock`, and
     PEP 517 builds.
-  - Comprehensive linting and formatting with **Ruff** (preview rules enabled, docstring
-    formatting, and import organization).
+  - Linting and formatting with **Ruff** (preview rules enabled, docstring formatting,
+    and import organization).
   - Strict static type analysis with **Pyrefly** (`preset = "strict"` with PEP 695
     generics).
   - Cognitive complexity enforcement with **complexipy** (ceiling of <= 10 per
@@ -49,7 +47,7 @@ and this project adheres to
     **Deptry**.
   - Declarative task runner integration with **Poe the Poet** (`uv run poe <task>`).
   - High-performance Markdown linting and embedded code verification with **rumdl**.
-  - Blazing-fast source code and documentation spell checking with **typos**.
+  - Source code and documentation spell checking with **typos**.
   - Consistent TOML and YAML/CSS formatting with **Taplo** and **Prettier**.
 - **Rigorous Test Stack**:
   - **100% Mandatory Test Coverage**: Configured with `.coveragerc` enforcing statement
@@ -66,7 +64,7 @@ and this project adheres to
   - Machine-readable context discovery configs for OpenAI Codex CLI
     (`.codex/config.toml`), Aider (`.aider.conf.yml`), and Google Gemini CLI
     (`.gemini/settings.json`).
-  - Comprehensive `.agents/skills/` directory with 26 agent skills covering architecture
+  - Repository `.agents/skills/` directory with 26 agent skills covering architecture
     decisions (ADRs), code reviews, git hygiene, benchmark inspections, and tool syntax.
   - ASD-STE100 Simplified Technical English linting and auto-fixing (`asd-ste100` skill
     and `ste-lint.py`).

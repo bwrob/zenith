@@ -22,7 +22,7 @@ Tach can generate visual Mermaid diagrams directly from the verified import grap
 The `dependencies` Poe task runs `tach check` for internal boundaries and `deptry src`
 for declared dependencies.
 
-## Why It's in Zenith
+## Why It Is in Zenith
 
 Over time, codebases naturally suffer from architectural erosion as developers and AI
 assistants import utilities opportunistically across modules, eventually creating an

@@ -13,24 +13,22 @@ agent capabilities into **modular, prefixed Agent Skills** located in `.agents/s
 
 ## Skill Taxonomy
 
-To prevent naming collisions, maintain predictable agent discovery, and separate
-template capabilities from project domain logic, Zenith standardizes on a
-**standardized set of 5 skill prefixes**:
+Zenith defines a **standard set of 5 skill prefixes**. This taxonomy prevents naming
+collisions and maintains predictable agent discovery:
 
 | Prefix Group                    | Scope & Purpose                                                                                                                                                                     | Examples                                                                                                                                             |
 | ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **[`sdd-*`](sdd.md)**           | **Spec-Driven Development Suite**<br/>Authoring specifications, technical planning, TDD implementation, and verification reviews.                                                   | `sdd`, `sdd-spec`, `sdd-plan`, `sdd-implement`, `sdd-review`.                                                                                        |
 | **[`workflow-*`](workflow.md)** | **Lifecycle & Multi-Step Procedures**<br/>Operational processes, version control, release ceremonies, architecture records, code review audits, skill authoring, and documentation. | `workflow-git`, `workflow-code-review`, `workflow-changelog`, `workflow-adr`, `workflow-setup`, `workflow-skill-creator`, `workflow-docs-authoring`. |
-| **[`tool-*`](tool.md)**         | **Tool Mechanics & Tooling Reference**<br/>Concrete command syntax, CLI flags, configuration details, and runbooks for specific developer tools and libraries.                      | `tool-uv`, `tool-ruff`, `tool-pyrefly`, `tool-tach`, `tool-pytest`, `tool-zensical`, etc.                                                            |
+| **[`tool-*`](tool.md)**         | **Tool Mechanics & Tooling Reference**<br/>Concrete command syntax, CLI flags, configuration details, and runbooks for specific developer tools and libraries.                      | `tool-uv`, `tool-ruff`, `tool-pyrefly`, `tool-tach`, `tool-pytest`, `tool-zensical`, and others.                                                     |
 | **[`guide-*`](guide.md)**       | **Engineering Conventions & Style**<br/>Coding style conventions, architecture invariants, type parameter rules, and technical writing standards.                                   | `guide-python`, `guide-ste100`.                                                                                                                      |
 | **[`domain-*`](domain.md)**     | **Project Domain & Business Rules**<br/>**Reserved exclusively for the author of the instantiated project.** Documents business rules, domain entities, APIs, and workflows.        | `domain-billing`, `domain-auth`, `domain-data-pipeline`.                                                                                             |
 
 > [!IMPORTANT]
 > **The `domain-*` prefix is strictly reserved for you**: The Zenith template ships with
-> zero `domain-*` skills out-of-the-box. When you scaffold a new repository using
-> Zenith, you and your team can create `domain-*` skills to codify your business logic,
-> vendor integrations, and proprietary domain models without any risk of colliding with
-> template updates or upstream tooling skills.
+> zero `domain-*` skills. When you scaffold a new repository, create `domain-*` skills
+> to codify business logic and vendor integrations. These custom skills never collide
+> with upstream tooling updates.
 
 ## Skill Discovery
 
@@ -56,8 +54,8 @@ flowchart TD
 1. **Context Discovery**: The agent reads root `AGENTS.md` (or symlinks `CLAUDE.md`,
    `.cursorrules`, `.windsurfrules`).
 2. **Progressive Disclosure**: The runner initially loads only the skill `name` and
-   `description` frontmatter. Full procedural instructions and templates are loaded into
-   context **only when that skill is activated**.
+   `description` frontmatter. The runner loads full procedural instructions and
+   templates **only when activating that skill**.
 3. **Execution Grounding**: The agent follows the skill's step-by-step instructions and
    executes tasks inside the hermetic project environment with `uv run poe <task>`.
 

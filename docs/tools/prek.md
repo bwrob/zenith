@@ -9,7 +9,7 @@ purpose: Document Git pre-commit lifecycle hooks, automated fixers, and hook ins
 
 `prek` is a fast Git hook runner written in Rust. In Zenith, it validates
 code hygiene, detects secrets, verifies schemas, and enforces formatting before
-commits are created.
+you create commits.
 
 ## What It Does
 
@@ -19,20 +19,20 @@ automated inspections across staged files.
 Zenith configures `prek` through `prek.toml` with multiple validation layers:
 
 - **File Sanitization**: Trims trailing whitespace, fixes end-of-file newlines,
-  checks merge and case conflicts, and blocks oversized files.
+  validates merge and case conflicts, and blocks oversized files.
 - **Secret Detection**: Runs `gitleaks` to detect hardcoded credentials, API keys,
   and sensitive tokens.
 - **Manifest Validation**: Runs `validate-pyproject` to ensure `pyproject.toml`
   schema integrity.
 - **Code Formatters**: Runs `ruff`, `taplo`, `rumdl`, and `prettier` directly on
   staged files.
-- **Local Quality Gates**: Executes `pyrefly`, `complexipy`, and `tach` to ensure
+- **Local Quality Gates**: Runs `pyrefly`, `complexipy`, and `tach`. This ensures
   code meets strict typing, cognitive complexity, and layer boundary standards before
   leaving the workstation.
 
-## Why It's in Zenith
+## Why It Is in Zenith
 
-Zenith standardizes on modern, ultra-fast, Rust-native developer tooling. Unlike
+Zenith standardizes on modern, fast, Rust-native developer tooling. Unlike
 traditional Python hook runners, `prek` executes hooks in milliseconds without
 Python interpreter startup latency or global virtual environment overhead.
 
@@ -69,8 +69,7 @@ to task aliases (`uv run poe type-check`):
    arguments natively. In contrast, wrapping calls in task runners can misroute or
    drop path arguments.
 2. **Subprocess Overhead Elimination**: Direct `uv run <tool>` invocations avoid
-   nested subprocess wrappers (prek → shell → uv → poe → python → tool), keeping
-   local Git commit operations instantaneous.
+   nested subprocess wrappers. This keeps local Git commit operations instantaneous.
 3. **Deterministic Exit Codes**: Direct commands propagate exit codes straight to
    Git without an intermediate task runner layer.
 

@@ -69,9 +69,9 @@ foundational pillars:
 
     ---
 
-    Zero compromises: **100% mandatory test coverage** (`fail_under = 100`), strict
-    static typing with Pyrefly, cognitive complexity <= 10 per function, module boundary
-    enforcement, and CI security auditing with **[zizmor](tools/zizmor.md)**.
+    Enforce **100% mandatory test coverage** (`fail_under = 100`) and strict Pyrefly
+    types. Guard functions with cognitive complexity <= 10, module boundaries, and
+    **[zizmor](tools/zizmor.md)** security audits.
 
 -   **[Hermetic Delivery & CI/CD](ci-actions.md)**
 
@@ -102,7 +102,7 @@ my-awesome-service/
 ### Production-Grade Code by Default
 
 Every generated repository produces strictly typed, immutable, and fully tested
-Python out of the box:
+Python from the initial commit:
 
 === "src/my_awesome_service/core.py"
 

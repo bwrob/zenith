@@ -8,7 +8,7 @@ purpose: Document template variables, lifecycle hooks, and project generation me
 [![Tool: Cookiecutter](https://img.shields.io/badge/template-cookiecutter-D4B830.svg)](https://github.com/cookiecutter/cookiecutter)
 
 `Cookiecutter` is a cross-platform command-line utility that creates projects from
-project templates (cookiecutters). Zenith is authored as a Cookiecutter template.
+project templates (cookiecutters). Zenith uses the Cookiecutter template format.
 
 ## What It Does
 
@@ -18,17 +18,16 @@ defined in `cookiecutter.json`, it dynamically scaffolds complete projects. Life
 hooks executed before and after file generation validate input parameters and perform
 programmatic filesystem adjustments.
 
-## Why It's in Zenith
+## Why It Is in Zenith
 
-Zenith is packaged as a Cookiecutter template to provide instant, zero-install
+Zenith operates as a Cookiecutter template to provide instant, zero-install
 scaffolding via `uvx cookiecutter gh:bwrob/zenith`. As the universal standard for
 project templating across the Python community, Cookiecutter ensures broad
 compatibility with existing developer workflows.
 
 Zenith uses post-generation lifecycle hooks (`hooks/post_gen_project.py`) to enforce
-strict project hygiene: conditionally stripping optional features like CLI code,
-removing explanatory comments from rendered configuration files, and establishing
-symlinks and configuration profiles for AI coding agents.
+project hygiene. Hooks strip unselected features like CLI code, remove explanatory
+comments, and configure symlinks for AI coding agents.
 
 ## Configuration in Zenith
 

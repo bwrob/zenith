@@ -13,27 +13,24 @@ assertion rigor, prevent state flakiness, and accelerate parallel execution.
 
 ## What It Does
 
-`pytest` provides a powerful, fixture-driven testing engine with deep assertion
-introspection. Tests are authored as idiomatic Python functions, leveraging dependency
-injection via fixtures, parameterized test matrices, and comprehensive filter mechanisms
-to target specific subsystems.
+`pytest` provides a fixture-driven testing engine with assertion introspection. You
+author tests as idiomatic Python functions. Tests leverage dependency injection via
+fixtures, parameterized matrices, and filtering mechanisms.
 
-Zenith configures pytest with strict validation flags: tests must declare valid markers,
-configuration files are strictly validated, doctests inside source docstrings are
-automatically discovered and executed, and unused snapshot assertions trigger warnings.
+Zenith configures pytest with strict validation flags. Tests must declare valid
+markers. Pytest validates configuration files strictly, executes docstring tests
+automatically, and warns on unused snapshots.
 
-## Why It's in Zenith
+## Why It Is in Zenith
 
-Testing in Zenith is designed to eliminate false confidence. Beyond standard unit
-assertions, pytest operates under a strict zero-warning tolerance policy
-(`filterwarnings = "error"`). Deprecation notices, unclosed resources, or encoding
-anomalies fail the test suite immediately.
+Testing in Zenith eliminates false confidence. Beyond standard unit assertions, pytest
+operates under a strict zero-warning policy (`filterwarnings = "error"`). Deprecation
+notices, unclosed resources, or encoding anomalies fail the test suite immediately.
 
-By pairing pytest with specialized plugins, Zenith transforms the test runner into a
-comprehensive behavioral verification engine. Parallel test execution keeps local
-developer loops fast, randomized ordering eliminates state pollution, and snapshot and
-property-based plugins catch edge-case regressions that manual test cases often
-overlook.
+By pairing pytest with specialized plugins, Zenith verifies behavior across multiple
+dimensions. Parallel test execution accelerates developer loops. Randomized ordering
+eliminates state pollution. Snapshot and property-based plugins catch edge-case
+regressions that manual test cases miss.
 
 ## Integrated Pytest Plugins
 

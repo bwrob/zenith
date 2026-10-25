@@ -16,13 +16,13 @@ preserve the rationale, trade-offs, and invariants behind our codebase design.
 
 Every record follows a defined status model:
 
-| Status         | Badge                    | Description                                                                  |
-| :------------- | :----------------------- | :--------------------------------------------------------------------------- |
-| **Proposed**   | :hourglass_flowing_sand: | Under maintainer and community review; not yet accepted.                     |
-| **Accepted**   | :white_check_mark:       | Formally approved; actively governs codebase architecture.                   |
-| **Rejected**   | :x:                      | Evaluated and declined; retained to document why an alternative was avoided. |
-| **Superseded** | :arrow_right:            | Replaced by a subsequent architectural decision.                             |
-| **Deprecated** | :warning:                | No longer relevant due to structural changes.                                |
+| Status         | Badge                    | Description                                                                 |
+| :------------- | :----------------------- | :-------------------------------------------------------------------------- |
+| **Proposed**   | :hourglass_flowing_sand: | Under maintainer review. Not yet accepted.                                  |
+| **Accepted**   | :white_check_mark:       | Formally approved. Actively governs codebase architecture.                  |
+| **Rejected**   | :x:                      | Evaluated and declined. Retained to document why teams avoided this option. |
+| **Superseded** | :arrow_right:            | Replaced by a subsequent architectural decision.                            |
+| **Deprecated** | :warning:                | No longer relevant due to structural changes.                               |
 
 ## Architectural Decision Log
 

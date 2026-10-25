@@ -32,6 +32,6 @@ plugin automatically compiles machine-readable markdown indices under `site/`:
 
 - **`site/llms.txt`**: A concise, curated sitemap of all documentation sections, guides,
   and modules for AI coding assistants.
-- **`site/llms-full.txt`**: A complete, concatenated full-text export containing all
-  documentation pages and rendered API signatures, optimized for LLM context windows
-  (Cursor, Claude Code, Copilot, and Gemini CLI).
+- **`site/llms-full.txt`**: A complete full-text export containing all
+  documentation pages and rendered API signatures. The file optimizes context for
+  LLM assistants.

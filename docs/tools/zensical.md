@@ -18,11 +18,10 @@ It automates API documentation via `mkdocstrings[python]`, client-side MathJax L
 rendering, dynamic code execution through `markdown-exec`, and native Mermaid diagram
 support.
 
-It also automatically compiles machine-readable `site/llms.txt` and `site/llms-full.txt`
-feeds, allowing AI coding assistants to consume project architecture guides and API
-reference surfaces in a single contextual payload.
+It also compiles machine-readable `site/llms.txt` and `site/llms-full.txt` files.
+AI assistants consume project guides and API reference surfaces in a single payload.
 
-## Why It's in Zenith
+## Why It Is in Zenith
 
 Zenith chooses Zensical because it standardizes on TOML configuration (`zensical.toml`),
 avoiding YAML sprawl and unifying configuration patterns with `pyproject.toml`.
@@ -36,16 +35,16 @@ with automated machine-readable feeds.
 
 Zenith enhances Zensical with specialized plugins configured under `[project.plugins]`:
 
-| Plugin                     | Capability                  | Purpose in Zenith                                                                                                                                                                                                           |
-| -------------------------- | --------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **`gh-admonitions`**       | GitHub Alert Callouts       | Renders GitHub-flavored alert callouts (`> [!NOTE]`, `> [!TIP]`, `> [!IMPORTANT]`, `> [!WARNING]`, `> [!CAUTION]`) with styled border accents and icons.                                                                    |
-| **`llmstxt`**              | AI Context Manifests        | Compiles structured `site/llms.txt` and `site/llms-full.txt` feeds, allowing AI coding assistants to consume repository guides and API signatures in a single contextual payload.                                           |
-| **`markdown-exec`**        | Dynamic Code Execution      | Executes inline Python, Shell, Tree, and Markdown snippets (`python exec="1"`, `sh exec="1"`) during build, ensuring rendered tool configurations and directory trees reflect live repository files without manual copying. |
-| **`mkdocstrings[python]`** | Automated API Documentation | Extracts and documents public Python functions, classes, type parameters, and protocols directly from source code docstrings via Griffe with NumPy style parsing.                                                           |
+| Plugin                     | Capability                  | Purpose in Zenith                                                                                                                                                                      |
+| -------------------------- | --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`gh-admonitions`**       | GitHub Alert Callouts       | Renders GitHub-flavored alert callouts (`> [!NOTE]`, `> [!TIP]`, `> [!IMPORTANT]`, `> [!WARNING]`, `> [!CAUTION]`) with styled border accents and icons.                               |
+| **`llmstxt`**              | AI Context Manifests        | Compiles structured `site/llms.txt` and `site/llms-full.txt` feeds. AI coding assistants consume repository guides and API signatures in a single payload.                             |
+| **`markdown-exec`**        | Dynamic Code Execution      | Executes inline code snippets (`python exec="1"`, `sh exec="1"`) during builds. Rendered tool configurations and directory trees reflect live repository files without manual copying. |
+| **`mkdocstrings[python]`** | Automated API Documentation | Extracts and documents public Python functions, classes, type parameters, and protocols directly from source code docstrings via Griffe with NumPy style parsing.                      |
 
 ## Markdown Extensions Suite
 
-Zenith enables a comprehensive suite of Python-Markdown and PyMdown Extensions under
+Zenith enables a suite of Python-Markdown and PyMdown Extensions under
 `[project.markdown_extensions]` to support rich technical authoring:
 
 | Extension Category         | Extensions                                                            | Enabled Features                                                                                                                                                               |
@@ -84,12 +83,11 @@ uv run poe docs-build                  # Strict production build into site/
 `zensical serve` includes an integrated file watchdog:
 
 - **Instant Millisecond Rebuilds**: Monitors `docs/`, `zensical.toml`, assets, and
-  stylesheets, updating pages in milliseconds as Markdown files are modified.
-- **WebSocket Live Browser Sync**: Automatically pushes changes to all open browser tabs
-  without manual page refreshes.
-- **Agent Workflow Note**: When developers run `uv run poe docs-serve` in a terminal
-  window, AI agents do not need to execute rebuilds during editing turns because the
-  watchdog reloads pages automatically.
+  stylesheets. It updates pages in milliseconds when you modify Markdown files.
+- **WebSocket Live Browser Sync**: Automatically pushes updates to all open browser
+  tabs without manual page refreshes.
+- **Agent Workflow Note**: When you run `uv run poe docs-serve` in a terminal window,
+  AI agents do not need to execute rebuilds. The watchdog reloads pages automatically.
 
 ## Upstream Documentation
 

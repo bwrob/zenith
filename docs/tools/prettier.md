@@ -7,7 +7,7 @@ purpose: Document YAML manifest and stylesheet formatting rules and execution wi
 
 [![Tool: Prettier](https://img.shields.io/badge/formatter-prettier-f7b93e.svg)](https://prettier.io/)
 
-`Prettier` is an opinionated code formatter. Zenith utilizes Prettier exclusively
+`Prettier` is an opinionated code formatter. Zenith uses Prettier exclusively
 through `prek` to format GitHub Actions YAML manifests, issue templates, and
 custom CSS stylesheets.
 
@@ -21,12 +21,12 @@ formatting, key-value spacing, and scalar wrapping across GitHub Actions workflo
 By formatting files automatically, Prettier completely eliminates stylistic noise from
 pull request reviews and version control diffs.
 
-## Why It's in Zenith
+## Why It Is in Zenith
 
 Zenith enforces consistent 4-space indentation across all languages in the project
-(Python, TOML, YAML, and CSS). Prettier is wired exclusively through prek mirrors,
-executing formatting without requiring a global Node.js installation or package
-manifests in the Python repository.
+(Python, TOML, YAML, and CSS). Prek runs Prettier mirrors directly, executing
+formatting without requiring a global Node.js installation or package manifests in the
+Python repository.
 
 It integrates directly into dedicated task runners (`poe format-yaml`, `poe format-css`)
 and the overarching `poe code-quality` verification pipeline.

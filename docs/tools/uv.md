@@ -20,12 +20,11 @@ up to a hundred times faster than legacy package managers. It produces determini
 guaranteeing reproducible environments across developer machines and continuous
 integration runners.
 
-Beyond dependency management, `uv` provisions isolated virtual environments
-automatically, compiles production-ready wheels and source distributions through its
-native `uv_build` backend, and executes ephemeral command-line tools via `uvx` without
-polluting the global system.
+`uv` provisions isolated virtual environments automatically. It compiles wheel
+and source distributions through its native `uv_build` backend. In addition, it
+executes ephemeral tools via `uvx` without polluting the global system.
 
-## Why It's in Zenith
+## Why It Is in Zenith
 
 Zenith adopts `uv` as its foundational environment engine to eliminate latency from
 developer and AI agent feedback loops. Sub-second environment synchronization
@@ -33,13 +32,13 @@ developer and AI agent feedback loops. Sub-second environment synchronization
 
 Executing all project tasks hermetically through `uv run <command>` guarantees that
 tools run against pinned project dependencies rather than system Python, preventing host
-environment contamination. Combined with declarative dependency groups (`dev`, `test`,
-`docs`) and native PEP 517 packaging, `uv` provides a unified, zero-drift foundation for
+environment contamination. Declarative dependency groups (`dev`, `test`, `docs`) and
+native PEP 517 packaging combine in `uv`. This provides a zero-drift foundation for
 modern Python engineering.
 
 ## Configuration in Zenith
 
-`uv` is configured declaratively in `pyproject.toml`:
+The `pyproject.toml` file configures `uv` declaratively:
 
 ```toml
 [build-system]

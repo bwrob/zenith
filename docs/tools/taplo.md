@@ -16,7 +16,7 @@ strict, clean formatting and schema validation across all TOML configuration fil
 4-space indentation, and alphabetically sorted tables. It verifies TOML syntax and
 validates configuration files against JSON Schema definitions in milliseconds.
 
-## Why It's in Zenith
+## Why It Is in Zenith
 
 Modern Python projects rely heavily on TOML across all tool configurations
 (`pyproject.toml`, `poe_tasks.toml`, `zensical.toml`, `ruff.toml`, `tach.toml`,
@@ -24,7 +24,7 @@ Modern Python projects rely heavily on TOML across all tool configurations
 
 Zenith integrates Taplo to maintain universal formatting harmony across all repository
 manifests. By enabling `align_entries = true`, key-value assignments align vertically
-for visual clarity, while automated format checks prevent unformatted configuration
+for visual clarity, while automated format inspections prevent unformatted configuration
 files from entering source control.
 
 ## Configuration in Zenith

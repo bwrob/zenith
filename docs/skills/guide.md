@@ -5,16 +5,14 @@ purpose: Prescribe Python 3.12+ engineering invariants, strict typing paradigms,
 
 # Engineering & Prose Guides
 
-While workflow skills define *what steps to take* and tool skills define *how to run
-tools*, the **`guide-*`** skill suite establishes **normative qualitative standards**:
-the core philosophy, architectural idioms, typing patterns, and prose rules that shape
-every file in the repository.
+Workflow skills define *what steps to take*. Tool skills define *how to run tools*.
+In contrast, the **`guide-*`** skill suite establishes **qualitative standards**: the
+core philosophy, typing patterns, and prose rules that shape every file in the
+repository.
 
-AI coding assistants are trained on millions of public repositories, most of which
-contain legacy Python (Python 3.8/3.9 idioms, mutable default arguments, deep
-inheritance hierarchies, unconstrained `Any` types) and colloquial, ambiguous technical
-writing. `guide-*` skills counteract this by grounding agents in Zenith's modern,
-opinionated engineering philosophy.
+Public training datasets expose AI models to legacy Python patterns and ambiguous
+technical writing. The `guide-*` skills counteract this by grounding agents in modern,
+opinionated engineering standards.
 
 ## Core Template Guides
 
@@ -27,12 +25,11 @@ projects.
 It codifies architectural invariants around type parameter syntax, structural subtyping,
 immutability, and module purity.
 
-**Why it's in Zenith**: Python has undergone a profound modernization with releases 3.12
-and 3.13. Modern Python offers first-class generic parameter syntax, high-speed type
-inference via Meta Pyrefly, and clean structural protocols. Without an explicit guide,
-AI models routinely generate legacy code: defining old-style `TypeVar('T')`, nesting
-deep object-oriented class hierarchies, importing `typing.List` or `typing.Dict`, or
-using mutable dataclasses that introduce race conditions.
+**Why it is in Zenith**: Python modernized syntax across releases 3.12 and 3.13. Modern
+Python offers generic parameter syntax, fast type inference via Meta Pyrefly, and
+structural protocols. Without an explicit guide, AI models generate legacy code. They
+declare old-style `TypeVar('T')`, nest deep class hierarchies, or use mutable
+dataclasses that introduce state bugs.
 
 `guide-python` establishes five non-negotiable architectural pillars:
 
@@ -69,18 +66,16 @@ using mutable dataclasses that introduce race conditions.
 **What it is**: The writing guide and automated linter implementing the international
 Simplified Technical English standard (ASD-STE100 Issue 8).
 
-**Why it's in Zenith**: Ambiguity in technical documentation and agent prompts is the
-number one cause of AI execution failures. When prompts or tool docstrings use modal
-verbs ("you could check this") or words with multiple meanings ("address the bug", "run
-the build"), LLMs often hallucinate alternate interpretations or skip verification steps
-entirely.
+**Why it is in Zenith**: Ambiguity in technical documentation causes execution failures.
+Prompts with modal verbs or ambiguous words trigger errors. LLMs often misinterpret
+instructions or skip verification steps entirely.
 
 ASD-STE100 solves this through controlled language principles:
 
 - **One Meaning Per Word**: Restricts words to a single approved meaning per part of
   speech, eliminating polysemy and semantic confusion.
-- **Active Voice & Imperative Verbs**: Replaces passive constructions ("the tests should
-  be run") with direct, clear instructions ("Run the unit test suite with `poe test`").
+- **Active Voice & Imperative Verbs**: Replaces passive constructions ("tests can be
+  run") with direct, clear instructions ("Run the unit test suite with `poe test`").
 - **Strict Sentence Length Limits**: Caps procedural instructions at 20 words and
   descriptive sentences at 25 words to prevent model attention degradation.
 - **Automated Verification**: Zenith includes a standalone, standard-library Python

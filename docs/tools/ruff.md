@@ -13,17 +13,16 @@ plugins.
 
 ## What It Does
 
-Ruff performs comprehensive static analysis and automatic code formatting on Python
-source code. It replaces more than a dozen legacy tools—including Flake8, Black, isort,
-pydocstyle, and pyupgrade—with a single Rust-native binary that implements over 800 lint
-rules covering code style, complexity, performance, docstring standards, and potential
-runtime flaws.
+Ruff performs static analysis and automatic code formatting on Python source code.
+It replaces more than a dozen legacy tools with a single Rust binary. Ruff implements
+over 800 lint rules covering style, complexity, performance, docstrings, and runtime
+flaws.
 
 In addition to drop-in formatting compatibility with Black, Ruff organizes import
 statements deterministically and applies safe in-place fixes across codebases in tens of
 milliseconds.
 
-## Why It's in Zenith
+## Why It Is in Zenith
 
 Zenith integrates Ruff with all rule categories and preview rules enabled
 (`select = ["ALL"]`) to establish a zero-drift standard of code excellence. Enabling
@@ -31,9 +30,9 @@ preview rules catches subtle defects early, such as mutable default arguments, u
 file handles, insecure pseudorandom generators, and unparenthesized generator
 expressions.
 
-Because Ruff operates at sub-second speeds even across large multi-module repositories,
-formatting and lint checks run before every commit and during CI without introducing
-developer latency or style debates.
+Ruff operates at sub-second speeds across repositories. Formatting and lint checks run
+before every commit and during CI without introducing developer latency or style
+debates.
 
 ## Configuration in Zenith
 
@@ -57,7 +56,7 @@ print(path.read_text().strip())
   across all files, and allows `flake8-type-checking` to safely move type-only imports
   into `if TYPE_CHECKING:` blocks.
 - **Absolute Imports Mandate**: `ban-relative-imports = "all"` eliminates ambiguous
-  relative imports (`from ..module import func`), ensuring every import path is explicit
+  relative imports (`from ..module import func`). Every import path remains explicit
   and readable.
 - **Docstring Code Formatting**: `docstring-code-format = true` automatically formats
   Python snippets embedded inside docstrings.
