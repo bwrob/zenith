@@ -1,25 +1,27 @@
-"""Unit tests for .agents/skills/inspect-module-setup/scripts/ (audit_repo.py & harvest_skills.py)."""
+"""Unit tests for the inspect-module-setup helper scripts.
 
-import sys
-from pathlib import Path
+Covers ``audit_repo.py`` and ``harvest_skills.py`` pillar detection.
+"""
 
-SCRIPTS_DIR = (
-    Path(__file__).resolve().parent.parent
-    / ".agents"
-    / "skills"
-    / "workflow-inspect-repo"
-    / "scripts"
-)
-sys.path.insert(0, str(SCRIPTS_DIR))
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
 
 import audit_repo
 import harvest_skills
 
+if TYPE_CHECKING:
+    from pathlib import Path
+
+# audit_pillar_4_task_runner reports level 3 when a duties.py task runner exists.
+EXPECTED_DUTIES_RUNNER_LEVEL = 3
+
 
 def test_pillar_2_dependency_pinning_order(tmp_path: Path) -> None:
-    """Bug: >=1.0,<2.0 previously matched gte_count == total before checking upper_count.
-    Root cause: if gte_count == total was evaluated before if upper_count > 0.
-    Fix: evaluate upper_count > 0 and strict_count > 0 before gte_count == total.
+    """Regression: dependency pinning order must check the upper bound first.
+
+    Root cause: ``gte_count == total`` was evaluated before ``upper_count > 0``.
+    Fix: evaluate upper bound and strict pins before ``gte_count == total``.
     """
     pyproject_upper: dict[str, object] = {
         "project": {
@@ -51,7 +53,7 @@ def test_pillar_2_dependency_pinning_order(tmp_path: Path) -> None:
 
 
 def test_config_subdirectory_and_ty_detection(tmp_path: Path) -> None:
-    """Verify detection of config/ruff.toml, config/ty.toml, config/pytest.ini, and duties.py."""
+    """Verify detection of nested config TOML/INI files and duties.py."""
     config_dir = tmp_path / "config"
     config_dir.mkdir()
     (config_dir / "ruff.toml").write_text(
@@ -67,7 +69,7 @@ def test_config_subdirectory_and_ty_detection(tmp_path: Path) -> None:
     assert any("Astral `ty`" in s for s in p3.strengths)
 
     p4 = audit_repo.audit_pillar_4_task_runner(tmp_path, {})
-    assert p4.level == 3
+    assert p4.level == EXPECTED_DUTIES_RUNNER_LEVEL
     assert any("duties.py" in s for s in p4.strengths)
 
     p5 = audit_repo.audit_pillar_5_testing(tmp_path, {})
@@ -76,7 +78,7 @@ def test_config_subdirectory_and_ty_detection(tmp_path: Path) -> None:
 
 
 def test_maturin_python_layout_detection(tmp_path: Path) -> None:
-    """Verify Maturin python/<pkg> and python/tests layout detection in Pillars 1 and 5."""
+    """Verify Maturin ``python/<pkg>`` layout detection in Pillars 1 and 5."""
     (tmp_path / "python" / "my_pkg").mkdir(parents=True)
     (tmp_path / "python" / "tests").mkdir(parents=True)
     (tmp_path / "Cargo.toml").write_text('[package]\nname = "demo"\n', encoding="utf-8")

@@ -1,4 +1,4 @@
-"""Synchronize the zenith-example showcase repository with the instantiated template."""
+"""Synchronize the zenith-example showcase with the instantiated template."""
 
 from __future__ import annotations
 
@@ -6,11 +6,15 @@ import argparse
 import os
 import shutil
 import subprocess
+import sys
 import tempfile
 from pathlib import Path
 from typing import Any
 
 from cookiecutter.main import cookiecutter
+from rich.console import Console
+
+console = Console(highlight=False)
 
 TEMPLATE_ROOT = Path(__file__).resolve().parent.parent
 
@@ -18,7 +22,9 @@ SHOWCASE_CONTEXT: dict[str, Any] = {
     "project_name": "Zenith Example",
     "project_slug": "zenith-example",
     "package_name": "zenith_example",
-    "description": "Demonstration and showcase repository instantiated from the Zenith template.",
+    "description": (
+        "Demonstration and showcase repository instantiated from the Zenith template."
+    ),
     "author_name": "bwrob",
     "author_email": "contact@bwrob.dev",
     "github_username": "bwrob",
@@ -55,12 +61,24 @@ def _copy_rendered_files(rendered_path: Path, target_dir: Path) -> None:
 
 
 def sync_example(target_dir: Path, *, lock: bool = True) -> Path:
-    """Render the Zenith template into target_dir, preserving its .git directory."""
+    """Render the Zenith template into target_dir, preserving its .git directory.
+
+    Args:
+        target_dir: Showcase repository to refresh.
+        lock: Whether to regenerate ``uv.lock`` in the target.
+
+    Returns:
+        The resolved target directory.
+
+    """
     resolved_target = target_dir.resolve()
     resolved_target.mkdir(parents=True, exist_ok=True)
 
     with tempfile.TemporaryDirectory() as tmpdir:
-        print(f"Scaffolding Zenith showcase into temporary staging: {tmpdir}")
+        console.print(
+            f"[bold cyan]Scaffolding Zenith showcase into "
+            f"temporary staging: {tmpdir}[/]"
+        )
         rendered_path = Path(
             cookiecutter(
                 str(TEMPLATE_ROOT),
@@ -70,29 +88,41 @@ def sync_example(target_dir: Path, *, lock: bool = True) -> Path:
             )
         )
 
-        print(f"Synchronizing rendered files to target: {resolved_target}")
+        console.print(
+            f"[bold cyan]Synchronizing rendered files to target: {resolved_target}[/]"
+        )
         _clean_target_dir(resolved_target)
         _copy_rendered_files(rendered_path, resolved_target)
+
+    run_tool = shutil.which("uv")
+    if run_tool is None:
+        sys.exit(1)
 
     sub_env = {k: v for k, v in os.environ.items() if k != "VIRTUAL_ENV"}
 
     if lock:
-        print(f"Generating uv.lock in {resolved_target}...")
-        subprocess.run(["uv", "lock"], cwd=resolved_target, env=sub_env, check=True)
+        console.print(f"[bold cyan]Generating uv.lock in {resolved_target}...[/]")
+        subprocess.run(  # ruff: ignore[subprocess-without-shell-equals-true]
+            [run_tool, "lock"], cwd=resolved_target, env=sub_env, check=True
+        )
 
-    print(f"Formatting rendered files in {resolved_target}...")
-    subprocess.run(
-        ["uv", "run", "poe", "fix"], cwd=resolved_target, env=sub_env, check=True
+    console.print(f"[bold cyan]Formatting rendered files in {resolved_target}...[/]")
+    subprocess.run(  # ruff: ignore[subprocess-without-shell-equals-true]
+        [run_tool, "run", "poe", "fix"], cwd=resolved_target, env=sub_env, check=True
     )
 
-    print(f"Showcase successfully synchronized at: {resolved_target}")
+    console.print(
+        f"[bold green]✅ Showcase successfully synchronized at: {resolved_target}[/]"
+    )
     return resolved_target
 
 
 def main() -> None:
     """Parse arguments and execute template synchronization."""
     parser = argparse.ArgumentParser(
-        description="Sync Zenith template showcase repository with instantiated template."
+        description=(
+            "Sync Zenith template showcase repository with instantiated template."
+        )
     )
     parser.add_argument(
         "target",

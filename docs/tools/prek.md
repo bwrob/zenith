@@ -57,7 +57,7 @@ reliable exit codes.
 
 In Zenith, local hooks in `prek.toml` invoke tools directly using `uv run <tool>`
 (for example, `uv run pyrefly check` or `uv run tach check`) rather than delegating
-to task aliases (`uv run poe check-types`):
+to task aliases (`uv run poe type-check`):
 
 1. **Staged File Argument Passing**: `prek` passes the list of staged filenames
    directly to hook commands. Direct tool invocations receive and process these file

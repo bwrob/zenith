@@ -1,27 +1,44 @@
 """Unit tests for .agents/skills/guide-ste100/scripts/ (ste modular linter package)."""
 
+from __future__ import annotations
+
+import contextlib
 import io
-import sys
-from pathlib import Path
+from typing import TYPE_CHECKING
 
-SCRIPTS_DIR = (
-    Path(__file__).resolve().parent.parent
-    / ".agents"
-    / "skills"
-    / "guide-ste100"
-    / "scripts"
-)
-sys.path.insert(0, str(SCRIPTS_DIR))
-
+import pytest
+from ste import markdown as ste_markdown
 from ste.cli import main, run_selftest
 from ste.directives import Action, Directive, build_suppressions, parse_directive
 from ste.engine import lint_document
 from ste.fixer import fix_line, fix_text
 from ste.inline import mask_inline
-from ste.markdown import _frontmatter, parse, split_table_row
+from ste.markdown import parse, split_table_row
 from ste.model import Block, BlockKind, Finding, Severity, Span, Suppressions
 from ste.reporter import compute_compliance_score, format_json, format_text
-from ste.rules import ALL_RULES, get_rules
+from ste.rules.registry import ALL_RULES, get_rules
+
+if TYPE_CHECKING:
+    from pathlib import Path
+
+# Accessor for the private, module-level frontmatter parser helper.
+frontmatter = vars(ste_markdown)["_frontmatter"]
+
+# Mirrors the Finding fixture in test_finding_properties_and_dict.
+FILE_LINE = 2
+FILE_COLUMN = 4
+# _frontmatter returns index 3 after consuming a closed three-line frontmatter.
+EXPECTED_FRONTMATTER_INDEX = 3
+# The rule registry currently ships 17 rules, 15 of them active by default.
+TOTAL_RULE_COUNT = 17
+EXPECTED_ACTIVE_RULES = 15
+# fix_line("don't utilize this") applies two replacements.
+EXPECTED_FIXER_REPLACEMENTS = 2
+
+PERFECT_SCORE = 100.0
+HARD_PENALTY_SCORE = 85.0
+ADVISORY_PENALTY_SCORE = 95.0
+CLAMPED_SCORE = 0.0
 
 
 def test_span_and_block_locate() -> None:
@@ -64,18 +81,18 @@ def test_finding_properties_and_dict() -> None:
     """Test Finding dataclass methods."""
     f = Finding(
         file="test.md",
-        line=2,
-        column=4,
+        line=FILE_LINE,
+        column=FILE_COLUMN,
         rule="semicolon",
         severity=Severity.HARD,
         match=";",
         message="STE bans the semicolon.",
     )
-    assert f.sort_key == ("test.md", 2, 4, "semicolon")
+    assert f.sort_key == ("test.md", FILE_LINE, FILE_COLUMN, "semicolon")
     d = f.to_dict()
     assert d["file"] == "test.md"
-    assert d["line"] == 2
-    assert d["column"] == 4
+    assert d["line"] == FILE_LINE
+    assert d["column"] == FILE_COLUMN
     assert d["rule"] == "semicolon"
     assert d["severity"] == "hard"
     assert d["match"] == ";"
@@ -190,27 +207,27 @@ def test_markdown_scanner_structures() -> None:
 
 def test_markdown_frontmatter_edge_cases() -> None:
     """Test frontmatter parser with missing boundaries or no description."""
-    assert _frontmatter([]) == (0, [])
-    assert _frontmatter(["# Not frontmatter"]) == (0, [])
-    assert _frontmatter(["---", "name: test"]) == (0, [])  # unclosed
+    assert frontmatter([]) == (0, [])
+    assert frontmatter(["# Not frontmatter"]) == (0, [])
+    assert frontmatter(["---", "name: test"]) == (0, [])  # unclosed
 
     # No description key
-    idx, blocks = _frontmatter(["---", "name: test", "---"])
-    assert idx == 3
+    idx, blocks = frontmatter(["---", "name: test", "---"])
+    assert idx == EXPECTED_FRONTMATTER_INDEX
     assert blocks == []
 
     # Single-line description with quotes
-    idx, blocks = _frontmatter(["---", 'description: "Quoted value"', "---"])
-    assert idx == 3
+    idx, blocks = frontmatter(["---", 'description: "Quoted value"', "---"])
+    assert idx == EXPECTED_FRONTMATTER_INDEX
     assert len(blocks) == 1
     assert "Quoted value" in blocks[0].text
 
 
 def test_all_rules_and_get_rules() -> None:
     """Test rule retrieval and filtering."""
-    assert len(ALL_RULES) == 17
+    assert len(ALL_RULES) == TOTAL_RULE_COUNT
     active = get_rules(disabled=["semicolon", "passive-voice"])
-    assert len(active) == 15
+    assert len(active) == EXPECTED_ACTIVE_RULES
     rule_ids = {r.id for r in active}
     assert "semicolon" not in rule_ids
     assert "passive-voice" not in rule_ids
@@ -335,7 +352,8 @@ def test_extended_rules() -> None:
 def test_unapproved_words_and_bare_nominalization() -> None:
     """Verify unapproved-word rule and bare nominalizations without articles."""
     doc = parse(
-        "We utilize this method and commence testing. We perform verification of the data."
+        "We utilize this method and commence testing. "
+        "We perform verification of the data."
     )
     res = lint_document(doc)
     rules_hit = {f.rule for f in res.findings}
@@ -349,9 +367,9 @@ def test_unapproved_words_and_bare_nominalization() -> None:
     res_phrase = lint_document(doc_phrase)
     assert any(f.rule == "unapproved-phrase" for f in res_phrase.findings)
 
-    # Test new unapproved words and phrases inspired by JAICHANGPARK / menonpg / sourdough-checker
     doc_new = parse(
-        "This operation is hazardous and precludes recovery. The agent is able to proceed."
+        "This operation is hazardous and precludes recovery. "
+        "The agent is able to proceed."
     )
     res_new = lint_document(doc_new)
     rules_new = {f.rule for f in res_new.findings}
@@ -361,11 +379,11 @@ def test_unapproved_words_and_bare_nominalization() -> None:
 
 def test_compute_compliance_score() -> None:
     """Verify compliance scoring calculations and bounds."""
-    # Empty text -> 100.0
-    assert compute_compliance_score([], 0, 0) == 100.0
+    # Empty text -> perfect score
+    assert compute_compliance_score([], 0, 0) == pytest.approx(PERFECT_SCORE)
 
-    # Clean text -> 100.0
-    assert compute_compliance_score([], 100, 0) == 100.0
+    # Clean text -> perfect score
+    assert compute_compliance_score([], 100, 0) == pytest.approx(PERFECT_SCORE)
 
     # Advisory vs hard penalty
     f_hard = Finding(
@@ -387,13 +405,19 @@ def test_compute_compliance_score() -> None:
         message="Advisory",
     )
     # 1 hard in 100 words -> 100 - (15 * 1.0) = 85.0
-    assert compute_compliance_score([f_hard], 100, 1) == 85.0
+    assert compute_compliance_score([f_hard], 100, 1) == pytest.approx(
+        HARD_PENALTY_SCORE
+    )
     # 1 advisory in 100 words -> 100 - (5 * 1.0) = 95.0
-    assert compute_compliance_score([f_adv], 100, 0) == 95.0
+    assert compute_compliance_score([f_adv], 100, 0) == pytest.approx(
+        ADVISORY_PENALTY_SCORE
+    )
 
     # Extreme violations clamp to 0.0
     many_findings = [f_hard] * 10
-    assert compute_compliance_score(many_findings, 50, 10) == 0.0
+    assert compute_compliance_score(many_findings, 50, 10) == pytest.approx(
+        CLAMPED_SCORE
+    )
 
 
 def test_contractions_latin_and_ing_clause() -> None:
@@ -478,7 +502,7 @@ def test_fixer_and_cli_fix(tmp_path: Path) -> None:
     # Line without backticks
     plain_fixed, p_count = fix_line("don't utilize this")
     assert plain_fixed == "do not use this"
-    assert p_count == 2
+    assert p_count == EXPECTED_FIXER_REPLACEMENTS
 
     # CLI --fix on file
     f_path = tmp_path / "fix_me.md"
@@ -489,7 +513,6 @@ def test_fixer_and_cli_fix(tmp_path: Path) -> None:
     # CLI --fix on stdin
     stdin_stream = io.StringIO("In order to proceed.\n")
     stdout_stream = io.StringIO()
-    import contextlib
 
     with contextlib.redirect_stdout(stdout_stream):
         assert main(["--fix"], stdin=stdin_stream) == 0

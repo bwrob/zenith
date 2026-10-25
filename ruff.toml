@@ -1,0 +1,43 @@
+exclude = [".venv", "site", "dist"]
+# The cookiecutter template directory contains literal Jinja (`{{ ... }}`)
+# that ruff cannot parse; it is validated via rendered projects instead.
+extend-exclude = ["*cookiecutter.project_slug*"]
+line-length    = 88
+
+[lint]
+    ignore = [
+        "blank-line-before-class",
+        "incorrect-blank-line-before-class",
+        "missing-copyright-notice",
+        "missing-trailing-comma",
+        "multi-line-summary-second-line",
+    ]
+    preview = true
+    select = ["ALL"]
+
+    [lint.flake8-bugbear]
+        extend-immutable-calls = ["typer.Argument", "typer.Option"]
+
+    [lint.flake8-tidy-imports]
+        ban-relative-imports = "all"
+
+    [lint.flake8-type-checking]
+        exempt-modules = ["typing", "typing_extensions"]
+
+    [lint.isort]
+        combine-as-imports = true
+        required-imports   = ["from __future__ import annotations"]
+
+    [lint.per-file-ignores]
+        # Lifecycle hook scripts: subprocess orchestrates locally installed
+        # tooling on repo-controlled paths.
+        "hooks/*" = ["suspicious-subprocess-import"]
+        # Maintenance scripts: subprocess drives repo-owned tooling on
+        # repo-controlled paths.
+        "scripts/*" = ["suspicious-subprocess-import"]
+        # pytest idioms: assertion-driven tests; subprocess fixtures exercise
+        # locally installed tooling on repo-controlled paths.
+        "tests/*" = ["assert", "suspicious-subprocess-import"]
+
+[format]
+    docstring-code-format = true

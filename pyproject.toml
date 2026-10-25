@@ -13,7 +13,7 @@
         "Topic :: Software Development :: Code Generators",
         "Typing :: Typed",
     ]
-    dependencies = ["cookiecutter>=2.7.0", "pyyaml>=6.0.3"]
+    dependencies = ["cookiecutter>=2.7.0", "pyyaml>=6.0.3", "rich>=15.0.0"]
     description = "Zenith: An opinionated, strict Cookiecutter template for modern Python projects using uv, ruff, pyrefly, complexipy, zensical, rumdl, tach, deptry, and poethepoet."
     name = "zenith"
     readme = "README.md"
@@ -31,11 +31,11 @@
         "poethepoet>=0.42.0",
         "prek>=0.5.5",
         "pyrefly>=1.3.0",
-        "pytest>=8.0.0",
+        "pytest>=9.0.0",
         "pytest-cov>=6.0.0",
         "pytest-xdist>=3.8.0",
         "ruff>=0.17.0",
-        "rumdl>=0.0.8",
+        "rumdl>=0.2.75",
         "taplo>=0.9.3",
         "typos>=1.30.0",
         "zizmor>=1.23.0",
@@ -46,7 +46,7 @@
         "mkdocstrings[python]>=1.0.7",
         "pymdown-extensions>=10.14.0",
         "typst>=0.13.0",
-        "zensical>=0.0.8",
+        "zensical>=0.0.70",
     ]
 
 [tool.uv]
@@ -104,9 +104,23 @@
     zizmor = { cmd = "zizmor --config .zizmor.yml --pedantic --min-severity informational .github/workflows", help = "Audit GitHub Actions workflows for security vulnerabilities with zizmor." }
 
 [tool.pytest.ini_options]
+    addopts = "--verbose -ra --durations=10 -p no:legacypath --doctest-modules --import-mode=importlib --strict-config --strict-markers"
+    filterwarnings = [
+        "error",
+        "ignore::coverage.exceptions.CoverageWarning",
+        "ignore::DeprecationWarning:click.*",
+        "default::EncodingWarning",
+    ]
+    minversion = "9.0"
     norecursedirs = ["{{cookiecutter.project_slug}}", ".*", "build", "dist"]
-    pythonpath    = ["."]
-    testpaths     = ["tests"]
-
-[tool.ruff]
-    extend-exclude = ["*cookiecutter.project_slug*"]
+    pythonpath = [
+        ".",
+        ".agents/skills/sdd-spec/scripts",
+        ".agents/skills/sdd-review/scripts",
+        ".agents/skills/sdd/scripts",
+        ".agents/skills/guide-ste100/scripts",
+        ".agents/skills/workflow-inspect-repo/scripts",
+    ]
+    strict = true
+    testpaths = ["tests"]
+    xfail_strict = true

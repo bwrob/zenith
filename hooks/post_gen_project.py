@@ -1,12 +1,18 @@
+"""Post-generation hook: prune conditional files and wire agent tooling."""
+
+from __future__ import annotations
+
+import contextlib
 import json
 import os
+import pathlib
 import re
 import shutil
 import subprocess
 
 import yaml
 
-PROJECT_DIR = os.path.realpath(os.path.curdir)
+PROJECT_DIR = pathlib.Path.cwd().resolve()
 
 CONFIG_FILES_WITH_HEADERS = [
     "pyproject.toml",
@@ -25,21 +31,33 @@ CONFIG_FILES_WITH_HEADERS = [
     ".prettierrc.yaml",
     ".editorconfig",
     ".zizmor.yml",
-    os.path.join(".codex", "config.toml"),
+    ".codex/config.toml",
     ".aider.conf.yml",
     "cosmic-ray.toml",
 ]
 
 
 def remove_file(*filepath_parts: str) -> None:
-    path = os.path.join(PROJECT_DIR, *filepath_parts)
-    if os.path.isfile(path) or os.path.islink(path):
-        os.remove(path)
+    """Remove a file or symbolic link within the generated project directory.
+
+    Args:
+        *filepath_parts: Path segments relative to the project root.
+
+    """
+    path = PROJECT_DIR.joinpath(*filepath_parts)
+    if path.is_file() or path.is_symlink():
+        path.unlink()
 
 
 def remove_dir(*dirpath_parts: str) -> None:
-    path = os.path.join(PROJECT_DIR, *dirpath_parts)
-    if os.path.isdir(path):
+    """Recursively remove a directory within the generated project directory.
+
+    Args:
+        *dirpath_parts: Path segments relative to the project root.
+
+    """
+    path = PROJECT_DIR.joinpath(*dirpath_parts)
+    if path.is_dir():
         shutil.rmtree(path)
 
 
@@ -47,121 +65,75 @@ def strip_config_headers() -> None:
     """Strip explanatory template comments from generated configuration files."""
     pattern = re.compile(r"^# =+[^\n]*\n(?:#[^\n]*\n)*# =+[^\n]*\n+")
     for filename in CONFIG_FILES_WITH_HEADERS:
-        filepath = os.path.join(PROJECT_DIR, filename)
-        if not os.path.isfile(filepath):
+        filepath = PROJECT_DIR / filename
+        if not filepath.is_file():
             continue
-        with open(filepath, "r", encoding="utf-8") as f:
-            content = f.read()
+        content = filepath.read_text(encoding="utf-8")
         new_content = pattern.sub("", content)
         if new_content != content:
-            with open(filepath, "w", encoding="utf-8") as f:
-                f.write(new_content)
+            filepath.write_text(new_content, encoding="utf-8")
 
 
 def to_bool(val: object) -> bool:
+    """Interpret a cookiecutter value as a boolean literal.
+
+    Args:
+        val: Raw cookiecutter templating value.
+
+    Returns:
+        The boolean interpretation of ``val``.
+
+    """
     if isinstance(val, bool):
         return val
-    return str(val).lower() in ("true", "yes", "1", "t", "y", "on")
+    return str(val).lower() in {"true", "yes", "1", "t", "y", "on"}
 
 
-def _setup_instruction_aliases(agents_path: str) -> None:
+def _setup_instruction_aliases(agents_path: pathlib.Path) -> None:
     for alias_name in ("CLAUDE.md", ".cursorrules", ".windsurfrules"):
-        alias_path = os.path.join(PROJECT_DIR, alias_name)
-        if os.path.isfile(agents_path) and not os.path.lexists(alias_path):
+        alias_path = PROJECT_DIR / alias_name
+        if agents_path.is_file() and not os.path.lexists(alias_path):
             try:
-                os.symlink("AGENTS.md", alias_path)
+                alias_path.symlink_to("AGENTS.md")
             except (OSError, NotImplementedError):
                 shutil.copyfile(agents_path, alias_path)
 
 
 def _setup_cursor_rules() -> None:
-    cursor_rules_dir = os.path.join(PROJECT_DIR, ".cursor", "rules")
-    os.makedirs(cursor_rules_dir, exist_ok=True)
-    cursor_rule_file = os.path.join(cursor_rules_dir, "zenith.mdc")
-    if not os.path.isfile(cursor_rule_file):
-        with open(cursor_rule_file, "w", encoding="utf-8") as f:
-            f.write(
-                "---\n"
-                "description: Authoritative project conventions, typing standards, and workflows\n"
-                'globs: ["*"]\n'
-                "alwaysApply: true\n"
-                "---\n\n"
-                "# Project Guidelines\n\n"
-                "Consult [AGENTS.md](../../AGENTS.md) for authoritative operational guidelines, architectural conventions, and development workflows.\n"
-            )
+    cursor_rules_dir = PROJECT_DIR / ".cursor" / "rules"
+    cursor_rules_dir.mkdir(exist_ok=True, parents=True)
+    cursor_rule_file = cursor_rules_dir / "zenith.mdc"
+    if not cursor_rule_file.is_file():
+        cursor_rule_file.write_text(
+            "---\n"
+            "description: Authoritative project conventions, typing standards, "
+            "and workflows\n"
+            'globs: ["*"]\n'
+            "alwaysApply: true\n"
+            "---\n\n"
+            "# Project Guidelines\n\n"
+            "Consult [AGENTS.md](../../AGENTS.md) for authoritative operational "
+            "guidelines, architectural conventions, and development workflows.\n",
+            encoding="utf-8",
+        )
 
 
-def _setup_gemini_settings() -> None:
-    gemini_dir = os.path.join(PROJECT_DIR, ".gemini")
-    os.makedirs(gemini_dir, exist_ok=True)
-    gemini_settings = os.path.join(gemini_dir, "settings.json")
-    if not os.path.isfile(gemini_settings):
-        with open(gemini_settings, "w", encoding="utf-8") as f:
-            f.write('{\n    "contextFileName": "AGENTS.md"\n}\n')
-
-
-def _setup_claude_settings() -> None:
-    claude_dir = os.path.join(PROJECT_DIR, ".claude")
-    os.makedirs(claude_dir, exist_ok=True)
-    claude_settings = os.path.join(claude_dir, "settings.json")
-    if not os.path.isfile(claude_settings):
-        with open(claude_settings, "w", encoding="utf-8") as f:
-            f.write(
-                "{\n"
-                '    "permissions": {\n'
-                '        "allow": [\n'
-                '            "Bash(uv run poe:*)",\n'
-                '            "Bash(uv run pytest:*)",\n'
-                '            "Bash(uv run ruff:*)",\n'
-                '            "Bash(uv run pyrefly:*)",\n'
-                '            "Bash(uv run complexipy:*)",\n'
-                '            "Bash(uv run tach:*)",\n'
-                '            "Bash(uv run rumdl:*)",\n'
-                '            "Bash(uv run typos:*)",\n'
-                '            "Bash(uv run taplo:*)",\n'
-                '            "Bash(uv run zizmor:*)",\n'
-                '            "Bash(uv run prek:*)"\n'
-                "        ],\n"
-                '        "deny": [\n'
-                '            "Bash(rm -rf /*)",\n'
-                '            "Bash(git push --force:*)"\n'
-                "        ]\n"
-                "    }\n"
-                "}\n"
-            )
-
-
-def _setup_codex_config() -> None:
-    codex_dir = os.path.join(PROJECT_DIR, ".codex")
-    os.makedirs(codex_dir, exist_ok=True)
-    codex_config = os.path.join(codex_dir, "config.toml")
-    if not os.path.isfile(codex_config):
-        with open(codex_config, "w", encoding="utf-8") as f:
-            f.write(
-                'approval_policy                = "on-request"\n'
-                'project_doc_fallback_filenames = [ "AGENTS.md", "CLAUDE.md" ]\n'
-                'sandbox_mode                   = "workspace-write"\n'
-            )
-
-
-def _link_subagents_to_dir(tool_dir: str, subagents_src: str) -> None:
-    os.makedirs(tool_dir, exist_ok=True)
-    for agent_filename in sorted(os.listdir(subagents_src)):
-        if not agent_filename.endswith(".md"):
+def _link_subagents_to_dir(tool_dir: pathlib.Path, subagents_src: pathlib.Path) -> None:
+    tool_dir.mkdir(exist_ok=True, parents=True)
+    for agent_path in sorted(subagents_src.iterdir()):
+        if not agent_path.name.endswith(".md"):
             continue
-        src_agent_file = os.path.join(subagents_src, agent_filename)
-        target_agent_file = os.path.join(tool_dir, agent_filename)
-        if not os.path.lexists(target_agent_file):
-            rel_src = os.path.relpath(src_agent_file, tool_dir)
+        target_agent_path = tool_dir / agent_path.name
+        if not os.path.lexists(target_agent_path):
+            rel_src = os.path.relpath(agent_path, tool_dir)
             try:
-                os.symlink(rel_src, target_agent_file)
+                target_agent_path.symlink_to(rel_src)
             except (OSError, NotImplementedError):
-                shutil.copyfile(src_agent_file, target_agent_file)
+                shutil.copyfile(agent_path, target_agent_path)
 
 
-def _codex_subagent_definition(agent_path: str) -> tuple[str, str, str]:
-    with open(agent_path, "r", encoding="utf-8") as agent_file:
-        content = agent_file.read()
+def _codex_subagent_definition(agent_path: pathlib.Path) -> tuple[str, str, str]:
+    content = agent_path.read_text(encoding="utf-8")
 
     frontmatter_match = re.match(
         r"\A---\r?\n(?P<metadata>.*?)\r?\n---\r?\n(?P<instructions>.*)\Z",
@@ -169,70 +141,68 @@ def _codex_subagent_definition(agent_path: str) -> tuple[str, str, str]:
         re.DOTALL,
     )
     if frontmatter_match is None:
-        raise ValueError(f"Subagent file is missing YAML front matter: {agent_path}")
+        msg = f"Subagent file is missing YAML front matter: {agent_path}"
+        raise ValueError(msg)
 
     metadata: object = yaml.safe_load(frontmatter_match.group("metadata"))
     if not isinstance(metadata, dict):
-        raise TypeError(f"Subagent front matter must be a mapping: {agent_path}")
+        msg = f"Subagent front matter must be a mapping: {agent_path}"
+        raise TypeError(msg)
 
     name: object = metadata.get("name")
     description: object = metadata.get("description")
     instructions = frontmatter_match.group("instructions").strip()
     if not isinstance(name, str) or not isinstance(description, str):
-        raise TypeError(f"Subagent name and description must be strings: {agent_path}")
+        msg = f"Subagent name and description must be strings: {agent_path}"
+        raise TypeError(msg)
     if not instructions:
-        raise ValueError(f"Subagent metadata is incomplete: {agent_path}")
+        msg = f"Subagent metadata is incomplete: {agent_path}"
+        raise ValueError(msg)
 
     return name, description, instructions
 
 
-def _setup_codex_subagents(subagents_src: str) -> None:
-    codex_agents_dir = os.path.join(PROJECT_DIR, ".codex", "agents")
-    os.makedirs(codex_agents_dir, exist_ok=True)
+def _setup_codex_subagents(subagents_src: pathlib.Path) -> None:
+    codex_agents_dir = PROJECT_DIR / ".codex" / "agents"
+    codex_agents_dir.mkdir(exist_ok=True, parents=True)
 
-    for agent_filename in sorted(os.listdir(subagents_src)):
-        if not agent_filename.endswith(".md"):
+    for agent_path in sorted(subagents_src.iterdir()):
+        if not agent_path.name.endswith(".md"):
             continue
 
-        agent_path = os.path.join(subagents_src, agent_filename)
         agent_name, description, instructions = _codex_subagent_definition(agent_path)
-        codex_agent_path = os.path.join(
-            codex_agents_dir,
-            f"{os.path.splitext(agent_filename)[0]}.toml",
-        )
+        codex_agent_path = codex_agents_dir / f"{agent_path.stem}.toml"
         if os.path.lexists(codex_agent_path):
             continue
 
-        with open(codex_agent_path, "w", encoding="utf-8") as codex_agent_file:
-            codex_agent_file.write(
-                f"name = {json.dumps(agent_name, ensure_ascii=False)}\n"
-                f"description = {json.dumps(description, ensure_ascii=False)}\n"
-                "developer_instructions = "
-                f"{json.dumps(instructions, ensure_ascii=False)}\n"
-            )
+        codex_agent_path.write_text(
+            f"name = {json.dumps(agent_name, ensure_ascii=False)}\n"
+            f"description = {json.dumps(description, ensure_ascii=False)}\n"
+            "developer_instructions = "
+            f"{json.dumps(instructions, ensure_ascii=False)}\n",
+            encoding="utf-8",
+        )
 
 
-def _setup_subagents(subagents_src: str) -> None:
-    if not os.path.isdir(subagents_src):
+def _setup_subagents(subagents_src: pathlib.Path) -> None:
+    if not subagents_src.is_dir():
         return
     for tool_name in (".claude", ".gemini", ".cursor"):
-        tool_dir = os.path.join(PROJECT_DIR, tool_name, "agents")
+        tool_dir = PROJECT_DIR / tool_name / "agents"
         _link_subagents_to_dir(tool_dir, subagents_src)
     _setup_codex_subagents(subagents_src)
 
 
 def setup_agent_instructions() -> None:
-    """Ensure agent instruction symlinks and configuration directories exist for all AI tools."""
-    agents_path = os.path.join(PROJECT_DIR, "AGENTS.md")
+    """Ensure agent instruction links and tool config directories exist."""
+    agents_path = PROJECT_DIR / "AGENTS.md"
     _setup_instruction_aliases(agents_path)
     _setup_cursor_rules()
-    _setup_gemini_settings()
-    _setup_claude_settings()
-    _setup_codex_config()
-    _setup_subagents(os.path.join(PROJECT_DIR, ".agents", "subagents"))
+    _setup_subagents(PROJECT_DIR / ".agents" / "subagents")
 
 
 def main() -> None:
+    """Generate the final project: prune branches, wire agents, format, install prek."""
     include_cli = to_bool("{{ cookiecutter.include_cli }}")
     include_ci_testing = to_bool("{{ cookiecutter.include_ci_testing }}")
     include_ci_publishing = to_bool("{{ cookiecutter.include_ci_publishing }}")
@@ -278,15 +248,13 @@ def format_toml_files() -> None:
     """Format generated TOML files with Taplo if available in PATH."""
     taplo_bin = shutil.which("taplo")
     if taplo_bin:
-        try:
-            subprocess.run(
+        with contextlib.suppress(OSError, subprocess.SubprocessError):
+            subprocess.run(  # ruff: ignore[subprocess-without-shell-equals-true]
                 [taplo_bin, "format"],
                 cwd=PROJECT_DIR,
                 check=False,
                 capture_output=True,
             )
-        except (OSError, subprocess.SubprocessError):
-            pass
 
 
 def init_prek() -> None:
@@ -294,10 +262,9 @@ def init_prek() -> None:
     git_bin = shutil.which("git")
     if not git_bin:
         return
-    git_dir = os.path.join(PROJECT_DIR, ".git")
-    if not os.path.isdir(git_dir):
+    if not (PROJECT_DIR / ".git").is_dir():
         try:
-            subprocess.run(
+            subprocess.run(  # ruff: ignore[subprocess-without-shell-equals-true]
                 [git_bin, "init"],
                 cwd=PROJECT_DIR,
                 check=False,
@@ -315,15 +282,13 @@ def init_prek() -> None:
         cmd = [uv_bin, "run", "prek", "install"]
 
     if cmd:
-        try:
-            subprocess.run(
+        with contextlib.suppress(OSError, subprocess.SubprocessError):
+            subprocess.run(  # ruff: ignore[subprocess-without-shell-equals-true]
                 cmd,
                 cwd=PROJECT_DIR,
                 check=False,
                 capture_output=True,
             )
-        except (OSError, subprocess.SubprocessError):
-            pass
 
 
 if __name__ == "__main__":

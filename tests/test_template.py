@@ -1,33 +1,54 @@
 """Tests for the Zenith template."""
 
+from __future__ import annotations
+
+import os
 import re
 import shutil
 import subprocess
+import sys
 import tempfile
 import tomllib
+from datetime import UTC, datetime
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import pytest
 from cookiecutter.exceptions import FailedHookException
 from cookiecutter.main import cookiecutter
 
+if TYPE_CHECKING:
+    from collections.abc import Iterator
+
+
 TEMPLATE_ROOT = Path(__file__).resolve().parent.parent
 
 
 @pytest.fixture
-def temp_output_dir():
-    """Create a temporary directory for cookiecutter output."""
+def temp_output_dir() -> Iterator[Path]:
+    """Create a temporary directory for cookiecutter output.
+
+    Yields:
+        Path: Temporary directory receiving rendered projects.
+
+    """
     with tempfile.TemporaryDirectory() as tmpdir:
         yield Path(tmpdir)
 
 
-def test_default_generation(temp_output_dir: Path) -> None:
-    """Test generating a project with default configuration."""
-    project_dir = Path(
+@pytest.fixture(scope="module")
+def rendered_demo_app(tmp_path_factory: pytest.TempPathFactory) -> Path:
+    """Render the default demo project once for focused assertions.
+
+    Returns:
+        Path: Root directory of the rendered demo project.
+
+    """
+    return Path(
         cookiecutter(
             str(TEMPLATE_ROOT),
             no_input=True,
-            output_dir=str(temp_output_dir),
+            output_dir=str(tmp_path_factory.mktemp("demo_app")),
             extra_context={
                 "project_name": "Demo App",
                 "python_version": "3.13",
@@ -36,6 +57,10 @@ def test_default_generation(temp_output_dir: Path) -> None:
         )
     )
 
+
+def test_default_generation_config_inventory(rendered_demo_app: Path) -> None:
+    """Verify all default-generation configuration files materialize."""
+    project_dir = rendered_demo_app
     assert project_dir.exists()
     assert (project_dir / "pyproject.toml").exists()
     assert (project_dir / "poe_tasks.toml").exists()
@@ -80,6 +105,11 @@ def test_default_generation(temp_output_dir: Path) -> None:
     assert (project_dir / ".cursor" / "rules" / "zenith.mdc").exists()
     assert (project_dir / ".github" / "copilot-instructions.md").exists()
     assert (project_dir / ".github" / "codecov.yml").exists()
+
+
+def test_default_generation_agent_skills(rendered_demo_app: Path) -> None:
+    """Verify bundled agent skills and their setup instructions."""
+    project_dir = rendered_demo_app
     for skill in [
         "workflow-adr",
         "workflow-changelog",
@@ -117,13 +147,19 @@ def test_default_generation(temp_output_dir: Path) -> None:
     ).read_text()
     assert "disable-model-invocation: true" in setup_skill_text
     assert "fail_under = 100" in (project_dir / ".coveragerc").read_text()
+
+
+def test_default_generation_poe_tasks_core(rendered_demo_app: Path) -> None:
+    """Verify core Poe task definitions in poe_tasks.toml."""
+    project_dir = rendered_demo_app
     poe_text = (project_dir / "poe_tasks.toml").read_text()
     assert "[tasks.zizmor]" in poe_text
     assert '"zizmor"' in poe_text
-    assert (
-        "zizmor --config .zizmor.yml --pedantic --min-severity informational .github/workflows"
-        in poe_text
+    zizmor_cmd = (
+        "zizmor --config .zizmor.yml --pedantic "
+        "--min-severity informational .github/workflows"
     )
+    assert zizmor_cmd in poe_text
     assert "[tasks.format-toml]" in poe_text
     assert "[tasks.format-check-toml]" in poe_text
     assert "[tasks.format-yaml]" in poe_text
@@ -136,6 +172,11 @@ def test_default_generation(temp_output_dir: Path) -> None:
     assert "[tasks.sdd-verify]" in poe_text
     assert "[tasks.sdd-archive]" in poe_text
     assert "[tasks.sdd-revert]" in poe_text
+
+
+def test_default_generation_skill_assets(rendered_demo_app: Path) -> None:
+    """Verify skill references, templates, and helper scripts exist."""
+    project_dir = rendered_demo_app
     for ref in [
         "hypothesis.md",
         "pytest-cov.md",
@@ -236,6 +277,11 @@ def test_default_generation(temp_output_dir: Path) -> None:
     assert (
         project_dir / ".agents" / "skills" / "sdd" / "scripts" / "revert_task.py"
     ).exists()
+
+
+def test_default_generation_subagents(rendered_demo_app: Path) -> None:
+    """Verify agent subagents mirror the template across tool configs."""
+    project_dir = rendered_demo_app
     for subagent in [
         "sdd-specifier.md",
         "sdd-planner.md",
@@ -270,6 +316,11 @@ def test_default_generation(temp_output_dir: Path) -> None:
         assert delimiter
         assert generated_codex_config["developer_instructions"] == instructions.strip()
         assert not (project_dir / ".codex" / "agents" / subagent).exists()
+
+
+def test_default_generation_project_layout(rendered_demo_app: Path) -> None:
+    """Verify skill lint assets and the rendered project layout."""
+    project_dir = rendered_demo_app
     assert (
         project_dir / ".agents" / "skills" / "guide-ste100" / "scripts" / "ste-lint.py"
     ).exists()
@@ -293,8 +344,11 @@ def test_default_generation(temp_output_dir: Path) -> None:
     assert (project_dir / "src" / "demo_app" / "__main__.py").exists()
     init_text = (project_dir / "src" / "demo_app" / "__init__.py").read_text()
     assert "_lazy" in init_text
-    assert "_LAZY_MEMBERS" in init_text
-    assert "accessors(globals(), _LAZY_MEMBERS)" in init_text
+    assert "lazy_getattr" in init_text
+    assert (
+        'lazy_getattr(globals(), {"app": ".cli", "get_greeting": ".core"})' in init_text
+    )
+    assert "lazy_dir(globals())" in init_text
     assert (
         project_dir
         / "src"
@@ -321,6 +375,11 @@ def test_default_generation(temp_output_dir: Path) -> None:
     assert (project_dir / "docs" / "assets" / "python-logo.svg").exists()
     assert (project_dir / "docs" / "assets" / "python-logo.typ").exists()
     assert (project_dir / "scripts" / "verify_wheel.py").exists()
+
+
+def test_default_generation_workflows_and_dependabot(rendered_demo_app: Path) -> None:
+    """Verify GitHub workflows, dependabot, and issue templates."""
+    project_dir = rendered_demo_app
     assert (project_dir / ".github" / "workflows" / "python_tests.yaml").exists()
     assert (project_dir / ".github" / "workflows" / "guard-dependencies.yaml").exists()
     assert (
@@ -359,6 +418,10 @@ def test_default_generation(temp_output_dir: Path) -> None:
     assert (project_dir / ".github" / "ISSUE_TEMPLATE" / "feature_request.yml").exists()
     assert (project_dir / ".github" / "ISSUE_TEMPLATE" / "config.yml").exists()
 
+
+def test_default_generation_poe_task_surface(rendered_demo_app: Path) -> None:
+    """Verify the full Poe task surface and CI workflow snippet."""
+    project_dir = rendered_demo_app
     # Verify precommit task removed and format-check added
     poe_text = (project_dir / "poe_tasks.toml").read_text()
     assert "tasks.precommit" not in poe_text
@@ -401,6 +464,10 @@ def test_default_generation(temp_output_dir: Path) -> None:
     assert "codecov/codecov-action@v7" in python_tests_yaml
     assert "griffe check" in python_tests_yaml
 
+
+def test_default_generation_pyproject_surface(rendered_demo_app: Path) -> None:
+    """Verify pyproject.toml metadata, dependencies, and groups."""
+    project_dir = rendered_demo_app
     # Verify markdown-exec, mutation group, and Python 3.15 in pyproject.toml
     pyproject_text = (project_dir / "pyproject.toml").read_text()
     assert re.search(r'license\s*=\s*"MIT"', pyproject_text) is not None
@@ -427,6 +494,7 @@ def test_default_generation(temp_output_dir: Path) -> None:
     assert "zizmor" in pyproject_text
     assert "rich>=" in pyproject_text
     assert "typer>=" in pyproject_text
+    assert 'dependencies = ["rich>=15.0.0", "typer>=0.16.0"]' in pyproject_text
     assert 'demo-app = "demo_app.__main__:main"' in pyproject_text
     assert "default-groups = [" in pyproject_text
     assert "test = [" in pyproject_text
@@ -435,6 +503,10 @@ def test_default_generation(temp_output_dir: Path) -> None:
     assert "mkdocstrings[python]" in pyproject_text
     assert "source-include = [" in pyproject_text
 
+
+def test_default_generation_zensical_plugins(rendered_demo_app: Path) -> None:
+    """Verify zensical plugin and validation configuration."""
+    project_dir = rendered_demo_app
     # Verify markdown-exec fences and mkdocstrings plugin in zensical.toml
     zensical_text = (project_dir / "zensical.toml").read_text()
     assert "markdown_exec.validator" in zensical_text
@@ -526,11 +598,21 @@ def test_default_generation(temp_output_dir: Path) -> None:
     assert "stylesheets/custom.css" in zensical_text
     assert "stylesheets/termynal.css" in zensical_text
     assert "javascripts/termynal.js" in zensical_text
+
+
+def test_default_generation_zensical_navigation(rendered_demo_app: Path) -> None:
+    """Verify zensical styles, scripts, and navigation entries."""
+    project_dir = rendered_demo_app
+    zensical_text = (project_dir / "zensical.toml").read_text()
     assert "javascripts/mathjax.js" in zensical_text
     assert '{ name = "tree"' in zensical_text
     assert "navigation.indexes" in zensical_text
     assert '"adr/index.md"' in zensical_text
 
+
+def test_default_generation_policy_files(rendered_demo_app: Path) -> None:
+    """Verify agents, coverage, pytest.ini, pyrefly, and ruff policies."""
+    project_dir = rendered_demo_app
     agents_text = (project_dir / "AGENTS.md").read_text()
     assert "## Project Stewardship" in agents_text
     assert "never double backticks" in agents_text
@@ -570,6 +652,10 @@ def test_default_generation(temp_output_dir: Path) -> None:
     assert "required-imports" in ruff_toml_text
     assert "future-annotations = true" in ruff_toml_text
 
+
+def test_default_generation_docs_reference(rendered_demo_app: Path) -> None:
+    """Verify docs reference pages, zensical commands, and workflows."""
+    project_dir = rendered_demo_app
     # Verify docs reference and mermaid diagrams
     ref_text = (project_dir / "docs" / "reference.md").read_text()
     assert "::: demo_app.core" in ref_text
@@ -587,6 +673,7 @@ def test_default_generation(temp_output_dir: Path) -> None:
     assert "stateDiagram-v2" in getting_started_text
 
     # Verify zensical commands
+    poe_text = (project_dir / "poe_tasks.toml").read_text()
     assert 'cmd  = "zensical serve"' in poe_text
     assert "zensical build --strict" in poe_text
     docs_yaml_text = (project_dir / ".github" / "workflows" / "docs.yaml").read_text()
@@ -600,6 +687,10 @@ def test_default_generation(temp_output_dir: Path) -> None:
     assert "actions/attest-build-provenance@v4" in publish_yaml_text
     assert "attestations: true" in publish_yaml_text
 
+
+def test_default_generation_ci_and_tools(rendered_demo_app: Path) -> None:
+    """Verify CI workflow split, prek typos, and Tach setup."""
+    project_dir = rendered_demo_app
     # Verify python aliases in rumdl.toml
     rumdl_text = (project_dir / "rumdl.toml").read_text()
     assert '"py"' in rumdl_text
@@ -653,7 +744,11 @@ def test_default_generation(temp_output_dir: Path) -> None:
     assert 'path       = "demo_app.__main__"' in tach_text
     assert "ignore_type_checking_imports = true" in tach_text
 
-    # Verify hardened pytest.ini, ruff ban-relative-imports, coveragerc overload, and AI policy
+
+def test_default_generation_hardened_configs(rendered_demo_app: Path) -> None:
+    """Verify hardened pytest, ruff, coverage, and AI policy files."""
+    project_dir = rendered_demo_app
+    # Verify hardened pytest.ini, ruff import bans, coveragerc, and AI policy
     pytest_text = (project_dir / "pytest.ini").read_text()
     assert "--import-mode=importlib" in pytest_text
     assert "--strict-config" in pytest_text
@@ -664,7 +759,10 @@ def test_default_generation(temp_output_dir: Path) -> None:
     ruff_text = (project_dir / "ruff.toml").read_text()
     assert 'ban-relative-imports = "all"' in ruff_text
     assert "keep-runtime-typing = true" in ruff_text
-    assert "non-empty-init-module" in ruff_text
+    assert '"tests/**/*" = ["assert"]' in ruff_text
+    assert '"scripts/*" = ["suspicious-subprocess-import"]' in ruff_text
+    assert '"COM",' not in ruff_text
+    assert '"too-many-branches",' not in ruff_text
 
     coverage_text = (project_dir / ".coveragerc").read_text()
     assert "@overload" in coverage_text
@@ -678,6 +776,10 @@ def test_default_generation(temp_output_dir: Path) -> None:
     ).read_text()
     assert "AI Assistance Disclosure" in pr_template_text
 
+
+def test_default_generation_readme_and_agents(rendered_demo_app: Path) -> None:
+    """Verify README and AGENTS.md content and AI tool configs."""
+    project_dir = rendered_demo_app
     # Verify Elevator Pitch present in generated README and repo README
     readme_text = (project_dir / "README.md").read_text()
     assert "Elevator Pitch" in readme_text
@@ -701,11 +803,9 @@ def test_default_generation(temp_output_dir: Path) -> None:
     assert (project_dir / ".cursorrules").read_text() == agents_text
     assert (project_dir / ".windsurfrules").read_text() == agents_text
     if (project_dir / "CLAUDE.md").is_symlink():  # pragma: no branch
-        import os
-
-        assert os.readlink(project_dir / "CLAUDE.md") == "AGENTS.md"
-        assert os.readlink(project_dir / ".cursorrules") == "AGENTS.md"
-        assert os.readlink(project_dir / ".windsurfrules") == "AGENTS.md"
+        assert (project_dir / "CLAUDE.md").readlink() == Path("AGENTS.md")
+        assert (project_dir / ".cursorrules").readlink() == Path("AGENTS.md")
+        assert (project_dir / ".windsurfrules").readlink() == Path("AGENTS.md")
 
     # Verify AI tool configuration files
     assert "uv run poe:*" in (project_dir / ".claude" / "settings.json").read_text()
@@ -746,7 +846,7 @@ def test_rendered_docs_pass_strict_build(temp_output_dir: Path) -> None:
 
     zensical = shutil.which("zensical")
     assert zensical is not None
-    build = subprocess.run(
+    build = subprocess.run(  # ruff: ignore[subprocess-without-shell-equals-true]
         [zensical, "build", "--clean", "--strict"],
         capture_output=True,
         check=False,
@@ -757,7 +857,7 @@ def test_rendered_docs_pass_strict_build(temp_output_dir: Path) -> None:
 
     rumdl = shutil.which("rumdl")
     assert rumdl is not None
-    markdown_check = subprocess.run(
+    markdown_check = subprocess.run(  # ruff: ignore[subprocess-without-shell-equals-true]
         [rumdl, "check", "docs/adr/index.md"],
         capture_output=True,
         check=False,
@@ -832,11 +932,9 @@ def test_no_cli_generation(temp_output_dir: Path) -> None:
     assert "termy" not in (project_dir / "docs" / "index.md").read_text()
 
     pyproject_text = (project_dir / "pyproject.toml").read_text()
-    assert (
-        "dependencies = [  ]" in pyproject_text or "dependencies = []" in pyproject_text
-    )
+    # rich is unconditional; typer ships only when the CLI layer is included.
+    assert 'dependencies = ["rich>=15.0.0"]' in pyproject_text
     assert "typer" not in pyproject_text
-    assert "rich" not in pyproject_text
 
     tach_text = (project_dir / "tach.toml").read_text()
     assert '"cli"' not in tach_text
@@ -920,7 +1018,7 @@ def test_no_ci_publishing(temp_output_dir: Path) -> None:
 
 
 def test_no_github_actions(temp_output_dir: Path) -> None:
-    """Test generating a project without GitHub actions (legacy flag or both disabled)."""
+    """Test generating a project without GitHub actions (legacy or both off)."""
     project_dir = Path(
         cookiecutter(
             str(TEMPLATE_ROOT),
@@ -988,8 +1086,6 @@ def test_package_name_keyword_validation(temp_output_dir: Path) -> None:
 
 def test_native_booleans_and_dynamic_year(temp_output_dir: Path) -> None:
     """Test native boolean variables and dynamic year injection."""
-    from datetime import UTC, datetime
-
     current_year = str(datetime.now(UTC).year)
     project_dir = Path(
         cookiecutter(
@@ -1015,7 +1111,7 @@ def test_native_booleans_and_dynamic_year(temp_output_dir: Path) -> None:
 
 
 def test_slugify_special_characters(temp_output_dir: Path) -> None:
-    """Test robust slugification of special characters and punctuation in project_name."""
+    """Test slugification of special characters and punctuation."""
     project_dir = Path(
         cookiecutter(
             str(TEMPLATE_ROOT),
@@ -1034,11 +1130,7 @@ def test_slugify_special_characters(temp_output_dir: Path) -> None:
 
 
 def test_verify_wheel_execution(temp_output_dir: Path) -> None:
-    """Test that scripts/verify_wheel.py builds and verifies the wheel in an isolated venv."""
-    import os
-    import subprocess
-    import sys
-
+    """Test verify_wheel.py builds the wheel in an isolated venv."""
     project_dir = Path(
         cookiecutter(
             str(TEMPLATE_ROOT),
@@ -1058,7 +1150,7 @@ def test_verify_wheel_execution(temp_output_dir: Path) -> None:
     subprocess_env.pop("COVERAGE_FILE", None)
 
     # Execute verify_wheel.py directly inside the generated project
-    result = subprocess.run(
+    result = subprocess.run(  # ruff: ignore[subprocess-without-shell-equals-true]
         [sys.executable, str(verify_script)],
         cwd=str(project_dir),
         env=subprocess_env,
@@ -1073,7 +1165,7 @@ def test_verify_wheel_execution(temp_output_dir: Path) -> None:
     assert "Wheel verification successful" in result.stdout
 
     # Execute verify_wheel.py with --run-tests to verify test suite against distribution
-    result_tests = subprocess.run(
+    result_tests = subprocess.run(  # ruff: ignore[subprocess-without-shell-equals-true]
         [sys.executable, str(verify_script), "--run-tests"],
         cwd=str(project_dir),
         env=subprocess_env,
@@ -1083,16 +1175,14 @@ def test_verify_wheel_execution(temp_output_dir: Path) -> None:
         check=False,
     )
     assert result_tests.returncode == 0, (
-        f"verify_wheel.py --run-tests failed:\nSTDOUT:\n{result_tests.stdout}\nSTDERR:\n{result_tests.stderr}"
+        f"verify_wheel.py --run-tests failed:\n"
+        f"STDOUT:\n{result_tests.stdout}\nSTDERR:\n{result_tests.stderr}"
     )
     assert "Distribution test suite passed successfully" in result_tests.stdout
 
 
 def test_lazy_load_behavior(temp_output_dir: Path) -> None:
     """Test that PEP 562 lazy loading prevents eager submodule imports."""
-    import subprocess
-    import sys
-
     project_dir = Path(
         cookiecutter(
             str(TEMPLATE_ROOT),
@@ -1137,7 +1227,7 @@ except AttributeError:
 else:
     raise AssertionError("AttributeError not raised for missing member")
 """
-    result = subprocess.run(
+    result = subprocess.run(  # ruff: ignore[subprocess-without-shell-equals-true]
         [sys.executable, "-c", verify_code],
         cwd=str(project_dir),
         capture_output=True,
@@ -1151,10 +1241,7 @@ else:
 
 
 def test_generated_toml_formatting_with_taplo(temp_output_dir: Path) -> None:
-    """Test that all generated TOML files (including cosmic-ray.toml) strictly adhere to Taplo formatting."""
-    import shutil
-    import subprocess
-
+    """Test that every generated TOML file adheres to Taplo formatting."""
     project_dir = Path(
         cookiecutter(
             str(TEMPLATE_ROOT),
@@ -1172,7 +1259,7 @@ def test_generated_toml_formatting_with_taplo(temp_output_dir: Path) -> None:
         "taplo executable must be available in dev environment"
     )
 
-    result = subprocess.run(
+    result = subprocess.run(  # ruff: ignore[subprocess-without-shell-equals-true]
         [taplo_bin, "format", "--check"],
         cwd=str(project_dir),
         capture_output=True,
@@ -1181,5 +1268,6 @@ def test_generated_toml_formatting_with_taplo(temp_output_dir: Path) -> None:
         check=False,
     )
     assert result.returncode == 0, (
-        f"Taplo format check failed on generated files:\nSTDOUT:\n{result.stdout}\nSTDERR:\n{result.stderr}"
+        f"Taplo format check failed on generated files:\n"
+        f"STDOUT:\n{result.stdout}\nSTDERR:\n{result.stderr}"
     )

@@ -51,8 +51,8 @@ Before presenting work for human review, the workflow checks:
 
 1. **AI Policy Compliance**: Confirms zero dead code, zero suppressed type diagnostics
    without rationale, and honest disclosure of any AI assistance per `AI_POLICY.md`.
-2. **Architectural Invariants**: Runs `uv run poe tach` to verify that module boundaries
-   are strictly respected and circular dependencies have not been introduced.
+2. **Architectural Invariants**: Runs `uv run poe dependencies` to verify module
+   boundaries are strictly respected and circular dependencies have not been introduced.
 3. **Type Precision**: Validates that Meta Pyrefly reports zero type errors and that
    models leverage PEP 695 type parameter syntax and structural protocols.
 4. **Coverage Invariants**: Asserts that 100% branch and statement coverage is intact.

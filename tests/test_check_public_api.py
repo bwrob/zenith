@@ -2,23 +2,17 @@
 
 from __future__ import annotations
 
-import sys
-from pathlib import Path
+from typing import TYPE_CHECKING
 from unittest.mock import MagicMock, patch
-
-SCRIPTS_DIR = (
-    Path(__file__).resolve().parent.parent
-    / ".agents"
-    / "skills"
-    / "sdd-review"
-    / "scripts"
-)
-sys.path.insert(0, str(SCRIPTS_DIR))
 
 import check_public_api
 
+if TYPE_CHECKING:
+    from pathlib import Path
+
 
 def test_detect_package_name_from_src(tmp_path: Path) -> None:
+    """Test detect package name from src."""
     src_dir = tmp_path / "src"
     pkg_dir = src_dir / "my_pkg"
     pkg_dir.mkdir(parents=True)
@@ -28,6 +22,7 @@ def test_detect_package_name_from_src(tmp_path: Path) -> None:
 
 
 def test_detect_package_name_from_pyproject(tmp_path: Path) -> None:
+    """Test detect package name from pyproject."""
     pyproject = tmp_path / "pyproject.toml"
     pyproject.write_text('[project]\nname = "demo-lib"\n', encoding="utf-8")
 
@@ -35,22 +30,26 @@ def test_detect_package_name_from_pyproject(tmp_path: Path) -> None:
 
 
 def test_detect_package_name_none(tmp_path: Path) -> None:
+    """Test detect package name none."""
     assert check_public_api.detect_package_name(tmp_path) is None
 
 
 def test_get_default_base_ref_success() -> None:
+    """Test get default base ref success."""
     with patch("subprocess.run") as mock_run:
         mock_run.return_value = MagicMock(returncode=0)
         assert check_public_api.get_default_base_ref() == "origin/main"
 
 
 def test_get_default_base_ref_fallback() -> None:
+    """Test get default base ref fallback."""
     with patch("subprocess.run") as mock_run:
         mock_run.return_value = MagicMock(returncode=1)
         assert check_public_api.get_default_base_ref() == "HEAD"
 
 
 def test_run_griffe_check_file_not_found() -> None:
+    """Test run griffe check file not found."""
     with patch("subprocess.run", side_effect=FileNotFoundError):
         ok, breaking = check_public_api.run_griffe_check("pkg", "main")
         assert not ok
@@ -58,6 +57,7 @@ def test_run_griffe_check_file_not_found() -> None:
 
 
 def test_run_griffe_check_not_installed() -> None:
+    """Test run griffe check not installed."""
     with patch("subprocess.run") as mock_run:
         mock_run.return_value = MagicMock(
             returncode=127, stdout="", stderr="command not found"
@@ -68,6 +68,7 @@ def test_run_griffe_check_not_installed() -> None:
 
 
 def test_run_griffe_check_breaking_changes() -> None:
+    """Test run griffe check breaking changes."""
     with patch("subprocess.run") as mock_run:
         mock_run.return_value = MagicMock(
             returncode=1,
@@ -80,6 +81,7 @@ def test_run_griffe_check_breaking_changes() -> None:
 
 
 def test_run_griffe_check_success() -> None:
+    """Test run griffe check success."""
     with patch("subprocess.run") as mock_run:
         mock_run.return_value = MagicMock(returncode=0, stdout="", stderr="")
         ok, breaking = check_public_api.run_griffe_check("pkg", "main")
@@ -88,16 +90,19 @@ def test_run_griffe_check_success() -> None:
 
 
 def test_extract_public_symbols_syntax_error() -> None:
+    """Test extract public symbols syntax error."""
     assert check_public_api.extract_public_symbols_from_ast("def invalid(") == []
 
 
 def test_extract_public_symbols_explicit_all() -> None:
+    """Test extract public symbols explicit all."""
     code = '__all__ = ["Alpha", "Beta"]\nGamma = 1\n'
     symbols = check_public_api.extract_public_symbols_from_ast(code)
     assert symbols == ["Alpha", "Beta"]
 
 
 def test_extract_public_symbols_fallback() -> None:
+    """Test extract public symbols fallback."""
     code = (
         "class PublicClass:\n"
         "    pass\n"
@@ -115,6 +120,7 @@ def test_extract_public_symbols_fallback() -> None:
 
 
 def test_get_package_public_symbols(tmp_path: Path) -> None:
+    """Test get package public symbols."""
     pkg_dir = tmp_path / "pkg"
     pkg_dir.mkdir()
     (pkg_dir / "__init__.py").write_text('__all__ = ["InitSymbol"]\n', encoding="utf-8")
@@ -123,6 +129,7 @@ def test_get_package_public_symbols(tmp_path: Path) -> None:
 
 
 def test_get_package_public_symbols_fallback_modules(tmp_path: Path) -> None:
+    """Test get package public symbols fallback modules."""
     pkg_dir = tmp_path / "pkg"
     pkg_dir.mkdir()
     (pkg_dir / "mod.py").write_text("def module_func(): pass\n", encoding="utf-8")
@@ -132,6 +139,7 @@ def test_get_package_public_symbols_fallback_modules(tmp_path: Path) -> None:
 
 
 def test_get_git_file_content() -> None:
+    """Test get git file content."""
     with patch("subprocess.run") as mock_run:
         mock_run.return_value = MagicMock(returncode=0, stdout="content")
         assert check_public_api.get_git_file_content("main", "file.py") == "content"
@@ -141,6 +149,7 @@ def test_get_git_file_content() -> None:
 
 
 def test_get_base_public_symbols_from_init() -> None:
+    """Test get base public symbols from init."""
     with patch("check_public_api.get_git_file_content") as mock_get:
         mock_get.return_value = '__all__ = ["BaseSymbol"]\n'
         symbols = check_public_api.get_base_public_symbols("main", "pkg")
@@ -148,6 +157,7 @@ def test_get_base_public_symbols_from_init() -> None:
 
 
 def test_get_base_public_symbols_from_tree() -> None:
+    """Test get base public symbols from tree."""
     with (
         patch("check_public_api.get_git_file_content") as mock_get,
         patch("subprocess.run") as mock_run,
@@ -159,6 +169,7 @@ def test_get_base_public_symbols_from_tree() -> None:
 
 
 def test_get_base_public_symbols_ls_tree_failed() -> None:
+    """Test get base public symbols ls tree failed."""
     with (
         patch("check_public_api.get_git_file_content", return_value=None),
         patch("subprocess.run") as mock_run,
@@ -168,6 +179,7 @@ def test_get_base_public_symbols_ls_tree_failed() -> None:
 
 
 def test_extract_planned_symbols(tmp_path: Path) -> None:
+    """Test extract planned symbols."""
     assert check_public_api.extract_planned_symbols(tmp_path / "nonexistent.md") == []
 
     plan_file = tmp_path / "plan.md"
@@ -199,6 +211,7 @@ def test_extract_planned_symbols(tmp_path: Path) -> None:
 
 
 def test_analyze_public_api(tmp_path: Path) -> None:
+    """Test analyze public api."""
     src_dir = tmp_path / "src" / "demo"
     src_dir.mkdir(parents=True)
     (src_dir / "__init__.py").write_text(
@@ -225,6 +238,7 @@ def test_analyze_public_api(tmp_path: Path) -> None:
 
 
 def test_format_report_and_main(tmp_path: Path) -> None:
+    """Test format report and main."""
     res = check_public_api.ApiDiffResult(
         package_name="demo",
         base_ref="origin/main",
@@ -252,13 +266,15 @@ def test_format_report_and_main(tmp_path: Path) -> None:
         assert out_file.exists()
 
 
-def test_main_package_not_detected(tmp_path: Path) -> None:
+def test_main_package_not_detected() -> None:
+    """Test main package not detected."""
     with patch("check_public_api.detect_package_name", return_value=None):
         exit_code = check_public_api.main(["--package", ""])
         assert exit_code == 1
 
 
 def test_main_clean_exit() -> None:
+    """Test main clean exit."""
     res = check_public_api.ApiDiffResult(
         package_name="demo",
         base_ref="main",
