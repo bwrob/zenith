@@ -132,9 +132,16 @@ def test_agent_instruction_configs_exist(full_project: Path) -> None:
     assert (full_project / "AI_POLICY.md").exists()
     assert (full_project / ".cursorrules").exists()
     assert (full_project / ".windsurfrules").exists()
+    assert (full_project / "HERMES.md").exists()
     assert (full_project / ".claude" / "settings.json").exists()
     assert (full_project / "opencode.json").exists()
     assert (full_project / ".codex" / "config.toml").exists()
+    assert (full_project / ".devin" / "config.json").exists()
+    assert (full_project / ".zed" / "settings.json").exists()
+    assert (full_project / ".zed" / "tasks.json").exists()
+    assert (full_project / ".pi" / "settings.json").exists()
+    assert (full_project / ".pi" / "APPEND_SYSTEM.md").exists()
+    assert (full_project / ".omp" / "SYSTEM.md").exists()
     assert (full_project / ".aider.conf.yml").exists()
     assert (full_project / ".cursor" / "rules" / "zenith.mdc").exists()
     assert (full_project / ".github" / "copilot-instructions.md").exists()
@@ -970,13 +977,23 @@ def test_readme_and_agent_symlinks(full_project: Path) -> None:
     assert (full_project / "CLAUDE.md").read_text() == agents_text
     assert (full_project / ".cursorrules").read_text() == agents_text
     assert (full_project / ".windsurfrules").read_text() == agents_text
+    assert (full_project / "HERMES.md").read_text() == agents_text
     if (full_project / "CLAUDE.md").is_symlink():  # pragma: no branch
         assert (full_project / "CLAUDE.md").readlink() == Path("AGENTS.md")
         assert (full_project / ".cursorrules").readlink() == Path("AGENTS.md")
         assert (full_project / ".windsurfrules").readlink() == Path("AGENTS.md")
+        assert (full_project / "HERMES.md").readlink() == Path("AGENTS.md")
+        assert (full_project / ".pi" / "APPEND_SYSTEM.md").readlink() == Path(
+            "../AGENTS.md"
+        )
+        assert (full_project / ".omp" / "SYSTEM.md").readlink() == Path("../AGENTS.md")
 
     assert "uv run poe:*" in (full_project / ".claude" / "settings.json").read_text()
     assert "uv run poe *" in (full_project / "opencode.json").read_text()
+    assert "uv run poe:*" in (full_project / ".devin" / "config.json").read_text()
+    assert "uv" in (full_project / ".zed" / "settings.json").read_text()
+    assert "uv run poe test" in (full_project / ".zed" / "tasks.json").read_text()
+    assert "bash" in (full_project / ".pi" / "settings.json").read_text()
     assert "workspace-write" in (full_project / ".codex" / "config.toml").read_text()
     assert "AGENTS.md" in (full_project / ".aider.conf.yml").read_text()
     copilot_text = (full_project / ".github" / "copilot-instructions.md").read_text()

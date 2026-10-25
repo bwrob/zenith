@@ -90,13 +90,35 @@ def to_bool(val: object) -> bool:
 
 
 def _setup_instruction_aliases(agents_path: pathlib.Path) -> None:
-    for alias_name in ("CLAUDE.md", ".cursorrules", ".windsurfrules"):
+    for alias_name in ("CLAUDE.md", ".cursorrules", ".windsurfrules", "HERMES.md"):
         alias_path = PROJECT_DIR / alias_name
         if agents_path.is_file() and not os.path.lexists(alias_path):
             try:
                 alias_path.symlink_to("AGENTS.md")
             except (OSError, NotImplementedError):
                 shutil.copyfile(agents_path, alias_path)
+
+
+def _setup_pi_instructions() -> None:
+    pi_dir = PROJECT_DIR / ".pi"
+    pi_dir.mkdir(exist_ok=True, parents=True)
+    append_system = pi_dir / "APPEND_SYSTEM.md"
+    if not os.path.lexists(append_system):
+        try:
+            append_system.symlink_to("../AGENTS.md")
+        except (OSError, NotImplementedError):
+            shutil.copyfile(PROJECT_DIR / "AGENTS.md", append_system)
+
+
+def _setup_omp_instructions() -> None:
+    omp_dir = PROJECT_DIR / ".omp"
+    omp_dir.mkdir(exist_ok=True, parents=True)
+    system_file = omp_dir / "SYSTEM.md"
+    if not os.path.lexists(system_file):
+        try:
+            system_file.symlink_to("../AGENTS.md")
+        except (OSError, NotImplementedError):
+            shutil.copyfile(PROJECT_DIR / "AGENTS.md", system_file)
 
 
 def _setup_cursor_rules() -> None:
@@ -198,6 +220,8 @@ def setup_agent_instructions() -> None:
     agents_path = PROJECT_DIR / "AGENTS.md"
     _setup_instruction_aliases(agents_path)
     _setup_cursor_rules()
+    _setup_pi_instructions()
+    _setup_omp_instructions()
     _setup_subagents(PROJECT_DIR / ".agents" / "subagents")
 
 

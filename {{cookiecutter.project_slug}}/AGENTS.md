@@ -91,6 +91,13 @@ Before editing code or running tasks, ensure a clean, isolated environment:
     `test-cmd` to Poe tasks).
   - **OpenCode**: `opencode.json` (pre-approving hermetic `uv run poe *` commands)
     and `.opencode/agents/*.md` (project subagents).
+  - **Devin**: `.devin/config.json` (pre-authorizing hermetic `uv run poe:*` commands)
+    and native `AGENTS.md` ingestion.
+  - **Zed**: `.zed/settings.json` (configuring Ruff formatting on save) and
+    `.zed/tasks.json` (wiring one-key task execution for Poe tasks).
+  - **Pi & Oh My Pi**: `.pi/settings.json`, `.pi/APPEND_SYSTEM.md`, and
+    `.omp/SYSTEM.md` symlinks injecting project instructions.
+  - **Hermes Agent**: `HERMES.md` symlink (`ln -s AGENTS.md HERMES.md`).
 - **Scope Hierarchy**: When exploring subdirectories, check for nested `AGENTS.md` or
   `CLAUDE.md` files; localized instructions take precedence within their scope.
 - **Workflow & Tool Guidance**: Consult `.agents/skills/` for lifecycle workflow skills
