@@ -1,6 +1,6 @@
 ---
 diataxis: explanation
-purpose: Define the 5-prefix skill taxonomy, progressive disclosure discovery model, and agent skill architecture.
+purpose: Define the 5-prefix skill taxonomy, progressive disclosure discovery model, and agentic tool compatibility matrix.
 ---
 
 # Agent Skills Architecture
@@ -17,6 +17,81 @@ agent capabilities into **modular, prefixed Agent Skills** located in `.agents/s
 > can safely ignore `.agents/skills/` (or delete the folder). The core Python package,
 > test runner, virtual environment, and CI/CD pipelines function completely
 > independently.
+
+## Agentic Tool Compatibility Matrix
+
+Zenith projects operate with modern autonomous coding agents, terminal
+assistants, and AI-native IDEs out of the box. During project scaffolding,
+lifecycle hooks automatically generate tool-specific configuration profiles,
+subagent definitions, permission policies, and context symlinks.
+
+The table below audits popular AI coding tools, their scaffolded configuration
+assets, their support level in Zenith, and their current verification status:
+
+| Tool                   | Category                   | Scaffolded Configuration Files                                          | Supported  | Tested      | Integration Highlights                                                                                                          |
+| :--------------------- | :------------------------- | :---------------------------------------------------------------------- | :--------: | :---------: | :------------------------------------------------------------------------------------------------------------------------------ |
+| **Google Antigravity** | Autonomous IDE & CLI Agent | `.gemini/settings.json`<br/>`.gemini/agents/*.md`<br/>`AGENTS.md`       | ✅ Yes     | ✅ Yes      | Explicitly tested; native `AGENTS.md` context discovery, subagent symlinks, hermetic task execution.                            |
+| **OpenAI Codex CLI**   | Autonomous Terminal Agent  | `.codex/config.toml`<br/>`.codex/agents/*.toml`<br/>`AGENTS.md`         | ✅ Yes     | ✅ Yes      | Explicitly tested; auto-fallback doc discovery, `workspace-write` sandbox, native TOML subagent definitions.                    |
+| **Claude Code**        | Autonomous Terminal Agent  | `CLAUDE.md`<br/>`.claude/settings.json`<br/>`.claude/agents/*.md`       | ✅ Yes     | ⏳ Untested | `CLAUDE.md` root symlink, pre-approved hermetic task permissions (`uv run poe:*`), dangerous command denies, subagent symlinks. |
+| **Google Gemini CLI**  | Autonomous Terminal Agent  | `.gemini/settings.json`<br/>`.gemini/agents/*.md`<br/>`AGENTS.md`       | ✅ Yes     | ⏳ Untested | Auto-configured `contextFileName: "AGENTS.md"`, subagent symlinks, modular skill discovery.                                     |
+| **Cursor**             | AI-Native IDE              | `.cursorrules`<br/>`.cursor/rules/zenith.mdc`<br/>`.cursor/agents/*.md` | ✅ Yes     | ⏳ Untested | Root `.cursorrules` symlink, always-on `.cursor/rules/zenith.mdc` (`globs: ["*"]`), subagent symlinks.                          |
+| **Windsurf**           | AI-Native IDE              | `.windsurfrules`<br/>`AGENTS.md`                                        | ✅ Yes     | ⏳ Untested | Root `.windsurfrules` symlink resolving directly to canonical `AGENTS.md`.                                                      |
+| **Aider**              | Terminal Pair Programmer   | `.aider.conf.yml`<br/>`AGENTS.md`                                       | ✅ Yes     | ⏳ Untested | Auto-reads `AGENTS.md`, pre-wires `lint-cmd` (`uv run poe fix`) and `test-cmd` (`uv run poe test`).                             |
+| **GitHub Copilot**     | IDE Extension & CLI        | `.github/copilot-instructions.md`<br/>`AGENTS.md`                       | ✅ Yes     | ⏳ Untested | Canonical workspace instruction pointer directing Copilot chat and completions to `AGENTS.md`.                                  |
+| **Cline**              | Autonomous IDE Extension   | `AGENTS.md` (manual instruction)                                        | ⚠️ Partial | ⏳ Untested | Discovers `AGENTS.md` through user prompts; dedicated `.clinerules` profile not currently scaffolded.                           |
+| **Roo Code**           | Autonomous IDE Extension   | `AGENTS.md` (manual instruction)                                        | ⚠️ Partial | ⏳ Untested | Discovers `AGENTS.md` through custom modes; dedicated `.roomodes` profile not currently scaffolded.                             |
+| **Continue.dev**       | Open-Source IDE Extension  | `AGENTS.md` (manual context)                                            | ⚠️ Partial | ⏳ Untested | Discovers `AGENTS.md` via manual context attachment; dedicated `.continue/` profile not currently scaffolded.                   |
+| **Amazon Q Developer** | IDE Assistant & CLI        | `AGENTS.md` (manual context)                                            | ⚠️ Partial | ⏳ Untested | Discovers `AGENTS.md` via workspace scanning; dedicated configuration profile not currently scaffolded.                         |
+| **OpenCode**           | Autonomous Terminal & TUI  | `AGENTS.md` (manual instruction)                                        | ⚠️ Partial | ⏳ Untested | Discovers `AGENTS.md` via terminal context; splits workflows between Plan and Build agent modes.                                |
+| **Pi**                 | Autonomous Terminal Agent  | `AGENTS.md` (manual instruction)                                        | ⚠️ Partial | ⏳ Untested | Minimalist terminal runner using Bash; discovers `AGENTS.md` and executes hermetic Poe tasks.                                   |
+| **Oh My Pi**           | Autonomous Terminal Agent  | `AGENTS.md` (manual instruction)                                        | ⚠️ Partial | ⏳ Untested | Extended Pi fork with LSP and DAP; executes hermetic Poe tasks in parallel worktrees with hashline edits.                       |
+| **Hermes Agent**       | Autonomous Skill Engine    | `AGENTS.md` (manual instruction)                                        | ⚠️ Partial | ⏳ Untested | Self-improving agent framework; discovers `AGENTS.md` and repository skills via shell toolsets.                                 |
+
+> [!NOTE]
+> **Status Explanations**:
+>
+> - **Supported**: The Zenith project generator (`hooks/post_gen_project.py` and
+>   template assets) automatically scaffolds dedicated configuration files, permission
+>   rules, subagent definitions, or instruction symlinks.
+> - **Partial**: The tool functions with Zenith through manual or generic context
+>   discovery (such as referencing `AGENTS.md`), but Zenith does not scaffold a
+>   dedicated, tool-specific configuration file out of the box.
+> - **Tested**: The tool has been explicitly tested and verified in interactive
+>   development sessions by project maintainers.
+> - **Untested**: Configuration files and integration hooks are generated and verified
+>   by template unit tests, but live end-to-end interactive developer sessions have not
+>   yet been formally conducted.
+
+### Audit Summary & Verified Workflows
+
+Zenith maintains first-class support for autonomous coding agents by enforcing three
+architectural invariants across all supported tools:
+
+1. **Deterministic Single Source of Truth**: Every tool resolves instructions back to
+   the canonical `AGENTS.md` at the repository root, either natively or via symbolic
+   links (`CLAUDE.md`, `.cursorrules`, `.windsurfrules`, `.cursor/rules/zenith.mdc`,
+   `.github/copilot-instructions.md`).
+2. **Subagent Specialization**: Where supported (Claude Code, Google Gemini CLI,
+   Antigravity, Cursor, OpenAI Codex), Zenith links or compiles specialized subagent
+   personas (`sdd-specifier`, `sdd-planner`, `sdd-implementer`, `sdd-reviewer`) from
+   `.agents/subagents/`.
+3. **Hermetic Task Sandboxing**: Tools operate within isolated environment boundaries
+   using `uv run poe <task>`, preventing dependency pollution and ensuring identical
+   execution between local agents, developers, and CI pipelines.
+
+#### Explicitly Tested Tools
+
+- **Google Antigravity**:
+  - Validated with Antigravity IDE and `agy` CLI environments.
+  - Verifies auto-discovery of `AGENTS.md` via `.gemini/settings.json`.
+  - Subagents in `.gemini/agents/` execute Spec-Driven Development tasks with full tool
+    calling, hermetic testing, and quality verification gates.
+- **OpenAI Codex CLI**:
+  - Validated with the OpenAI Codex CLI runner.
+  - Verifies project instruction loading through
+    `project_doc_fallback_filenames = ["AGENTS.md", "CLAUDE.md"]`.
+  - Verifies `workspace-write` sandbox confinement and `on-request` approval policies.
+  - Verifies native `.codex/agents/*.toml` subagent declarations.
 
 ## Skill Taxonomy
 

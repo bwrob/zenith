@@ -176,7 +176,9 @@ flowchart LR
 Every Zenith project maintains a canonical `AGENTS.md` in the repository root. This file
 establishes operational boundaries, bug-scoping workflows, and zero-drift conventions,
 symlinked for universal tool compatibility (`CLAUDE.md`, `.cursorrules`,
-`.windsurfrules`).
+`.windsurfrules`). For a complete breakdown of supported configurations and live-testing
+status across popular tools, consult the
+[Agentic Tool Compatibility Matrix](skills/index.md#agentic-tool-compatibility-matrix).
 
 ### Modular Agent Skills
 
