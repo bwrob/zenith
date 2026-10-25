@@ -5,7 +5,7 @@ description: >-
   workflows and how to verify downstream CI test status.
   Triggers: zenith-example, sync-example, showcase, showcase status, downstream tests, test status.
 name: workflow-example-sync
-version: 1.0.0
+version: 1.1.0
 ---
 
 # Zenith Showcase Synchronization & Status Monitoring (`workflow-example-sync`)
@@ -170,6 +170,15 @@ Common root causes:
 - **TOML formatting failure**: A newly introduced or modified `.toml` file does not match `.taplo.toml` formatting.
 - **Markdown or syntax issue**: Documentation contains malformed links, unescaped MathJax equations, or unrendered code blocks.
 - **Lockfile mismatch**: `uv.lock` in the showcase repository requires dependency resynchronization.
+- **Windows-only symlink mismatch**: Local verification passes on macOS or Linux,
+  but Windows `sync_skills` runs fail. Cause: `os.path.relpath` emits
+  backslash separators on Windows. Symlink verification then compares
+  backslash paths against POSIX-style expected targets and mismatches.
+  Remedy: normalize with `Path(os.path.relpath(...)).as_posix()` before
+  storing or comparing link targets (fixed in `scripts/sync_skills.py`).
+  Treat "local green" as insufficient evidence for Windows. Verify the
+  Windows job in the sync workflow before declaring a cross-platform
+  synthesis complete.
 
 ### Step 2: Reproduce Locally
 

@@ -55,6 +55,59 @@ Before editing code or executing tasks, ensure an isolated, clean working enviro
 - **AI Contribution Policy**: Consult and adhere to `AI_POLICY.md` for human review,
   local verification, and tool disclosure guidelines.
 
+## Subagent Orchestration & Work-Sharing Policy
+
+When work is decomposed across subagents (background or foreground), follow
+these rules so that parallel work neither collides nor leaves orphaned
+changes:
+
+1. **Disjoint File Partitioning**: Assign each subagent an explicit, mutually
+   exclusive set of file paths. Two agents must never write the same file in
+   the same session. Shared "read any, write only yours" discipline: agents
+   may read the whole repository, but write only partitioned paths.
+2. **Canonical-Path Editing Behind Symlinks**: Root `.agents/skills/*`
+   entries are symlinks into the git-tracked template directories
+   (for example, `{{cookiecutter.project_slug}}/.agents/skills/tool-ruff/SKILL.md`).
+   Instruct agents to edit the canonical template path, never the symlink
+   target through the root link, and never to rewrite symlinked files in
+   place (`Edit` through a symlink resolves to the target; writes to
+   anything besides the canonical path are considered a policy violation).
+   Run `uv run poe sync-skills-check` after skill edits.
+3. **Per-Agent Context Package**: Do not hand each subagent only a one-line
+   mission. Give every agent a package with:
+   - the exact file list it may modify,
+   - current tool state (config file paths, relevant ignore lists versions,
+     failing-check counts),
+   - the verification command set it must NOT run (or must run) locally,
+   - the required format of its final report (files touched, decisions,
+     open questions).
+4. **Partial-Work Audit on Cancellation**: When a task is cancelled mid-run
+   (by the user, supervisor, or failure), immediately audit the working tree
+   with `git status` and `git diff --stat` for partial edits left by the
+   cancelled agent. Either complete the work deliberately, or revert the
+   half-done files with consent; never assume scattered partial changes are
+   self-consistent.
+5. **No Interdependent Edits in One Batch**: Do not dispatch multiple agents
+   whose edits depend on each other's output within a single parallel batch.
+   Sequence dependent edits (or perform them in one agent) so review is
+   linearized.
+
+## Strict-Lint Compliance Box
+
+The repository enforces a fully strict ruff preset (`select = ["ALL"]`) with
+these invariants:
+
+- A bare `# noqa` comment (with or without codes) anywhere in tracked Python
+  is forbidden. Use `# ruff: ignore[full-rule-name]` with a rationale
+  comment. Details live in the `tool-ruff` skill, including the line-1
+  placement rule for module-level diagnostics.
+- Every pylint-style directive references a Ruff rulename, never a letter
+  digit code.
+- Generated projects must also be linted with their own config from inside
+  the rendered directory: `uv run poe lint-rendered`.
+- Root and template lint ignore lists must stay in exact lockstep;
+  `tests/test_repo_conventions.py` fails on drift.
+
 ## Project Instructions Discovery & Compatibility
 
 - **Multi-Agent Discovery & Settings**: Instruction files and configuration profiles are

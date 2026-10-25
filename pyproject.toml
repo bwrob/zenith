@@ -93,6 +93,7 @@
     format-yaml = { cmd = "prek run prettier --all-files", help = "Format YAML configuration files with Prettier via prek." }
     lint = { cmd = "ruff check", help = "Lint codebase with Ruff." }
     lint-md = { cmd = "rumdl check --config rumdl.toml", help = "Lint Markdown files with rumdl." }
+    lint-rendered = { cmd = "python scripts/audit_rendered.py", help = "Render template variants and lints each rendered project with Ruff in place." }
     lint-ste = { cmd = "python .agents/skills/guide-ste100/scripts/ste-lint.py .agents/skills", help = "Lint agent skills against ASD-STE100 structural rules." }
     sync-example = { cmd = "python scripts/sync_example.py", help = "Render and sync showcase repository (zenith-example)." }
     sync-skills = { cmd = "python scripts/sync_skills.py", help = "Synchronize repo skills as symlinks from template source of truth." }

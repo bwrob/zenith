@@ -60,6 +60,11 @@ Before editing code or running tasks, ensure a clean, isolated environment:
   from first principles rather than piling on patches.
 - **AI Contribution Policy**: All contributions must adhere to `AI_POLICY.md`
   for human review, local test verification, and tool disclosure.
+- **Inline Lint Suppression**: `# noqa` comments are forbidden. Where a rule
+  genuinely conflicts with required code, use the Ruff ignore directive
+  `# ruff: ignore[full-rule-name]` with a rationale comment (see the
+  `tool-ruff` skill, including the line-1 placement rule for module-level
+  diagnostics).
 
 ## Project Instructions Discovery & Compatibility
 
