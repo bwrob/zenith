@@ -77,9 +77,8 @@ foundational pillars:
 
     ---
 
-    Built for autonomous pair-programming with Antigravity, Codex, Claude Code, Gemini
-    CLI, Cursor, and more. Audited in the
-    [Agentic Tool Matrix](skills/index.md#agentic-tool-compatibility-matrix), with
+    Built for autonomous pair-programming with modern AI coding assistants. Audited in
+    the [Agentic Tool Matrix](skills/index.md#agentic-tool-compatibility-matrix), with
     canonical `AGENTS.md` context, modular skills in
     [`.agents/skills/`](skills/index.md), transparent review standards, and automated
     `llms.txt`.

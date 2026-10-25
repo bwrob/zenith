@@ -150,8 +150,7 @@ Strictness provides the safety; sub-second performance provides the velocity.
 
 ## AI-Ready Architecture
 
-Autonomous AI coding agents (Claude Code, Google Gemini CLI, Antigravity, OpenAI Codex,
-Cursor, Windsurf, Aider) now write and refactor substantial portions of production
+Autonomous AI coding agents now write and refactor substantial portions of production
 codebases.
 
 However, unsupervised AI agents easily produce degraded code:
@@ -175,9 +174,9 @@ flowchart LR
 
 Every Zenith project maintains a canonical `AGENTS.md` in the repository root. This file
 establishes operational boundaries, bug-scoping workflows, and zero-drift conventions,
-symlinked for universal tool compatibility (`CLAUDE.md`, `.cursorrules`,
-`.windsurfrules`). For a complete breakdown of supported configurations and live-testing
-status across popular tools, consult the
+symlinked for universal tool compatibility across editor and CLI environments. For a
+complete breakdown of supported configurations and live-testing status across AI coding
+tools, consult the
 [Agentic Tool Compatibility Matrix](skills/index.md#agentic-tool-compatibility-matrix).
 
 ### Modular Agent Skills
