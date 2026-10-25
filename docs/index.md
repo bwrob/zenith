@@ -13,6 +13,17 @@ purpose: Introduce Zenith, showcase the four architectural pillars, and guide de
   An opinionated template for modern Python 3.12+ services, packages, and autonomous AI agents.
 </p>
 
+> [!NOTE]
+> **What Zenith Is**: Zenith is a production-grade [Cookiecutter](tools/cookiecutter.md)
+> project template for Python 3.12+. Rather than a runtime library you import, it
+> scaffolds a complete, pre-configured repository with sub-second developer tooling and
+> autonomous AI agent workflows—so you can write production code from commit zero
+> without tooling debt.
+>
+> **Human-First, AI-Accelerated**: Zenith works identically as a pure human-driven
+> developer workflow. AI agent skills are optional companions that operate within the
+> exact same mechanical guardrails.
+
 ## Quick Start
 
 > [!TIP]

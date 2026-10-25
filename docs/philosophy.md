@@ -35,6 +35,29 @@ non-negotiable, engineering velocity actually increases:
   untyped objects, convoluted logic, circular dependencies, or fragile workarounds
   because the quality gate rejects non-compliant code immediately.
 
+### The Business ROI: Defending Rigor to Engineering Leadership
+
+When engineering leaders (CTOs, VPs of Engineering) evaluate strict template standards,
+they inevitably weigh the upfront investment against delivery velocity. Here is how
+Zenith's guardrails deliver concrete business return:
+
+1. **Shift-Left Mean Time to Detect (MTTD)**: Catching a bug in a local 2-second test
+   run costs orders of magnitude less in engineering hours and customer trust than
+   triaging a regression in staging or production.
+2. **Radically Faster Pull Request Turnaround**: By automating formatting, import
+   hygiene, type completeness, and boundary verification, code review turnaround drops
+   from days to hours. Reviewers spend zero cognitive energy pointing out style
+   inconsistencies, focusing 100% on domain logic and architectural contracts.
+3. **Safe AI Acceleration**: Autonomous AI coding assistants can generate 40%+ of
+   project boilerplate without degrading repository standards. Mechanical gates
+   guarantee that hallucinated imports, unverified logic, and loose types are rejected
+   before human review.
+4. **The Short-Term Tax vs. The Compounding Dividend**: During the first one or two
+   sprints, developers adapting to strict type checking and 100% coverage may notice a
+   minor upfront investment while learning mocking and typing patterns. By month two,
+   this pays a compounding dividend: teams spend their time delivering features rather
+   than debugging legacy regressions.
+
 ### The Guardrail Stack
 
 <div class="grid cards" markdown>
@@ -221,5 +244,27 @@ flowchart TD
 - **A 24-hour hackathon project**: When rapid experimentation and throwing away 90% of
   the code matters more than clean architecture, Zenith's 100% coverage and complexity
   limits will feel restrictive.
-- **Introductory Python exercises**: Beginners learning basic syntax do not need
-  multi-agent skills, architectural layers, or strict type checking mode.
+- **Isolated syntax practice**: If you are solely learning Python's basic `for` loop
+  syntax for the first time, a full production template is unnecessary overhead.
+  (However, if you are a junior engineer building your first production service or
+  serious portfolio project, Zenith provides ideal safety nets.)
+
+## Brownfield Adoption & Incremental Migration
+
+Engineering organizations rarely have the luxury of starting 100% of their projects from
+greenfield templates. If you are adopting Zenith principles in an existing codebase,
+apply this progressive ratcheting strategy:
+
+1. **Step 1: Unify Tooling with uv and Ruff**: Replace legacy package managers with `uv`
+   and legacy linters with `ruff check` and `ruff format`. This delivers immediate speed
+   improvements without code changes.
+2. **Step 2: Ratchet Coverage Progressively**: If your existing service has 65%
+   coverage, do not immediately enforce `fail_under = 100`. Set `fail_under = 65` in
+   `.coveragerc` and ratchet upward with each milestone, requiring 100% coverage only on
+   newly introduced modules.
+3. **Step 3: Capture Boundary Baselines with Tach**: Run `tach check --record` to
+   capture existing import structures without failing CI, then gradually eliminate
+   legacy circular dependencies.
+4. **Step 4: Enable Strict Typing in Increments**: Configure Pyrefly with transitional
+   settings, migrating key domain models to strict typing before enforcing complete type
+   coverage across legacy endpoints.

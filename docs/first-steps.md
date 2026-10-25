@@ -61,7 +61,20 @@ installation):
 uvx cookiecutter https://github.com/bwrob/zenith.git
 ```
 
-Follow the prompts. If you are unsure, press `Enter` to accept the defaults.
+Cookiecutter will prompt you for a few project settings:
+
+| Prompt                  | Meaning & Purpose                                      | Recommended Choice / Default       |
+| :---------------------- | :----------------------------------------------------- | :--------------------------------- |
+| `project_name`          | Human-readable title of your project                   | `My Awesome Service`               |
+| `project_slug`          | Directory name & Python import name                    | `my_awesome_service`               |
+| `package_description`   | Short summary for README & package metadata            | Press `Enter` to customize         |
+| `author_name` / `email` | Your details for packaging metadata                    | Your name and email                |
+| `python_version`        | Target Python runtime                                  | `3.12`, `3.13`, or `3.14`          |
+| `include_cli`           | Scaffold a ready-to-run Typer command-line application | `true` (recommended for apps/CLIs) |
+| `license`               | Open-source or proprietary license                     | `MIT` or `Proprietary`             |
+
+If you are unsure about any prompt, simply press `Enter` to accept the default. You can
+adjust these settings at any time in `pyproject.toml`.
 
 ### 2. Enter and Sync Your Project
 
@@ -135,6 +148,34 @@ my-awesome-service/
 > The files ending in `.toml` in the project root are pre-configured background
 > settings—like the pre-tuned engine in a car. You can safely ignore them. You do not
 > need to open or configure them to write your application.
+
+### How Does the Project CLI Script Work?
+
+When you scaffold a project with `include_cli: true`, Cookiecutter registers a
+command-line script in `pyproject.toml` under `[project.scripts]`:
+
+```toml
+[project.scripts]
+my-awesome-service = "my_awesome_service.cli:app"
+```
+
+This tells `uv` to look inside `src/my_awesome_service/cli.py` and run the Typer `app`
+function whenever you invoke `uv run my-awesome-service`. If you build new modules or
+functions in `src/my_awesome_service/`, you can call them from `cli.py` or import them
+into other modules.
+
+### The Quick Translation Guide: from Tutorial Python to Zenith
+
+If you learned Python through courses or tutorials, you likely used traditional tools.
+Here is how your existing habits translate directly into Zenith:
+
+| Traditional Pattern               | Zenith Modern Pattern         | Why Zenith Uses It                                                                                                                   |
+| :-------------------------------- | :---------------------------- | :----------------------------------------------------------------------------------------------------------------------------------- |
+| `pip install <package>`           | `uv add <package>`            | `uv add` installs packages in milliseconds and records them in `pyproject.toml`.                                                     |
+| `pip install -r requirements.txt` | `uv sync`                     | `uv sync` reads `uv.lock` for 100% deterministic, reproducible environments.                                                         |
+| `source .venv/bin/activate`       | `uv run <command>`            | `uv run` executes within `.venv` automatically without manual activation (though `.venv` remains there if you prefer activating it). |
+| `python script.py`                | `uv run python -m pkg.module` | Prevents import resolution errors and ensures `src/` is correctly mapped on `sys.path`.                                              |
+| `pytest`                          | `uv run poe test`             | Executes pytest with parallel multi-core execution (`-n auto`), 100% coverage gating, and zero-warning tolerance.                    |
 
 ## Everyday Workflows
 
@@ -235,6 +276,50 @@ Required test coverage of 100.0% reached. Total coverage: 100.00%
 ```
 
 The gate turns green, confirming that all statements and branches are tested.
+
+### What About Branch Coverage and Missing Branches?
+
+Zenith measures both **line coverage** and **branch coverage** (`branch = true`). A
+branch occurs whenever code makes a decision (`if/else`, `try/except`, `while`).
+
+For example, imagine you write an integer division function:
+
+```python
+def divide(a: int, b: int) -> int:
+    if b == 0:
+        raise ValueError("Cannot divide by zero")
+    return a // b
+```
+
+If your test only calls `divide(10, 2)`, line 3 is never executed, and `coverage`
+flags a `BrPart 1 Missing` violation. Even if you don't miss lines, failing to test both
+sides of a conditional path fails the build.
+
+To satisfy the branch coverage gate, test the exception path using `pytest.raises`:
+
+```python
+import pytest
+from my_awesome_service.calculator import divide
+
+
+def test_divide_success() -> None:
+    assert divide(10, 2) == 5
+
+
+def test_divide_zero_raises() -> None:
+    with pytest.raises(ValueError, match="Cannot divide by zero"):
+        divide(10, 0)
+```
+
+### What Does "Cognitive Complexity <= 10" Mean?
+
+`complexipy` checks how difficult a function is for human working memory to read and
+maintain. Unlike raw line counts, cognitive complexity measures nested logic: `for`
+loops inside `if` statements inside `while` blocks increment the complexity score.
+
+**The Fix**: When a function exceeds a score of 10, simply extract the inner loop or
+conditional body into a small, descriptive helper function. This keeps functions
+bite-sized, easy to read, and painless to unit test.
 
 ## Step-by-Step Recap: What Just Happened
 

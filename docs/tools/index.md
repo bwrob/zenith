@@ -104,6 +104,12 @@ standardizes on **separate, dedicated configuration files per tool** whenever po
 - **Tool-Native Schema Support**: Dedicated files allow language servers, editors, and
   formatters to attach dedicated JSON/TOML schemas directly without schema interference.
 
+> [!TIP]
+> **Consolidation Is Supported**: If your organization prefers a single unified
+> `pyproject.toml`, modern tools like Ruff, Coverage, Taplo, and Mutmut natively support
+> `[tool.*]` tables. You can freely consolidate sections into `pyproject.toml` and
+> delete the standalone config files without breaking tool behavior.
+
 ## Tooling Matrix
 
 | Tool                                | Group                      | Primary Role                                                               | Upstream Documentation                                                         |

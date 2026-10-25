@@ -11,6 +11,13 @@ Google Gemini CLI, Antigravity, OpenAI Codex, Cursor, Windsurf, Aider).
 Rather than relying on vague prompts or unbounded system prompts, Zenith organizes all
 agent capabilities into **modular, prefixed Agent Skills** located in `.agents/skills/`.
 
+> [!NOTE]
+> **Optional for Pure-Human Teams**: The `.agents/skills/` directory is purely additive.
+> If you or your organization develop entirely by hand without AI coding assistants, you
+> can safely ignore `.agents/skills/` (or delete the folder). The core Python package,
+> test runner, virtual environment, and CI/CD pipelines function completely
+> independently.
+
 ## Skill Taxonomy
 
 To prevent naming collisions, maintain predictable agent discovery, and separate
@@ -60,6 +67,22 @@ flowchart TD
    context **only when that skill is activated**.
 3. **Execution Grounding**: The agent follows the skill's step-by-step instructions and
    executes tasks inside the hermetic project environment with `uv run poe <task>`.
+
+### How Skills Work in Action: a 3-Step Walkthrough
+
+Here is how an everyday developer interaction looks when pairing with an AI coding
+assistant:
+
+1. **Step 1: Developer Request**: In your editor chat or terminal (Claude Code, Cursor,
+   Copilot, Gemini CLI), you submit an intent:
+   > *"Draft a technical specification for our new stripe billing webhook following
+   > `sdd-spec`."*
+2. **Step 2: Skill Activation**: The assistant inspects `AGENTS.md`, activates
+   `.agents/skills/sdd-spec/SKILL.md`, and adopts its structured EARS specification
+   format and artifact boundaries.
+3. **Step 3: Execution & Verification**: The assistant writes the specification
+   document, executes local Poe tasks to verify syntax (`uv run poe code-quality`), and
+   presents the draft for human review.
 
 ## Skill Groups
 

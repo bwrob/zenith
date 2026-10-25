@@ -38,6 +38,25 @@ untested error-handling paths. Mandating full coverage prevents untested code fr
 reaching `main`, while liberating developers to execute major architectural refactors
 without fear of regression.
 
+### Pragmatic Coverage: Platform Margins & Custom Thresholds
+
+While 100% statement and branch coverage is the default posture, real-world engineering
+requires pragmatic handling of operating systems and type guards:
+
+- **Built-in Exclusions**: Zenith's `.coveragerc` pre-configures `exclude_also` rules
+  for non-executable constructs:
+  - `if TYPE_CHECKING:` guards (active only during static type analysis).
+  - Protocol definitions and `@abstractmethod` signatures.
+  - Defensive unreachable fallbacks (`assert_never`, `raise NotImplementedError`).
+- **Platform-Specific Code**: When code branches on specific OS platforms (e.g.
+  `if sys.platform == "win32"`), use `# pragma: no cover` accompanied by a brief
+  rationale comment, or combine coverage artifacts across your CI matrix runners using
+  `coverage combine`.
+- **Customizing Thresholds**: If your application domain involves heavy external
+  sockets, C-extensions, or hardware drivers where exhaustive branch coverage yields low
+  engineering ROI, you can pragmatically adjust `fail_under = 90` directly inside
+  `.coveragerc`.
+
 ## Configuration in Zenith
 
 Configured in `.coveragerc` at the project root:
