@@ -182,6 +182,7 @@ def test_agent_skills_present(full_project: Path) -> None:
         "sdd-spec",
         "workflow-setup",
         "workflow-skill-creator",
+        "workflow-docs-authoring",
         "guide-python",
         "guide-ste100",
         "tool-complexipy",
@@ -252,6 +253,38 @@ def test_workflow_skill_templates_exist(full_project: Path) -> None:
         / "workflow-skill-creator"
         / "templates"
         / "SKILL_TEMPLATE.md"
+    ).exists()
+    assert (
+        full_project
+        / ".agents"
+        / "skills"
+        / "workflow-docs-authoring"
+        / "templates"
+        / "page_template.md"
+    ).exists()
+    assert (
+        full_project
+        / ".agents"
+        / "skills"
+        / "workflow-docs-authoring"
+        / "templates"
+        / "troubleshooting_section.md"
+    ).exists()
+    assert (
+        full_project
+        / ".agents"
+        / "skills"
+        / "workflow-docs-authoring"
+        / "references"
+        / "anti-slop-checklist.md"
+    ).exists()
+    assert (
+        full_project
+        / ".agents"
+        / "skills"
+        / "workflow-docs-authoring"
+        / "references"
+        / "diataxis.md"
     ).exists()
     assert (
         full_project
@@ -425,6 +458,7 @@ def test_project_tests_and_docs_layout(full_project: Path) -> None:
     assert (full_project / "tests" / "test_cli.py").exists()
     assert (full_project / "docs" / "index.md").exists()
     docs_index_text = (full_project / "docs" / "index.md").read_text()
+    assert "diataxis: explanation" in docs_index_text
     assert "https://github.com/bwrob/zenith" in docs_index_text
     assert "https://bwrob.dev" in docs_index_text
     assert "Built with the <a href=" in docs_index_text

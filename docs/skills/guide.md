@@ -1,3 +1,8 @@
+---
+diataxis: reference
+purpose: Prescribe Python 3.12+ engineering invariants, strict typing paradigms, and ASD-STE100 technical writing standards.
+---
+
 # Engineering & Prose Guides
 
 While workflow skills define *what steps to take* and tool skills define *how to run

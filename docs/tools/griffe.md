@@ -1,3 +1,8 @@
+---
+diataxis: reference
+purpose: Document public API docstring parsing, signature inspection, and breaking change detection with Griffe.
+---
+
 # Griffe: Static Analysis & API Guard
 
 [![Tool: Griffe](https://img.shields.io/badge/api-griffe-blue.svg)](https://mkdocstrings.github.io/griffe/)

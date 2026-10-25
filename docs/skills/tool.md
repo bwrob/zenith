@@ -1,3 +1,8 @@
+---
+diataxis: reference
+purpose: Catalog developer tool skills, command syntax runbooks, and configuration mechanics across the Zenith stack.
+---
+
 # Tool Skills
 
 Modern developer tools move fast. LLMs are notoriously prone to hallucinating outdated

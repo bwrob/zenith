@@ -1,3 +1,8 @@
+---
+diataxis: explanation
+purpose: Introduce {{ cookiecutter.project_name }}, summarize its core architecture, and link to getting-started and API reference documentation.
+---
+
 # {{ cookiecutter.project_name }}
 
 <p align="center">

@@ -1,3 +1,8 @@
+---
+diataxis: how-to
+purpose: Provide operational procedures for version control, changelog curation, code review audits, ADR creation, and doc authoring.
+---
+
 # Workflow Skills
 
 Modern software engineering with AI coding assistants is only as reliable as the
@@ -131,6 +136,40 @@ hallucinated tool flags.
   validated by an automated linter.
 - **Template Synchronization**: Automatically handles symlink wiring between template
   sources and repository links via `uv run poe sync-skills`.
+
+### Human-Centered Documentation Authoring (workflow-docs-authoring)
+
+**What it is**: The operational authoring workflow and writing standard for creating
+clear, human-centered technical documentation in `docs/`.
+
+**Why it's in Zenith**: AI assistants frequently produce "AI slop": wordy, passive,
+throat-clearing prose that re-states the obvious without providing actionable value.
+Furthermore, documentation easily degrades when the same configuration or concept is
+duplicated across multiple guides, causing instructions to drift out of sync.
+
+`workflow-docs-authoring` enforces core architectural and writing rules:
+
+- **Diátaxis Information Architecture**: Classifies every documentation page into one of
+  four intent quadrants (*Tutorials*, *How-To Guides*, *Reference*, *Explanation*) via a
+  mandatory non-renderable YAML frontmatter preamble (`diataxis:` and `purpose:`).
+  Enforces a single-focus page scope and guides page splitting when content drifts
+  across boundaries.
+- **Documentation-Driven Design (DDD)**: Drafts user guides and tutorials in lockstep
+  with interface design. Friction in writing docs serves as an immediate design smell
+  prompting public API simplification.
+- **Golden Source of Truth ("Do Not Repeat, Link")**: Every option, architecture
+  decision, and API behavior has a single canonical location. Documentation links
+  directly to authoritative sources (`docs/adr/`, `mkdocstrings`, `docs/tools/`)
+  instead of duplicating text. Code snippets are complete, standalone runnable, and
+  transcluded from continuous CI-tested files via `pymdownx.snippets` (`--8<--`).
+- **Progressive Disclosure & Editor DX**: Focuses mainstream guides on the primary 80%
+  use path, quarantining advanced complexity into dedicated reference pages. Ensures
+  all Python examples carry explicit typing so developer editors autocomplete cleanly.
+- **Anti-AI-Slop Writing Standards**: Eliminates hollow filler, circular definitions,
+  and marketing buzzwords (`seamless`, `robust`, `delve`, `game-changer`, `empower`).
+  Mandates direct, active-voice instructions, honest negative-space analysis
+  (limitations and trade-offs), and structural verification with `uv run poe format-md`,
+  `uv run poe lint-md`, and `uv run poe docs-build`.
 
 ---
 

@@ -1,3 +1,8 @@
+---
+diataxis: explanation
+purpose: Introduce Zenith, showcase the four architectural pillars, and guide developers to quickstart workflows.
+---
+
 # Zenith
 
 <p align="center">

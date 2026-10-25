@@ -1,3 +1,8 @@
+---
+diataxis: reference
+purpose: Document 100% statement and branch coverage enforcement and report analysis with Coverage.py.
+---
+
 # Coverage.py: Code Coverage
 
 [![Tool: Coverage.py](https://img.shields.io/badge/coverage-100%25-brightgreen.svg)](https://coverage.readthedocs.io/)

@@ -1,3 +1,8 @@
+---
+diataxis: reference
+purpose: Document Git pre-commit lifecycle hooks, automated fixers, and hook installation with prek.
+---
+
 # Prek: Git Hook Automation
 
 [![Tool: prek](https://img.shields.io/badge/prek-enabled-brightgreen)](https://github.com/j178/prek)

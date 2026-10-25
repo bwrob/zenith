@@ -1,3 +1,8 @@
+---
+diataxis: reference
+purpose: Document dependency health checks, unused package detection, and transitive import audits with Deptry.
+---
+
 # Deptry: Dependency Hygiene
 
 Deptry checks Python imports against the dependencies declared in `pyproject.toml`. It

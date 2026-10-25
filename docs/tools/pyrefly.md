@@ -1,3 +1,8 @@
+---
+diataxis: reference
+purpose: Document strict static type checking, generic type parameters, and type configuration with Pyrefly.
+---
+
 # Pyrefly: Static Type Checking
 
 [![Tool: Pyrefly](https://img.shields.io/badge/types-pyrefly%20strict-blueviolet.svg)](https://github.com/facebook/pyrefly)

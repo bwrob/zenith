@@ -1,3 +1,8 @@
+---
+diataxis: reference
+purpose: Document TOML schema validation, formatting standards, and linter configuration with Taplo.
+---
+
 # Taplo: TOML Toolkit
 
 [![Tool: Taplo](https://img.shields.io/badge/toml-taplo-blue.svg)](https://taplo.tamasfe.dev/)

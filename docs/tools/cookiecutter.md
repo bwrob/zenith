@@ -1,3 +1,8 @@
+---
+diataxis: reference
+purpose: Document template variables, lifecycle hooks, and project generation mechanics with Cookiecutter.
+---
+
 # Cookiecutter: Templating Engine
 
 [![Tool: Cookiecutter](https://img.shields.io/badge/template-cookiecutter-D4B830.svg)](https://github.com/cookiecutter/cookiecutter)

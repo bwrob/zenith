@@ -1,3 +1,8 @@
+---
+diataxis: reference
+purpose: Document hermetic task definitions, command orchestration, and developer shortcuts with Poe the Poet.
+---
+
 # Poe the Poet: Task Automation
 
 [![Tool: poethepoet](https://img.shields.io/badge/tasks-poethepoet-blue.svg)](https://poethepoet.natn.io/)

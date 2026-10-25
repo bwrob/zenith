@@ -1,3 +1,8 @@
+---
+diataxis: reference
+purpose: Record historical releases, breaking changes, and user-facing modifications across versions following Keep a Changelog.
+---
+
 # Changelog
 
 All notable changes to the **Zenith** project will be documented in this file.
@@ -10,6 +15,13 @@ and this project adheres to
 
 ### Added
 
+- New `workflow-docs-authoring` agent skill enforcing human-first technical writing,
+  Documentation-Driven Design (DDD as an API interface smell test), the golden source of
+  truth rule ("do not repeat, link"), continuous tested snippet transclusion in CI,
+  progressive disclosure, editor ergonomics, the Diátaxis architecture, the Google
+  condition-before-instruction rule, and the Troubleshooting Triad formula.
+- Standardized non-renderable Diátaxis YAML frontmatter preambles across all
+  documentation pages in the repository and template.
 - Dedicated Zenith documentation website configured with Zensical, Catppuccin hue-based
   theming, MathJax, and Termynal terminal animations.
 - Comprehensive tooling guides for the integrated tools (uv, Ruff, Pyrefly, complexipy,

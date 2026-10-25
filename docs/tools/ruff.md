@@ -1,3 +1,8 @@
+---
+diataxis: reference
+purpose: Document strict Python linting, rule presets, inline diagnostic overrides, and formatting with Astral Ruff.
+---
+
 # Ruff: Linter & Formatter
 
 [![Tool: Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)

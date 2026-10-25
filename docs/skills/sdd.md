@@ -1,3 +1,8 @@
+---
+diataxis: how-to
+purpose: Guide developers and agents through the phased Spec-Driven Development lifecycle from specification to archival.
+---
+
 # Spec-Driven Development (SDD) Suite
 
 The **Spec-Driven Development (SDD)** suite (`sdd-*`) is Zenith's core methodology

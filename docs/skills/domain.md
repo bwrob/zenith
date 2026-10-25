@@ -1,3 +1,8 @@
+---
+diataxis: how-to
+purpose: Instruct project authors on creating, structuring, and maintaining custom business-logic skills in the reserved domain namespace.
+---
+
 # Domains
 
 > [!IMPORTANT]

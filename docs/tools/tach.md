@@ -1,3 +1,8 @@
+---
+diataxis: reference
+purpose: Document module boundary enforcement, layer hierarchies, and circular dependency prevention with Tach.
+---
+
 # Tach: Architecture Boundaries
 
 [![Tool: Tach](https://img.shields.io/badge/architecture-tach-purple.svg)](https://github.com/gauge-sh/tach)

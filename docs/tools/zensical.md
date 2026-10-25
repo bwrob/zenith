@@ -1,3 +1,8 @@
+---
+diataxis: reference
+purpose: Document static documentation compilation, live development serving, and plugin configuration with Zensical.
+---
+
 # Zensical: Documentation Generator
 
 [![Tool: Zensical](https://img.shields.io/badge/docs-zensical-teal.svg)](https://github.com/zensical/zensical)
