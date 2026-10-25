@@ -66,8 +66,9 @@ Zenith's guardrails deliver concrete business return:
 
     ---
 
-    Every single execution path, error branch, and fallback must be verified by
-    automated tests. Untested code is unknown code.
+    Every execution path, error branch, and fallback is verified by automated tests.
+    While customizable for early prototypes, complete branch coverage provides the
+    foundation for fearless refactoring and reliable AI code generation.
 
 -   **Strict Static Typing & 100% Type Completeness**
 
@@ -107,6 +108,24 @@ Zenith's guardrails deliver concrete business return:
     vulnerability databases with pinned cutoff dates to prevent supply-chain attacks.
 
 </div>
+
+### Pragmatic Rigor: the Testing Spectrum & Prototyping Modes
+
+Quality gates are designed to serve engineers, not paralyze them. While Zenith defaults
+to 100% statement and branch coverage to enable fearless refactoring, it fully embraces
+practical engineering realities:
+
+- **Sanctioned Platform Exclusions**: Code interfacing directly with operating system
+  margins (`sys.platform == 'win32'`), hardware drivers, or defensive assertions can
+  be excluded with `# pragma: no cover` without breaking the global gate.
+- **The Prototyping Ratchet for MVPs**: When exploring new product concepts or building
+  early-stage prototypes where 70% of code may be rewritten next week, teams can adjust
+  `fail_under = 80` in `.coveragerc`. As the product architecture stabilizes, ratchet
+  the threshold back toward 100% to lock in long-term reliability.
+- **Emergency Incident Protocols**: During critical production incidents, engineering
+  leads can approve targeted pragma comments or hotfix branch exceptions to restore
+  service immediately, with follow-up tasks to backfill coverage once the incident
+  resolves.
 
 ## Fast Feedback Loops Make Strict Quality Checks Practical
 

@@ -82,6 +82,33 @@ flowchart TB
 Click any tool above to view its technical specifications, architectural rationale in
 Zenith, configuration showcases, and upstream references.
 
+## Two-Tier Tooling Architecture: Daily Essentials Vs. Hardening
+
+Seeing over twenty tools can feel overwhelming. Zenith organizes its tooling into two
+distinct tiers so developers can focus immediately on shipping code:
+
+| Tier                                  | Tools                                                                                               | When You Use Them                     | Interaction Pattern                                            |
+| :------------------------------------ | :-------------------------------------------------------------------------------------------------- | :------------------------------------ | :------------------------------------------------------------- |
+| **Tier 1: Daily Velocity Essentials** | **`uv`**, **`ruff`**, **`pytest`**, **`poe`**, **`typer`**                                          | Every minute while writing code       | Direct commands: `uv run poe test`, `uv run poe fix`, `uv add` |
+| **Tier 2: Hardening & Auditing**      | **`tach`**, **`complexipy`**, **`pyrefly`**, **`deptry`**, **`griffe`**, **`mutmut`**, **`zizmor`** | Background guardrails before PR merge | Automated: Runs in `uv run poe code-quality` and CI pipelines  |
+
+You do not need to learn or configure Tier 2 tools on Day 1. They operate as automated
+safety nets that prevent architectural rot, loose typing, and security leaks.
+
+## Customizing or Pruning Tools
+
+Zenith's tools are decoupled and modular. If your team does not need architectural
+boundary enforcement (`tach`), complexity ceilings (`complexipy`), or mutation testing
+(`mutmut`), you can prune them in three simple steps without breaking other tasks:
+
+1. **Remove from Composite Tasks (`poe_tasks.toml`)**: Open `poe_tasks.toml` and remove
+   the tool's command from the `code-quality` task array.
+2. **Remove from Git Hooks (`prek.toml`)**:
+   Open `prek.toml` and remove the hook entry so `git commit` does not execute it.
+3. **Remove from Dependencies (`pyproject.toml`)**: Remove the package from
+   `[dependency-groups.dev]` in `pyproject.toml` and run `uv sync`. You can then safely
+   delete the tool's standalone `.toml` configuration file.
+
 ## Dedicated Configuration Files
 
 Most modern Python tools—such as Ruff, Pytest, Coverage, and Taplo—support defining

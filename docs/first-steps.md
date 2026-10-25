@@ -144,10 +144,12 @@ my-awesome-service/
 ```
 
 > [!NOTE]
-> **The "Engine Room" Rule**
-> The files ending in `.toml` in the project root are pre-configured background
-> settings—like the pre-tuned engine in a car. You can safely ignore them. You do not
-> need to open or configure them to write your application.
+> **The "Engine Room" Rule: Zero Configuration by Default, Full Control When Needed**
+> The files ending in `.toml` in the project root are pre-configured guardrails. For
+> everyday feature development, you do not need to edit or configure them—they work out
+> of the box like a pre-tuned engine. When senior engineers or platform teams need to
+> customize linting rules, type boundaries, or tasks, every setting lives in an
+> explicit, decoupled file rather than an opaque global environment.
 
 ### How Does the Project CLI Script Work?
 
@@ -176,6 +178,34 @@ Here is how your existing habits translate directly into Zenith:
 | `source .venv/bin/activate`       | `uv run <command>`            | `uv run` executes within `.venv` automatically without manual activation (though `.venv` remains there if you prefer activating it). |
 | `python script.py`                | `uv run python -m pkg.module` | Prevents import resolution errors and ensures `src/` is correctly mapped on `sys.path`.                                              |
 | `pytest`                          | `uv run poe test`             | Executes pytest with parallel multi-core execution (`-n auto`), 100% coverage gating, and zero-warning tolerance.                    |
+
+### Connecting Your Editor or IDE
+
+When you open a scaffolded project in an editor (such as VS Code, Cursor, or PyCharm),
+the editor may default to your system Python. This causes false red or yellow squiggly
+lines under imports like `import typer`.
+
+To connect your editor to the project virtual environment:
+
+=== "VS Code & Cursor"
+
+```text
+1. Open the Command Palette using `Cmd+Shift+P` (macOS) or `Ctrl+Shift+P` (Windows/Linux).
+2. Type and select **Python: Select Interpreter**.
+3. Choose the interpreter located in your project directory: `./.venv/bin/python`
+   (or `.\.venv\Scripts\python.exe` on Windows).
+```
+
+=== "PyCharm"
+
+```text
+1. Open **Settings** (or **Preferences** on macOS) and navigate to **Project > Python Interpreter**.
+2. Click **Add Interpreter** and choose **Add Local Interpreter**.
+3. Select **Existing Environment** and browse to `./.venv/bin/python` (or `.\.venv\Scripts\python.exe`).
+```
+
+Once connected, your editor will auto-complete functions, resolve all imports, and
+provide instant type feedback while you write code.
 
 ## Everyday Workflows
 
@@ -320,6 +350,68 @@ loops inside `if` statements inside `while` blocks increment the complexity scor
 **The Fix**: When a function exceeds a score of 10, simply extract the inner loop or
 conditional body into a small, descriptive helper function. This keeps functions
 bite-sized, easy to read, and painless to unit test.
+
+### How to Run and Debug an Individual Test
+
+`uv run poe test` enforces 100% statement and branch coverage across the **entire**
+codebase. When you are drafting a new feature, running whole-suite coverage on a single
+test file will fail because untouched files are also measured.
+
+During active development, run individual tests directly through `pytest`:
+
+```shell
+# Run a specific test file
+uv run pytest tests/test_calculator.py
+
+# Run a specific test by function name
+uv run pytest tests/test_calculator.py -k test_divide_zero_raises
+
+# Drop into the interactive Python debugger (PDB) on failure
+uv run pytest tests/test_calculator.py --pdb
+```
+
+You can also place `breakpoint()` anywhere in your code or tests to pause execution and
+inspect variables interactively. Once your isolated test passes, run `uv run poe test`
+to verify project-wide coverage before committing.
+
+### When Quality Gates Fail: Troubleshooting Triads
+
+When `uv run poe code-quality` or `prek` flags an issue, follow these steps:
+
+#### 1. Formatting or Style Errors (Ruff)
+
+- **Symptom**: `ruff:check` or `ruff:format` reports missing whitespace, unused imports,
+  or formatting violations.
+- **Root Cause**: Code was written or edited without running the automated formatter.
+- **Resolution**: Run `uv run poe fix`. Poe formats code and auto-fixes auto-resolvable
+  lint rules immediately.
+
+#### 2. Static Type Violations (Pyrefly)
+
+- **Symptom**: `pyrefly check` reports `Expected int, got str | None`.
+- **Root Cause**: A function receives or returns an optional value that may be `None` at
+  runtime.
+- **Resolution**: Add an explicit check before using the variable:
+
+  ```python
+  value: str | None = None
+  if value is None:
+      raise ValueError("Value cannot be None")
+  ```
+
+  Avoid using `# type: ignore` or untyped `Any`—explicit guards preserve runtime safety
+  and satisfy the type checker.
+
+#### 3. Pre-Commit Hook Blocks Your Commit (Prek)
+
+- **Symptom**: Running `git commit -m "..."` stops and prints `Failed` on a hook.
+- **Root Cause**: Code in your staging area violates a linting, formatting, or security
+  rule.
+- **Resolution**: Your code is **completely safe**—Git hooks never delete or lose your
+  edits.
+  1. Inspect the terminal output to see which hook failed.
+  2. Run `uv run poe fix` to resolve formatting and linting.
+  3. Re-stage the modified files (`git add <file>`) and run `git commit` again.
 
 ## Step-by-Step Recap: What Just Happened
 

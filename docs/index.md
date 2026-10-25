@@ -27,7 +27,13 @@ purpose: Introduce Zenith, showcase the four architectural pillars, and guide de
 ## Quick Start
 
 > [!TIP]
-> **New to modern Python tooling or project templates?**
+> **Prerequisites & First Steps**
+> Zenith requires Astral **`uv`**. If you do not have `uv` installed yet:
+>
+> ```bash
+> curl -LsSf https://astral.sh/uv/install.sh | sh
+> ```
+>
 > If terms like virtual environments, `uv`, or project scaffolding are unfamiliar, start
 > with the [First Steps & Core Concepts](first-steps.md) guide.
 
