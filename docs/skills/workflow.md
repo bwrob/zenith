@@ -185,10 +185,10 @@ backgrounds to evaluate docs with fresh eyes.
 
 `workflow-docs-consumers` standardizes the persona evaluation protocol:
 
-- **Multi-Persona Simulation**: Evaluates documentation through distinct developer
-  archetypes (*The Newcomer*, *The Junior Developer*, *The Opinionated Senior
-  Pythonista*, *The Tech Lead & Engineering Manager*, *The DevOps Engineer*, and
-  *The Open-Source Library Maintainer*).
+- **Multi-Persona Simulation**: Evaluates documentation through five distinct,
+  high-contrast developer archetypes (*The Junior Developer*,
+  *The Opinionated Senior Pythonista*, *The Tech Lead & Engineering Manager*,
+  *The DevOps Engineer*, and *The Solo Prototyper*).
 - **Clean-Context Dispatch**: Subagents run with zero prior project knowledge,
   evaluating landing pages, quickstart tutorials, and architectural rationale as
   outside developers.

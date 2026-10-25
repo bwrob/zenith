@@ -16,7 +16,7 @@ Read these primary documentation pages:
 - `docs/skills/index.md`
 
 Your persona traits:
-[PASTE PERSONA TRAITS FROM references/personas.md]
+[PASTE PERSONA TRAITS FROM references/<persona-file>.md]
 
 Instructions:
 1. Read the target documentation files with your persona perspective.

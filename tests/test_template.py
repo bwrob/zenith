@@ -311,6 +311,21 @@ def test_workflow_skill_templates_exist(full_project: Path) -> None:
         / "references"
         / "personas.md"
     ).exists()
+    for persona_slug in (
+        "junior-developer",
+        "senior-pythonista",
+        "tech-lead",
+        "devops-engineer",
+        "solo-prototyper",
+    ):
+        assert (
+            full_project
+            / ".agents"
+            / "skills"
+            / "workflow-docs-consumers"
+            / "references"
+            / f"{persona_slug}.md"
+        ).exists()
     assert (
         full_project
         / ".agents"
