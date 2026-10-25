@@ -22,6 +22,8 @@
     "include_cli": true,
     "include_ci_testing": true,
     "include_ci_publishing": true,
+    "include_agent_skills": true,
+    "ai_tools": "all",
     "__year": "{% now 'utc', '%Y' %}",
     "_new_lines": "\n",
     "_jinja2_env_vars": {
@@ -58,6 +60,8 @@
         },
         "include_cli": "Scaffold Typer/Rich command-line interface?",
         "include_ci_testing": "Generate GitHub Actions workflows for CI testing and code quality?",
-        "include_ci_publishing": "Generate GitHub Actions workflow for PyPI Trusted Publishing and documentation deployment?"
+        "include_ci_publishing": "Generate GitHub Actions workflow for PyPI Trusted Publishing and documentation deployment?",
+        "include_agent_skills": "Include Zenith agent skills suite and SDD subagents (.agents/)?",
+        "ai_tools": "AI assistant configs to scaffold ('all', 'recommended', 'ide-only', 'cli-only', 'minimal', 'none', or comma-separated names):"
     }
 }

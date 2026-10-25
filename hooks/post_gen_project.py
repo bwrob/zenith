@@ -89,18 +89,106 @@ def to_bool(val: object) -> bool:
     return str(val).lower() in {"true", "yes", "1", "t", "y", "on"}
 
 
-def _setup_instruction_aliases(agents_path: pathlib.Path) -> None:
+PRESET_MAP: dict[str, set[str]] = {
+    "all": {
+        "aider",
+        "claude",
+        "codex",
+        "copilot",
+        "cursor",
+        "devin",
+        "gemini",
+        "hermes",
+        "omp",
+        "opencode",
+        "pi",
+        "windsurf",
+        "zed",
+    },
+    "recommended": {"claude", "cursor", "codex", "opencode", "gemini", "copilot"},
+    "ide-only": {"cursor", "windsurf", "zed", "copilot"},
+    "cli-only": {
+        "claude",
+        "codex",
+        "opencode",
+        "gemini",
+        "devin",
+        "pi",
+        "omp",
+        "hermes",
+        "aider",
+    },
+    "minimal": set(),
+    "none": set(),
+}
+
+TOOL_ALIASES: dict[str, str] = {
+    "antigravity": "gemini",
+    "google-gemini": "gemini",
+    "claude-code": "claude",
+    "openai-codex": "codex",
+    "github-copilot": "copilot",
+    "oh-my-pi": "omp",
+    "hermes-agent": "hermes",
+}
+
+TOOL_CONFIG_PATHS: dict[str, list[tuple[str, ...]]] = {
+    "claude": [(".claude",), ("CLAUDE.md",)],
+    "gemini": [(".gemini",)],
+    "codex": [(".codex",)],
+    "opencode": [(".opencode",), ("opencode.json",)],
+    "cursor": [(".cursor",), (".cursorrules",)],
+    "windsurf": [(".windsurfrules",)],
+    "copilot": [(".github", "copilot-instructions.md")],
+    "devin": [(".devin",)],
+    "zed": [(".zed",)],
+    "pi": [(".pi",)],
+    "omp": [(".omp",)],
+    "hermes": [("HERMES.md",)],
+    "aider": [(".aider.conf.yml",)],
+}
+
+
+def resolve_active_ai_tools(raw_ai_tools: str) -> set[str]:
+    """Resolve raw cookiecutter ai_tools input into a set of active tool keys.
+
+    Args:
+        raw_ai_tools: Raw string specification from cookiecutter prompt.
+
+    Returns:
+        Set of active normalized tool identifier strings.
+
+    """
+    raw = raw_ai_tools.strip().lower()
+    tokens = [t.strip() for t in raw.replace(";", ",").split(",") if t.strip()]
+    if len(tokens) == 1 and tokens[0] in PRESET_MAP:
+        return set(PRESET_MAP[tokens[0]])
+    active: set[str] = set()
+    for token in tokens:
+        if token in PRESET_MAP:
+            active.update(PRESET_MAP[token])
+        else:
+            resolved = TOOL_ALIASES.get(token, token)
+            active.add(resolved)
+    return active
+
+
+def _setup_instruction_aliases(
+    agents_path: pathlib.Path, active_tools: set[str]
+) -> None:
     if not agents_path.is_file():
         return
-    aliases = (
-        (PROJECT_DIR / "CLAUDE.md", "AGENTS.md"),
-        (PROJECT_DIR / ".cursorrules", "AGENTS.md"),
-        (PROJECT_DIR / ".windsurfrules", "AGENTS.md"),
-        (PROJECT_DIR / "HERMES.md", "AGENTS.md"),
-        (PROJECT_DIR / ".pi" / "APPEND_SYSTEM.md", "../AGENTS.md"),
-        (PROJECT_DIR / ".omp" / "SYSTEM.md", "../AGENTS.md"),
+    aliases: tuple[tuple[pathlib.Path, str, str], ...] = (
+        (PROJECT_DIR / "CLAUDE.md", "AGENTS.md", "claude"),
+        (PROJECT_DIR / ".cursorrules", "AGENTS.md", "cursor"),
+        (PROJECT_DIR / ".windsurfrules", "AGENTS.md", "windsurf"),
+        (PROJECT_DIR / "HERMES.md", "AGENTS.md", "hermes"),
+        (PROJECT_DIR / ".pi" / "APPEND_SYSTEM.md", "../AGENTS.md", "pi"),
+        (PROJECT_DIR / ".omp" / "SYSTEM.md", "../AGENTS.md", "omp"),
     )
-    for alias_path, target_rel in aliases:
+    for alias_path, target_rel, tool_key in aliases:
+        if tool_key not in active_tools:
+            continue
         alias_path.parent.mkdir(exist_ok=True, parents=True)
         if not os.path.lexists(alias_path):
             try:
@@ -109,7 +197,9 @@ def _setup_instruction_aliases(agents_path: pathlib.Path) -> None:
                 shutil.copyfile(agents_path, alias_path)
 
 
-def _setup_cursor_rules() -> None:
+def _setup_cursor_rules(active_tools: set[str]) -> None:
+    if "cursor" not in active_tools:
+        return
     cursor_rule_file = PROJECT_DIR / ".cursor" / "rules" / "zenith.mdc"
     if not cursor_rule_file.is_file():
         cursor_rule_file.parent.mkdir(exist_ok=True, parents=True)
@@ -193,21 +283,76 @@ def _setup_codex_subagents(subagents_src: pathlib.Path) -> None:
         )
 
 
-def _setup_subagents(subagents_src: pathlib.Path) -> None:
+def _setup_subagents(subagents_src: pathlib.Path, active_tools: set[str]) -> None:
     if not subagents_src.is_dir():
         return
-    for tool_name in (".claude", ".gemini", ".cursor", ".opencode"):
-        tool_dir = PROJECT_DIR / tool_name / "agents"
-        _link_subagents_to_dir(tool_dir, subagents_src)
-    _setup_codex_subagents(subagents_src)
+    tool_map: dict[str, str] = {
+        "claude": ".claude",
+        "gemini": ".gemini",
+        "cursor": ".cursor",
+        "opencode": ".opencode",
+    }
+    for tool_key, tool_dir_name in tool_map.items():
+        if tool_key in active_tools:
+            tool_dir = PROJECT_DIR / tool_dir_name / "agents"
+            _link_subagents_to_dir(tool_dir, subagents_src)
+    if "codex" in active_tools:
+        _setup_codex_subagents(subagents_src)
 
 
-def setup_agent_instructions() -> None:
-    """Ensure agent instruction links and tool config directories exist."""
+def _prune_all_ai_configs() -> None:
+    remove_file("AGENTS.md")
+    remove_file("AI_POLICY.md")
+    for paths in TOOL_CONFIG_PATHS.values():
+        for p in paths:
+            remove_dir(*p)
+            remove_file(*p)
+
+
+def prune_inactive_ai_tools(active_tools: set[str], *, is_none: bool) -> None:
+    """Remove inactive AI tool directories, config files, and context links.
+
+    Args:
+        active_tools: Set of active AI tool keys to preserve.
+        is_none: Whether AI tooling is entirely disabled.
+
+    """
+    if is_none:
+        _prune_all_ai_configs()
+        return
+
+    for tool_key, paths in TOOL_CONFIG_PATHS.items():
+        if tool_key not in active_tools:
+            for p in paths:
+                remove_dir(*p)
+                remove_file(*p)
+
+
+def setup_agent_instructions(*, include_agent_skills: bool, raw_ai_tools: str) -> None:
+    """Ensure agent instruction links and tool config directories exist.
+
+    Args:
+        include_agent_skills: Whether to retain skills and wire SDD subagents.
+        raw_ai_tools: Raw string specification of AI tools from prompt.
+
+    """
+    is_none = raw_ai_tools.strip().lower() == "none"
+    active_tools = set() if is_none else resolve_active_ai_tools(raw_ai_tools)
+
+    prune_inactive_ai_tools(active_tools, is_none=is_none)
+
+    if not include_agent_skills or is_none:
+        remove_dir(".agents")
+        remove_file("scripts", "check_skills.py")
+
+    if is_none:
+        return
+
     agents_path = PROJECT_DIR / "AGENTS.md"
-    _setup_instruction_aliases(agents_path)
-    _setup_cursor_rules()
-    _setup_subagents(PROJECT_DIR / ".agents" / "subagents")
+    _setup_instruction_aliases(agents_path, active_tools)
+    _setup_cursor_rules(active_tools)
+    if include_agent_skills:
+        _setup_subagents(PROJECT_DIR / ".agents" / "subagents", active_tools)
 
 
 def main() -> None:
@@ -215,6 +360,8 @@ def main() -> None:
     include_cli = to_bool("{{ cookiecutter.include_cli }}")
     include_ci_testing = to_bool("{{ cookiecutter.include_ci_testing }}")
     include_ci_publishing = to_bool("{{ cookiecutter.include_ci_publishing }}")
+    include_agent_skills = to_bool("{{ cookiecutter.include_agent_skills }}")
+    ai_tools = "{{ cookiecutter.ai_tools }}"
     license_type = "{{ cookiecutter.license }}"
     package_name = "{{ cookiecutter.package_name }}"
 
@@ -248,7 +395,10 @@ def main() -> None:
     if license_type.lower() == "none":
         remove_file("LICENSE")
 
-    setup_agent_instructions()
+    setup_agent_instructions(
+        include_agent_skills=include_agent_skills,
+        raw_ai_tools=ai_tools,
+    )
     format_toml_files()
     init_prek()
 
