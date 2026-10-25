@@ -30,9 +30,9 @@ immutability, and module purity.
 **Why it's in Zenith**: Python has undergone a profound modernization with releases 3.12
 and 3.13. Modern Python offers first-class generic parameter syntax, high-speed type
 inference via Meta Pyrefly, and clean structural protocols. Without an explicit guide,
-AI models routinely generate legacy code: defining old-style `TypeVar('T')`, nesting
-deep object-oriented class hierarchies, importing `typing.List` or `typing.Dict`, or
-using mutable dataclasses that introduce race conditions.
+AI models routinely generate legacy code: declaring old-style `TypeVar('T')`, nesting
+deep object-oriented class hierarchies, or using mutable dataclasses that introduce
+state bugs.
 
 `guide-python` establishes five non-negotiable architectural pillars:
 
@@ -69,23 +69,24 @@ using mutable dataclasses that introduce race conditions.
 **What it is**: The writing guide and automated linter implementing the international
 Simplified Technical English standard (ASD-STE100 Issue 8).
 
-**Why it's in Zenith**: Ambiguity in technical documentation and agent prompts is the
-number one cause of AI execution failures. When prompts or tool docstrings use modal
-verbs ("you could check this") or words with multiple meanings ("address the bug", "run
-the build"), LLMs often hallucinate alternate interpretations or skip verification steps
-entirely.
+**Why it's in Zenith**: Ambiguity in technical documentation causes execution failures
+for autonomous agents. When prompts or skill instructions contain modal verbs, passive
+voice, or ambiguous vocabulary, LLMs frequently misinterpret instructions, guess
+missing parameters, or skip critical verification steps entirely.
 
 ASD-STE100 solves this through controlled language principles:
 
 - **One Meaning Per Word**: Restricts words to a single approved meaning per part of
   speech, eliminating polysemy and semantic confusion.
-- **Active Voice & Imperative Verbs**: Replaces passive constructions ("the tests should
-  be run") with direct, clear instructions ("Run the unit test suite with `poe test`").
+- **Active Voice & Imperative Verbs**: Replaces passive constructions ("tests can be
+  run") with direct, clear instructions ("Run the unit test suite with `poe test`").
 - **Strict Sentence Length Limits**: Caps procedural instructions at 20 words and
   descriptive sentences at 25 words to prevent model attention degradation.
 - **Automated Verification**: Zenith includes a standalone, standard-library Python
-  linter and auto-fixer (`ste-lint.py`). Run `uv run poe lint-ste` to audit skills and
-  documentation against STE-100 vocabulary and structure rules.
+  linter and auto-fixer (`ste-lint.py`). Run `uv run poe lint-ste` to audit agent skills
+  and Python docstrings against STE-100 vocabulary and structure rules. STE-100 is not
+  enforced as a rule in user-facing documentation (`docs/`), where it serves only as a
+  suggestion for clear phrasing.
 
 ## Authoring Custom Guide Skills
 

@@ -39,11 +39,12 @@ SDD enforces four non-negotiable architectural invariants:
    context bloat and eliminates model distraction.
 3. **Approval Stops vs. Autonomous Mode**:
    By default (Supervised Mode), agents pause after specification, planning,
-   implementation, and review for human sign-off. When `--autonomous` or `/goal` is
-   passed, the suite executes end-to-end without pausing unless an automated gate fails.
-4. **Reversibility**: If an implementation task fails or introduces architectural drift,
-   `poe sdd-revert` cleanly rolls back the commit and resets the plan checkbox without
-   leaving dirty working trees.
+   implementation, and review for human sign-off. When the developer passes
+   `--autonomous` or `/goal`, the suite runs end-to-end without pausing unless an
+   automated quality gate fails.
+4. **Reversibility**: When a task fails quality gates or introduces architectural
+   drift, `poe sdd-revert` cleanly rolls back the commit and resets the plan checkbox
+   without leaving dirty working trees.
 
 ## The Five SDD Skills
 
@@ -55,7 +56,7 @@ Each skill owns one stage of the specification-driven development lifecycle.
 concept to final archival across the entire SDD lifecycle.
 
 **Why it's in Zenith**: Coordinating multiple specialized subagents, task boundaries,
-Git branches, and verification gates manually is prone to human error. `sdd` provides a
+Git branches, and verification gates manually is prone to error. `sdd` provides a
 deterministic state machine that orchestrates each phase, tracks feature progress, and
 ensures no quality gates are bypassed.
 
@@ -76,7 +77,7 @@ Key capabilities include:
 ### Specification Authoring (sdd-spec)
 
 **What it is**: The requirements elicitation and specification drafting skill that
-captures user needs before any code is written.
+captures user needs before developers write code.
 
 **Why it's in Zenith**: AI models love jumping directly into code. When prompted with a
 feature idea, agents typically make unstated assumptions about error behavior,
@@ -122,19 +123,20 @@ Key architectural guardrails:
 Test-Driven Development (TDD).
 
 **Why it's in Zenith**: Unsupervised agents often write production code first and tests
-later (or skip tests entirely), producing tests that mirror the implementation without
-verifying real behavior. `sdd-implement` enforces a strict red-green-refactor loop.
+second, creating tests that mirror their implementation rather than verifying actual
+requirements. `sdd-implement` enforces a strict red-green-refactor loop that guarantees
+genuine test-driven verification.
 
 Implementation protocol:
 
 1. **Red**: Writes a minimal failing test tagged with the corresponding requirement ID
-   (e.g., `# REQ-001`) and confirms the test fails as expected.
+   (for example, `# REQ-001`) and validates that the test fails as expected.
 2. **Green**: Writes the minimal production code necessary to make the test pass.
-3. **Refactor**: Formats and lints code automatically with `uv run poe fix`, verifying
-   that type checking and 100% coverage remain intact.
+3. **Refactor**: Formats and lints code automatically with `uv run poe fix`, validating
+   that type analysis and 100% coverage remain intact.
 4. **Commit Tracking**: Commits the verified task using Conventional Commits and records
    the Git commit SHA directly in `plan.md` for full auditability.
-5. **Phase Checkpoints**: At phase boundaries, verifies 1:1 file-to-test coverage,
+5. **Phase Checkpoints**: At phase boundaries, validates 1:1 file-to-test coverage,
    executes manual verification commands, and stops for confirmation.
 
 ### Adversarial Verification & Review (sdd-review)
@@ -143,9 +145,9 @@ Implementation protocol:
 original specification before merging.
 
 **Why it's in Zenith**: An author cannot objectively audit their own work. When the same
-agent context evaluates its own code, confirmation bias blinds it to breaking changes,
-unplanned API exports, and untested edge cases. `sdd-review` acts as an adversarial
-auditor.
+agent evaluates its own implementation, confirmation bias blinds it to breaking changes,
+unplanned API exports, and untested edge cases. `sdd-review` acts as an independent
+adversarial auditor.
 
 Review capabilities:
 
@@ -155,11 +157,12 @@ Review capabilities:
 - **Traceability Verification**: Runs `uv run poe sdd-check-traceability <feature-id>`
   to guarantee that every functional requirement (`REQ-XXX`) maps to passing test
   functions.
-- **Smart Diff Chunking**: For pull requests exceeding 300 lines of code, automatically
-  switches from monolithic diff review to file-by-file chunked review to eliminate model
-  attention degradation.
-- **Remediation Loop**: If issues are found, appends a structured `Review Fixes` phase
-  to `plan.md`, returning the feature to `sdd-implement` for targeted resolution.
+- **Smart Diff Chunking**: For pull requests exceeding 300 lines of change, review
+  switches to a chunked file-by-file inspection to eliminate model attention
+  degradation.
+- **Remediation Loop**: When auditors detect issues, the skill appends a structured
+  `Review Fixes` phase to `plan.md`, returning the feature to `sdd-implement` for
+  targeted resolution.
 
 ## SDD Task Runner Quick Reference
 

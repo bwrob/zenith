@@ -14,7 +14,7 @@ automatic validation, and modern typing of FastAPI to the command line.
 ## What It Does
 
 Typer parses command-line arguments and options using standard Python type annotations.
-Utilizing modern `typing.Annotated` metadata, parameter definitions cleanly decouple
+Using modern `typing.Annotated` metadata, parameter definitions cleanly decouple
 argument validation from descriptive help text, flags, and environment fallbacks. String
 inputs are automatically converted into native Python types including numbers, paths,
 booleans, enums, and UUIDs.

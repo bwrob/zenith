@@ -14,12 +14,12 @@ embedded code blocks.
 ## What It Does
 
 `rumdl` analyzes Markdown files across the codebase to enforce CommonMark and GitHub
-Flavored Markdown specifications, validating heading hierarchies, list indentation, and
-table formatting.
+Flavored Markdown specifications. It checks heading hierarchies, list indentation,
+and table formatting.
 
-Crucially, rumdl integrates with Python linters like Ruff to validate embedded Python
-code blocks (` ```python `), ensuring examples never contain broken syntax, invalid
-imports, or outdated conventions.
+Rumdl also integrates with Python linters like Ruff to check embedded Python code
+blocks (` ```python `). This guarantees that examples never contain broken syntax,
+invalid imports, or outdated conventions.
 
 ## Why It's in Zenith
 

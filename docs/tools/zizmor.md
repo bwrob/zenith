@@ -18,8 +18,8 @@ unescaped context interpolations that expose steps to script injection, flags wo
 lacking explicit minimal permission blocks, and warns against unpinned third-party
 actions referencing mutable branch heads.
 
-By checking for patterns where fork pull requests or untrusted triggers could exfiltrate
-secrets, zizmor secures CI pipelines before changes are deployed.
+By checking for patterns where fork pull requests or untrusted triggers could
+exfiltrate secrets, zizmor secures CI pipelines before changes are deployed.
 
 ## Why It's in Zenith
 

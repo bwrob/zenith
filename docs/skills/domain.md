@@ -6,11 +6,11 @@ purpose: Instruct project authors on creating, structuring, and maintaining cust
 # Domains
 
 > [!IMPORTANT]
-> **Strict Reservation Notice**: The **`domain-*`** skill prefix is
-> **strictly reserved for the author and maintainers of the instantiated project**. The
-> Zenith template intentionally includes **zero** `domain-*` skills out-of-the-box,
-> ensuring that your application domain namespace remains clean, unpolluted, and free of
-> naming collisions with upstream template updates.
+> **Strict Reservation Notice**: The **`domain-*`** skill prefix is **strictly reserved
+> for the author and maintainers of the instantiated project**. The Zenith template
+> intentionally ships with zero `domain-*` skills out-of-the-box, ensuring that your
+> application domain namespace remains clean and free of naming collisions with upstream
+> template updates.
 
 ## What Are Domain Skills?
 
@@ -23,12 +23,12 @@ Without domain guidance, autonomous AI agents tend to:
 - Make invalid assumptions about customer billing calculations or subscription tiers.
 - Invent unauthorized order state transitions.
 - Misunderstand tenant isolation or authentication boundaries.
-- Implement business logic that violates regulatory compliance (e.g. HIPAA, GDPR,
+- Implement business logic that violates regulatory compliance (such as HIPAA, GDPR,
   PCI-DSS).
 
-**Domain Skills (`domain-*`) solve this by codifying your business rules, domain
-invariants, entity lifecycles, and proprietary service logic into structured runbooks
-that AI agents load when working on domain code.**
+**Domain Skills (`domain-*`) codify business rules, domain invariants, entity
+lifecycles, and proprietary service logic into structured runbooks that AI agents load
+when working on domain code.**
 
 ## Anatomy of a Domain Skill
 
@@ -85,8 +85,8 @@ stateDiagram-v2
 
 ### Edge Case Matrices
 
-Document how the domain handles boundary conditions (e.g., Leap year billing, fractional
-cent rounding, concurrent subscription upgrades).
+Document how the domain handles boundary conditions (for example, leap year billing,
+fractional cent rounding, concurrent subscription upgrades).
 
 ## Common Domain Skills
 

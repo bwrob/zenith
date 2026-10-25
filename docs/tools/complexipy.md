@@ -28,9 +28,9 @@ production software. AI coding assistants frequently write deeply nested code wh
 attempting to patch complex functionality.
 
 Zenith enforces a hard ceiling of **cognitive complexity <= 10** per function or method.
-Functions that exceed 10 points fail CI immediately, forcing developers and AI agents to
-refactor logic into small, composable functions with early returns, structural pattern
-matching, or dispatch tables.
+Functions that exceed 10 points fail CI immediately, prompting developers and AI agents
+to refactor logic into small, composable functions with early returns, structural
+pattern matching, or dispatch tables.
 
 ## Configuration in Zenith
 

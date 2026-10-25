@@ -183,6 +183,7 @@ def test_agent_skills_present(full_project: Path) -> None:
         "workflow-setup",
         "workflow-skill-creator",
         "workflow-docs-authoring",
+        "workflow-docs-consumers",
         "guide-python",
         "guide-ste100",
         "tool-complexipy",
@@ -286,6 +287,45 @@ def test_workflow_skill_templates_exist(full_project: Path) -> None:
         / "references"
         / "diataxis.md"
     ).exists()
+    assert (
+        full_project
+        / ".agents"
+        / "skills"
+        / "workflow-docs-consumers"
+        / "templates"
+        / "persona_prompt.md"
+    ).exists()
+    assert (
+        full_project
+        / ".agents"
+        / "skills"
+        / "workflow-docs-consumers"
+        / "templates"
+        / "evaluation_report.md"
+    ).exists()
+    assert (
+        full_project
+        / ".agents"
+        / "skills"
+        / "workflow-docs-consumers"
+        / "references"
+        / "personas.md"
+    ).exists()
+    for persona_slug in (
+        "junior-developer",
+        "senior-pythonista",
+        "tech-lead",
+        "devops-engineer",
+        "solo-prototyper",
+    ):
+        assert (
+            full_project
+            / ".agents"
+            / "skills"
+            / "workflow-docs-consumers"
+            / "references"
+            / f"{persona_slug}.md"
+        ).exists()
     assert (
         full_project
         / ".agents"

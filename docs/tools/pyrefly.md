@@ -52,6 +52,21 @@ Implicit `Any` inference is strictly prohibited, structural protocols are valida
 call sites, and any untyped third-party libraries require explicit stub declarations or
 typed wrappers.
 
+### Editor Experience & Alternative Type Checkers
+
+Developers typically author code inside VS Code, Cursor, PyCharm, or Neovim:
+
+- **Editor Language Servers (LSP)**: If your editor uses Pylance or Pyright for inline
+  completions, Pyrefly operates harmoniously in the background, executing in
+  milliseconds during `uv run poe type-check`, `prek` pre-commit hooks, and CI
+  pipelines.
+- **Third-Party Stubs & PEP 561**: Pyrefly automatically ingests inline types from PEP
+  561 compliant libraries and community `typeshed` definitions. For legacy untyped
+  dependencies, install typeshed stubs (e.g. `uv add --dev types-requests`) or wrap
+  external APIs in typed boundary adapters.
+- **Flexibility**: If your organization mandates `mypy` or `pyright`, you can swap type
+  checkers at any time by updating the `[tasks.type-check]` command in `poe_tasks.toml`.
+
 ## Type Coverage & Completeness Enforcement
 
 Beyond checking type correctness, Pyrefly provides native type coverage and completeness

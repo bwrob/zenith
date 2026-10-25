@@ -1,6 +1,6 @@
 ---
 diataxis: reference
-purpose: Document comprehensive mutation testing and database-backed test suite verification with Cosmic Ray.
+purpose: Document mutation testing and database-backed test suite verification with Cosmic Ray.
 ---
 
 # Cosmic Ray: Mutation Testing
@@ -19,7 +19,7 @@ without asserting their behavior?"**
 
 Cosmic Ray parses production Python source files into an Abstract Syntax Tree and
 introduces microscopic mutations, such as inverting boolean logic, replacing operators,
-or deleting statements. It then executes the test suite against each mutant. If a test
+or deleting statements. It then executes the test suite against each mutant. When a test
 fails, the mutant is killed, proving the test suite actively caught the regression; if
 all tests pass, the mutant survives, exposing a blind spot in test assertion depth.
 
@@ -36,8 +36,8 @@ universal cross-platform mutation engine, executing reliably across macOS, Linux
 Windows runners.
 
 Mutation session results are stored in an SQLite database, allowing deep assertion
-audits to be distributed across worker processes, paused, or resumed incrementally
-without losing progress.
+audits to be paused, resumed, or distributed across worker processes without losing
+progress.
 
 ## Configuration in Zenith
 

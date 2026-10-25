@@ -20,7 +20,7 @@ to target specific subsystems.
 
 Zenith configures pytest with strict validation flags: tests must declare valid markers,
 configuration files are strictly validated, doctests inside source docstrings are
-automatically discovered and executed, and unused snapshot assertions trigger warnings.
+automatically executed, and unused snapshot assertions trigger warnings.
 
 ## Why It's in Zenith
 
@@ -30,10 +30,9 @@ assertions, pytest operates under a strict zero-warning tolerance policy
 anomalies fail the test suite immediately.
 
 By pairing pytest with specialized plugins, Zenith transforms the test runner into a
-comprehensive behavioral verification engine. Parallel test execution keeps local
-developer loops fast, randomized ordering eliminates state pollution, and snapshot and
-property-based plugins catch edge-case regressions that manual test cases often
-overlook.
+comprehensive verification engine: parallel execution keeps local test runs fast,
+randomized ordering eliminates state pollution between tests, and snapshot and
+property-based plugins catch edge-case regressions that manual test cases often miss.
 
 ## Integrated Pytest Plugins
 

@@ -24,7 +24,7 @@ Modern Python projects rely heavily on TOML across all tool configurations
 
 Zenith integrates Taplo to maintain universal formatting harmony across all repository
 manifests. By enabling `align_entries = true`, key-value assignments align vertically
-for visual clarity, while automated format checks prevent unformatted configuration
+for visual clarity, while automated format inspections prevent unformatted configuration
 files from entering source control.
 
 ## Configuration in Zenith

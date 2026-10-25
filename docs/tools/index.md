@@ -82,6 +82,33 @@ flowchart TB
 Click any tool above to view its technical specifications, architectural rationale in
 Zenith, configuration showcases, and upstream references.
 
+## Two-Tier Tooling Architecture: Daily Essentials Vs. Hardening
+
+Seeing over twenty tools can feel overwhelming. Zenith organizes its tooling into two
+distinct tiers so developers can focus immediately on shipping code:
+
+| Tier                                  | Tools                                                                                               | When You Use Them                     | Interaction Pattern                                            |
+| :------------------------------------ | :-------------------------------------------------------------------------------------------------- | :------------------------------------ | :------------------------------------------------------------- |
+| **Tier 1: Daily Velocity Essentials** | **`uv`**, **`ruff`**, **`pytest`**, **`poe`**, **`typer`**                                          | Every minute while writing code       | Direct commands: `uv run poe test`, `uv run poe fix`, `uv add` |
+| **Tier 2: Hardening & Auditing**      | **`tach`**, **`complexipy`**, **`pyrefly`**, **`deptry`**, **`griffe`**, **`mutmut`**, **`zizmor`** | Background guardrails before PR merge | Automated: Runs in `uv run poe code-quality` and CI pipelines  |
+
+You do not need to learn or configure Tier 2 tools on Day 1. They operate as automated
+safety nets that prevent architectural rot, loose typing, and security leaks.
+
+## Customizing or Pruning Tools
+
+Zenith's tools are decoupled and modular. If your team does not need architectural
+boundary enforcement (`tach`), complexity ceilings (`complexipy`), or mutation testing
+(`mutmut`), you can prune them in three simple steps without breaking other tasks:
+
+1. **Remove from Composite Tasks (`poe_tasks.toml`)**: Open `poe_tasks.toml` and remove
+   the tool's command from the `code-quality` task array.
+2. **Remove from Git Hooks (`prek.toml`)**:
+   Open `prek.toml` and remove the hook entry so `git commit` does not execute it.
+3. **Remove from Dependencies (`pyproject.toml`)**: Remove the package from
+   `[dependency-groups.dev]` in `pyproject.toml` and run `uv sync`. You can then safely
+   delete the tool's standalone `.toml` configuration file.
+
 ## Dedicated Configuration Files
 
 Most modern Python tools—such as Ruff, Pytest, Coverage, and Taplo—support defining
@@ -91,20 +118,24 @@ standardizes on **separate, dedicated configuration files per tool** whenever po
 (`ruff.toml`, `pyrefly.toml`, `complexipy.toml`, `tach.toml`, `poe_tasks.toml`,
 `pytest.ini`, `.coveragerc`, `.taplo.toml`, `prek.toml`):
 
-- **Focused, High-Signal Code Reviews**: Modifying a linter rule, adjusting type check
-  settings, or updating task scripts creates a clean, isolated Git diff in that tool's
-  specific file. Pull requests remain easy to review without unnecessary changes to the
-  core packaging manifest.
-- **Prevents Monolithic File Bloat**: Storing configuration for 15+ comprehensive
-  developer tools in `pyproject.toml` results in a gigantic file stretching hundreds of
-  lines. This bloat obscures essential PEP 621 package metadata, project dependencies,
-  and build system specifications.
+- **Focused, High-Signal Code Reviews**: Updating a linter rule, adjusting type check
+  settings, or revising task scripts creates a clean Git diff in that tool's specific
+  file. Pull requests remain easy to review without noise in the core packaging
+  manifest.
+- **Prevents Monolithic File Bloat**: Storing configuration for 15+ developer tools in
+  `pyproject.toml` results in a file stretching hundreds of lines. This bloat obscures
+  essential PEP 621 package metadata, dependencies, and build specifications.
 - **Granular Git Blame & History**: Each tool configuration retains an independent
   commit history. Inspecting `git log ruff.toml` or `git blame tach.toml` surfaces the
   exact context, author, and pull request for architectural decisions over time.
 - **Tool-Native Schema Support**: Dedicated files allow language servers, editors, and
-  formatters to attach dedicated JSON/TOML schemas directly to the target configuration
-  file without schema interference.
+  formatters to attach dedicated JSON/TOML schemas directly without schema interference.
+
+> [!TIP]
+> **Consolidation Is Supported**: If your organization prefers a single unified
+> `pyproject.toml`, modern tools like Ruff, Coverage, Taplo, and Mutmut natively support
+> `[tool.*]` tables. You can freely consolidate sections into `pyproject.toml` and
+> delete the standalone config files without breaking tool behavior.
 
 ## Tooling Matrix
 
@@ -112,10 +143,10 @@ standardizes on **separate, dedicated configuration files per tool** whenever po
 | ----------------------------------- | -------------------------- | -------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
 | **[uv](uv.md)**                     | Build & Workflow           | Package manager, virtual environments, lockfiles, and PEP 517 builds       | [docs.astral.sh/uv](https://docs.astral.sh/uv/)                                |
 | **[Poe the Poet](poethepoet.md)**   | Build & Workflow           | Declarative development task runner integrated with uv                     | [poethepoet.natn.io](https://poethepoet.natn.io/)                              |
-| **[prek](prek.md)**                 | Build & Workflow           | Ultra-fast Rust Git hook runner and local quality gate automation          | [prek.j178.dev](https://prek.j178.dev/)                                        |
+| **[prek](prek.md)**                 | Build & Workflow           | Rust Git hook runner and local quality gate automation                     | [prek.j178.dev](https://prek.j178.dev/)                                        |
 | **[Typer](typer.md)**               | Build & Workflow           | Type-safe CLI framework with Rich terminal rendering                       | [typer.tiangolo.com](https://typer.tiangolo.com/)                              |
 | **[Cookiecutter](cookiecutter.md)** | Build & Workflow           | Project templating engine powering Zenith generation                       | [cookiecutter.readthedocs.io](https://cookiecutter.readthedocs.io/)            |
-| **[Ruff](ruff.md)**                 | Code Quality               | Blazing-fast Python linter and formatter with preview rules                | [docs.astral.sh/ruff](https://docs.astral.sh/ruff/)                            |
+| **[Ruff](ruff.md)**                 | Code Quality               | Fast Python linter and formatter with preview rules                        | [docs.astral.sh/ruff](https://docs.astral.sh/ruff/)                            |
 | **[Pyrefly](pyrefly.md)**           | Code Quality               | Meta's strict type checker and 100% type coverage engine                   | [github.com/facebook/pyrefly](https://github.com/facebook/pyrefly)             |
 | **[Tach](tach.md)**                 | Code Quality               | Modular boundary enforcement, circular dependency blocker                  | [github.com/gauge-sh/tach](https://github.com/gauge-sh/tach)                   |
 | **[Deptry](deptry.md)**             | Code Quality               | Detect missing, unused, and transitive package dependencies                | [github.com/osprey-oss/deptry](https://github.com/osprey-oss/deptry)           |

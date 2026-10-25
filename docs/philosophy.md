@@ -5,12 +5,11 @@ purpose: Establish core architectural principles, strictness-for-velocity philos
 
 # Zenith Philosophy
 
-Zenith is not a generic template. It is an opinionated, strict development system
-crafted for teams of humans and autonomous AI coding agents who build production
-software with high confidence, zero architectural drift, and consistent code
-quality.
+Zenith is not a generic template. It is a strict development system for humans
+and autonomous AI coding agents. The system builds production software with high
+confidence, zero architectural drift, and consistent code quality.
 
-Zenith is built on a practical principle: **automated, strict quality guardrails
+Zenith embodies a practical principle: **automated, strict quality guardrails
 accelerate development rather than hindering it.**
 
 ## Strict Guardrails Accelerate Development
@@ -21,7 +20,7 @@ coverage, skip complexity limits, and permit circular dependencies under the ill
 moving faster.
 
 Zenith rejects this premise. When guardrails are automated, exhaustive, and
-non-negotiable:
+non-negotiable, engineering velocity actually increases:
 
 - **Refactoring Is Fearless**: 100% statement and branch test coverage guarantees that
   regressions surface immediately. Engineers and AI agents can restructure internal
@@ -33,8 +32,31 @@ non-negotiable:
   Developers and AI agents never have to guess what shape an object takes or what values
   a function accepts.
 - **Low-Quality AI Code Is Blocked at the Gate**: Autonomous agents cannot commit
-  untyped objects, convoluted logic, circular dependencies, or fragile workarounds. The
-  quality gate rejects non-compliant code immediately.
+  untyped objects, convoluted logic, circular dependencies, or fragile workarounds
+  because the quality gate rejects non-compliant code immediately.
+
+### The Business ROI: Defending Rigor to Engineering Leadership
+
+When engineering leaders (CTOs, VPs of Engineering) evaluate strict template standards,
+they inevitably weigh the upfront investment against delivery velocity. Here is how
+Zenith's guardrails deliver concrete business return:
+
+1. **Shift-Left Mean Time to Detect (MTTD)**: Catching a bug in a local 2-second test
+   run costs orders of magnitude less in engineering hours and customer trust than
+   triaging a regression in staging or production.
+2. **Radically Faster Pull Request Turnaround**: By automating formatting, import
+   hygiene, type completeness, and boundary verification, code review turnaround drops
+   from days to hours. Reviewers spend zero cognitive energy pointing out style
+   inconsistencies, focusing 100% on domain logic and architectural contracts.
+3. **Safe AI Acceleration**: Autonomous AI coding assistants can generate 40%+ of
+   project boilerplate without degrading repository standards. Mechanical gates
+   guarantee that hallucinated imports, unverified logic, and loose types are rejected
+   before human review.
+4. **The Short-Term Tax vs. The Compounding Dividend**: During the first one or two
+   sprints, developers adapting to strict type checking and 100% coverage may notice a
+   minor upfront investment while learning mocking and typing patterns. By month two,
+   this pays a compounding dividend: teams spend their time delivering features rather
+   than debugging legacy regressions.
 
 ### The Guardrail Stack
 
@@ -44,8 +66,9 @@ non-negotiable:
 
     ---
 
-    Every single execution path, error branch, and fallback must be verified by
-    automated tests. Untested code is unknown code.
+    Every execution path, error branch, and fallback is verified by automated tests.
+    While customizable for early prototypes, complete branch coverage provides the
+    foundation for fearless refactoring and reliable AI code generation.
 
 -   **Strict Static Typing & 100% Type Completeness**
 
@@ -59,9 +82,9 @@ non-negotiable:
 
     ---
 
-    Functions are restricted to low cognitive and cyclomatic complexity. Deeply nested
-    loops, cascading conditionals, and convoluted branching logic are blocked at the
-    authoring gate.
+    Functions are held to low cognitive and cyclomatic complexity limits. Deeply nested
+    loops, cascading conditionals, and convoluted branching logic are blocked directly
+    at the authoring gate.
 
 -   **Architectural Boundary Enforcement**
 
@@ -86,6 +109,24 @@ non-negotiable:
 
 </div>
 
+### Pragmatic Rigor: the Testing Spectrum & Prototyping Modes
+
+Quality gates are designed to serve engineers, not paralyze them. While Zenith defaults
+to 100% statement and branch coverage to enable fearless refactoring, it fully embraces
+practical engineering realities:
+
+- **Sanctioned Platform Exclusions**: Code interfacing directly with operating system
+  margins (`sys.platform == 'win32'`), hardware drivers, or defensive assertions can
+  be excluded with `# pragma: no cover` without breaking the global gate.
+- **The Prototyping Ratchet for MVPs**: When exploring new product concepts or building
+  early-stage prototypes where 70% of code may be rewritten next week, teams can adjust
+  `fail_under = 80` in `.coveragerc`. As the product architecture stabilizes, ratchet
+  the threshold back toward 100% to lock in long-term reliability.
+- **Emergency Incident Protocols**: During critical production incidents, engineering
+  leads can approve targeted pragma comments or hotfix branch exceptions to restore
+  service immediately, with follow-up tasks to backfill coverage once the incident
+  resolves.
+
 ## Fast Feedback Loops Make Strict Quality Checks Practical
 
 Thorough quality checks historically carried a significant penalty: slow linters,
@@ -96,8 +137,8 @@ check messages, and avoid running checks until the end of the day.
 This is where modern Rust-native tooling enters the picture. **Speed is not the
 philosophy itself; speed is what makes thorough quality checks frictionless.**
 
-By standardizing on fast, Rust-powered tooling, Zenith compresses comprehensive
-quality checks into seconds:
+By standardizing on fast, Rust-powered tooling, Zenith compresses complete quality
+checks into seconds:
 
 - Linting, formatting checks, type checks, and markdown audits complete in under 2
   seconds combined.
@@ -120,7 +161,7 @@ However, unsupervised AI agents easily produce degraded code:
 - Spaghetti logic that passes happy-path tests but fails at scale.
 - Subtle degradation of docstrings, comments, and architectural contracts.
 
-Zenith is designed from the ground up as an **AI-ready environment**:
+Zenith builds an **AI-ready environment** from commit zero:
 
 ```mermaid
 flowchart LR
@@ -139,15 +180,15 @@ symlinked for universal tool compatibility (`CLAUDE.md`, `.cursorrules`,
 
 ### Modular Agent Skills
 
-Agents do not just need rules; they need structured operational procedures. Zenith
+Agents do not just need rules—they need structured operational procedures. Zenith
 provides a standardized skill library spanning workflows, tool mechanics, and
 engineering guides.
 
 ### Machine-Readable Documentation
 
 Documentation builds automatically compile plain-text `site/llms.txt` and
-`site/llms-full.txt` feeds, allowing AI coding assistants to consume the entire API
-surface in a clean, high-signal format.
+`site/llms-full.txt` feeds, allowing AI coding assistants to consume the library's
+entire API surface in a clean, high-signal format.
 
 ## Architectural Workflow
 
@@ -191,8 +232,8 @@ For a detailed breakdown of the CI verification pipeline, see
 
 ## Project Sizing & Fit
 
-Zenith is opinionated. It is designed for longevity and maintainability, not
-disposable prototypes.
+Zenith is deliberately opinionated: the architecture is engineered for longevity and
+maintainability rather than disposable prototypes.
 
 ```mermaid
 flowchart TD
@@ -222,5 +263,27 @@ flowchart TD
 - **A 24-hour hackathon project**: When rapid experimentation and throwing away 90% of
   the code matters more than clean architecture, Zenith's 100% coverage and complexity
   limits will feel restrictive.
-- **Introductory Python exercises**: Beginners learning basic syntax do not need
-  multi-agent skills, architectural layers, or strict type checking mode.
+- **Isolated syntax practice**: If you are solely learning Python's basic `for` loop
+  syntax for the first time, a full production template is unnecessary overhead.
+  (However, if you are a junior engineer building your first production service or
+  serious portfolio project, Zenith provides ideal safety nets.)
+
+## Brownfield Adoption & Incremental Migration
+
+Engineering organizations rarely have the luxury of starting 100% of their projects from
+greenfield templates. If you are adopting Zenith principles in an existing codebase,
+apply this progressive ratcheting strategy:
+
+1. **Step 1: Unify Tooling with uv and Ruff**: Replace legacy package managers with `uv`
+   and legacy linters with `ruff check` and `ruff format`. This delivers immediate speed
+   improvements without code changes.
+2. **Step 2: Ratchet Coverage Progressively**: If your existing service has 65%
+   coverage, do not immediately enforce `fail_under = 100`. Set `fail_under = 65` in
+   `.coveragerc` and ratchet upward with each milestone, requiring 100% coverage only on
+   newly introduced modules.
+3. **Step 3: Capture Boundary Baselines with Tach**: Run `tach check --record` to
+   capture existing import structures without failing CI, then gradually eliminate
+   legacy circular dependencies.
+4. **Step 4: Enable Strict Typing in Increments**: Configure Pyrefly with transitional
+   settings, migrating key domain models to strict typing before enforcing complete type
+   coverage across legacy endpoints.

@@ -13,10 +13,27 @@ purpose: Introduce Zenith, showcase the four architectural pillars, and guide de
   An opinionated template for modern Python 3.12+ services, packages, and autonomous AI agents.
 </p>
 
+> [!NOTE]
+> **What Zenith Is**: Zenith is a production-grade [Cookiecutter](tools/cookiecutter.md)
+> project template for Python 3.12+. Rather than a runtime library you import, it
+> scaffolds a complete, pre-configured repository with sub-second developer tooling and
+> autonomous AI agent workflows—so you can write production code from commit zero
+> without tooling debt.
+>
+> **Human-First, AI-Accelerated**: Zenith works identically as a pure human-driven
+> developer workflow. AI agent skills are optional companions that operate within the
+> exact same mechanical guardrails.
+
 ## Quick Start
 
 > [!TIP]
-> **New to modern Python tooling or project templates?**
+> **Prerequisites & First Steps**
+> Zenith requires Astral **`uv`**. If you do not have `uv` installed yet:
+>
+> ```bash
+> curl -LsSf https://astral.sh/uv/install.sh | sh
+> ```
+>
 > If terms like virtual environments, `uv`, or project scaffolding are unfamiliar, start
 > with the [First Steps & Core Concepts](first-steps.md) guide.
 

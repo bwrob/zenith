@@ -18,9 +18,9 @@ It automates API documentation via `mkdocstrings[python]`, client-side MathJax L
 rendering, dynamic code execution through `markdown-exec`, and native Mermaid diagram
 support.
 
-It also automatically compiles machine-readable `site/llms.txt` and `site/llms-full.txt`
-feeds, allowing AI coding assistants to consume project architecture guides and API
-reference surfaces in a single contextual payload.
+It also compiles machine-readable `site/llms.txt` and `site/llms-full.txt` feeds,
+allowing AI coding assistants to consume the library's entire API reference surface and
+guides in a single, high-signal contextual payload.
 
 ## Why It's in Zenith
 
@@ -45,7 +45,7 @@ Zenith enhances Zensical with specialized plugins configured under `[project.plu
 
 ## Markdown Extensions Suite
 
-Zenith enables a comprehensive suite of Python-Markdown and PyMdown Extensions under
+Zenith enables a suite of Python-Markdown and PyMdown Extensions under
 `[project.markdown_extensions]` to support rich technical authoring:
 
 | Extension Category         | Extensions                                                            | Enabled Features                                                                                                                                                               |
@@ -85,8 +85,8 @@ uv run poe docs-build                  # Strict production build into site/
 
 - **Instant Millisecond Rebuilds**: Monitors `docs/`, `zensical.toml`, assets, and
   stylesheets, updating pages in milliseconds as Markdown files are modified.
-- **WebSocket Live Browser Sync**: Automatically pushes changes to all open browser tabs
-  without manual page refreshes.
+- **WebSocket Live Browser Sync**: Automatically pushes updates to all open browser
+  tabs without manual page refreshes.
 - **Agent Workflow Note**: When developers run `uv run poe docs-serve` in a terminal
   window, AI agents do not need to execute rebuilds during editing turns because the
   watchdog reloads pages automatically.

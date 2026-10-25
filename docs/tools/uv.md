@@ -97,10 +97,52 @@ update locks.
 
 ```bash
 uv sync                       # Synchronize project environment with uv.lock
+uv sync --frozen              # Strict sync in CI/Docker (fails if lockfile is out of date)
 uv sync --group test          # Sync with test dependency group
 uv run poe test               # Run Poe tasks inside managed environment
 uv build                      # Build sdist and wheel distributions
 uv lock --upgrade             # Upgrade dependency pins in uv.lock
+```
+
+## Production Multi-Stage Containerization
+
+For containerized microservices, `uv` enables lean, multi-stage Docker builds with
+BuildKit cache mounts and bytecode precompilation:
+
+```dockerfile
+# syntax=docker/dockerfile:1.7
+FROM python:3.12-slim-bookworm AS builder
+
+# Copy uv binary directly from official image
+COPY --from=ghcr.io/astral-sh/uv:0.5.0 /uv /bin/uv
+
+# Compile bytecode and copy packages instead of hardlinking
+ENV UV_COMPILE_BYTECODE=1 UV_LINK_MODE=copy
+
+WORKDIR /app
+
+# Install production dependencies using BuildKit cache mounts
+RUN --mount=type=cache,target=/root/.cache/uv \
+    --mount=type=bind,source=uv.lock,target=uv.lock \
+    --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
+    uv sync --frozen --no-dev --no-editable
+
+# Stage 2: Final lightweight runtime image
+FROM python:3.12-slim-bookworm AS runtime
+
+WORKDIR /app
+
+# Copy isolated virtual environment and application source
+COPY --from=builder /app/.venv /app/.venv
+COPY src /app/src
+
+# Set PATH to use the virtual environment binaries automatically
+ENV PATH="/app/.venv/bin:$PATH"
+
+# Run as non-root user for container security
+USER nobody
+
+ENTRYPOINT ["python", "-m", "my_awesome_service.cli"]
 ```
 
 ## Upstream Documentation

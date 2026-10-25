@@ -28,8 +28,8 @@ covered and missed branches in source files.
 
 Zenith establishes a non-negotiable engineering standard:
 **100% mandatory statement and branch test coverage** (`fail_under = 100` and
-`branch = true`). In Zenith, untested code is considered uncommitted code. If a single
-statement or conditional branch is missed, continuous integration pipelines fail
+`branch = true`). In Zenith, untested code is considered uncommitted code: if even a
+single statement or conditional branch is missed, continuous integration pipelines fail
 immediately.
 
 In AI-native workflows, 100% coverage provides a critical structural invariant.
@@ -37,6 +37,25 @@ Autonomous coding agents frequently introduce partial implementations, dead bran
 untested error-handling paths. Mandating full coverage prevents untested code from
 reaching `main`, while liberating developers to execute major architectural refactors
 without fear of regression.
+
+### Pragmatic Coverage: Platform Margins & Custom Thresholds
+
+While 100% statement and branch coverage is the default posture, real-world engineering
+requires pragmatic handling of operating systems and type guards:
+
+- **Built-in Exclusions**: Zenith's `.coveragerc` pre-configures `exclude_also` rules
+  for non-executable constructs:
+  - `if TYPE_CHECKING:` guards (active only during static type analysis).
+  - Protocol definitions and `@abstractmethod` signatures.
+  - Defensive unreachable fallbacks (`assert_never`, `raise NotImplementedError`).
+- **Platform-Specific Code**: When code branches on specific OS platforms (e.g.
+  `if sys.platform == "win32"`), use `# pragma: no cover` accompanied by a brief
+  rationale comment, or combine coverage artifacts across your CI matrix runners using
+  `coverage combine`.
+- **Customizing Thresholds**: If your application domain involves heavy external
+  sockets, C-extensions, or hardware drivers where exhaustive branch coverage yields low
+  engineering ROI, you can pragmatically adjust `fail_under = 90` directly inside
+  `.coveragerc`.
 
 ## Configuration in Zenith
 

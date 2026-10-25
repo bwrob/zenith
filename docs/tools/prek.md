@@ -19,7 +19,7 @@ automated inspections across staged files.
 Zenith configures `prek` through `prek.toml` with multiple validation layers:
 
 - **File Sanitization**: Trims trailing whitespace, fixes end-of-file newlines,
-  checks merge and case conflicts, and blocks oversized files.
+  validates merge and case conflicts, and blocks oversized files.
 - **Secret Detection**: Runs `gitleaks` to detect hardcoded credentials, API keys,
   and sensitive tokens.
 - **Manifest Validation**: Runs `validate-pyproject` to ensure `pyproject.toml`
@@ -32,7 +32,7 @@ Zenith configures `prek` through `prek.toml` with multiple validation layers:
 
 ## Why It's in Zenith
 
-Zenith standardizes on modern, ultra-fast, Rust-native developer tooling. Unlike
+Zenith standardizes on modern, fast, Rust-native developer tooling. Unlike
 traditional Python hook runners, `prek` executes hooks in milliseconds without
 Python interpreter startup latency or global virtual environment overhead.
 

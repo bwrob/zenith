@@ -31,9 +31,9 @@ unexpected side effects, uninitialized database connections, or missing C-extens
 crashes. Griffe extracts signatures, type hints, and docstrings completely offline and
 safely.
 
-To protect library consumers, Zenith wires `griffe check` into continuous integration
-and the `poe check-api` task, ensuring that pull requests cannot accidentally introduce
-breaking API changes in minor or patch releases.
+To protect library consumers, Zenith wires `griffe check` into continuous
+integration and the `poe check-api` task, ensuring that pull requests cannot
+accidentally introduce breaking API changes in minor or patch releases.
 
 ## Configuration in Zenith
 
