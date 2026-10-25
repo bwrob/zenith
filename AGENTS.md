@@ -46,6 +46,13 @@ Before editing code or executing tasks, ensure an isolated, clean working enviro
   - `uv run prek run --all-files`
   - Always re-read any files modified by formatters or `prek` hooks before making
     subsequent edits.
+- **CI Monitoring on Push**: Never leave work unmonitored after `git push`. Track the
+  triggered CI runs with `gh run watch` or `gh run list`. If a remote check fails,
+  inspect the failure immediately (`gh run view <run-id> --log-failed`), reproduce,
+  fix, and verify until all checks pass.
+- **Downstream CI Monitoring on PR Merge**: When merging a pull request to `main`,
+  monitor the automated sync workflow (`sync-example.yaml`) and verify that downstream
+  canary runs pass in `bwrob/zenith-example` (`workflow-example-sync`).
 - **Reproduce-First Bug Scoping**: When fixing a bug, first reproduce the failure with a
   minimal test, trace the root cause, and search the codebase for sibling occurrences of
   the same pattern before editing production code.
