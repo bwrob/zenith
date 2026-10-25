@@ -25,5 +25,6 @@ Instructions:
    - What is confusing, unexplained, or intimidating?
    - What misconceptions might someone with your background form?
    - What trade-offs, inefficiencies, or missing explanations exist?
-3. Send a structured evaluation report back using the schema in templates/evaluation_report.md.
+3. Write your structured evaluation report artifact to `.temp/docs-review/<persona-slug>.md` using the schema in `templates/evaluation_report.md`.
+4. Send a notification message back to the main thread confirming that your report is complete.
 ```

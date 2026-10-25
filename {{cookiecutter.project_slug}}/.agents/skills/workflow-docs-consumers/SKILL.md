@@ -25,30 +25,44 @@ Zenith evaluates documentation across complementary developer archetypes:
 
 ```mermaid
 flowchart TD
-    Docs["Documentation Suite<br/>(docs/ & guides)"] --> Orchestrator["Lead Review Orchestrator"]
+    Docs["Documentation Suite<br/>(docs/ & guides)"] --> Main["Main Thread Orchestrator"]
 
-    subgraph Personas["Independent Reader Subagents"]
+    subgraph Parallel["Parallel Subagent Execution"]
         direction TB
-        P1["Junior Developer<br/>(Onboarding & Usability)"]
-        P2["Senior Pythonista<br/>(Architecture & Trade-offs)"]
-        P3["Tech Lead / EM<br/>(Team Velocity & Business ROI)"]
-        P4["DevOps Engineer<br/>(CI/CD & Platform Stability)"]
-        P5["Solo Prototyper<br/>(Lean Speed & Modularity)"]
+        P1["Junior Developer Subagent"]
+        P2["Senior Pythonista Subagent"]
+        P3["Tech Lead Subagent"]
+        P4["DevOps Engineer Subagent"]
+        P5["Solo Prototyper Subagent"]
     end
 
-    Orchestrator --> P1
-    Orchestrator --> P2
-    Orchestrator --> P3
-    Orchestrator --> P4
-    Orchestrator --> P5
+    Main -->|Parallel Dispatch| P1
+    Main -->|Parallel Dispatch| P2
+    Main -->|Parallel Dispatch| P3
+    Main -->|Parallel Dispatch| P4
+    Main -->|Parallel Dispatch| P5
 
-    P1 --> Reports["Structured Persona Reports"]
-    P2 --> Reports
-    P3 --> Reports
-    P4 --> Reports
-    P5 --> Reports
+    subgraph Shared["Common Artifacts Directory (.temp/docs-review/)"]
+        R1["junior-developer.md"]
+        R2["senior-pythonista.md"]
+        R3["tech-lead.md"]
+        R4["devops-engineer.md"]
+        R5["solo-prototyper.md"]
+    end
 
-    Reports --> Synthesis["Synthesis Matrix & Refinement Plan"]
+    P1 --> R1
+    P2 --> R2
+    P3 --> R3
+    P4 --> R4
+    P5 --> R5
+
+    R1 --> Compact["Main Thread: Compact Findings & Propose Fixes"]
+    R2 --> Compact
+    R3 --> Compact
+    R4 --> Compact
+    R5 --> Compact
+
+    Compact --> Synthesis["Consolidated Synthesis<br/>(.temp/docs-review/synthesis.md)"]
     Synthesis --> Updates["Targeted Documentation Updates"]
 ```
 
@@ -65,24 +79,31 @@ Select two to three complementary personas based on your review goals:
 - For onboarding and usability: Pair **The Junior Developer** and **The Solo Prototyper**.
 - For architectural rigor: Pair **The Senior Pythonista** and **The Tech Lead**.
 - For platform and operations: Pair **The DevOps Engineer** and **The Tech Lead**.
-- For an exhaustive audit: Dispatch all five personas before major releases.
+- For a full audit: Dispatch all five personas before major releases.
 
-### Step 2: Dispatch Independent Reader Subagents
-Dispatch each persona as an independent subagent with clean context:
+### Step 2: Dispatch Independent Reader Subagents in Parallel
+Dispatch selected personas simultaneously as parallel subagents with clean context:
 1. Provide the persona mandate using [templates/persona_prompt.md](./templates/persona_prompt.md).
-2. Set read-only permissions for the subagent so it does not modify files during review.
-3. Instruct the subagent to read the target documentation files.
-4. Require the subagent to return findings using [templates/evaluation_report.md](./templates/evaluation_report.md).
+2. Set read-only permissions for project documentation and source files.
+3. Instruct each subagent to read the documentation independently in parallel.
+4. Require each subagent to save its evaluation report artifact in a shared location:
+   `.temp/docs-review/<persona-slug>.md`.
+5. Require each subagent to send a completion notification to the main thread.
 
-### Step 3: Synthesize Multi-Persona Findings
-When all subagents deliver reports, compile a cross-persona matrix:
-1. **First Impressions**: Identify where the project pitch or elevator message was unclear.
-2. **Unanswered Questions**: Extract questions that arose across multiple readers.
-3. **Friction Points**: Document scary terminology, cognitive complexity, or tone dissonance.
-4. **Architectural Gaps**: Record technical trade-offs that require clearer justification.
+### Step 3: Compact Multi-Persona Findings in the Main Thread
+When all parallel subagents complete their reviews, the main thread collects all artifacts:
+1. **Compact Overlapping Feedback**:
+   - Merge findings that repeat or touch similar issues from different viewpoints.
+   - For example, combine beginner confusion about tool commands with senior requests for tool configuration flags into a single documentation task.
+2. **Reconcile Persona Tensions**:
+   - Resolve opposing feedback between personas (such as beginner simplicity against senior technical depth) through progressive disclosure.
+3. **Formulate Concrete Fixes**:
+   - Translate compacted findings into specific edits with target file paths and proposed text changes.
+   - Save the consolidated review matrix to `.temp/docs-review/synthesis.md`.
+   - Present proposed changes to the team for review before editing files.
 
 ### Step 4: Implement Refinements and Verify
-Apply targeted edits to the documentation:
+Apply approved edits to documentation files:
 1. **Clarify Onboarding**: Add explicit definitions and quick translation tables for beginners.
 2. **Defend Trade-offs**: Add architectural justifications for senior reviewers.
 3. **Calibrate Tone**: Ensure tone remains supportive, empowering, and free from empty marketing buzzwords.

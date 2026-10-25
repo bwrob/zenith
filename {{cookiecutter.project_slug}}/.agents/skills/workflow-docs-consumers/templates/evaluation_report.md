@@ -1,6 +1,7 @@
 # Persona Evaluation Report Template
 
 Use this template to format subagent evaluation reports.
+Save each completed report artifact to `.temp/docs-review/<persona-slug>.md`.
 
 ## Report Structure
 

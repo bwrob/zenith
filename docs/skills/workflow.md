@@ -189,15 +189,15 @@ backgrounds to evaluate docs with fresh eyes.
   high-contrast developer archetypes (*The Junior Developer*,
   *The Opinionated Senior Pythonista*, *The Tech Lead & Engineering Manager*,
   *The DevOps Engineer*, and *The Solo Prototyper*).
-- **Clean-Context Dispatch**: Subagents run with zero prior project knowledge,
-  evaluating landing pages, quickstart tutorials, and architectural rationale as
-  outside developers.
-- **Structured Persona Reports**: Collects findings in a standardized schema detailing
-  immediate strengths, unanswered questions, friction points, jargon barriers, and
-  actionable improvements.
-- **Cross-Persona Synthesis**: Combines findings into an executive matrix, guiding
-  targeted documentation updates and verifying changes against all automated quality
-  gates.
+- **Parallel Subagent Dispatch**: Dispatches selected persona subagents concurrently
+  with clean context and read-only permissions, eliminating serial latency and mutual
+  bias.
+- **Common Artifact Storage**: Each persona writes its full evaluation report artifact
+  directly to `.temp/docs-review/<persona-slug>.md`.
+- **Main-Thread Compaction & Proposals**: The lead orchestrator collects all reports,
+  deduplicates repeated issues, reconciles competing persona tensions through
+  progressive disclosure, and formulates concrete file-by-file update proposals
+  before implementing edits.
 
 ---
 
