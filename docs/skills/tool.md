@@ -24,7 +24,7 @@ These tools manage dependencies, repeatable project tasks, and command-line work
 
 **What it is**: The skill governing Astral's high-speed package installer and resolver.
 
-**Why it is in Zenith**: Python dependency management historically suffered from
+**Why it's in Zenith**: Python dependency management historically suffered from
 sluggish resolvers, broken environment isolation, and fragmentation between tools. `uv`
 replaces this ecosystem with a single Rust binary that resolves packages in milliseconds
 and guarantees reproducible environments via `uv.lock`.
@@ -37,7 +37,7 @@ updates.
 
 **What it is**: The runbook for Zenith's declarative task runner, Poe the Poet.
 
-**Why it is in Zenith**: Development teams often rely on ad-hoc shell scripts or
+**Why it's in Zenith**: Development teams often rely on ad-hoc shell scripts or
 obscure `Makefile` targets that fail across operating systems. Poe the Poet defines
 development tasks directly inside `poe_tasks.toml` and runs them strictly within the
 isolated `uv` virtual environment.
@@ -51,7 +51,7 @@ composition patterns.
 **What it is**: The skill for running and configuring Git pre-commit lifecycle hooks
 using `prek`.
 
-**Why it is in Zenith**: Traditional Python `pre-commit` incurs noticeable startup
+**Why it's in Zenith**: Traditional Python `pre-commit` incurs noticeable startup
 latency and requires isolated environments for every hook. `prek` is a fast,
 Rust-native drop-in alternative that executes configured checks in parallel with minimal
 overhead.
@@ -64,20 +64,20 @@ workspace audits (`uv run prek run --all-files`), and `prek.toml` configuration 
 **What it is**: The design guide and syntax reference for building modern command-line
 interfaces using Typer and Rich.
 
-**Why it is in Zenith**: Building CLIs with Python standard `argparse` requires
+**Why it's in Zenith**: Building CLIs with Python's standard `argparse` requires
 verbose boilerplate. Typer leverages modern Python type hints and PEP 593 `Annotated`
-metadata to auto-generate help text, check arguments, and format output with Rich
+metadata to auto-generate help text, validate arguments, and format output with Rich
 terminal components.
 
-`tool-typer` ensures agents build CLIs adhering to Zenith typing standards. It uses
-lazy subcommand imports for fast startup and provides clean terminal panes.
+`tool-typer` ensures agents build CLIs adhering to Zenith typing standards, using lazy
+subcommand imports for fast startup and providing clean terminal panes.
 
 ### Template Instantiation & Scaffolding (tool-cookiecutter)
 
 **What it is**: The skill for maintaining and testing Zenith's Cookiecutter template
 engine, variables, and lifecycle hooks.
 
-**Why it is in Zenith**: Zenith is itself a Cookiecutter template. Maintaining
+**Why it's in Zenith**: Zenith is itself a Cookiecutter template. Maintaining
 `cookiecutter.json`, conditional file trees, and Jinja templating hooks requires strict
 attention to variable scoping and post-generation scripts.
 
@@ -93,9 +93,9 @@ These tools check source style, type correctness, module boundaries, and complex
 **What it is**: The operational guide for Astral Ruff, the unified Python linter and
 code formatter.
 
-**Why it is in Zenith**: In the past, Python projects combined multiple separate
-formatters and linters. This caused slow CI builds and conflicting formatting rules.
-Ruff replaces dozens of tools with a single Rust engine operating 10-100x faster than
+**Why it's in Zenith**: Historically, Python projects combined multiple separate
+formatters and linters, resulting in slow CI builds and conflicting formatting rules.
+Ruff replaces dozens of tools with a single Rust engine operating 10–100x faster than
 legacy alternatives.
 
 `tool-ruff` guides agents through Zenith's complete rule configuration (including
@@ -106,7 +106,7 @@ formatting rules.
 
 **What it is**: The reference guide for Meta's high-speed Pyrefly static type checker.
 
-**Why it is in Zenith**: Static typing is the bedrock of agentic reliability. When types
+**Why it's in Zenith**: Static typing is the bedrock of agentic reliability. When types
 are loose or unverified, AI assistants frequently introduce runtime `TypeError` or
 `AttributeError` exceptions. Pyrefly provides near-instantaneous feedback, first-class
 support for modern PEP 695 generic syntax, and strict structural subtyping.
@@ -118,9 +118,9 @@ aliases, and enforce 100% strict type coverage across domain packages.
 
 **What it is**: The skill for defining and enforcing module layer boundaries with Tach.
 
-**Why it is in Zenith**: As codebases expand, modular boundaries erode into circular
+**Why it's in Zenith**: As codebases expand, modular boundaries erode into circular
 dependencies and improper layer coupling. Tach enforces explicit import rules directly
-in AST.
+in the AST.
 
 `tool-tach` ensures agents respect defined layer hierarchies, update `tach.toml` when
 adding new modules, and resolve circular dependencies using dependency injection or
@@ -131,10 +131,9 @@ protocols.
 **What it is**: The runbook for measuring cognitive complexity and refactoring dense
 code.
 
-**Why it is in Zenith**: Cyclomatic complexity measures linear code branches. In
-contrast, cognitive complexity measures how difficult code is for a human mind and an
-LLM to understand. Deeply nested loops and defensive branch conditions are magnets for
-bugs.
+**Why it's in Zenith**: While cyclomatic complexity measures linear code branches,
+cognitive complexity measures how difficult code is for a human mind or an LLM to
+comprehend. Deeply nested loops and defensive branch conditions are magnets for bugs.
 
 Zenith sets a strict ceiling:
 **no function may exceed a cognitive complexity score of 10**. `tool-complexipy`
@@ -146,20 +145,20 @@ lookup tables) to reduce complexity scores.
 **What it is**: The skill for static AST inspection of Python public API signatures
 using Griffe.
 
-**Why it is in Zenith**: Unintended breaking changes in public APIs break downstream
+**Why it's in Zenith**: Unintended breaking changes in public APIs break downstream
 consumers. Griffe parses public docstrings and AST signatures without importing or
 executing untrusted code.
 
 In Zenith, `tool-griffe` powers automated API diff audits during Spec-Driven Development
-reviews (`uv run poe sdd-check-api`). This ensures every new, modified, or removed
-symbol is intentional.
+reviews (`uv run poe sdd-check-api`), ensuring every new, modified, or removed symbol
+is intentional.
 
 ### Source Code & Documentation Spelling Verification (tool-typos)
 
 **What it is**: The guide for source code and documentation spell checking via `typos`.
 
-**Why it is in Zenith**: Typos in code identifiers, configuration keys, or documentation
-anchor links degrade project professionalism and cause subtle runtime bugs. `typos` is a
+**Why it's in Zenith**: Typos in code identifiers, configuration keys, or documentation
+anchor links degrade project polish and cause subtle runtime bugs. `typos` is a
 zero-dependency Rust tool that scans codebases in milliseconds with virtually zero false
 positives.
 
@@ -174,8 +173,8 @@ These tools check behavior, coverage, dependency safety, and CI workflows.
 
 **What it is**: The runbook for Zenith's pytest test suite and ecosystem plugins.
 
-**Why it is in Zenith**: High-assurance engineering requires more than simple unit
-tests. Zenith's test stack integrates `pytest-xdist` for multi-core parallel execution,
+**Why it's in Zenith**: High-assurance engineering requires more than simple unit tests.
+Zenith's test stack integrates `pytest-xdist` for multi-core parallel execution,
 `pytest-randomly` for order-independent test isolation, `syrupy` for snapshot testing,
 and `hypothesis` for property-based fuzz testing.
 
@@ -186,7 +185,7 @@ failures, and managing test execution parameters.
 
 **What it is**: The configuration and enforcement guide for Coverage.py.
 
-**Why it is in Zenith**: Statement coverage is deceptive: a test can execute a line
+**Why it's in Zenith**: Statement coverage is deceptive: a test can execute a line
 without testing both branches of an `if` condition. Zenith enforces **100% branch and
 statement coverage** (`fail_under = 100`) as a mandatory quality gate.
 
@@ -198,19 +197,20 @@ branches.
 
 **What it is**: The guide for high-speed AST mutation testing with `mutmut`.
 
-**Why it is in Zenith**: 100% test coverage proves that tests executed the code.
-However, it does not prove that assertions test meaningful logic. Mutation testing
-modifies your AST (for example, flipping boolean operators) to check if tests fail.
+**Why it's in Zenith**: 100% test coverage proves that code was executed, but not that
+the tests actually assert anything meaningful. Mutation testing modifies your AST (for
+example, flipping boolean operators) to verify whether tests fail.
 
-`tool-mutmut` provides a fast mutation loop for local development. Developers and agents
-discover surviving mutants and write deeper test assertions.
+`tool-mutmut` provides a fast, interactive mutation loop for local development, helping
+developers and agents discover surviving mutants and write deeper test assertions.
 
 ### Cross-Platform Mutation Testing (tool-cosmic-ray)
 
 **What it is**: The skill for thorough, cross-platform mutation testing with Cosmic Ray.
 
-**Why it is in Zenith**: `mutmut` excels at fast local loops. Cosmic Ray provides
-mutation sweeps across all supported platforms, including Windows environments.
+**Why it's in Zenith**: While `mutmut` excels at fast local developer loops, Cosmic Ray
+provides comprehensive AST mutation sweeps across all supported platforms, including
+Windows environments.
 
 `tool-cosmic-ray` teaches agents how to initialize SQLite mutation databases, execute
 distributed mutation workers, and analyze survivor summaries.
@@ -219,12 +219,12 @@ distributed mutation workers, and analyze survivor summaries.
 
 **What it is**: The static security analyzer for GitHub Actions workflows.
 
-**Why it is in Zenith**: CI/CD workflows are frequent targets for supply-chain attacks,
+**Why it's in Zenith**: CI/CD workflows are frequent targets for supply-chain attacks,
 script injections, unpinned third-party actions, and excessive token permissions.
 
-`tool-zizmor` audits all `.github/workflows/*.yaml` files in pedantic mode. The audit
-ensures workflows follow least-privilege permissions, pin actions to full commit SHAs,
-and guard against script execution bugs.
+`tool-zizmor` audits all `.github/workflows/*.yaml` files in pedantic mode, ensuring
+workflows follow least-privilege permissions, pin actions to full commit SHAs, and guard
+against arbitrary script execution.
 
 ## Documentation, Assets & Formatting
 
@@ -235,9 +235,10 @@ These tools build documentation and keep its source files and visual assets cons
 **What it is**: The operational guide for Zensical, Zenith's modern static documentation
 generator.
 
-**Why it is in Zenith**: Developers configure Zensical entirely via TOML
-(`zensical.toml`). It features instant live-reloading, automatic `llms.txt` generation,
-and clean theme switching.
+**Why it's in Zenith**: Traditional documentation generators often rely on slow builds,
+complex Python configurations, or legacy themes. Zensical is configured entirely via
+TOML (`zensical.toml`) and features instant live-reloading, automatic `llms.txt`
+generation, Lucide icons, and native dark/light mode switching.
 
 `tool-zensical` guides agents in serving documentation locally
 (`uv run poe docs-serve`), organizing navigation hierarchies, and configuring
@@ -247,7 +248,7 @@ and clean theme switching.
 
 **What it is**: The skill for formatting and linting documentation with `rumdl`.
 
-**Why it is in Zenith**: Markdown documentation easily drifts into inconsistent heading
+**Why it's in Zenith**: Markdown documentation easily drifts into inconsistent heading
 styles, broken links, and irregular list formatting. `rumdl` formats markdown at Rust
 speeds and features integrated code-block tools that format embedded Python blocks with
 Ruff.
@@ -259,7 +260,7 @@ formatting prose, and resolving rule diagnostics.
 
 **What it is**: The formatting and schema validation guide for TOML configuration files.
 
-**Why it is in Zenith**: Zenith organizes configurations into dedicated TOML files
+**Why it's in Zenith**: Zenith organizes configurations into dedicated TOML files
 (`pyproject.toml`, `tach.toml`, `zensical.toml`, `poe_tasks.toml`). Without automated
 formatting, key-value pairs become disorganized and hard to read.
 
@@ -271,17 +272,18 @@ TOML manifests via `uv run poe format-check-toml`.
 **What it is**: The formatting guide for GitHub Actions YAML manifests and custom CSS
 stylesheets using Prettier.
 
-**Why it is in Zenith**: Ruff and Taplo format Python and TOML. Prettier formats GitHub
-Actions YAML workflows and Zensical CSS stylesheets with consistent indentation.
+**Why it's in Zenith**: While Ruff and Taplo format Python and TOML, GitHub Actions
+workflows and Zensical CSS styling require consistent multi-line indentation and quote
+normalization.
 
-`tool-prettier` formats all YAML and CSS files to prevent noisy Git diffs.
+`tool-prettier` formats all YAML and CSS files automatically to prevent noisy Git diffs.
 
 ### Vector Logotypes & Asset Generation (tool-typst)
 
 **What it is**: The guide for authoring vector SVG logotypes and diagrams using the
 Typst typesetting engine.
 
-**Why it is in Zenith**: Raster images (PNG, JPEG) blur on high-DPI displays and cannot
+**Why it's in Zenith**: Raster images (PNG, JPEG) blur on high-DPI displays and cannot
 be edited in code. Typst compiles human-readable code into crisp, responsive vector SVG
 assets (such as `docs/assets/python-logo.svg`).
 
@@ -293,7 +295,7 @@ export workflows.
 **What it is**: The skill for authoring interactive terminal animations in
 documentation.
 
-**Why it is in Zenith**: Static CLI output in documentation is dry and unengaging.
+**Why it's in Zenith**: Static CLI output in documentation is dry and unengaging.
 Termynal provides lightweight animated terminal widgets that simulate real CLI sessions
 with interactive controls and custom progress delays.
 

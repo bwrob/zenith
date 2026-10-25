@@ -24,7 +24,7 @@ terminal help screens, elegant error dialogs, and progress displays directly fro
 function signatures and docstrings. It also provides automatic tab-completion support
 across all major shells.
 
-## Why It Is in Zenith
+## Why It's in Zenith
 
 Zenith chooses Typer for projects that require a command-line interface because it
 harmonizes completely with strict static type checking. Unlike legacy `argparse` or
@@ -185,7 +185,8 @@ Try 'my-awesome-service --help' for help.
 
 ## Automated CLI Testing
 
-Tests in `tests/test_cli.py` check CLI commands using `typer.testing.CliRunner`:
+CLI commands in Zenith projects are verified using `typer.testing.CliRunner` in
+`tests/test_cli.py`:
 
 ```python
 from my_awesome_service.cli import app

@@ -21,7 +21,7 @@ prompts, user input, and console outputs.
 Unlike video recordings or animated GIFs, Termynal renders text as pure, accessible HTML
 and CSS without heavy media assets.
 
-## Why It Is in Zenith
+## Why It's in Zenith
 
 First impressions matter. Displaying an interactive, animated terminal demonstration of
 the CLI on the landing page immediately conveys project ergonomics without requiring

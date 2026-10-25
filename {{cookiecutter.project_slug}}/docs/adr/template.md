@@ -19,9 +19,9 @@ trade-off requires resolution? What forces, requirements, and constraints apply?
 
 ## Decision Drivers
 
-- *Driver 1, for example, zero runtime overhead or sub-millisecond import time*
-- *Driver 2, for example, strict static type checking with Pyrefly*
-- *Driver 3, for example, modular layer boundary enforcement via Tach*
+- *Driver 1, e.g., zero runtime overhead or sub-millisecond import time*
+- *Driver 2, e.g., strict static type checking with Pyrefly*
+- *Driver 3, e.g., modular layer boundary enforcement via Tach*
 
 ## Considered Options
 
@@ -63,4 +63,4 @@ Chosen option: **"Option 1: *Name*"**, because
 - **Tach Layers**: *Impact on `tach.toml` modules or layer definitions*
 - **Static Typing**:
   *Impact on Pyrefly type contracts, Protocols, or generic parameters*
-- **Testing Strategy**: *How automated tests check this invariant*
+- **Testing Strategy**: *How this invariant is validated in automated tests*

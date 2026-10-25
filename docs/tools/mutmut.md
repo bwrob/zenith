@@ -8,24 +8,24 @@ purpose: Document fast local AST mutation testing and survivor mutant eliminatio
 [![Tool: mutmut](https://img.shields.io/badge/mutation-mutmut-orange.svg)](https://mutmut.readthedocs.io/)
 
 `mutmut` is a fast mutation testing framework for Python. It introduces deliberate
-modifications into the Abstract Syntax Tree (AST) of source code. It then executes the
-test suite against each mutation to verify whether tests catch the defect.
+modifications into the Abstract Syntax Tree (AST) of source code and executes the test
+suite against each mutation to verify whether existing tests actively catch the
+introduced defects.
 
 ## What It Does
 
-Traditional code coverage only measures which lines of code run during a test suite
-execution. It cannot determine whether tests contain meaningful assertions. A test suite
-can reach 100% line coverage while asserting nothing.
+Traditional code coverage only measures which lines of code were executed during a test
+run; it cannot determine whether tests contain meaningful assertions. A test suite can
+reach 100% line coverage while asserting nothing.
 
-`mutmut` modifies Python AST trees directly in memory and source files. It applies
-small mutations such as swapping relational operators (`<` to `<=`), replacing boolean
-constants, mutating numbers, or removing function calls. It then runs targeted `pytest`
-executions against each mutant.
+`mutmut` modifies Python AST trees directly in memory and source files, applying
+microscopic mutations such as swapping relational operators (`<` to `<=`), replacing
+boolean constants, mutating numbers, or removing function calls. It then runs targeted
+`pytest` executions against each mutant. When a mutant causes a test failure, it is
+marked as killed; when all tests pass despite the mutation, the mutant is flagged as
+surviving, revealing an untested boundary condition.
 
-When a mutant causes a test failure, `mutmut` records it as killed. When all tests pass
-despite the mutation, the mutant survives. This reveals an untested boundary condition.
-
-## Why It Is in Zenith
+## Why It's in Zenith
 
 Zenith integrates mutation testing to prevent test suites from becoming superficial
 coverage checklists. Autonomous AI coding agents frequently generate tests that achieve
@@ -35,7 +35,7 @@ execute paths.
 
 Zenith provides `mutmut` as the primary mutation testing tool for rapid, day-to-day
 developer and AI agent iteration loops. Running `uv run poe test-mutation` evaluates
-code in seconds. Developers can inspect surviving mutants immediately and
+code in seconds, allowing developers to inspect surviving mutants immediately and
 strengthen assertions before opening a pull request.
 
 > [!WARNING]

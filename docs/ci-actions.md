@@ -5,9 +5,10 @@ purpose: Document GitHub Actions delivery pipelines, security scanning schedules
 
 # CI/CD Pipeline
 
-Zenith scaffolds automation using GitHub Actions. Automation operates in two
-distinct lifecycles: a continuous delivery pipeline for code updates, and a
-scheduled governance pipeline for security audits.
+Zenith scaffolds automation using GitHub Actions, organizing delivery and
+maintenance into two distinct operational lifecycles: a continuous delivery pipeline
+triggered by code changes, and a scheduled governance pipeline running background
+security audits.
 
 ## Delivery Pipeline
 
@@ -39,10 +40,10 @@ compatibility across Python 3.12 through 3.15.
 
 Automated quality gates block syntax flaws, unannotated functions, cyclomatic complexity
 spikes, circular imports, and undeclared dependencies before human review begins.
-Mandatory 100% test coverage enforces complete assertion depth. Lowest-direct
-resolution proves declared minimum dependency bounds in `pyproject.toml`. In
-addition, `UV_EXCLUDE_NEWER` establishes an explicit timestamp cutoff to shield
-builds against supply-chain disruptions.
+Mandatory 100% statement and branch coverage enforces complete assertion depth,
+lowest-direct resolution proves that declared minimum dependency bounds in
+`pyproject.toml` actually work, and `UV_EXCLUDE_NEWER` establishes an explicit package
+cutoff timestamp to shield builds against upstream supply-chain disruptions.
 
 ### Test Redistribution Workflow
 
@@ -50,19 +51,21 @@ Proves that built wheel (`.whl`) and source (`.tar.gz`) distribution packages in
 and execute cleanly in isolated user environments.
 
 Tests run inside a developer checkout often pass because uncommitted files or assets
-exist locally on disk. Installing freshly built wheels into an isolated environment
-eliminates local checkout blind spots. Testing against the installed package proves
-that users installing via `uv add` or `pip install` receive a working distribution.
+exist locally on disk. Installing freshly built wheels into an isolated environment and
+executing tests against the installed artifact eliminates local checkout blind spots,
+proving that users installing via `uv add` or `pip install` receive a fully functional
+distribution.
 
 ### Documentation Workflow
 
 Builds and deploys verified documentation to GitHub Pages while compiling
 machine-readable `llms.txt` feeds for AI assistants.
 
-Strict build-time validation eliminates link rot. Deployments fail whenever an
-internal link, API reference anchor, or footnote contains errors. The workflow
-deploys credential-free via GitHub OpenID Connect (OIDC) permissions. It
-automatically compiles plain-text `site/llms.txt` feeds for AI coding assistants.
+Strict build-time validation eliminates link rot by failing deployments whenever an
+internal link, API reference anchor, or footnote is broken. The workflow deploys
+credential-free via GitHub OpenID Connect (OIDC) permissions, while automatically
+compiling structured `site/llms.txt` and `site/llms-full.txt` feeds for AI coding
+assistants.
 
 > [!IMPORTANT]
 > **Configure GitHub Pages Deployment Source**
@@ -118,6 +121,6 @@ Continuously audits locked transitive dependencies against published CVE vulnera
 databases on a recurring schedule.
 
 Security vulnerabilities are frequently uncovered in third-party packages months after
-developers lock dependencies. Scheduled background audits alert maintainers to newly
-disclosed CVEs. This enables prompt remediation before vulnerabilities affect
-production services.
+dependencies are locked and deployed. Running scheduled background audits alerts
+maintainers to newly disclosed CVEs, enabling prompt remediation before
+vulnerabilities affect production services.

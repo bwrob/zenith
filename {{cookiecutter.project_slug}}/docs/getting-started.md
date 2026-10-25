@@ -111,8 +111,9 @@ virtual environments.
 - [ ] Preview documentation with `uv run poe docs-serve`
 
 > [!NOTE]
-> Configure GitHub Pages to deploy via `.github/workflows/docs.yaml`. Open your GitHub
-> repository, go to **Settings** → **Pages**, and set **Source** to **GitHub Actions**.
+> To enable automated documentation deployment to GitHub Pages via
+> `.github/workflows/docs.yaml`, open your GitHub repository, navigate to **Settings** →
+> **Pages**, and set **Build and deployment** → **Source** to **GitHub Actions**.
 
 > [!TIP]
 > When browsing docs, press ++slash++ or ++cmd+k++ (or ++ctrl+k++ on Linux/Windows) to

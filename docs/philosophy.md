@@ -19,8 +19,8 @@ bumps that slow down feature delivery. Teams relax type checkers, postpone test
 coverage, skip complexity limits, and permit circular dependencies under the illusion of
 moving faster.
 
-Zenith rejects this premise. Automated, exhaustive, and non-negotiable guardrails
-bring clear benefits:
+Zenith rejects this premise. When guardrails are automated, exhaustive, and
+non-negotiable, engineering velocity actually increases:
 
 - **Refactoring Is Fearless**: 100% statement and branch test coverage guarantees that
   regressions surface immediately. Engineers and AI agents can restructure internal
@@ -31,9 +31,9 @@ bring clear benefits:
 - **Ambiguity Disappears**: Strict static types serve as living machine contracts.
   Developers and AI agents never have to guess what shape an object takes or what values
   a function accepts.
-- **The Gate Blocks Low-Quality AI Code**: Autonomous agents cannot commit untyped
-  objects, convoluted logic, circular dependencies, or fragile workarounds. The
-  quality gate rejects non-compliant code immediately.
+- **Low-Quality AI Code Is Blocked at the Gate**: Autonomous agents cannot commit
+  untyped objects, convoluted logic, circular dependencies, or fragile workarounds
+  because the quality gate rejects non-compliant code immediately.
 
 ### The Guardrail Stack
 
@@ -58,8 +58,8 @@ bring clear benefits:
 
     ---
 
-    The engine restricts functions to low cognitive and cyclomatic complexity. Deeply
-    nested loops, cascading conditionals, and convoluted branching logic trigger errors
+    Functions are held to low cognitive and cyclomatic complexity limits. Deeply nested
+    loops, cascading conditionals, and convoluted branching logic are blocked directly
     at the authoring gate.
 
 -   **Architectural Boundary Enforcement**
@@ -80,9 +80,8 @@ bring clear benefits:
 
     ---
 
-    The pipeline audits transitive dependencies and workflow configurations against
-    known vulnerability databases with pinned cutoff dates to prevent supply-chain
-    attacks.
+    Transitive dependencies and workflow configurations are audited against known
+    vulnerability databases with pinned cutoff dates to prevent supply-chain attacks.
 
 </div>
 
@@ -94,7 +93,7 @@ context switching. When running quality checks takes 45 seconds, developers look
 check messages, and avoid running checks until the end of the day.
 
 This is where modern Rust-native tooling enters the picture. **Speed is not the
-philosophy itself. Speed makes thorough quality checks frictionless.**
+philosophy itself; speed is what makes thorough quality checks frictionless.**
 
 By standardizing on fast, Rust-powered tooling, Zenith compresses complete quality
 checks into seconds:
@@ -105,7 +104,7 @@ checks into seconds:
   of strict rules.
 - Local pre-commit hooks and live documentation previews run instantaneously.
 
-Strictness provides the safety. Sub-second performance provides the velocity.
+Strictness provides the safety; sub-second performance provides the velocity.
 
 ## AI-Ready Architecture
 
@@ -139,15 +138,15 @@ symlinked for universal tool compatibility (`CLAUDE.md`, `.cursorrules`,
 
 ### Modular Agent Skills
 
-Agents do not only need rules. Agents need structured operational procedures. Zenith
+Agents do not just need rules—they need structured operational procedures. Zenith
 provides a standardized skill library spanning workflows, tool mechanics, and
 engineering guides.
 
 ### Machine-Readable Documentation
 
 Documentation builds automatically compile plain-text `site/llms.txt` and
-`site/llms-full.txt` feeds. AI coding assistants consume the entire API
-surface through these feeds in a clean format.
+`site/llms-full.txt` feeds, allowing AI coding assistants to consume the library's
+entire API surface in a clean, high-signal format.
 
 ## Architectural Workflow
 
@@ -191,8 +190,8 @@ For a detailed breakdown of the CI verification pipeline, see
 
 ## Project Sizing & Fit
 
-Zenith enforces opinionated standards. The architecture targets longevity and
-maintainability, not disposable prototypes.
+Zenith is deliberately opinionated: the architecture is engineered for longevity and
+maintainability rather than disposable prototypes.
 
 ```mermaid
 flowchart TD
@@ -219,8 +218,8 @@ flowchart TD
 
 - **A 50-line utility script**: Do not use Zenith. Use `uv run script.py` with inline
   PEP 723 metadata.
-- **A 24-hour hackathon project**: Rapid experimentation often requires discarding
-  prototype code. Zenith test coverage and complexity limits slow down throwaway
-  experiments.
+- **A 24-hour hackathon project**: When rapid experimentation and throwing away 90% of
+  the code matters more than clean architecture, Zenith's 100% coverage and complexity
+  limits will feel restrictive.
 - **Introductory Python exercises**: Beginners learning basic syntax do not need
   multi-agent skills, architectural layers, or strict type checking mode.

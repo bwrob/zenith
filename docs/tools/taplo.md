@@ -16,7 +16,7 @@ strict, clean formatting and schema validation across all TOML configuration fil
 4-space indentation, and alphabetically sorted tables. It verifies TOML syntax and
 validates configuration files against JSON Schema definitions in milliseconds.
 
-## Why It Is in Zenith
+## Why It's in Zenith
 
 Modern Python projects rely heavily on TOML across all tool configurations
 (`pyproject.toml`, `poe_tasks.toml`, `zensical.toml`, `ruff.toml`, `tach.toml`,

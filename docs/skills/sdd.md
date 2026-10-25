@@ -8,10 +8,11 @@ purpose: Guide developers and agents through the phased Spec-Driven Development 
 The **Spec-Driven Development (SDD)** suite (`sdd-*`) is Zenith's core methodology
 for high-assurance software engineering with autonomous AI coding agents.
 
-Traditional agentic development treats coding as a conversation. A developer
-submits a loose prompt, the model guesses, and errors occur. In contrast, SDD treats
-**specifications as versioned contracts**. Code is a downstream artifact generated
-from approved specifications.
+Traditional agentic development often treats coding as a conversation: a developer
+submits a loose prompt, the model guesses an implementation, errors occur, and both
+parties spend hours playing conversational whack-a-mole. In contrast, SDD treats
+**specifications as authoritative, versioned contracts**. Code is merely a downstream
+artifact generated from approved specifications.
 
 ## The SDD Lifecycle & Invariants
 
@@ -39,9 +40,11 @@ SDD enforces four non-negotiable architectural invariants:
 3. **Approval Stops vs. Autonomous Mode**:
    By default (Supervised Mode), agents pause after specification, planning,
    implementation, and review for human sign-off. When the developer passes
-   `--autonomous` or `/goal`, the suite runs end-to-end without pausing.
-4. **Reversibility**: When a task fails quality gates, `poe sdd-revert` rolls back the
-   commit. It resets the plan checkbox without leaving dirty working trees.
+   `--autonomous` or `/goal`, the suite runs end-to-end without pausing unless an
+   automated quality gate fails.
+4. **Reversibility**: When a task fails quality gates or introduces architectural
+   drift, `poe sdd-revert` cleanly rolls back the commit and resets the plan checkbox
+   without leaving dirty working trees.
 
 ## The Five SDD Skills
 
@@ -52,30 +55,31 @@ Each skill owns one stage of the specification-driven development lifecycle.
 **What it is**: The high-level workflow director that guides a feature from initial
 concept to final archival across the entire SDD lifecycle.
 
-**Why it is in Zenith**: Coordinating specialized subagents, task boundaries, Git
-branches, and verification gates manually causes errors. `sdd` provides a state machine
-that orchestrates each phase, tracks feature progress, and prevents bypassing quality
-gates.
+**Why it's in Zenith**: Coordinating multiple specialized subagents, task boundaries,
+Git branches, and verification gates manually is prone to error. `sdd` provides a
+deterministic state machine that orchestrates each phase, tracks feature progress, and
+ensures no quality gates are bypassed.
 
 Key capabilities include:
 
 - **Lifecycle Orchestration**: Automates branch creation, directory initialization,
   agent handoffs, and final archival.
-- **Fast-Path SDD**: Scales down ceremony for small features (under 150 lines). It
-  combines specification and planning into a single workflow.
+- **Fast-Path SDD**: Automatically scales down ceremony for small features and bug fixes
+  (under 150 lines of change), combining specification and planning into a lean,
+  single-step workflow.
 - **Permanent Archival**: Upon approval, `uv run poe sdd-archive <feature-id>` folds
   completed specifications from `.specs/` into permanent repository documentation under
   `docs/specs/`, preserving institutional memory.
-- **Task Rollback**: When a task fails quality gates,
-  `uv run poe sdd-revert <feature-id>` performs a Git revert. It restores the task
-  checkbox in `plan.md`.
+- **Task Rollback**: When a task fails quality gates or encounters architectural drift,
+  `uv run poe sdd-revert <feature-id>` performs a non-destructive Git revert and
+  restores the task checkbox in `plan.md`.
 
 ### Specification Authoring (sdd-spec)
 
 **What it is**: The requirements elicitation and specification drafting skill that
 captures user needs before developers write code.
 
-**Why it is in Zenith**: AI models love jumping directly into code. When prompted with a
+**Why it's in Zenith**: AI models love jumping directly into code. When prompted with a
 feature idea, agents typically make unstated assumptions about error behavior,
 performance ceilings, and edge cases. `sdd-spec` forces active clarification *before*
 writing code.
@@ -98,10 +102,10 @@ Core practices enforced by `sdd-spec`:
 **What it is**: The architectural planning skill that translates approved specifications
 into typed Python 3.12+ component designs and atomic implementation tasks.
 
-**Why it is in Zenith**: Large, unconstrained implementation tasks cause LLMs to lose
+**Why it's in Zenith**: Large, unconstrained implementation tasks cause LLMs to lose
 focus, skip edge cases, or introduce subtle type errors. `sdd-plan` decomposes features
-into atomic tasks (under 100 lines of change each) with explicit dependencies and
-verification commands.
+into atomic, bite-sized tasks (under 100 lines of change each) with explicit
+dependencies and verification commands.
 
 Key architectural guardrails:
 
@@ -118,9 +122,10 @@ Key architectural guardrails:
 **What it is**: The sequential execution engine that implements plan tasks using strict
 Test-Driven Development (TDD).
 
-**Why it is in Zenith**: Unsupervised agents often write production code before
-tests. Tests then mirror the implementation without testing real behavior.
-`sdd-implement` enforces a strict red-green-refactor loop.
+**Why it's in Zenith**: Unsupervised agents often write production code first and tests
+second, creating tests that mirror their implementation rather than verifying actual
+requirements. `sdd-implement` enforces a strict red-green-refactor loop that guarantees
+genuine test-driven verification.
 
 Implementation protocol:
 
@@ -139,9 +144,9 @@ Implementation protocol:
 **What it is**: The independent quality gate that audits implemented code against the
 original specification before merging.
 
-**Why it is in Zenith**: An author cannot objectively audit their own work. When the
-same agent context evaluates its own code, confirmation bias blinds it to breaking
-changes, unplanned API exports, and untested edge cases. `sdd-review` acts as an
+**Why it's in Zenith**: An author cannot objectively audit their own work. When the same
+agent evaluates its own implementation, confirmation bias blinds it to breaking changes,
+unplanned API exports, and untested edge cases. `sdd-review` acts as an independent
 adversarial auditor.
 
 Review capabilities:
@@ -152,8 +157,9 @@ Review capabilities:
 - **Traceability Verification**: Runs `uv run poe sdd-check-traceability <feature-id>`
   to guarantee that every functional requirement (`REQ-XXX`) maps to passing test
   functions.
-- **Smart Diff Chunking**: For pull requests exceeding 300 lines, review switches to a
-  chunked file-by-file review. This eliminates model attention degradation.
+- **Smart Diff Chunking**: For pull requests exceeding 300 lines of change, review
+  switches to a chunked file-by-file inspection to eliminate model attention
+  degradation.
 - **Remediation Loop**: When auditors detect issues, the skill appends a structured
   `Review Fixes` phase to `plan.md`, returning the feature to `sdd-implement` for
   targeted resolution.

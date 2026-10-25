@@ -21,7 +21,7 @@ Rumdl also integrates with Python linters like Ruff to check embedded Python cod
 blocks (` ```python `). This guarantees that examples never contain broken syntax,
 invalid imports, or outdated conventions.
 
-## Why It Is in Zenith
+## Why It's in Zenith
 
 Legacy Markdown linters require Node.js or Ruby runtimes. Zenith chooses rumdl to
 eliminate `npm` dependencies, keeping development environments strictly hermetic with

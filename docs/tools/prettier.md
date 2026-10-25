@@ -21,7 +21,7 @@ formatting, key-value spacing, and scalar wrapping across GitHub Actions workflo
 By formatting files automatically, Prettier completely eliminates stylistic noise from
 pull request reviews and version control diffs.
 
-## Why It Is in Zenith
+## Why It's in Zenith
 
 Zenith enforces consistent 4-space indentation across all languages in the project
 (Python, TOML, YAML, and CSS). Prek runs Prettier mirrors directly, executing

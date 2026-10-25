@@ -13,7 +13,7 @@ modern Python 3.12+ type system syntax.
 
 ## What It Does
 
-Pyrefly checks type soundness across Python codebases by evaluating Abstract Syntax
+Pyrefly validates type soundness across Python codebases by evaluating Abstract Syntax
 Trees in Rust. It natively supports modern Python 3.12+ features—including PEP 695
 generic syntax (`def get_item[T](items: list[T]) -> T:`), type aliases, and structural
 subtyping through `typing.Protocol` without requiring inheritance.
@@ -21,7 +21,7 @@ subtyping through `typing.Protocol` without requiring inheritance.
 By validating function boundaries at compile time, Pyrefly catches missing type
 annotations, implicit dynamic conversions, and unsafe coercions with instant feedback.
 
-## Why It Is in Zenith
+## Why It's in Zenith
 
 Zenith runs Pyrefly in its highest-assurance configuration (`preset = "strict"`). This
 eliminates implicit `Any` and ensures that every public interface, parameter, and return
@@ -48,7 +48,7 @@ print(path.read_text().strip())
 ### Strict Mode Invariants
 
 Under strict mode, all function parameters and return types must be fully annotated.
-Implicit `Any` inference is strictly prohibited, Pyrefly checks structural protocols at
+Implicit `Any` inference is strictly prohibited, structural protocols are validated at
 call sites, and any untyped third-party libraries require explicit stub declarations or
 typed wrappers.
 

@@ -21,16 +21,16 @@ conditional ladders, and convoluted boolean expressions.
 `complexipy` performs this analysis in milliseconds, generating detailed terminal
 reports that pinpoint exact lines where cognitive overhead spikes.
 
-## Why It Is in Zenith
+## Why It's in Zenith
 
 Deeply nested logic and tangled branching are the primary sources of regression bugs in
 production software. AI coding assistants frequently write deeply nested code when
 attempting to patch complex functionality.
 
 Zenith enforces a hard ceiling of **cognitive complexity <= 10** per function or method.
-Functions exceeding 10 points fail CI immediately. This requirement prompts developers
-and agents to refactor logic into composable functions with early returns or dispatch
-tables.
+Functions that exceed 10 points fail CI immediately, prompting developers and AI agents
+to refactor logic into small, composable functions with early returns, structural
+pattern matching, or dispatch tables.
 
 ## Configuration in Zenith
 

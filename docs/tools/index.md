@@ -84,23 +84,25 @@ Zenith, configuration showcases, and upstream references.
 
 ## Dedicated Configuration Files
 
-Most modern Python tools support defining configuration inside `pyproject.toml` with
-`[tool.*]` tables. Consolidating settings into one file seems convenient. However,
-Zenith standardizes on dedicated configuration files for each tool. Examples include
-`ruff.toml`, `pyrefly.toml`, `complexipy.toml`, `tach.toml`, `poe_tasks.toml`,
-`pytest.ini`, `.coveragerc`, `.taplo.toml`, and `prek.toml`.
+Most modern Python tools—such as Ruff, Pytest, Coverage, and Taplo—support defining
+configuration directly inside `pyproject.toml` using `[tool.*]` tables. While
+consolidating settings into a single file appears convenient, Zenith intentionally
+standardizes on **separate, dedicated configuration files per tool** whenever possible
+(`ruff.toml`, `pyrefly.toml`, `complexipy.toml`, `tach.toml`, `poe_tasks.toml`,
+`pytest.ini`, `.coveragerc`, `.taplo.toml`, `prek.toml`):
 
-- **Focused Code Reviews**: Updating a linter rule, adjusting type checks, or
-  revising task scripts creates a clean Git diff in that tool's file. Pull requests
-  remain easy to review without noise in the core packaging manifest.
-- **Prevents Monolithic File Bloat**: Storing configuration for 15+ developer tools
-  in `pyproject.toml` creates a file stretching hundreds of lines. This bloat obscures
-  essential package metadata, dependencies, and build specifications.
+- **Focused, High-Signal Code Reviews**: Updating a linter rule, adjusting type check
+  settings, or revising task scripts creates a clean Git diff in that tool's specific
+  file. Pull requests remain easy to review without noise in the core packaging
+  manifest.
+- **Prevents Monolithic File Bloat**: Storing configuration for 15+ developer tools in
+  `pyproject.toml` results in a file stretching hundreds of lines. This bloat obscures
+  essential PEP 621 package metadata, dependencies, and build specifications.
 - **Granular Git Blame & History**: Each tool configuration retains an independent
   commit history. Inspecting `git log ruff.toml` or `git blame tach.toml` surfaces the
   exact context, author, and pull request for architectural decisions over time.
-- **Tool-Native Schema Support**: Dedicated files allow language servers and editors
-  to attach schemas directly without schema interference.
+- **Tool-Native Schema Support**: Dedicated files allow language servers, editors, and
+  formatters to attach dedicated JSON/TOML schemas directly without schema interference.
 
 ## Tooling Matrix
 

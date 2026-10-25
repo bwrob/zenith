@@ -20,11 +20,11 @@ AST representations without importing code or executing side-effects.
 
 Griffe automatically parses Google, NumPy, and Sphinx docstrings, detects deprecated
 APIs decorated with `@warnings.deprecated`, and powers `mkdocstrings[python]` to
-generate API documentation. Through `griffe check`, it compares the active
+generate comprehensive documentation. Through `griffe check`, it compares the active
 codebase against previous Git revisions or tags to pinpoint breaking public API
 alterations.
 
-## Why It Is in Zenith
+## Why It's in Zenith
 
 Importing untrusted or complex packages at documentation build time can trigger
 unexpected side effects, uninitialized database connections, or missing C-extension
@@ -32,8 +32,8 @@ crashes. Griffe extracts signatures, type hints, and docstrings completely offli
 safely.
 
 To protect library consumers, Zenith wires `griffe check` into continuous
-integration and the `poe check-api` task. This prevents pull requests from
-introducing breaking API changes in minor or patch releases.
+integration and the `poe check-api` task, ensuring that pull requests cannot
+accidentally introduce breaking API changes in minor or patch releases.
 
 ## Configuration in Zenith
 

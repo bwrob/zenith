@@ -15,11 +15,10 @@ and this project adheres to
 
 ### Added
 
-- New `workflow-docs-authoring` agent skill. The skill enforces human-first technical
-  writing, Documentation-Driven Design, the golden source of truth rule ("do not
-  repeat, link"), and tested snippet transclusion in CI. It also enforces
-  progressive disclosure, editor ergonomics, Diátaxis, Google condition rules,
-  and the Troubleshooting Triad.
+- New `workflow-docs-authoring` agent skill enforcing human-first technical writing,
+  Documentation-Driven Design, the golden source of truth rule ("do not repeat, link"),
+  and tested snippet transclusion in CI, alongside progressive disclosure, editor
+  ergonomics, the Diátaxis architecture, and Troubleshooting Triads.
 - Standardized non-renderable Diátaxis YAML frontmatter preambles across all
   documentation pages in the repository and template.
 - Dedicated Zenith documentation website configured with Zensical, Catppuccin hue-based

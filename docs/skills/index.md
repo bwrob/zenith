@@ -13,8 +13,9 @@ agent capabilities into **modular, prefixed Agent Skills** located in `.agents/s
 
 ## Skill Taxonomy
 
-Zenith defines a **standard set of 5 skill prefixes**. This taxonomy prevents naming
-collisions and maintains predictable agent discovery:
+To prevent naming collisions, maintain predictable agent discovery, and separate
+template capabilities from project domain logic, Zenith standardizes on
+**5 distinct skill prefixes**:
 
 | Prefix Group                    | Scope & Purpose                                                                                                                                                                     | Examples                                                                                                                                             |
 | ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -26,9 +27,10 @@ collisions and maintains predictable agent discovery:
 
 > [!IMPORTANT]
 > **The `domain-*` prefix is strictly reserved for you**: The Zenith template ships with
-> zero `domain-*` skills. When you scaffold a new repository, create `domain-*` skills
-> to codify business logic and vendor integrations. These custom skills never collide
-> with upstream tooling updates.
+> zero `domain-*` skills out-of-the-box. When you scaffold a new repository using
+> Zenith, you and your team can create `domain-*` skills to codify your business logic,
+> vendor integrations, and proprietary domain models without any risk of colliding with
+> template updates or upstream tooling skills.
 
 ## Skill Discovery
 
@@ -54,8 +56,8 @@ flowchart TD
 1. **Context Discovery**: The agent reads root `AGENTS.md` (or symlinks `CLAUDE.md`,
    `.cursorrules`, `.windsurfrules`).
 2. **Progressive Disclosure**: The runner initially loads only the skill `name` and
-   `description` frontmatter. The runner loads full procedural instructions and
-   templates **only when activating that skill**.
+   `description` frontmatter. Full procedural instructions and templates are loaded into
+   context **only when that skill is activated**.
 3. **Execution Grounding**: The agent follows the skill's step-by-step instructions and
    executes tasks inside the hermetic project environment with `uv run poe <task>`.
 
