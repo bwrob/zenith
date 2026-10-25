@@ -2,42 +2,33 @@
 
 from __future__ import annotations
 
-import sys
+import shutil
+import subprocess
 from pathlib import Path
-
-import pytest
-
-SCRIPTS_SPEC = (
-    Path(__file__).resolve().parent.parent
-    / ".agents"
-    / "skills"
-    / "sdd-spec"
-    / "scripts"
-)
-SCRIPTS_REVIEW = (
-    Path(__file__).resolve().parent.parent
-    / ".agents"
-    / "skills"
-    / "sdd-review"
-    / "scripts"
-)
-SCRIPTS_SDD = (
-    Path(__file__).resolve().parent.parent / ".agents" / "skills" / "sdd" / "scripts"
-)
-
-sys.path.insert(0, str(SCRIPTS_SPEC))
-sys.path.insert(0, str(SCRIPTS_REVIEW))
-sys.path.insert(0, str(SCRIPTS_SDD))
+from typing import TYPE_CHECKING
 
 import archive_feature
 import check_spec
 import check_traceability
 import revert_task
 
+if TYPE_CHECKING:
+    import pytest
+
+# The spec fixture in test_extract_requirements_from_spec declares two requirements.
+EXPECTED_TWO_REQS = 2
+# The plan fixture in test_find_revertable_tasks_found lists two revertable tasks.
+EXPECTED_REVERTABLE_TASKS = 2
+
+# Resolved at import time; falls back to "git" when git is absent so tests fail
+# loudly rather than silently skipping the subprocesses under test.
+GIT_BIN = shutil.which("git") or "git"
+
 # --- check_spec.py tests ---
 
 
 def test_validate_spec_content_valid() -> None:
+    """Test validate spec content valid."""
     valid_spec = (
         "# Feature Spec\n\n"
         "### In-Scope\n- Feature A\n\n"
@@ -58,6 +49,7 @@ def test_validate_spec_content_valid() -> None:
 
 
 def test_validate_spec_content_missing_boundaries() -> None:
+    """Test validate spec content missing boundaries."""
     content = "Just some text without boundaries."
     res = check_spec.validate_spec_content(content, Path("spec.md"))
     assert not res.is_valid
@@ -68,6 +60,7 @@ def test_validate_spec_content_missing_boundaries() -> None:
 
 
 def test_validate_spec_content_code_leakage() -> None:
+    """Test validate spec content code leakage."""
     content = (
         "### In-Scope\n- A\n### Out-of-Scope\n- B\nREQ-001\nGiven When Then\n"
         "```python\nclass InternalLeak:\n    pass\n```\n"
@@ -86,6 +79,7 @@ def test_validate_spec_content_code_leakage() -> None:
 
 
 def test_validate_spec_content_placeholders() -> None:
+    """Test validate spec content placeholders."""
     content = (
         "### In-Scope\n- A\n### Out-of-Scope\n- B\nREQ-001\nGiven When Then\n"
         "Problem: [Describe problem here]\n"
@@ -96,17 +90,20 @@ def test_validate_spec_content_placeholders() -> None:
 
 
 def test_validate_spec_file_not_found(tmp_path: Path) -> None:
+    """Test validate spec file not found."""
     res = check_spec.validate_spec_file(tmp_path / "nonexistent.md")
     assert not res.is_valid
     assert any("not found" in err for err in res.errors)
 
 
 def test_validate_spec_format_report_and_main(tmp_path: Path) -> None:
+    """Test validate spec format report and main."""
     spec_dir = tmp_path / "feat"
     spec_dir.mkdir()
     spec_file = spec_dir / "spec.md"
     spec_file.write_text(
-        "### In-Scope\n- A\n### Out-of-Scope\n- B\nREQ-001\nGiven When Then\nThe system must work.\n",
+        "### In-Scope\n- A\n### Out-of-Scope\n- B\nREQ-001\n"
+        "Given When Then\nThe system must work.\n",
         encoding="utf-8",
     )
 
@@ -125,6 +122,7 @@ def test_validate_spec_format_report_and_main(tmp_path: Path) -> None:
 
 
 def test_extract_requirements_from_spec(tmp_path: Path) -> None:
+    """Test extract requirements from spec."""
     spec_file = tmp_path / "spec.md"
     spec_file.write_text(
         "### Requirement 1: User Profile Retrieval\n"
@@ -136,7 +134,7 @@ def test_extract_requirements_from_spec(tmp_path: Path) -> None:
         encoding="utf-8",
     )
     reqs = check_traceability.extract_requirements_from_spec(spec_file)
-    assert len(reqs) == 2
+    assert len(reqs) == EXPECTED_TWO_REQS
     assert reqs[0].req_id == "REQ-001"
     assert reqs[0].title == "User Profile Retrieval"
     assert reqs[1].req_id == "REQ-002"
@@ -144,6 +142,7 @@ def test_extract_requirements_from_spec(tmp_path: Path) -> None:
 
 
 def test_extract_requirements_fallback(tmp_path: Path) -> None:
+    """Test extract requirements fallback."""
     spec_file = tmp_path / "spec.md"
     spec_file.write_text(
         "Text mentioning REQ-042 and REQ-099 casually.", encoding="utf-8"
@@ -153,12 +152,14 @@ def test_extract_requirements_fallback(tmp_path: Path) -> None:
 
 
 def test_extract_requirements_missing_file(tmp_path: Path) -> None:
+    """Test extract requirements missing file."""
     assert (
         check_traceability.extract_requirements_from_spec(tmp_path / "missing.md") == []
     )
 
 
 def test_scan_tests_for_requirements(tmp_path: Path) -> None:
+    """Test scan tests for requirements."""
     test_file = tmp_path / "test_feature.py"
     test_file.write_text(
         "def test_req_001_logic(): pass\n"
@@ -187,6 +188,7 @@ def test_scan_tests_for_requirements(tmp_path: Path) -> None:
 
 
 def test_analyze_traceability_and_main(tmp_path: Path) -> None:
+    """Test analyze traceability and main."""
     spec_file = tmp_path / "spec.md"
     spec_file.write_text("REQ-001\nREQ-002\n", encoding="utf-8")
 
@@ -213,6 +215,7 @@ def test_analyze_traceability_and_main(tmp_path: Path) -> None:
 
 
 def test_archive_feature_success(tmp_path: Path) -> None:
+    """Test archive feature success."""
     specs_root = tmp_path / ".specs"
     docs_root = tmp_path / "docs" / "specs"
 
@@ -242,6 +245,7 @@ def test_archive_feature_success(tmp_path: Path) -> None:
 
 
 def test_archive_feature_not_approved_error(tmp_path: Path) -> None:
+    """Test archive feature not approved error."""
     specs_root = tmp_path / ".specs"
     docs_root = tmp_path / "docs" / "specs"
 
@@ -269,6 +273,7 @@ def test_archive_feature_not_approved_error(tmp_path: Path) -> None:
 
 
 def test_archive_feature_path_traversal(tmp_path: Path) -> None:
+    """Test archive feature path traversal."""
     specs_root = tmp_path / ".specs"
     docs_root = tmp_path / "docs" / "specs"
     specs_root.mkdir(parents=True)
@@ -279,12 +284,14 @@ def test_archive_feature_path_traversal(tmp_path: Path) -> None:
 
 
 def test_archive_feature_missing_dir(tmp_path: Path) -> None:
+    """Test archive feature missing dir."""
     specs_root = tmp_path / ".specs"
     docs_root = tmp_path / "docs" / "specs"
     assert archive_feature.archive_feature("nonexistent", specs_root, docs_root) == 1
 
 
 def test_archive_feature_main(tmp_path: Path) -> None:
+    """Test archive feature main."""
     specs_root = tmp_path / ".specs"
     docs_root = tmp_path / "docs" / "specs"
     feat_dir = specs_root / "cli-feat"
@@ -307,12 +314,14 @@ def test_archive_feature_main(tmp_path: Path) -> None:
 
 
 def test_find_revertable_tasks_empty() -> None:
+    """Test find revertable tasks empty."""
     plan = "# Plan\n- [ ] Task 1 (no sha)\n- [x] Task 2 without sha\n"
     targets = revert_task.find_revertable_tasks(plan)
     assert targets == []
 
 
 def test_find_revertable_tasks_found() -> None:
+    """Test find revertable tasks found."""
     plan = (
         "# Plan\n"
         "- [x] **Task 1: Protocol** (a1b2c3d)\n"
@@ -320,7 +329,7 @@ def test_find_revertable_tasks_found() -> None:
         "  - [x] Subtask A (1234567890abcdef)\n"
     )
     targets = revert_task.find_revertable_tasks(plan)
-    assert len(targets) == 2
+    assert len(targets) == EXPECTED_REVERTABLE_TASKS
     assert targets[0].task_title == "**Task 1: Protocol**"
     assert targets[0].sha == "a1b2c3d"
     assert targets[0].reset_line == "- [ ] **Task 1: Protocol**"
@@ -331,6 +340,7 @@ def test_find_revertable_tasks_found() -> None:
 
 
 def test_revert_task_security_violation(tmp_path: Path) -> None:
+    """Test revert task security violation."""
     specs_root = tmp_path / ".specs"
     specs_root.mkdir(parents=True)
     assert revert_task.revert_task("../../outside", specs_root=specs_root) == 1
@@ -338,17 +348,22 @@ def test_revert_task_security_violation(tmp_path: Path) -> None:
 
 
 def test_revert_task_path_exception() -> None:
+    """Test revert task path exception."""
+
     class BrokenSpecs:
-        def resolve(self) -> Path:
-            raise RuntimeError("Simulated resolve failure")
+        @staticmethod
+        def resolve() -> Path:
+            msg = "Simulated resolve failure"
+            raise RuntimeError(msg)
 
         def __truediv__(self, _other: str) -> BrokenSpecs:
             return self
 
-    assert revert_task.revert_task("any-feat", specs_root=BrokenSpecs()) == 1  # type: ignore[arg-type]
+    assert revert_task.revert_task("any-feat", specs_root=BrokenSpecs()) == 1  # pyrefly: ignore[bad-argument-type]
 
 
 def test_revert_task_plan_missing(tmp_path: Path) -> None:
+    """Test revert task plan missing."""
     specs_root = tmp_path / ".specs"
     feat_dir = specs_root / "auth"
     feat_dir.mkdir(parents=True)
@@ -356,6 +371,7 @@ def test_revert_task_plan_missing(tmp_path: Path) -> None:
 
 
 def test_revert_task_plan_read_error(tmp_path: Path) -> None:
+    """Test revert task plan read error."""
     specs_root = tmp_path / ".specs"
     feat_dir = specs_root / "auth"
     feat_dir.mkdir(parents=True)
@@ -369,6 +385,7 @@ def test_revert_task_plan_read_error(tmp_path: Path) -> None:
 
 
 def test_revert_task_no_revertable_tasks(tmp_path: Path) -> None:
+    """Test revert task no revertable tasks."""
     specs_root = tmp_path / ".specs"
     feat_dir = specs_root / "auth"
     feat_dir.mkdir(parents=True)
@@ -377,6 +394,7 @@ def test_revert_task_no_revertable_tasks(tmp_path: Path) -> None:
 
 
 def test_revert_task_target_sha_not_found(tmp_path: Path) -> None:
+    """Test revert task target sha not found."""
     specs_root = tmp_path / ".specs"
     feat_dir = specs_root / "auth"
     feat_dir.mkdir(parents=True)
@@ -392,6 +410,7 @@ def test_revert_task_target_sha_not_found(tmp_path: Path) -> None:
 def test_revert_task_commit_not_in_git(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
+    """Test revert task commit not in git."""
     specs_root = tmp_path / ".specs"
     feat_dir = specs_root / "auth"
     feat_dir.mkdir(parents=True)
@@ -399,10 +418,8 @@ def test_revert_task_commit_not_in_git(
         "# Plan\n- [x] Task 1 (abcdef1)\n", encoding="utf-8"
     )
 
-    import subprocess
-
     def mock_run_fail(
-        cmd: list[str] | str, *args: object, **kwargs: object
+        cmd: list[str] | str, *_args: object, **_kwargs: object
     ) -> subprocess.CompletedProcess[str]:
         return subprocess.CompletedProcess(cmd, returncode=1, stdout="", stderr="error")
 
@@ -411,16 +428,15 @@ def test_revert_task_commit_not_in_git(
 
 
 def test_revert_task_dry_run(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Test revert task dry run."""
     specs_root = tmp_path / ".specs"
     feat_dir = specs_root / "auth"
     feat_dir.mkdir(parents=True)
     plan_content = "# Plan\n- [x] Task 1 (abcdef1)\n"
     (feat_dir / "plan.md").write_text(plan_content, encoding="utf-8")
 
-    import subprocess
-
     def mock_run(
-        cmd: list[str], *args: object, **kwargs: object
+        cmd: list[str], *_args: object, **_kwargs: object
     ) -> subprocess.CompletedProcess[str]:
         return subprocess.CompletedProcess(
             cmd, returncode=0, stdout="abcdef1", stderr=""
@@ -434,6 +450,7 @@ def test_revert_task_dry_run(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) ->
 def test_revert_task_revert_conflict(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
+    """Test revert task revert conflict."""
     specs_root = tmp_path / ".specs"
     feat_dir = specs_root / "auth"
     feat_dir.mkdir(parents=True)
@@ -441,10 +458,8 @@ def test_revert_task_revert_conflict(
         "# Plan\n- [x] Task 1 (abcdef1)\n", encoding="utf-8"
     )
 
-    import subprocess
-
     def mock_run(
-        cmd: list[str], *args: object, **kwargs: object
+        cmd: list[str], *_args: object, **_kwargs: object
     ) -> subprocess.CompletedProcess[str]:
         if "rev-parse" in cmd:
             return subprocess.CompletedProcess(
@@ -463,16 +478,15 @@ def test_revert_task_revert_conflict(
 def test_revert_task_write_error(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
+    """Test revert task write error."""
     specs_root = tmp_path / ".specs"
     feat_dir = specs_root / "auth"
     feat_dir.mkdir(parents=True)
     plan_file = feat_dir / "plan.md"
     plan_file.write_text("# Plan\n- [x] Task 1 (abcdef1)\n", encoding="utf-8")
 
-    import subprocess
-
     def mock_run_ok(
-        cmd: list[str] | str, *args: object, **kwargs: object
+        cmd: list[str] | str, *_args: object, **_kwargs: object
     ) -> subprocess.CompletedProcess[str]:
         return subprocess.CompletedProcess(cmd, returncode=0)
 
@@ -486,35 +500,36 @@ def test_revert_task_write_error(
 
 
 def test_revert_task_success(tmp_path: Path) -> None:
-    import subprocess
-
-    subprocess.run(
-        ["git", "init", "-b", "main"], cwd=tmp_path, check=True, capture_output=True
+    """Test revert task success."""
+    subprocess.run(  # ruff: ignore[subprocess-without-shell-equals-true]
+        [GIT_BIN, "init", "-b", "main"], cwd=tmp_path, check=True, capture_output=True
     )
-    subprocess.run(
-        ["git", "config", "user.name", "Test User"], cwd=tmp_path, check=True
+    subprocess.run(  # ruff: ignore[subprocess-without-shell-equals-true]
+        [GIT_BIN, "config", "user.name", "Test User"], cwd=tmp_path, check=True
     )
-    subprocess.run(
-        ["git", "config", "user.email", "test@example.com"], cwd=tmp_path, check=True
+    subprocess.run(  # ruff: ignore[subprocess-without-shell-equals-true]
+        [GIT_BIN, "config", "user.email", "test@example.com"], cwd=tmp_path, check=True
     )
 
     dummy_file = tmp_path / "hello.txt"
     dummy_file.write_text("initial\n", encoding="utf-8")
-    subprocess.run(["git", "add", "hello.txt"], cwd=tmp_path, check=True)
-    subprocess.run(["git", "commit", "-m", "chore: initial"], cwd=tmp_path, check=True)
+    subprocess.run([GIT_BIN, "add", "hello.txt"], cwd=tmp_path, check=True)  # ruff: ignore[subprocess-without-shell-equals-true]
+    subprocess.run(  # ruff: ignore[subprocess-without-shell-equals-true]
+        [GIT_BIN, "commit", "-m", "chore: initial"], cwd=tmp_path, check=True
+    )
 
     dummy_file.write_text("task 1 change\n", encoding="utf-8")
-    subprocess.run(["git", "add", "hello.txt"], cwd=tmp_path, check=True)
-    subprocess.run(["git", "commit", "-m", "feat: task 1"], cwd=tmp_path, check=True)
-    sha1 = subprocess.check_output(
-        ["git", "rev-parse", "--short", "HEAD"], cwd=tmp_path, text=True
+    subprocess.run([GIT_BIN, "add", "hello.txt"], cwd=tmp_path, check=True)  # ruff: ignore[subprocess-without-shell-equals-true]
+    subprocess.run([GIT_BIN, "commit", "-m", "feat: task 1"], cwd=tmp_path, check=True)  # ruff: ignore[subprocess-without-shell-equals-true]
+    sha1 = subprocess.check_output(  # ruff: ignore[subprocess-without-shell-equals-true]
+        [GIT_BIN, "rev-parse", "--short", "HEAD"], cwd=tmp_path, text=True
     ).strip()
 
     dummy_file.write_text("task 1 change\ntask 2 change\n", encoding="utf-8")
-    subprocess.run(["git", "add", "hello.txt"], cwd=tmp_path, check=True)
-    subprocess.run(["git", "commit", "-m", "feat: task 2"], cwd=tmp_path, check=True)
-    sha2 = subprocess.check_output(
-        ["git", "rev-parse", "--short", "HEAD"], cwd=tmp_path, text=True
+    subprocess.run([GIT_BIN, "add", "hello.txt"], cwd=tmp_path, check=True)  # ruff: ignore[subprocess-without-shell-equals-true]
+    subprocess.run([GIT_BIN, "commit", "-m", "feat: task 2"], cwd=tmp_path, check=True)  # ruff: ignore[subprocess-without-shell-equals-true]
+    sha2 = subprocess.check_output(  # ruff: ignore[subprocess-without-shell-equals-true]
+        [GIT_BIN, "rev-parse", "--short", "HEAD"], cwd=tmp_path, text=True
     ).strip()
 
     specs_root = tmp_path / ".specs"
@@ -525,9 +540,9 @@ def test_revert_task_success(tmp_path: Path) -> None:
         f"# Plan\n\n- [x] **Task 1: Init** ({sha1})\n- [x] **Task 2: Add** ({sha2})\n",
         encoding="utf-8",
     )
-    subprocess.run(["git", "add", str(plan_file)], cwd=tmp_path, check=True)
-    subprocess.run(
-        ["git", "commit", "-m", "docs(plan): track tasks"], cwd=tmp_path, check=True
+    subprocess.run([GIT_BIN, "add", str(plan_file)], cwd=tmp_path, check=True)  # ruff: ignore[subprocess-without-shell-equals-true]
+    subprocess.run(  # ruff: ignore[subprocess-without-shell-equals-true]
+        [GIT_BIN, "commit", "-m", "docs(plan): track tasks"], cwd=tmp_path, check=True
     )
 
     # 1. Revert task 2 by default (last completed task)
@@ -552,6 +567,7 @@ def test_revert_task_success(tmp_path: Path) -> None:
 
 
 def test_revert_task_main_cli(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Test revert task main cli."""
     specs_root = tmp_path / ".specs"
     feat_dir = specs_root / "feat-cli"
     feat_dir.mkdir(parents=True)
@@ -559,10 +575,8 @@ def test_revert_task_main_cli(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -
         "# Plan\n- [x] Task 1 (abcdef1)\n", encoding="utf-8"
     )
 
-    import subprocess
-
     def mock_run_commit(
-        cmd: list[str] | str, *args: object, **kwargs: object
+        cmd: list[str] | str, *_args: object, **_kwargs: object
     ) -> subprocess.CompletedProcess[str]:
         return subprocess.CompletedProcess(cmd, returncode=0, stdout="abcdef1")
 

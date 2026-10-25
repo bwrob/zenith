@@ -8,7 +8,7 @@
 # source and test files adhere to rigorous type contracts.
 # ==============================================================================
 
-enabled-ignores = ["pyrefly", "type"]
+enabled-ignores = ["pyrefly"]
 infer-with-first-use = false
 preset = "strict"
 project-excludes = [

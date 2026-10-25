@@ -5,9 +5,9 @@ serves as the canonical single source of truth. This script ensures every shared
 skill in `.agents/skills/` is a relative symlink pointing directly to its template
 counterpart.
 
-Repository-specific skills that only exist in `.agents/skills/` (e.g.
-`workflow-inspect-repo`, `tool-cookiecutter`, `workflow-update-tools`, `workflow-example-sync`)
-are preserved untouched.
+Repository-specific skills that only exist in ``.agents/skills/`` (e.g.
+``workflow-inspect-repo``, ``tool-cookiecutter``, ``workflow-update-tools``,
+and ``workflow-example-sync``) are preserved untouched.
 """
 
 from __future__ import annotations
@@ -18,6 +18,11 @@ import shutil
 import sys
 from pathlib import Path
 
+from rich.console import Console
+
+console = Console(highlight=False)
+error_console = Console(stderr=True, highlight=False)
+
 DEFAULT_SOURCE = Path("{{cookiecutter.project_slug}}/.agents/skills")
 DEFAULT_TARGET = Path(".agents/skills")
 
@@ -25,12 +30,27 @@ DEFAULT_TARGET = Path(".agents/skills")
 def _handle_symlink(
     tgt_skill: Path, rel_target: str, skill_name: str, *, check_only: bool
 ) -> str | None:
-    """Handle an existing symlink in target directory."""
-    current_target = os.readlink(tgt_skill)
+    """Handle an existing symlink in the target directory.
+
+    Args:
+        tgt_skill: Existing symlink path.
+        rel_target: Expected relative symlink target.
+        skill_name: Display name of the skill.
+        check_only: Whether to report drift instead of repairing it.
+
+    Returns:
+        None when the symlink is correct, an error message on drift, or an
+        empty string when the symlink was replaced.
+
+    """
+    current_target = tgt_skill.readlink().as_posix()
     if current_target == rel_target:
         return None
     if check_only:
-        return f"{skill_name}: symlink points to '{current_target}', expected '{rel_target}'"
+        return (
+            f"{skill_name}: symlink points to '{current_target}', "
+            f"expected '{rel_target}'"
+        )
     tgt_skill.unlink()
     return ""
 
@@ -38,9 +58,24 @@ def _handle_symlink(
 def _handle_existing(
     tgt_skill: Path, rel_target: str, skill_name: str, *, check_only: bool
 ) -> str | None:
-    """Handle an existing non-symlink file or directory in target directory."""
+    """Handle an existing non-symlink path in the target directory.
+
+    Args:
+        tgt_skill: Existing regular file or directory.
+        rel_target: Expected relative symlink target.
+        skill_name: Display name of the skill.
+        check_only: Whether to report drift instead of repairing it.
+
+    Returns:
+        An error message in check mode, otherwise an empty string after
+        removal.
+
+    """
     if check_only:
-        return f"{skill_name}: expected symlink to '{rel_target}', but found directory/file"
+        return (
+            f"{skill_name}: expected symlink to '{rel_target}', "
+            "but found directory/file"
+        )
     if tgt_skill.is_dir():
         shutil.rmtree(tgt_skill)
     else:
@@ -55,7 +90,19 @@ def _sync_skill(
     *,
     check_only: bool,
 ) -> str | None:
-    """Synchronize a single skill directory to target_dir as a relative symlink."""
+    """Synchronize one skill directory into the target as a relative symlink.
+
+    Args:
+        src_skill: Canonical skill directory.
+        target_dir: Target skills directory.
+        tgt_resolved: Resolved target directory for relative links.
+        check_only: Whether to report drift instead of repairing it.
+
+    Returns:
+        None on success, an error message on drift, or an empty string
+        when repaired.
+
+    """
     skill_name = src_skill.name
     tgt_skill = target_dir / skill_name
     rel_target = os.path.relpath(src_skill, tgt_resolved)
@@ -81,7 +128,17 @@ def sync_skills(
     *,
     check_only: bool = False,
 ) -> list[str]:
-    """Ensure skills in target_dir are relative symlinks to source_dir."""
+    """Ensure skills in target_dir are relative symlinks to source_dir.
+
+    Args:
+        source_dir: Canonical template skills directory.
+        target_dir: Repository skills directory to verify or repair.
+        check_only: Whether to only report drift.
+
+    Returns:
+        A list of drift or failure messages; empty when synchronized.
+
+    """
     errors: list[str] = []
 
     src_resolved = source_dir.resolve()
@@ -105,9 +162,17 @@ def sync_skills(
 
 
 def main(argv: list[str] | None = None) -> int:
-    """CLI entrypoint for skill synchronization."""
+    """CLI entrypoint for skill synchronization.
+
+    Args:
+        argv: Command-line arguments; defaults to ``sys.argv`` when None.
+
+    Returns:
+        Process exit code: 0 on success, 1 on failure.
+
+    """
     parser = argparse.ArgumentParser(
-        description="Synchronize repository skills with template skills via symlinks."
+        description=("Synchronize repository skills with template skills via symlinks.")
     )
     parser.add_argument(
         "--source",
@@ -130,15 +195,17 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     action_label = "Checking" if args.check else "Synchronizing"
-    print(f"🔄 {action_label} skills: {args.target} -> {args.source}...")
+    console.print(
+        f"[bold cyan]🔄 {action_label} skills: {args.target} -> {args.source}...[/]"
+    )
 
     errors = sync_skills(args.source, args.target, check_only=args.check)
 
     if errors:
         prefix = "❌ Verification failed" if args.check else "❌ Synchronization failed"
-        print(f"\n{prefix}:", file=sys.stderr)
+        error_console.print(f"\n[bold red]{prefix}:[/]")
         for err in errors:
-            print(f"  ✗ {err}", file=sys.stderr)
+            error_console.print(f"  [red]✗ {err}[/]")
         return 1
 
     success_label = (
@@ -146,7 +213,7 @@ def main(argv: list[str] | None = None) -> int:
         if args.check
         else "Successfully synchronized all skills with template source of truth!"
     )
-    print(f"✅ {success_label}")
+    console.print(f"[bold green]✅ {success_label}[/]")
     return 0
 
 

@@ -2,7 +2,7 @@
 # See https://prek.j178.dev for more information.
 #:schema https://www.schemastore.org/prek.json
 
-default_install_hook_types = ["pre-commit"]
+default_install_hook_types = ["pre-commit", "pre-push"]
 default_stages             = ["pre-commit"]
 exclude                    = '^({{cookiecutter\.project_slug}}|templates)/'
 fail_fast                  = false
@@ -62,9 +62,7 @@ fail_fast                  = false
     hooks = [
         { id = "ruff-check", name = "🐍 ruff · Check Python code", args = [
             "--fix",
-        ], files = '(\.(py|pyi)$|(^|/)(pyproject\.toml|uv\.lock)$)', types_or = [
-            "file",
-        ], pass_filenames = false, priority = "source_fix" },
+        ], files = '\.(py|pyi)$', priority = "source_fix" },
         { id = "ruff-format", name = "🐍 ruff · Format Python code", priority = "python_format" },
     ]
     repo = "https://github.com/astral-sh/ruff-pre-commit"
@@ -109,8 +107,12 @@ fail_fast                  = false
 
 [[repos]]
     hooks = [
-        { id = "pyrefly", name = "🐍 pyrefly · Type check Python code", entry = "uv run pyrefly check", language = "system", pass_filenames = false, files = '(\.(py|pyi)$|(^|/)(pyproject\.toml|uv\.lock|pyrefly\.toml)$)', priority = "checks" },
-        { id = "complexipy", name = "🧮 complexipy · Cognitive complexity check", entry = "uv run complexipy scripts tests hooks", language = "system", pass_filenames = false, files = '(\.(py|pyi)$|(^|/)complexipy\.toml$)', priority = "checks" },
+        { id = "pyrefly", name = "🐍 pyrefly · Type check Python code", entry = "uv run pyrefly check", language = "system", pass_filenames = false, files = '(\.(py|pyi)$|(^|/)(pyproject\.toml|uv\.lock|pyrefly\.toml)$)', priority = "checks", stages = [
+            "pre-push",
+        ] },
+        { id = "complexipy", name = "🧮 complexipy · Cognitive complexity check", entry = "uv run complexipy scripts tests hooks", language = "system", pass_filenames = false, files = '(\.(py|pyi)$|(^|/)complexipy\.toml$)', priority = "checks", stages = [
+            "pre-push",
+        ] },
     ]
     repo = "local"
 

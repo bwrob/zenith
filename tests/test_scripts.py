@@ -10,10 +10,23 @@ import pytest
 
 from scripts import check_skills, sync_example, sync_skills
 
+SKILL_FRONTMATTER = (
+    "---\n"
+    "name: valid-skill\n"
+    "description: A valid description with plenty of characters.\n"
+    "---\n"
+)
+
+# sync_example with lock=True runs `uv lock` and `uv run poe fix` once each.
+EXPECTED_UV_LOCK_RUN_CALLS = 2
+# test_sync_skills_check_drift_conditions creates three drifted skills.
+EXPECTED_DRIFT_ERRORS = 3
+
 # --- check_skills.py tests ---
 
 
 def test_parse_frontmatter_valid() -> None:
+    """Test parse frontmatter valid."""
     content = (
         "---\nname: my-skill\ndescription: A valid skill description.\n---\n# Body\n"
     )
@@ -23,6 +36,7 @@ def test_parse_frontmatter_valid() -> None:
 
 
 def test_parse_frontmatter_multiline_folded() -> None:
+    """Test parse frontmatter multiline folded."""
     content = (
         "---\n"
         "name: my-skill\n"
@@ -39,12 +53,14 @@ def test_parse_frontmatter_multiline_folded() -> None:
 
 
 def test_parse_frontmatter_trailing_multiline() -> None:
+    """Test parse frontmatter trailing multiline."""
     content = "---\nname: my-skill\ndescription: >-\n  Line one\n  Line two\n---\n"
     meta = check_skills.parse_frontmatter(content)
     assert meta["description"] == "Line one Line two"
 
 
 def test_parse_frontmatter_empty_value_and_orphan_line() -> None:
+    """Test parse frontmatter empty value and orphan line."""
     content = "---\n  orphan line before any key\nempty_key:\nname: my-skill\n---\n"
     meta = check_skills.parse_frontmatter(content)
     assert "empty_key" not in meta
@@ -52,16 +68,19 @@ def test_parse_frontmatter_empty_value_and_orphan_line() -> None:
 
 
 def test_parse_frontmatter_missing_boundary() -> None:
+    """Test parse frontmatter missing boundary."""
     with pytest.raises(ValueError, match="Missing leading '---'"):
         check_skills.parse_frontmatter("name: my-skill\n")
 
 
 def test_parse_frontmatter_unclosed() -> None:
+    """Test parse frontmatter unclosed."""
     with pytest.raises(ValueError, match="Unclosed frontmatter"):
         check_skills.parse_frontmatter("---\nname: my-skill\n")
 
 
 def test_validate_skill_missing_file(tmp_path: Path) -> None:
+    """Test validate skill missing file."""
     skill_dir = tmp_path / "test-skill"
     skill_dir.mkdir()
     errors = check_skills.validate_skill(skill_dir)
@@ -69,6 +88,7 @@ def test_validate_skill_missing_file(tmp_path: Path) -> None:
 
 
 def test_validate_skill_read_error(tmp_path: Path) -> None:
+    """Test validate skill read error."""
     skill_dir = tmp_path / "test-skill"
     skill_dir.mkdir()
     skill_file = skill_dir / "SKILL.md"
@@ -80,6 +100,7 @@ def test_validate_skill_read_error(tmp_path: Path) -> None:
 
 
 def test_validate_skill_invalid_frontmatter(tmp_path: Path) -> None:
+    """Test validate skill invalid frontmatter."""
     skill_dir = tmp_path / "test-skill"
     skill_dir.mkdir()
     (skill_dir / "SKILL.md").write_text("invalid content", encoding="utf-8")
@@ -88,6 +109,7 @@ def test_validate_skill_invalid_frontmatter(tmp_path: Path) -> None:
 
 
 def test_validate_skill_missing_name(tmp_path: Path) -> None:
+    """Test validate skill missing name."""
     skill_dir = tmp_path / "test-skill"
     skill_dir.mkdir()
     (skill_dir / "SKILL.md").write_text(
@@ -98,6 +120,7 @@ def test_validate_skill_missing_name(tmp_path: Path) -> None:
 
 
 def test_validate_skill_name_mismatch(tmp_path: Path) -> None:
+    """Test validate skill name mismatch."""
     skill_dir = tmp_path / "test-skill"
     skill_dir.mkdir()
     (skill_dir / "SKILL.md").write_text(
@@ -109,6 +132,7 @@ def test_validate_skill_name_mismatch(tmp_path: Path) -> None:
 
 
 def test_validate_skill_missing_description(tmp_path: Path) -> None:
+    """Test validate skill missing description."""
     skill_dir = tmp_path / "test-skill"
     skill_dir.mkdir()
     (skill_dir / "SKILL.md").write_text(
@@ -119,6 +143,7 @@ def test_validate_skill_missing_description(tmp_path: Path) -> None:
 
 
 def test_validate_skill_brief_description(tmp_path: Path) -> None:
+    """Test validate skill brief description."""
     skill_dir = tmp_path / "test-skill"
     skill_dir.mkdir()
     (skill_dir / "SKILL.md").write_text(
@@ -129,6 +154,7 @@ def test_validate_skill_brief_description(tmp_path: Path) -> None:
 
 
 def test_validate_skill_broken_link(tmp_path: Path) -> None:
+    """Test validate skill broken link."""
     skill_dir = tmp_path / "test-skill"
     skill_dir.mkdir()
     (skill_dir / "SKILL.md").write_text(
@@ -141,6 +167,7 @@ def test_validate_skill_broken_link(tmp_path: Path) -> None:
 
 
 def test_validate_skill_valid(tmp_path: Path) -> None:
+    """Test validate skill valid."""
     skill_dir = tmp_path / "test-skill"
     templates_dir = skill_dir / "templates"
     templates_dir.mkdir(parents=True)
@@ -156,11 +183,13 @@ def test_validate_skill_valid(tmp_path: Path) -> None:
 
 
 def test_check_skills_main_missing_dir(tmp_path: Path) -> None:
+    """Test check skills main missing dir."""
     ret = check_skills.main([str(tmp_path / "nonexistent")])
     assert ret == 1
 
 
 def test_check_skills_main_empty_dir(tmp_path: Path) -> None:
+    """Test check skills main empty dir."""
     skills_dir = tmp_path / "empty_skills"
     skills_dir.mkdir()
     ret = check_skills.main([str(skills_dir)])
@@ -168,6 +197,7 @@ def test_check_skills_main_empty_dir(tmp_path: Path) -> None:
 
 
 def test_check_skills_main_failure(tmp_path: Path) -> None:
+    """Test check skills main failure."""
     skills_dir = tmp_path / "skills"
     skill_dir = skills_dir / "invalid-skill"
     skill_dir.mkdir(parents=True)
@@ -177,11 +207,12 @@ def test_check_skills_main_failure(tmp_path: Path) -> None:
 
 
 def test_check_skills_main_success(tmp_path: Path) -> None:
+    """Test check skills main success."""
     skills_dir = tmp_path / "skills"
     skill_dir = skills_dir / "valid-skill"
     skill_dir.mkdir(parents=True)
     (skill_dir / "SKILL.md").write_text(
-        "---\nname: valid-skill\ndescription: A valid description with plenty of characters.\n---\n",
+        SKILL_FRONTMATTER,
         encoding="utf-8",
     )
     ret = check_skills.main([str(skills_dir)])
@@ -189,11 +220,13 @@ def test_check_skills_main_success(tmp_path: Path) -> None:
 
 
 def test_validate_docs_coverage_missing_dir(tmp_path: Path) -> None:
+    """Test validate docs coverage missing dir."""
     errors = check_skills.validate_docs_coverage(["my-skill"], tmp_path / "missing")
     assert any("Docs directory not found" in e for e in errors)
 
 
 def test_validate_docs_coverage_no_md_files(tmp_path: Path) -> None:
+    """Test validate docs coverage no md files."""
     docs_dir = tmp_path / "docs"
     docs_dir.mkdir()
     errors = check_skills.validate_docs_coverage(["my-skill"], docs_dir)
@@ -201,6 +234,7 @@ def test_validate_docs_coverage_no_md_files(tmp_path: Path) -> None:
 
 
 def test_validate_docs_coverage_read_error(tmp_path: Path) -> None:
+    """Test validate docs coverage read error."""
     docs_dir = tmp_path / "docs"
     docs_dir.mkdir()
     (docs_dir / "guide.md").write_text("content", encoding="utf-8")
@@ -210,6 +244,7 @@ def test_validate_docs_coverage_read_error(tmp_path: Path) -> None:
 
 
 def test_validate_docs_coverage_missing_skill(tmp_path: Path) -> None:
+    """Test validate docs coverage missing skill."""
     docs_dir = tmp_path / "docs"
     docs_dir.mkdir()
     (docs_dir / "guide.md").write_text(
@@ -221,6 +256,7 @@ def test_validate_docs_coverage_missing_skill(tmp_path: Path) -> None:
 
 
 def test_validate_docs_coverage_success(tmp_path: Path) -> None:
+    """Test validate docs coverage success."""
     docs_dir = tmp_path / "docs"
     docs_dir.mkdir()
     (docs_dir / "guide.md").write_text(
@@ -231,11 +267,12 @@ def test_validate_docs_coverage_success(tmp_path: Path) -> None:
 
 
 def test_check_skills_main_with_docs_check_success(tmp_path: Path) -> None:
+    """Test check skills main with docs check success."""
     skills_dir = tmp_path / "skills"
     skill_dir = skills_dir / "valid-skill"
     skill_dir.mkdir(parents=True)
     (skill_dir / "SKILL.md").write_text(
-        "---\nname: valid-skill\ndescription: A valid description with plenty of characters.\n---\n",
+        SKILL_FRONTMATTER,
         encoding="utf-8",
     )
     docs_dir = tmp_path / "docs"
@@ -247,11 +284,12 @@ def test_check_skills_main_with_docs_check_success(tmp_path: Path) -> None:
 
 
 def test_check_skills_main_with_docs_check_failure(tmp_path: Path) -> None:
+    """Test check skills main with docs check failure."""
     skills_dir = tmp_path / "skills"
     skill_dir = skills_dir / "valid-skill"
     skill_dir.mkdir(parents=True)
     (skill_dir / "SKILL.md").write_text(
-        "---\nname: valid-skill\ndescription: A valid description with plenty of characters.\n---\n",
+        SKILL_FRONTMATTER,
         encoding="utf-8",
     )
     docs_dir = tmp_path / "docs"
@@ -265,12 +303,12 @@ def test_check_skills_main_with_docs_check_failure(tmp_path: Path) -> None:
 
 
 def test_check_skills_main_candidate_docs_dir(tmp_path: Path) -> None:
-    # Structure: tmp_path / ".agents" / "skills" and tmp_path / "docs" / "skills"
+    """Check the candidate docs directory used by ``check_skills.main``."""
     skills_dir = tmp_path / ".agents" / "skills"
     skill_dir = skills_dir / "valid-skill"
     skill_dir.mkdir(parents=True)
     (skill_dir / "SKILL.md").write_text(
-        "---\nname: valid-skill\ndescription: A valid description with plenty of characters.\n---\n",
+        SKILL_FRONTMATTER,
         encoding="utf-8",
     )
     docs_skills_dir = tmp_path / "docs" / "skills"
@@ -290,6 +328,7 @@ def test_check_skills_main_candidate_docs_dir(tmp_path: Path) -> None:
 
 
 def test_sync_example(tmp_path: Path) -> None:
+    """Test sync example."""
     target_dir = tmp_path / "test-showcase"
     target_dir.mkdir()
     git_dir = target_dir / ".git"
@@ -318,10 +357,11 @@ def test_sync_example(tmp_path: Path) -> None:
         assert not old_sub.exists()
         assert (target_dir / "new_file.txt").exists()
         assert (target_dir / "new_sub" / "inner.txt").exists()
-        assert mock_run.call_count == 2  # uv lock, uv run poe fix
+        assert mock_run.call_count == EXPECTED_UV_LOCK_RUN_CALLS  # uv lock, poe fix
 
 
 def test_sync_example_no_lock(tmp_path: Path) -> None:
+    """Test sync example no lock."""
     target_dir = tmp_path / "test-showcase-nolock"
     target_dir.mkdir()
 
@@ -338,19 +378,39 @@ def test_sync_example_no_lock(tmp_path: Path) -> None:
         assert mock_run.call_count == 1  # only uv run poe fix
 
 
-def test_sync_example_main() -> None:
+def test_sync_example_missing_uv(tmp_path: Path) -> None:
+    """Exit with an error when uv is unavailable on PATH."""
+    target_dir = tmp_path / "test-showcase-nouv"
+    target_dir.mkdir()
+    fake_rendered = tmp_path / "fake_rendered_nouv"
+    fake_rendered.mkdir()
+    (fake_rendered / "file.txt").write_text("content", encoding="utf-8")
+
+    with (
+        patch("scripts.sync_example.cookiecutter", return_value=str(fake_rendered)),
+        patch("scripts.sync_example.shutil.which", return_value=None),
+        pytest.raises(SystemExit) as exc_info,
+    ):
+        sync_example.sync_example(target_dir, lock=False)
+    assert exc_info.value.code == 1
+
+
+def test_sync_example_main(tmp_path: Path) -> None:
+    """Test sync example main."""
+    dest = str(tmp_path / "dest")
     with (
         patch("scripts.sync_example.sync_example") as mock_sync,
-        patch.object(sys, "argv", ["sync_example.py", "/tmp/dest", "--no-lock"]),
+        patch.object(sys, "argv", ["sync_example.py", dest, "--no-lock"]),
     ):
         sync_example.main()
-        mock_sync.assert_called_once_with(Path("/tmp/dest"), lock=False)
+        mock_sync.assert_called_once_with(Path(dest), lock=False)
 
 
 # --- sync_skills.py tests ---
 
 
 def test_sync_skills_missing_source_or_target(tmp_path: Path) -> None:
+    """Test sync skills missing source or target."""
     non_existent = tmp_path / "missing"
     existing = tmp_path / "exists"
     existing.mkdir()
@@ -363,6 +423,7 @@ def test_sync_skills_missing_source_or_target(tmp_path: Path) -> None:
 
 
 def test_sync_skills_success_and_check(tmp_path: Path) -> None:
+    """Test sync skills success and check."""
     src_dir = tmp_path / "src_skills"
     src_dir.mkdir()
     (src_dir / "my-skill").mkdir()
@@ -382,6 +443,7 @@ def test_sync_skills_success_and_check(tmp_path: Path) -> None:
 
 
 def test_sync_skills_check_drift_conditions(tmp_path: Path) -> None:
+    """Test sync skills check drift conditions."""
     src_dir = tmp_path / "src_skills"
     src_dir.mkdir()
     (src_dir / "skill-a").mkdir()
@@ -398,13 +460,14 @@ def test_sync_skills_check_drift_conditions(tmp_path: Path) -> None:
     # skill-c does not exist in target
 
     errs = sync_skills.sync_skills(src_dir, tgt_dir, check_only=True)
-    assert len(errs) == 3
+    assert len(errs) == EXPECTED_DRIFT_ERRORS
     assert any("skill-a: symlink points to" in e for e in errs)
     assert any("skill-b: expected symlink" in e for e in errs)
     assert any("skill-c: missing symlink" in e for e in errs)
 
 
 def test_sync_skills_overwrite_existing(tmp_path: Path) -> None:
+    """Test sync skills overwrite existing."""
     src_dir = tmp_path / "src_skills"
     src_dir.mkdir()
     (src_dir / "skill-dir").mkdir()
@@ -436,6 +499,7 @@ def test_sync_skills_overwrite_existing(tmp_path: Path) -> None:
 
 
 def test_sync_skills_main(tmp_path: Path) -> None:
+    """Test sync skills main."""
     src_dir = tmp_path / "src"
     src_dir.mkdir()
     (src_dir / "sample").mkdir()
