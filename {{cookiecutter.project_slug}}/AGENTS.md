@@ -89,6 +89,8 @@ Before editing code or running tasks, ensure a clean, isolated environment:
     (`ln -s AGENTS.md .cursorrules`) and `.cursor/rules/zenith.mdc`.
   - **Aider**: `.aider.conf.yml` (auto-loading `AGENTS.md`, wiring `lint-cmd` and
     `test-cmd` to Poe tasks).
+  - **OpenCode**: `opencode.json` (pre-approving hermetic `uv run poe *` commands)
+    and `.opencode/agents/*.md` (project subagents).
 - **Scope Hierarchy**: When exploring subdirectories, check for nested `AGENTS.md` or
   `CLAUDE.md` files; localized instructions take precedence within their scope.
 - **Workflow & Tool Guidance**: Consult `.agents/skills/` for lifecycle workflow skills

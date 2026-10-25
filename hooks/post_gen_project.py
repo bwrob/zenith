@@ -187,7 +187,7 @@ def _setup_codex_subagents(subagents_src: pathlib.Path) -> None:
 def _setup_subagents(subagents_src: pathlib.Path) -> None:
     if not subagents_src.is_dir():
         return
-    for tool_name in (".claude", ".gemini", ".cursor"):
+    for tool_name in (".claude", ".gemini", ".cursor", ".opencode"):
         tool_dir = PROJECT_DIR / tool_name / "agents"
         _link_subagents_to_dir(tool_dir, subagents_src)
     _setup_codex_subagents(subagents_src)

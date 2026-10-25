@@ -133,6 +133,7 @@ def test_agent_instruction_configs_exist(full_project: Path) -> None:
     assert (full_project / ".cursorrules").exists()
     assert (full_project / ".windsurfrules").exists()
     assert (full_project / ".claude" / "settings.json").exists()
+    assert (full_project / "opencode.json").exists()
     assert (full_project / ".codex" / "config.toml").exists()
     assert (full_project / ".aider.conf.yml").exists()
     assert (full_project / ".cursor" / "rules" / "zenith.mdc").exists()
@@ -410,7 +411,7 @@ def test_subagent_definitions_and_tool_symlinks(full_project: Path) -> None:
         "sdd-reviewer.md",
     ]:
         assert (full_project / ".agents" / "subagents" / subagent).exists()
-        for tool_dir in (".claude", ".gemini", ".cursor"):
+        for tool_dir in (".claude", ".gemini", ".cursor", ".opencode"):
             generated_agent = full_project / tool_dir / "agents" / subagent
             template_agent = TEMPLATE_ROOT / tool_dir / "agents" / subagent
             assert generated_agent.exists()
@@ -975,6 +976,7 @@ def test_readme_and_agent_symlinks(full_project: Path) -> None:
         assert (full_project / ".windsurfrules").readlink() == Path("AGENTS.md")
 
     assert "uv run poe:*" in (full_project / ".claude" / "settings.json").read_text()
+    assert "uv run poe *" in (full_project / "opencode.json").read_text()
     assert "workspace-write" in (full_project / ".codex" / "config.toml").read_text()
     assert "AGENTS.md" in (full_project / ".aider.conf.yml").read_text()
     copilot_text = (full_project / ".github" / "copilot-instructions.md").read_text()
