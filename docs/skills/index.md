@@ -53,7 +53,7 @@ assets, their support level in Zenith, and their current verification status:
 | **Tabnine**                | IDE Assistant & Agent        | `AGENTS.md`<br/>`.tabnine/guidelines/*.md`                              | ⚠️ Partial | ⏳ Untested | Tabnine Agent ingests natural language project rules from `.tabnine/guidelines/` and root `AGENTS.md`; supports CLI and chat.               |
 | **Qodo Gen**               | IDE Extension & Review Agent | `AGENTS.md`<br/>`.pr_agent.toml`                                        | ⚠️ Partial | ⏳ Untested | Generates unit tests adhering to project conventions; Qodo Merge / PR-Agent reads review instructions from `.pr_agent.toml`.                |
 | **Void**                   | Open-Source AI IDE           | `.voidrules` (manual symlink to `AGENTS.md`)                            | ⚠️ Partial | ⏳ Untested | Open-source Cursor alternative; injects project instructions via `.voidrules` (can symlink to `AGENTS.md`) for chat and edits.              |
-| **OpenCode**               | Autonomous Terminal & TUI    | `opencode.json`<br/>`.opencode/agents/*.md`<br/>`AGENTS.md`             | ✅ Yes     | ⏳ Untested | Dedicated `opencode.json` permissions pre-authorizing hermetic tasks; subagent symlinks in `.opencode/agents/`; native `AGENTS.md` context. |
+| **OpenCode**               | Autonomous Terminal & TUI    | `opencode.json`<br/>`.opencode/agents/*.md`<br/>`AGENTS.md`             | ✅ Yes     | ✅ Yes      | Dedicated `opencode.json` permissions pre-authorizing hermetic tasks; subagent symlinks in `.opencode/agents/`; native `AGENTS.md` context. |
 | **Pi**                     | Autonomous Terminal Agent    | `AGENTS.md` (manual instruction)                                        | ⚠️ Partial | ⏳ Untested | Minimalist terminal runner using Bash; discovers `AGENTS.md` and executes hermetic Poe tasks.                                               |
 | **Oh My Pi**               | Autonomous Terminal Agent    | `AGENTS.md` (manual instruction)                                        | ⚠️ Partial | ⏳ Untested | Extended Pi fork with LSP and DAP; executes hermetic Poe tasks in parallel worktrees with hashline edits.                                   |
 | **Hermes Agent**           | Autonomous Skill Engine      | `AGENTS.md` (manual instruction)                                        | ⚠️ Partial | ⏳ Untested | Self-improving agent framework; discovers `AGENTS.md` and repository skills via shell toolsets.                                             |
@@ -107,6 +107,12 @@ architectural invariants across all supported tools:
     `project_doc_fallback_filenames = ["AGENTS.md", "CLAUDE.md"]`.
   - Verifies `workspace-write` sandbox confinement and `on-request` approval policies.
   - Verifies native `.codex/agents/*.toml` subagent declarations.
+- **OpenCode**:
+  - Validated with the OpenCode CLI / TUI environment.
+  - Verifies auto-discovery of `AGENTS.md` at project root.
+  - Verifies command permissions and task pre-authorizations via `opencode.json`.
+  - Subagents in `.opencode/agents/` execute Spec-Driven Development tasks with hermetic
+    task execution and quality verification gates.
 
 ## Skill Taxonomy
 
