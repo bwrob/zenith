@@ -1,3 +1,8 @@
+---
+diataxis: reference
+purpose: Document CLI argument parsing, subcommands, and Rich console styling with Typer.
+---
+
 # Typer: CLI Framework
 
 [![Tool: Typer](https://img.shields.io/badge/cli-typer-009688.svg)](https://typer.tiangolo.com/)

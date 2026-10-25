@@ -1,3 +1,8 @@
+---
+diataxis: reference
+purpose: Document GitHub Actions static security auditing and pipeline risk analysis with zizmor.
+---
+
 # Zizmor: CI Security Static Analysis
 
 [![Tool: zizmor](https://img.shields.io/badge/security-zizmor-red.svg)](https://woodruffw.github.io/zizmor/)

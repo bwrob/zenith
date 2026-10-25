@@ -1,3 +1,8 @@
+---
+diataxis: reference
+purpose: Catalog the integrated developer tooling stack spanning workflow, code quality, testing, security, and documentation.
+---
+
 # Zenith Tooling Stack
 
 Zenith replaces fragmented Python tooling with a fast, Rust-based toolchain

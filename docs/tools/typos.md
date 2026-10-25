@@ -1,3 +1,8 @@
+---
+diataxis: reference
+purpose: Document automated source code, docstring, and commit message spell-checking with typos.
+---
+
 # Typos: Spell Checker
 
 [![Tool: typos](https://img.shields.io/badge/spelling-typos-blue.svg)](https://github.com/crate-ci/typos)

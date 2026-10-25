@@ -1,3 +1,8 @@
+---
+diataxis: explanation
+purpose: Establish core architectural principles, strictness-for-velocity philosophy, and AI-ready development guardrails.
+---
+
 # Zenith Philosophy
 
 Zenith is not a generic template. It is an opinionated, strict development system

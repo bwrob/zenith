@@ -1,3 +1,8 @@
+---
+diataxis: reference
+purpose: Document vector layout markup, SVG logo authoring, and mathematical diagram compilation with Typst.
+---
+
 # Typst: Vector Layout Engine
 
 [![Tool: Typst](https://img.shields.io/badge/typesetting-typst-239dad.svg)](https://typst.app)

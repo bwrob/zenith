@@ -1,3 +1,8 @@
+---
+diataxis: tutorial
+purpose: Teach newcomers modern Python concepts, tooling rationale, and end-to-end scaffolding workflows from commit zero.
+---
+
 # First Steps & Core Concepts
 
 If you are comfortable writing Python scripts but feel intimidated by modern

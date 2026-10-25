@@ -1,3 +1,8 @@
+---
+diataxis: reference
+purpose: Document comprehensive mutation testing and database-backed test suite verification with Cosmic Ray.
+---
+
 # Cosmic Ray: Mutation Testing
 
 [![Tool: Cosmic Ray](https://img.shields.io/badge/testing-cosmic--ray-darkred.svg)](https://cosmic-ray.readthedocs.io/)

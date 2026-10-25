@@ -1,3 +1,8 @@
+---
+diataxis: reference
+purpose: Document cognitive complexity measurement, threshold scoring, and function refactoring with complexipy.
+---
+
 # Complexipy: Cognitive Complexity
 
 [![Tool: complexipy](https://img.shields.io/badge/complexity-complexipy-crimson.svg)](https://github.com/rohaquinlop/complexipy)

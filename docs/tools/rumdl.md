@@ -1,3 +1,8 @@
+---
+diataxis: reference
+purpose: Document GitHub Flavored Markdown linting, formatting rules, and embedded code block validation with rumdl.
+---
+
 # Rumdl: Markdown Linter
 
 [![Tool: rumdl](https://img.shields.io/badge/markdown-rumdl-orange.svg)](https://github.com/rvben/rumdl)

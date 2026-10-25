@@ -1,3 +1,8 @@
+---
+diataxis: reference
+purpose: Document GitHub Actions delivery pipelines, security scanning schedules, and automated release infrastructure.
+---
+
 # CI/CD Pipeline
 
 Zenith scaffolds a production-grade automation suite using GitHub Actions. Rather than

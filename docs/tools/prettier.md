@@ -1,3 +1,8 @@
+---
+diataxis: reference
+purpose: Document YAML manifest and stylesheet formatting rules and execution with Prettier.
+---
+
 # Prettier: YAML & CSS Formatter
 
 [![Tool: Prettier](https://img.shields.io/badge/formatter-prettier-f7b93e.svg)](https://prettier.io/)

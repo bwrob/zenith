@@ -1,3 +1,8 @@
+---
+diataxis: reference
+purpose: Document fast local AST mutation testing and survivor mutant elimination with mutmut.
+---
+
 # Mutmut: Fast Mutation Testing
 
 [![Tool: mutmut](https://img.shields.io/badge/mutation-mutmut-orange.svg)](https://mutmut.readthedocs.io/)

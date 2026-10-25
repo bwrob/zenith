@@ -1,3 +1,8 @@
+---
+diataxis: reference
+purpose: Document interactive animated terminal widgets and console session wrapping with Termynal.
+---
+
 # Termynal: Terminal Animations
 
 [![Tool: Termynal](https://img.shields.io/badge/docs-termynal-00c853.svg)](https://github.com/ines/termynal)

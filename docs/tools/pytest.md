@@ -1,3 +1,8 @@
+---
+diataxis: reference
+purpose: Document unit test execution, parallel testing, property testing, and test order randomization with pytest.
+---
+
 # Pytest: Test Framework
 
 [![Tool: pytest](https://img.shields.io/badge/tests-pytest-blue.svg)](https://docs.pytest.org/)
