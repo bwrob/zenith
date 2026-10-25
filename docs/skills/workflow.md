@@ -149,6 +149,11 @@ duplicated across multiple guides, causing instructions to drift out of sync.
 
 `workflow-docs-authoring` enforces core architectural and writing rules:
 
+- **Diátaxis Information Architecture**: Classifies every documentation page into one of
+  four intent quadrants (*Tutorials*, *How-To Guides*, *Reference*, *Explanation*) via a
+  mandatory non-renderable YAML frontmatter preamble (`diataxis:` and `purpose:`).
+  Enforces a single-focus page scope and guides page splitting when content drifts
+  across boundaries.
 - **Documentation-Driven Design (DDD)**: Drafts user guides and tutorials in lockstep
   with interface design. Friction in writing docs serves as an immediate design smell
   prompting public API simplification.
