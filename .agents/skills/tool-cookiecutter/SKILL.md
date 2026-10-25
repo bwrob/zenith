@@ -25,8 +25,7 @@ A modern Cookiecutter repository has five components:
 zenith/
 ├── cookiecutter.json               # Template configuration, variables, __prompts__, _jinja2_env_vars
 ├── hooks/                          # Lifecycle scripts (Python / Shell)
-│   ├── pre_prompt.py               # (2.4+) Runs before questions; validates environment/tools
-│   ├── pre_gen_project.py          # Runs after questions, before render; validates input variables
+│   ├── pre_gen_project.py          # Runs after questions, before render; validates prerequisites and inputs
 │   └── post_gen_project.py         # Runs after generation; cleans conditional files, formats configs
 ├── templates/                      # (2.2+) Shared template partials (via Jinja include / extends)
 │   ├── _header.md
@@ -267,9 +266,11 @@ Cookiecutter supports three distinct lifecycle hooks:
 
 | Hook | Timing | Working Directory | Context Available | Primary Purpose |
 | :--- | :--- | :--- | :--- | :--- |
-| **`pre_prompt.py`** *(2.4+)* | Before any user questions | Copy of template repository | No | Check system prerequisites (`uv`, `git`, Python version) |
-| **`pre_gen_project.py`** | After questions, before files render | Generated project directory | Yes (rendered) | Check input variables (regex, reserved keywords) |
+| **`pre_gen_project.py`** | After questions, before files render | Generated project directory | Yes (rendered) | Check system prerequisites (`uv`, `git`, Python) and input variables |
 | **`post_gen_project.py`** | After file rendering | Generated project directory | Yes (rendered) | File pruning, educational header stripping, git init |
+
+> [!NOTE]
+> Cookiecutter 2.4+ also supports `pre_prompt.py`, but it executes `shutil.copytree` on the entire template repository (including local `.venv` or `.git` directories) before prompting, adding substantial file I/O overhead on local checkouts. Consolidate prerequisite checks into `pre_gen_project.py` for immediate execution without repository cloning.
 
 ### Hook Error Handling
 

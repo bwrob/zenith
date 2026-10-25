@@ -733,6 +733,7 @@ def test_agents_and_coverage_policies(full_project: Path) -> None:
 def test_pytest_and_linter_policies(full_project: Path) -> None:
     """Verify pytest.ini, pyrefly, and ruff policies."""
     pytest_ini_text = (full_project / "pytest.ini").read_text()
+    assert "-v" in pytest_ini_text
     assert "-ra" in pytest_ini_text
     assert "--durations=10" in pytest_ini_text
     assert "--snapshot-warn-unused" in pytest_ini_text
