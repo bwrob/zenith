@@ -19,6 +19,9 @@ and this project adheres to
   Documentation-Driven Design, the golden source of truth rule ("do not repeat, link"),
   and tested snippet transclusion in CI, alongside progressive disclosure, editor
   ergonomics, the Diátaxis architecture, and Troubleshooting Triads.
+- New `workflow-docs-consumers` agent skill providing automated stress-testing and
+  review of technical documentation through independent simulated developer and
+  stakeholder personas.
 - Standardized non-renderable Diátaxis YAML frontmatter preambles across all
   documentation pages in the repository and template.
 - Dedicated Zenith documentation website configured with Zensical, Catppuccin hue-based

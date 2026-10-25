@@ -172,6 +172,33 @@ drift out of sync.
   (limitations and trade-offs), and structural verification with `uv run poe format-md`,
   `uv run poe lint-md`, and `uv run poe docs-build`.
 
+### Documentation Consumer Review (workflow-docs-consumers)
+
+**What it is**: The operational procedure for stress-testing technical documentation
+through simulated developer and stakeholder personas before release.
+
+**Why it's in Zenith**: Documentation authors suffer from the curse of knowledge:
+having deep familiarity with system internals, they easily omit critical onboarding
+context or write prose that feels dry, intimidating, or dogmatic.
+`workflow-docs-consumers` dispatches independent reader agents with distinct
+backgrounds to evaluate docs with fresh eyes.
+
+`workflow-docs-consumers` standardizes the persona evaluation protocol:
+
+- **Multi-Persona Simulation**: Evaluates documentation through distinct developer
+  archetypes (*The Newcomer*, *The Junior Developer*, *The Opinionated Senior
+  Pythonista*, *The Tech Lead & Engineering Manager*, *The DevOps Engineer*, and
+  *The Open-Source Library Maintainer*).
+- **Clean-Context Dispatch**: Subagents run with zero prior project knowledge,
+  evaluating landing pages, quickstart tutorials, and architectural rationale as
+  outside developers.
+- **Structured Persona Reports**: Collects findings in a standardized schema detailing
+  immediate strengths, unanswered questions, friction points, jargon barriers, and
+  actionable improvements.
+- **Cross-Persona Synthesis**: Combines findings into an executive matrix, guiding
+  targeted documentation updates and verifying changes against all automated quality
+  gates.
+
 ---
 
 > [!TIP]

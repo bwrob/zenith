@@ -136,7 +136,7 @@ these invariants:
 - **Workflow & Tool Guidance**: Consult `.agents/skills/` for lifecycle workflow skills
   (`workflow-git`, `workflow-code-review`, `workflow-changelog`, `workflow-adr`,
   `workflow-setup`, `workflow-skill-creator`, `workflow-docs-authoring`,
-  `workflow-example-sync`), Spec-Driven
+  `workflow-docs-consumers`, `workflow-example-sync`), Spec-Driven
   Development suite (`sdd`, `sdd-spec`, `sdd-plan`, `sdd-implement`, `sdd-review`),
   engineering guides (`guide-python`, `guide-ste100`), and tool-specific guidance
   (`tool-*/SKILL.md`).
