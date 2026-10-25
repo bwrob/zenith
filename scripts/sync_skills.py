@@ -105,7 +105,9 @@ def _sync_skill(
     """
     skill_name = src_skill.name
     tgt_skill = target_dir / skill_name
-    rel_target = os.path.relpath(src_skill, tgt_resolved)
+    # Symlink targets are normalized to POSIX separators so that created and
+    # verified links agree on both POSIX and Windows platforms.
+    rel_target = Path(os.path.relpath(src_skill, tgt_resolved)).as_posix()
 
     if tgt_skill.is_symlink():
         res = _handle_symlink(tgt_skill, rel_target, skill_name, check_only=check_only)
