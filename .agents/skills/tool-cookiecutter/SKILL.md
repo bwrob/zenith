@@ -270,7 +270,10 @@ Cookiecutter supports three distinct lifecycle hooks:
 | **`post_gen_project.py`** | After file rendering | Generated project directory | Yes (rendered) | File pruning, educational header stripping, git init |
 
 > [!NOTE]
-> Cookiecutter 2.4+ also supports `pre_prompt.py`, but it executes `shutil.copytree` on the entire template repository (including local `.venv` or `.git` directories) before prompting, adding substantial file I/O overhead on local checkouts. Consolidate prerequisite checks into `pre_gen_project.py` for immediate execution without repository cloning.
+> Cookiecutter 2.4+ supports `pre_prompt.py`.
+> However, it copies the full repository (including `.venv` and `.git`) before prompts.
+> This copy creates high I/O overhead on local checkouts.
+> Keep prerequisite checks in `pre_gen_project.py` instead.
 
 ### Hook Error Handling
 
