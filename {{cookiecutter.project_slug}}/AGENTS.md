@@ -67,6 +67,19 @@ Before editing code or running tasks, ensure a clean, isolated environment:
   from first principles rather than piling on patches.
 - **AI Contribution Policy**: All contributions must adhere to `AI_POLICY.md`
   for human review, local test verification, and tool disclosure.
+- **Automatic Skill Activation by Domain**: When working in specific project domains,
+  agents must activate and follow the corresponding workflow skill unconditionally, even
+  without explicit prompt triggers:
+  - **Documentation (`docs/`)**: Always activate and adhere to
+    `workflow-docs-authoring`.
+  - **Pre-PR & Code Audits**: Always activate and adhere to `workflow-code-review`.
+  - **Architecture Decisions (`docs/adr/`)**: Always activate and adhere to
+    `workflow-adr`.
+  - **Changelog & Releases (`docs/changelog.md`)**: Always activate and adhere to
+    `workflow-changelog`.
+  - **Python Implementation & Refactoring**: Always adhere to `guide-python`.
+  - **Skill Authoring (`.agents/skills/`)**: Always activate and adhere to
+    `workflow-skill-creator`.
 - **Inline Lint Suppression**: `# noqa` comments are forbidden. Where a rule
   genuinely conflicts with required code, use the Ruff ignore directive
   `# ruff: ignore[full-rule-name]` with a rationale comment (see the

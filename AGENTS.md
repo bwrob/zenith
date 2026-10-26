@@ -61,6 +61,19 @@ Before editing code or executing tasks, ensure an isolated, clean working enviro
   from first principles rather than piling on patches.
 - **AI Contribution Policy**: Consult and adhere to `AI_POLICY.md` for human review,
   local verification, and tool disclosure guidelines.
+- **Automatic Skill Activation by Domain**: When working in specific project domains,
+  agents must activate and follow the corresponding workflow skill unconditionally, even
+  without explicit prompt triggers:
+  - **Documentation (`docs/`)**: Always activate and adhere to
+    `workflow-docs-authoring`.
+  - **Pre-PR & Code Audits**: Always activate and adhere to `workflow-code-review`.
+  - **Architecture Decisions (`docs/adr/`)**: Always activate and adhere to
+    `workflow-adr`.
+  - **Changelog & Releases (`docs/changelog.md`)**: Always activate and adhere to
+    `workflow-changelog`.
+  - **Python Implementation & Refactoring**: Always adhere to `guide-python`.
+  - **Skill Authoring (`.agents/skills/`)**: Always activate and adhere to
+    `workflow-skill-creator`.
 
 ## Subagent Orchestration & Work-Sharing Policy
 
