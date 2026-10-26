@@ -2,7 +2,8 @@
 description: >-
   Workflow and standards for creating modular agent skills in Zenith repositories.
   Enforces progressive disclosure, structured directories, external template separation,
-  standard prefix taxonomy, and ASD-STE100 writing standards. Use when creating, refactoring, or modularizing agent skills.
+  standard prefix taxonomy, and ASD-STE100 writing standards.
+  Mandatory whenever creating, editing, refactoring, or modularizing agent skills in .agents/skills/, even without prompt triggers.
   Triggers: create skill, new skill, add skill, author skill, modular skill, skill template.
 name: workflow-skill-creator
 version: 1.0.0
@@ -91,6 +92,24 @@ Select the structure based on skill complexity:
   ```bash
   uv run python .agents/skills/guide-ste100/scripts/ste-lint.py .agents/skills/<name>/SKILL.md
   ```
+
+### Rule 5: Select One Activation Mode
+Free-running agents select skills from the `description` text only.
+Write the description so that the agent cannot miss a required skill.
+Select one of these three modes:
+- **Mandatory**: The skill enforces a repository convention for a file domain.
+  Start the activation sentence with `Mandatory whenever`.
+  Name the domain paths and end with `even without prompt triggers`.
+  Add the domain-to-skill mapping to `AGENTS.md`.
+- **On demand**: The skill is a reference or a tool guide.
+  Start the activation sentence with `Use when`.
+  List the tool names, commands, and error types in `Triggers:`.
+- **Manual only**: The skill has external side effects or a high cost.
+  Examples: it pushes to a remote, clones external repositories,
+  rebuilds the environment, or dispatches several subagents.
+  Set `disable-model-invocation: true` in the frontmatter.
+  Add the sentence `Runs only when explicitly requested` to the description.
+  Keep manual-only skills to a minimum.
 
 ---
 

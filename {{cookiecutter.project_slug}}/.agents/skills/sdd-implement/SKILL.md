@@ -3,6 +3,7 @@ name: sdd-implement
 description: >-
   Executes implementation plans using disciplined Test-Driven Development (TDD).
   Runs red-green-refactor loops, verifies quality gates per task, and stops on drift.
+  Mandatory whenever executing tasks from an SDD plan, even without prompt triggers.
   Triggers: sdd implement, execute plan, run tasks, tdd implementation, sdd coding.
 version: 1.1.0
 ---

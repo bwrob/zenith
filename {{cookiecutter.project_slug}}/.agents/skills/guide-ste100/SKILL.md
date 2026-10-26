@@ -2,7 +2,7 @@
 name: guide-ste100
 description: >-
   Use when an agent must parse text without human review.
-  Applies to agent skills and Python code docstrings.
+  Mandatory whenever writing or editing agent skills in .agents/skills/ or Python docstrings, even without prompt triggers.
   Serves as a clarity suggestion, not an enforced rule, in user documentation.
   Triggers: disambiguate, STE100 rewrite, apply Simplified Technical English, plain-language rewrite, controlled-language rewrite, rewrite so an agent cannot misread the text.
   Not for creative or marketing copy.

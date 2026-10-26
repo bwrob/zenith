@@ -151,6 +151,23 @@ flowchart TD
 3. **Execution Grounding**: The agent follows the skill's step-by-step instructions and
    executes tasks inside the hermetic project environment with `uv run poe <task>`.
 
+### Activation Modes
+
+Each skill uses one of three activation modes. The mode is set in the `description`
+and frontmatter of its `SKILL.md`.
+
+| Mode            | How it activates                                                                                  | Skills                                                                                                                                                                            |
+| --------------- | ------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Mandatory**   | The agent loads it whenever it touches the matching domain, even if your prompt does not name it. | `guide-python`, `guide-ste100`, `workflow-git`, `workflow-code-review`, `workflow-adr`, `workflow-changelog`, `workflow-docs-authoring`, `workflow-skill-creator`, `sdd-*` phases |
+| **On demand**   | The agent loads it when the task or an error matches its triggers.                                | All `tool-*` skills, `sdd`                                                                                                                                                        |
+| **Manual only** | The agent never selects it on its own. You must ask for it by name or slash command.              | `workflow-setup`, `workflow-docs-consumers`                                                                                                                                       |
+
+Manual-only skills set `disable-model-invocation: true` in their frontmatter. Zenith
+reserves this mode for skills with heavy side effects or cost: rebuilding the local
+environment, or dispatching several reviewer subagents. The domain-to-skill mapping
+for mandatory skills is repeated in `AGENTS.md`, so agents that ignore skill
+descriptions still receive the rule.
+
 ### How Skills Work in Action: a 3-Step Walkthrough
 
 Here is how an everyday developer interaction looks when pairing with an AI coding

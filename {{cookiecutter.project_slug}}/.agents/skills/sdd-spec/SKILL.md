@@ -3,6 +3,7 @@ name: sdd-spec
 description: >-
   Authors and clarifies functional specifications in Spec-Driven Development.
   Captures user stories, scope boundaries, and acceptance criteria in EARS format without implementation details.
+  Mandatory whenever authoring or changing a spec file in an SDD feature directory.
   Triggers: write spec, author spec, sdd spec, feature specification, clarify requirements.
 version: 1.1.0
 ---

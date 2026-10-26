@@ -73,7 +73,15 @@ Before editing code or executing tasks, ensure an isolated, clean working enviro
     `workflow-changelog`.
   - **Python Implementation & Refactoring**: Always adhere to `guide-python`.
   - **Skill Authoring (`.agents/skills/`)**: Always activate and adhere to
-    `workflow-skill-creator`.
+    `workflow-skill-creator` and `guide-ste100`.
+  - **Git Operations (branches, commits, PRs)**: Always activate and adhere to
+    `workflow-git`.
+  - **Spec-Driven Features (`specs/`)**: Activate the matching `sdd-*` phase skill.
+  - **Manual Only**: Never self-activate skills marked
+    `disable-model-invocation: true` (`workflow-setup`, `workflow-docs-consumers`,
+    `workflow-inspect-repo`, `workflow-example-sync`). Run them only on explicit user
+    request. The merge-monitoring step above is such a request: read
+    `.agents/skills/workflow-example-sync/SKILL.md` directly.
 
 ## Subagent Orchestration & Work-Sharing Policy
 

@@ -2,8 +2,9 @@
 description: >
   Manages git branches, conventional commits, and pull requests in Zenith
   projects. Enforces AI disclosure checklists, testing plans, and clean commit
-  hygiene. Use when creating branches, preparing commits, staging files, authoring
-  commit messages, or creating pull requests.
+  hygiene. Mandatory whenever creating branches, preparing commits, staging files,
+  authoring commit messages, or creating pull requests, even without prompt triggers.
+  Triggers: commit, branch, pull request, PR, push, conventional commit.
 name: workflow-git
 version: 1.0.0
 ---

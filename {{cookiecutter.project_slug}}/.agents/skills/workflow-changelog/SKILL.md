@@ -3,8 +3,9 @@ description: >
   Workflow to maintain, draft, and update Keep-a-Changelog
   compliant changelogs and release notes in Zenith projects. Enforces source-checked
   Git commit ranges, Semantic Versioning, PR inspection via gh CLI, and contributor
-  attribution. Use when updating docs/changelog.md, preparing releases, drafting
-  release notes, or logging user-facing changes.
+  attribution. Mandatory whenever editing docs/changelog.md, preparing releases,
+  drafting release notes, or logging user-facing changes, even without prompt triggers.
+  Triggers: changelog, release notes, release, version bump, semver.
 name: workflow-changelog
 version: 1.0.0
 ---

@@ -4,6 +4,8 @@ description: >-
   the zenith-example showcase repository. Explains local and automated sync
   workflows and how to verify downstream CI test status.
   Triggers: zenith-example, sync-example, showcase, showcase status, downstream tests, test status.
+  Runs only when explicitly requested because it pushes changes to an external repository.
+disable-model-invocation: true
 name: workflow-example-sync
 version: 1.1.0
 ---
@@ -13,6 +15,11 @@ version: 1.1.0
 This skill documents the relationship between **`zenith`** and **`zenith-example`**.
 It covers synchronization mechanics and the mandatory verification protocol
 for downstream test status after pushing changes to `zenith:main`.
+
+> [!IMPORTANT]
+> This skill operates with `disable-model-invocation: true`.
+> Run it only when the user explicitly asks for a sync or a merge to `main`.
+> `AGENTS.md` names this file for the merge-monitoring step. Read it then.
 
 ---
 

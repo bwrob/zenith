@@ -79,7 +79,13 @@ Before editing code or running tasks, ensure a clean, isolated environment:
     `workflow-changelog`.
   - **Python Implementation & Refactoring**: Always adhere to `guide-python`.
   - **Skill Authoring (`.agents/skills/`)**: Always activate and adhere to
-    `workflow-skill-creator`.
+    `workflow-skill-creator` and `guide-ste100`.
+  - **Git Operations (branches, commits, PRs)**: Always activate and adhere to
+    `workflow-git`.
+  - **Spec-Driven Features (`specs/`)**: Activate the matching `sdd-*` phase skill.
+  - **Manual Only**: Never self-activate skills marked
+    `disable-model-invocation: true` (`workflow-setup`, `workflow-docs-consumers`).
+    Run them only on explicit user request.
 - **Inline Lint Suppression**: `# noqa` comments are forbidden. Where a rule
   genuinely conflicts with required code, use the Ruff ignore directive
   `# ruff: ignore[full-rule-name]` with a rationale comment (see the

@@ -2,12 +2,15 @@
 
 Encoding hard-won policy invariants as tests: suppression directives must use
 the Ruff ignore form (never noqa), and the root and template Ruff ignore
-lists must never drift apart.
+lists must never drift apart. The manual-only skill list in AGENTS.md must
+match the skills that set ``disable-model-invocation: true``.
 """
 
 from __future__ import annotations
 
+import re
 import tomllib
+from itertools import takewhile
 from pathlib import Path
 
 import pytest
@@ -107,3 +110,63 @@ def test_root_and_template_ignore_lists_match() -> None:
     assert _ignore_list(REPO_ROOT / "ruff.toml") == _ignore_list(
         TEMPLATE_ROOT / "ruff.toml"
     )
+
+
+_MANUAL_FLAG = re.compile(r"^disable-model-invocation:\s*true\s*$", re.MULTILINE)
+_SKILL_NAME = re.compile(r"`((?:workflow|tool|guide|sdd|domain)-[a-z0-9-]+|sdd)`")
+
+
+def _manual_only_skills(skills_dir: Path) -> set[str]:
+    """Collect skills whose frontmatter disables model invocation.
+
+    Args:
+        skills_dir: Directory that holds one subdirectory per skill.
+
+    Returns:
+        The names of the skills marked ``disable-model-invocation: true``.
+
+    """
+    names: set[str] = set()
+    for skill_file in skills_dir.glob("*/SKILL.md"):
+        frontmatter = skill_file.read_text(encoding="utf-8").split("---", 2)[1]
+        if _MANUAL_FLAG.search(frontmatter):
+            names.add(skill_file.parent.name)
+    return names
+
+
+def _agents_md_manual_only(agents_md: Path) -> set[str]:
+    """Collect the skill names listed in the AGENTS.md "Manual Only" bullet.
+
+    Args:
+        agents_md: Path of the AGENTS.md file to parse.
+
+    Returns:
+        The skill names named in backticks inside the bullet.
+
+    """
+    lines = agents_md.read_text(encoding="utf-8").splitlines()
+    start = next(i for i, line in enumerate(lines) if "**Manual Only**" in line)
+    continuation = takewhile(
+        lambda line: bool(line.strip()) and not line.lstrip().startswith("- "),
+        lines[start + 1 :],
+    )
+    return set(_SKILL_NAME.findall(" ".join([lines[start], *continuation])))
+
+
+@pytest.mark.parametrize(
+    ("skills_dir", "agents_md"),
+    [
+        (REPO_ROOT / ".agents" / "skills", REPO_ROOT / "AGENTS.md"),
+        (TEMPLATE_ROOT / ".agents" / "skills", TEMPLATE_ROOT / "AGENTS.md"),
+    ],
+    ids=["root", "template"],
+)
+def test_manual_only_skills_match_agents_md(skills_dir: Path, agents_md: Path) -> None:
+    """Hold the AGENTS.md manual-only list to parity with skill frontmatter.
+
+    Agents that skip skill frontmatter still read AGENTS.md, so the two
+    sources must name the same manual-only skills.
+    """
+    manual = _manual_only_skills(skills_dir)
+    assert manual
+    assert manual == _agents_md_manual_only(agents_md)

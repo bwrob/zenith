@@ -3,6 +3,7 @@ name: sdd-review
 description: >-
   Audits implemented code against functional specifications and quality invariants.
   Verifies acceptance criteria, tests for regressions, and audits for scope creep.
+  Mandatory after all tasks of an SDD plan are complete, before the agent reports the feature as done.
   Triggers: sdd review, verify spec, audit implementation, spec conformance, sdd convergence.
 version: 1.1.0
 ---

@@ -2,6 +2,8 @@
 description: >
   Performs a pre-flight code review against Zenith engineering,
   architecture, and AI policy standards before submitting changes or opening a PR.
+  Mandatory before opening a pull request or reporting an autonomous task as complete,
+  even without prompt triggers.
   Use when asked to review code, conduct pre-PR audits, check compliance with
   AI_POLICY.md, check architectural boundaries, or check typing precision.
 name: workflow-code-review

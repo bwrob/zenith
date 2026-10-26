@@ -3,6 +3,7 @@ name: sdd-plan
 description: >-
   Translates functional specifications into technical implementation plans.
   Defines component architectures, layer boundaries, interface contracts, and atomic task breakdowns.
+  Mandatory whenever converting an approved spec into a plan or task list.
   Triggers: plan implementation, sdd plan, technical plan, task breakdown, architecture plan.
 version: 1.1.0
 ---
