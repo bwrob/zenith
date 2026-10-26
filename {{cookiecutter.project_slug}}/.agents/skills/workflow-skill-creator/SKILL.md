@@ -146,7 +146,7 @@ Follow these steps to create a new skill:
    ```bash
    uv run poe sync-skills
    ```
-3. If the skill is repo-only (such as `workflow-inspect-repo`), create it directly in
+3. If the skill is repo-only (a maintainer skill for the template repository), create it directly in
    `.agents/skills/<prefix>-<name>/` and omit it from the template.
 4. Add the skill to the skills list in `AGENTS.md` and `{{cookiecutter.project_slug}}/AGENTS.md`.
 5. Add the skill existence assertion to `tests/test_template.py`.

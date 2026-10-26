@@ -170,3 +170,24 @@ def test_manual_only_skills_match_agents_md(skills_dir: Path, agents_md: Path) -
     manual = _manual_only_skills(skills_dir)
     assert manual
     assert manual == _agents_md_manual_only(agents_md)
+
+
+def test_template_skills_omit_repo_only_references() -> None:
+    """Keep maintainer-only skills and the showcase repo out of template skills.
+
+    Generated projects do not ship the repo-only skills and have no
+    downstream showcase, so a template skill that names them misleads agents.
+    """
+    repo_only = {
+        path.name
+        for path in (REPO_ROOT / ".agents" / "skills").iterdir()
+        if not path.is_symlink()
+    }
+    forbidden = (*repo_only, "zenith-example")
+    offenders = [
+        f"{path.relative_to(TEMPLATE_ROOT)}: {term}"
+        for path in (TEMPLATE_ROOT / ".agents" / "skills").rglob("*.md")
+        for term in forbidden
+        if term in path.read_text(encoding="utf-8")
+    ]
+    assert not offenders

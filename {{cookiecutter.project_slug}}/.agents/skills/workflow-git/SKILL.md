@@ -187,33 +187,3 @@ Immediately after pushing commits to a branch or pull request:
    Reproduce the failure locally.
    Apply the fix, run local verification gates, commit, and push again.
    Monitor CI again until all jobs report green.
-
----
-
-## 7. Downstream Showcase Monitoring After PR Merge
-
-In Zenith repositories, merging a PR to `main` triggers automated downstream synchronization.
-The `.github/workflows/sync-example.yaml` workflow synchronizes changes to `zenith-example`.
-
-### Post-Merge Downstream Protocol
-
-Immediately after merging a pull request into `main`:
-
-1. **Monitor the upstream sync workflow**:
-
-   ```bash
-   gh run list --workflow sync-example.yaml --limit 1
-   gh run watch <run-id>
-   ```
-
-2. **Monitor downstream showcase CI in `zenith-example`**:
-   Once the sync push lands, check the canary test workflows:
-
-   ```bash
-   gh run list --repo bwrob/zenith-example --limit 5
-   gh run watch <run-id> --repo bwrob/zenith-example
-   ```
-
-3. **Check canary green status**:
-   Ensure both `python_tests.yaml` and `test_redistribute.yaml` pass in `zenith-example`.
-   Consult `workflow-example-sync` for full troubleshooting steps if downstream CI fails.
