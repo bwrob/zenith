@@ -20,7 +20,7 @@ It establishes component boundaries, typing contracts, and atomic tasks before c
 1. **Direct Specification Traceability**:
    Every architectural decision and task must link directly to `.specs/<feature-id>/spec.md`.
    Do not introduce speculative abstractions or unrequested frameworks.
-2. **Zenith Architecture Rules**:
+2. **Project Architecture Rules**:
    - Python 3.12+ syntax: Use PEP 695 generics (`def func[T]()`, `type Alias = ...`).
    - Immutable data models: Use `@dataclass(frozen=True, slots=True)`.
    - Structural subtyping: Use `typing.Protocol` instead of concrete inheritance.

@@ -287,8 +287,23 @@ Follow these principles when developing the template:
 
 - **Edit template, never rendered output**: Always make changes inside
   `{{cookiecutter.project_slug}}/` or `templates/`, not in temporary test output.
-- **Escape Literal Jinja & Workflow Expressions**: When rendering GitHub Actions (`${{ github.sha }}`) or Jinja docs, wrap expressions in `{% raw %}...{% endraw %}`.
-- **Maintain Formatting Resilience**: Expressions like `{{ cookiecutter.project_slug }}` vary in character length. Parenthesize lines in Python template code so `ruff format` does not fail on longer names.
+- **Template skill isolation**: Skills in `{{cookiecutter.project_slug}}/.agents/skills/`
+  must not reference Cookiecutter, `{{cookiecutter.project_slug}}`, `hooks/`,
+  `lint-rendered`, `sync-skills-check`, `test_template.py`, or `zenith-example`.
+  Keep template-repo workflows in root `AGENTS.md` and repo-only skills.
+- **Synchronize shared skills**: Edit shared skills at their canonical path in
+  `{{cookiecutter.project_slug}}/.agents/skills/<name>/`. Run `uv run poe sync-skills`
+  and `uv run poe sync-skills-check` to maintain root symlinks, and update
+  `tests/test_template.py` when adding a new shared skill.
+- **Rendered-output linting**: Raw files in `{{cookiecutter.project_slug}}/` contain
+  Jinja tags and stay excluded in root `ruff.toml`. Always run
+  `uv run poe lint-rendered` (`scripts/audit_rendered.py`) to run Ruff inside
+  rendered short-slug and long-slug directories.
+- **Ruff ignore lockstep**: Keep `lint.ignore` in root `ruff.toml` and
+  `{{cookiecutter.project_slug}}/ruff.toml` identical.
+  `tests/test_repo_conventions.py` fails on drift.
+- **Escape Literal Jinja & Workflow Expressions**: When rendering GitHub Actions (`${{ github.sha }}`) or Jinja docs, wrap expressions in `{% raw %}...{% endraw %}`. Use quotes or comments in YAML and CSS when Prettier interacts with Jinja conditionals.
+- **Maintain Formatting Resilience**: Expressions like `{{ cookiecutter.project_slug }}` vary in character length. Hoist template-dependent strings into module constants so `ruff format` stays under the line limit for every slug length.
 - **Header Stripping Synchronization**: Zenith includes educational comments in config files that `hooks/post_gen_project.py` strips out. Keep `CONFIG_FILES_WITH_HEADERS` synchronized when adding new root configs.
 - **Binary & Asset Protection**: Always register static binary and SVG assets in `_copy_without_render`.
 - **Maintain Test Coverage**: Maintain test cases in `tests/test_template.py` covering boolean flags, Python versions, and licenses.

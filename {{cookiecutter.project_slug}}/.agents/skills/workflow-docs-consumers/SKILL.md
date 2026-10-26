@@ -27,7 +27,7 @@ This workflow dispatches independent reader agents with simulated backgrounds to
 ## 1. Multi-Persona Evaluation Model
 
 Reviewing documentation through a single perspective creates blind spots.
-Zenith evaluates documentation across complementary developer archetypes:
+This project evaluates documentation across complementary developer archetypes:
 
 ```mermaid
 flowchart TD

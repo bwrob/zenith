@@ -101,7 +101,15 @@ changes:
    place (`Edit` through a symlink resolves to the target; writes to
    anything besides the canonical path are considered a policy violation).
    Run `uv run poe sync-skills-check` after skill edits.
-3. **Per-Agent Context Package**: Do not hand each subagent only a one-line
+3. **Template Skill Isolation**: Skills and subagents inside
+   `{{cookiecutter.project_slug}}/.agents/` ship to generated projects and must
+   have zero awareness of Cookiecutter, the template repository (`hooks/`,
+   `{{cookiecutter.project_slug}}/`, `lint-rendered`, `sync-skills-check`,
+   `audit_rendered.py`, `test_template.py`, `test_repo_conventions.py`),
+   repo-only skills, or `zenith-example`. Keep template-maintenance knowledge in
+   root `AGENTS.md` and repo-only skills (`tool-cookiecutter`,
+   `workflow-update-tools`, `workflow-inspect-repo`, `workflow-example-sync`).
+4. **Per-Agent Context Package**: Do not hand each subagent only a one-line
    mission. Give every agent a package with:
    - the exact file list it may modify,
    - current tool state (config file paths, relevant ignore lists versions,
@@ -109,13 +117,13 @@ changes:
    - the verification command set it must NOT run (or must run) locally,
    - the required format of its final report (files touched, decisions,
      open questions).
-4. **Partial-Work Audit on Cancellation**: When a task is cancelled mid-run
+5. **Partial-Work Audit on Cancellation**: When a task is cancelled mid-run
    (by the user, supervisor, or failure), immediately audit the working tree
    with `git status` and `git diff --stat` for partial edits left by the
    cancelled agent. Either complete the work deliberately, or revert the
    half-done files with consent; never assume scattered partial changes are
    self-consistent.
-5. **No Interdependent Edits in One Batch**: Do not dispatch multiple agents
+6. **No Interdependent Edits in One Batch**: Do not dispatch multiple agents
    whose edits depend on each other's output within a single parallel batch.
    Sequence dependent edits (or perform them in one agent) so review is
    linearized.

@@ -1,7 +1,7 @@
 ---
 description: >
-  Manages git branches, conventional commits, and pull requests in Zenith
-  projects. Enforces AI disclosure checklists, testing plans, and clean commit
+  Manages git branches, conventional commits, and pull requests in this
+  project. Enforces AI disclosure checklists, testing plans, and clean commit
   hygiene. Mandatory whenever creating branches, preparing commits, staging files,
   authoring commit messages, or creating pull requests, even without prompt triggers.
   Triggers: commit, branch, pull request, PR, push, conventional commit.
@@ -12,7 +12,7 @@ version: 1.0.0
 # Git Workflow & Pull Request Standards (`workflow-git`)
 
 This skill defines branch management, conventional commit
-formatting, and pull request standards for Zenith repositories.
+formatting, and pull request standards for this repository.
 
 ---
 

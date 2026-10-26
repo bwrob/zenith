@@ -10,7 +10,7 @@ version: 1.1.0
 
 # Specification Conformance Review (`sdd-review`)
 
-This skill defines the audit protocol to verify implemented code against functional specifications in Zenith projects.
+This skill defines the audit protocol to verify implemented code against functional specifications in this project.
 It verifies that delivered code satisfies all acceptance criteria without introducing scope creep or regressions.
 
 ---
@@ -119,7 +119,7 @@ Run the verification suite to prove correctness:
 uv run poe code-quality
 ```
 
-Record the output in the Zenith Invariant Scorecard.
+Record the output in the Quality Invariant Scorecard.
 
 ### Step 7: Render Verdict
 

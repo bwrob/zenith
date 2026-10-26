@@ -1,6 +1,6 @@
 ---
 description: >
-  Performs a pre-flight code review against Zenith engineering,
+  Performs a pre-flight code review against project engineering,
   architecture, and AI policy standards before submitting changes or opening a PR.
   Mandatory before opening a pull request or reporting an autonomous task as complete,
   even without prompt triggers.
@@ -12,7 +12,7 @@ version: 1.1.0
 
 # Pre-Flight Code Review (`workflow-code-review`)
 
-This skill defines the code review protocol for Zenith Python repositories.
+This skill defines the code review protocol for Python repositories.
 It establishes the quality gates that all code changes must satisfy before merge.
 
 ---
@@ -88,7 +88,7 @@ Review changes across six dimensions:
 - [ ] **Pyrefly Strict**: Does static type checking pass without bare suppressions
   (only rule-scoped `# pyrefly: ignore[code]` when unavoidable)?
 - [ ] **No-ruff-ignores Contract**: Does the diff contain zero `# noqa`
-  comments across template files, hooks, scripts, and tests?
+  comments across source files, scripts, and tests?
   Does every `# ruff: ignore[...]` directive use the full lowercase rule name
   with a rationale comment?
 
@@ -106,12 +106,8 @@ Review changes across six dimensions:
 - [ ] **Transformation Assertions**: Do assertions check computed outputs rather than
   echoing input arguments? Do bug fixes include provenance docstrings
   (`Bug / Root cause / Fix`)?
-- [ ] **Coverage Threshold**: Does test coverage satisfy project thresholds (80%+
-  branch coverage)?
-- [ ] **Rendered-Output Linting**: For template or configuration changes, did
-  the review run `uv run poe lint-rendered`?
-  This task checks rendered projects (CLI on/off, short and long slugs)
-  with `ruff check` and `ruff format --check` inside each rendered directory.
+- [ ] **Coverage Threshold**: Does test coverage satisfy project thresholds (100%
+  statement and branch coverage)?
 
 ### 6. Packaging & Hermetic Dependencies (`pyproject.toml`)
 

@@ -173,21 +173,50 @@ def test_manual_only_skills_match_agents_md(skills_dir: Path, agents_md: Path) -
 
 
 def test_template_skills_omit_repo_only_references() -> None:
-    """Keep maintainer-only skills and the showcase repo out of template skills.
+    """Keep template-repository and Cookiecutter machinery out of template .agents.
 
-    Generated projects do not ship the repo-only skills and have no
-    downstream showcase, so a template skill that names them misleads agents.
+    Skills and subagents shipped inside ``{{cookiecutter.project_slug}}/.agents/``
+    must have zero awareness of the template repository they were generated from,
+    Cookiecutter/Jinja syntax, maintainer-only tasks/scripts/tests, or Zenith's
+    own documentation tree.
     """
     repo_only = {
         path.name
         for path in (REPO_ROOT / ".agents" / "skills").iterdir()
         if not path.is_symlink()
     }
-    forbidden = (*repo_only, "zenith-example")
+    forbidden = (
+        *repo_only,
+        "zenith",
+        "cookiecutter",
+        "{{",
+        "{%",
+        "lint-rendered",
+        "sync-skills-check",
+        "sync_skills",
+        "audit_rendered",
+        "test_template",
+        "test_repo_conventions",
+        "post_gen_project",
+        "pre_gen_project",
+        "include_cli",
+        "include_ci",
+        "include_agent_skills",
+        "docs/first-steps.md",
+        "docs/philosophy.md",
+        "docs/tools/",
+        "docs/skills/",
+        "docs/ci-actions.md",
+    )
+    agent_files = [
+        path
+        for path in (TEMPLATE_ROOT / ".agents").rglob("*")
+        if path.is_file() and path.suffix in {".md", ".py", ".toml"}
+    ]
     offenders = [
         f"{path.relative_to(TEMPLATE_ROOT)}: {term}"
-        for path in (TEMPLATE_ROOT / ".agents" / "skills").rglob("*.md")
+        for path in sorted(agent_files)
         for term in forbidden
-        if term in path.read_text(encoding="utf-8")
+        if term in path.read_text(encoding="utf-8").lower()
     ]
     assert not offenders

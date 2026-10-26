@@ -10,7 +10,7 @@ version: 1.1.0
 
 # Feature Specification Authoring (`sdd-spec`)
 
-This skill defines the process to author and clarify functional specifications in Zenith projects.
+This skill defines the process to author and clarify functional specifications in this project.
 It captures observable behavior, boundary limits, and testable acceptance criteria before code design begins.
 
 ---

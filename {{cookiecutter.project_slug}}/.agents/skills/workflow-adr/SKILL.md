@@ -1,6 +1,6 @@
 ---
 description: >-
-  Workflow for proposing, drafting, reviewing, and updating Architecture Decision Records (ADRs) in Zenith projects.
+  Workflow for proposing, drafting, reviewing, and updating Architecture Decision Records (ADRs) in this project.
   Enforces the MADR decision format, numbering sequences, status lifecycles, and architectural invariants.
   Mandatory whenever editing docs/adr/ or introducing a significant design change, even without prompt triggers.
   Use when proposing architectural choices, documenting design decisions, or superseding prior decisions.
@@ -12,9 +12,9 @@ version: 1.0.0
 # Architecture Decision Records (`workflow-adr`)
 
 This skill provides the process to author, number, evaluate, and update
-Architecture Decision Records (ADRs) in Zenith projects.
+Architecture Decision Records (ADRs) in this project.
 
-Zenith couples Tach architectural boundaries with ADRs in `docs/adr/`.
+This project couples Tach architectural boundaries with ADRs in `docs/adr/`.
 This preserves the rationale, context, and trade-offs of architectural invariants.
 
 ---

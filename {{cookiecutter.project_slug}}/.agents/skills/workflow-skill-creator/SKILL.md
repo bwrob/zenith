@@ -1,6 +1,6 @@
 ---
 description: >-
-  Workflow and standards for creating modular agent skills in Zenith repositories.
+  Workflow and standards for creating modular agent skills in this repository.
   Enforces progressive disclosure, structured directories, external template separation,
   standard prefix taxonomy, and ASD-STE100 writing standards.
   Mandatory whenever creating, editing, refactoring, or modularizing agent skills in .agents/skills/, even without prompt triggers.
@@ -12,7 +12,7 @@ version: 1.0.0
 # Agent Skill Creator (`workflow-skill-creator`)
 
 This skill defines the standards, directory conventions, prefix taxonomy, and workflows
-to create agent skills in Zenith projects.
+to create agent skills in this project.
 
 Agent skills extend coding assistants with specialized runbooks, workflows,
 and tool knowledge. They operate under **progressive disclosure**.
@@ -23,7 +23,7 @@ It reads the full content only when activated.
 
 ## 1. Skill Prefix Taxonomy & Grouping
 
-Every skill in a Zenith project must belong to one of five standardized prefix groups:
+Every skill in the project must belong to one of five standardized prefix groups:
 
 | Prefix | Domain & Scope | Examples |
 |---|---|---|
@@ -34,7 +34,7 @@ Every skill in a Zenith project must belong to one of five standardized prefix g
 | **`domain-*`** | **Reserved: Project Business Logic**<br/>**Reserved exclusively for the author of the instantiated project.** Documents business rules, domain models, and application workflows. | `domain-billing`, `domain-auth`, `domain-data-pipeline`. |
 
 > [!IMPORTANT]
-> The `domain-*` prefix is strictly reserved for the end user and project author. The Zenith template includes zero `domain-*` skills out-of-the-box so the application namespace remains completely unpolluted.
+> The `domain-*` prefix is strictly reserved for project authors. No `domain-*` skills ship by default so the application namespace remains clean.
 
 ---
 
@@ -118,16 +118,16 @@ Select one of these three modes:
 Follow these steps to create a new skill:
 
 ### Step 1: Select Prefix Group and Tier
-1. Select one of the 4 valid prefixes: `tool-`, `workflow-`, `guide-`, or `domain-`.
+1. Select one of the valid prefixes: `sdd-`, `tool-`, `workflow-`, `guide-`, or `domain-`.
 2. Select Tier A (single `SKILL.md`) or Tier B (structured directory).
 3. If Tier B, initialize the directory layout:
    ```bash
-   mkdir -p {{cookiecutter.project_slug}}/.agents/skills/<prefix>-<name>/{templates,examples,references,scripts}
+   mkdir -p .agents/skills/<prefix>-<name>/{templates,examples,references,scripts}
    ```
 
 ### Step 2: Author Frontmatter and Core Instructions
 1. Copy [templates/SKILL_TEMPLATE.md](./templates/SKILL_TEMPLATE.md) to
-   `{{cookiecutter.project_slug}}/.agents/skills/<prefix>-<name>/SKILL.md`.
+   `.agents/skills/<prefix>-<name>/SKILL.md`.
 2. Craft the YAML frontmatter block:
    - **`name`**: Lowercase, hyphenated with prefix (for example, `workflow-changelog` or `domain-billing`).
    - **`description`**: Summary stating *what* the skill does and *when* to use it,
@@ -140,22 +140,15 @@ Follow these steps to create a new skill:
 3. Extract complete code examples into `examples/<filename>`.
 4. Link all extracted assets from `SKILL.md` with relative links.
 
-### Step 4: Synchronize and Register
-1. Maintain shared skills in `{{cookiecutter.project_slug}}/.agents/skills/<prefix>-<name>/`.
-2. Run skill synchronization to create relative symlinks in `.agents/skills/<prefix>-<name>/`:
-   ```bash
-   uv run poe sync-skills
-   ```
-3. If the skill is repo-only (a maintainer skill for the template repository), create it directly in
-   `.agents/skills/<prefix>-<name>/` and omit it from the template.
-4. Add the skill to the skills list in `AGENTS.md` and `{{cookiecutter.project_slug}}/AGENTS.md`.
-5. Add the skill existence assertion to `tests/test_template.py`.
+### Step 4: Register the Skill
+1. Place the skill directory in `.agents/skills/<prefix>-<name>/`.
+2. Add the skill to the skills list in `AGENTS.md`.
+3. If the skill uses `Mandatory` or `Manual only` activation, update the domain activation list in `AGENTS.md`.
 
 ### Step 5: Verify Formatting and Tests
-Run the full verification suite:
+Run the verification suite:
 ```bash
 uv run python .agents/skills/guide-ste100/scripts/ste-lint.py .agents/skills/<name>/SKILL.md
 uv run poe check-skills
-uv run poe sync-skills-check
 uv run poe code-quality
 ```
