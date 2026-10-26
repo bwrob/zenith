@@ -2,10 +2,11 @@
 description: >-
   Workflow and standards for authoring clear, human-centered technical documentation in Zenith projects.
   Enforces information architecture, anti-AI-slop writing rules, single source of truth linking, and verification gates.
-  Use when writing, structuring, editing, or reviewing documentation in docs/.
-  Triggers: write docs, doc authoring, documentation guide, docs workflow, document feature, write guide, anti slop, single source of truth.
+  Use when writing, structuring, editing, updating, or reviewing documentation in docs/.
+  Triggers: write docs, doc authoring, documentation guide, docs workflow, document feature, write guide.
+  Additional triggers: anti slop, single source of truth, in the docs, update docs, edit docs, clarify docs, review docs.
 name: workflow-docs-authoring
-version: 1.1.0
+version: 1.2.0
 ---
 
 # Documentation Authoring Workflow (`workflow-docs-authoring`)

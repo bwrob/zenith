@@ -21,8 +21,10 @@ purpose: Introduce Zenith, showcase the four architectural pillars, and guide de
 > without tooling debt.
 >
 > **Human-First, AI-Accelerated**: Zenith works identically as a pure human-driven
-> developer workflow. AI agent skills are optional companions that operate within the
-> exact same mechanical guardrails.
+> developer workflow. All AI tooling and agent skills are 100% elective during
+> scaffolding. The strict quality gates—100% test coverage, strict typing, complexity
+> limits, and layer boundaries—help human developers just as much as AI agents by
+> providing instant feedback, fearless refactoring, and zero review bikeshedding.
 
 ## Quick Start
 
@@ -77,19 +79,18 @@ foundational pillars:
 
     ---
 
-    Built for autonomous pair-programming with modern AI coding assistants. Audited in
-    the [Agentic Tool Matrix](skills/index.md#agentic-tool-compatibility-matrix), with
-    canonical `AGENTS.md` context, modular skills in
-    [`.agents/skills/`](skills/index.md), transparent review standards, and automated
-    `llms.txt`.
+    Built for autonomous pair-programming when desired, yet completely elective.
+    Scaffold all assistants, select your preferred tools, or exclude AI configs
+    entirely for a traditional Python repository. Audited in the
+    [Agentic Tool Matrix](skills/index.md#agentic-tool-compatibility-matrix).
 
 -   **[Automated Quality Guardrails](philosophy.md)**
 
     ---
 
-    Zero compromises: **100% mandatory test coverage** (`fail_under = 100`), strict
-    static typing with Pyrefly, cognitive complexity <= 10 per function, module boundary
-    enforcement, and CI security auditing with **[zizmor](tools/zizmor.md)**.
+    Rigor that accelerates humans and agents alike: **100% mandatory test coverage**
+    (`fail_under = 100`), strict static typing with Pyrefly, cognitive complexity
+    limits (<= 10), module boundary enforcement, and CI security auditing.
 
 -   **[Hermetic Delivery & CI/CD](ci-actions.md)**
 

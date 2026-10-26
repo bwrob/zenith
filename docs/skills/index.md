@@ -12,18 +12,22 @@ Rather than relying on vague prompts or unbounded system prompts, Zenith organiz
 agent capabilities into **modular, prefixed Agent Skills** located in `.agents/skills/`.
 
 > [!NOTE]
-> **Optional for Pure-Human Teams**: The `.agents/skills/` directory is purely additive.
-> If you or your organization develop entirely by hand without AI coding assistants, you
-> can safely ignore `.agents/skills/` (or delete the folder). The core Python package,
-> test runner, virtual environment, and CI/CD pipelines function completely
-> independently.
+> **Elective AI Tooling & Skills**: The entire AI tooling stack is 100% elective during
+> project scaffolding. You can choose all supported tools, select specific assistants
+> (for example, `claude, cursor`), use universal context files only (`minimal`), or
+> exclude AI tooling entirely (`none`).
+>
+> The strict quality gates—100% branch test coverage, strict Pyrefly static typing,
+> and architectural boundaries—protect the codebase equally whether changes are written
+> by human hands, autonomous agents, or collaborative pair programming.
 
 ## Agentic Tool Compatibility Matrix
 
-Zenith projects operate with modern autonomous coding agents, terminal
-assistants, and AI-native IDEs out of the box. During project scaffolding,
-lifecycle hooks automatically generate tool-specific configuration profiles,
-subagent definitions, permission policies, and context symlinks.
+Zenith projects operate with modern autonomous coding agents, terminal assistants, and
+AI-native IDEs out of the box when enabled. During project scaffolding, the `ai_tools`
+prompt lets you select all tools (`all`), popular tools (`recommended`), targeted form
+factors (`ide-only`, `cli-only`), custom tool combinations, universal context only
+(`minimal`), or completely exclude AI tooling (`none`).
 
 The table below audits popular AI coding tools, their scaffolded configuration
 assets, their support level in Zenith, and their current verification status:

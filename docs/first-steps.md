@@ -66,12 +66,29 @@ Cookiecutter will prompt you for a few project settings:
 | Prompt                  | Meaning & Purpose                                      | Recommended Choice / Default       |
 | :---------------------- | :----------------------------------------------------- | :--------------------------------- |
 | `project_name`          | Human-readable title of your project                   | `My Awesome Service`               |
-| `project_slug`          | Directory name & Python import name                    | `my_awesome_service`               |
-| `package_description`   | Short summary for README & package metadata            | Press `Enter` to customize         |
+| `project_slug`          | Directory and distribution package name                | `my_awesome_service`               |
+| `package_name`          | Import identifier in `src/`                            | Auto-derived from `project_slug`   |
+| `description`           | Short summary for README & package metadata            | Press `Enter` to customize         |
 | `author_name` / `email` | Your details for packaging metadata                    | Your name and email                |
-| `python_version`        | Target Python runtime                                  | `3.12`, `3.13`, or `3.14`          |
-| `include_cli`           | Scaffold a ready-to-run Typer command-line application | `true` (recommended for apps/CLIs) |
-| `license`               | Open-source or proprietary license                     | `MIT` or `Proprietary`             |
+| `github_username`       | GitHub user or organization name                       | Your GitHub handle                 |
+| `python_version`        | Target Python runtime                                  | `3.13` (current stable)            |
+| `license`               | Open-source or proprietary license                     | `MIT`, `Apache-2.0`, `None`        |
+| `include_cli`           | Scaffold a ready-to-run Typer command-line application | `true` (recommended for CLIs/apps) |
+| `include_ci_testing`    | Generate GitHub Actions CI test & quality workflows    | `true`                             |
+| `include_ci_publishing` | Generate GitHub Actions PyPI & docs deploy workflow    | `true`                             |
+| `include_agent_skills`  | Include Zenith agent skills suite and SDD subagents    | `true` (or `false` for pure-human) |
+| `ai_tools`              | AI assistant configs to scaffold (presets or custom)   | `all`, `recommended`, or `none`    |
+
+> [!NOTE]
+> **AI Tooling Is 100% Elective**
+>
+> Zenith does not force AI tooling onto your repository. If you develop without AI
+> assistants or prefer a traditional Python project, set `ai_tools` to `none` and
+> `include_agent_skills` to `false`. The generator completely removes all agent
+> configuration files, skills, and context symlinks.
+>
+> The strict quality gates (100% test coverage, strict typing, complexity limits) remain
+> identical—accelerating human developers just as effectively as autonomous agents.
 
 If you are unsure about any prompt, simply press `Enter` to accept the default. You can
 adjust these settings at any time in `pyproject.toml`.
