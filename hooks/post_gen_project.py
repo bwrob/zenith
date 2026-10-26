@@ -178,21 +178,22 @@ def _setup_instruction_aliases(
 ) -> None:
     if not agents_path.is_file():
         return
-    aliases: tuple[tuple[pathlib.Path, str, str], ...] = (
-        (PROJECT_DIR / "CLAUDE.md", "AGENTS.md", "claude"),
-        (PROJECT_DIR / ".cursorrules", "AGENTS.md", "cursor"),
-        (PROJECT_DIR / ".windsurfrules", "AGENTS.md", "windsurf"),
-        (PROJECT_DIR / "HERMES.md", "AGENTS.md", "hermes"),
-        (PROJECT_DIR / ".pi" / "APPEND_SYSTEM.md", "../AGENTS.md", "pi"),
-        (PROJECT_DIR / ".omp" / "SYSTEM.md", "../AGENTS.md", "omp"),
+    aliases: tuple[tuple[pathlib.Path, str], ...] = (
+        (PROJECT_DIR / "CLAUDE.md", "claude"),
+        (PROJECT_DIR / ".cursorrules", "cursor"),
+        (PROJECT_DIR / ".windsurfrules", "windsurf"),
+        (PROJECT_DIR / "HERMES.md", "hermes"),
+        (PROJECT_DIR / ".pi" / "APPEND_SYSTEM.md", "pi"),
+        (PROJECT_DIR / ".omp" / "SYSTEM.md", "omp"),
     )
-    for alias_path, target_rel, tool_key in aliases:
+    for alias_path, tool_key in aliases:
         if tool_key not in active_tools:
             continue
         alias_path.parent.mkdir(exist_ok=True, parents=True)
         if not os.path.lexists(alias_path):
+            rel_src = os.path.relpath(agents_path, alias_path.parent)
             try:
-                alias_path.symlink_to(target_rel)
+                alias_path.symlink_to(rel_src)
             except (OSError, NotImplementedError):
                 shutil.copyfile(agents_path, alias_path)
 
