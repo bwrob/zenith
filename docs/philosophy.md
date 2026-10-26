@@ -19,21 +19,25 @@ bumps that slow down feature delivery. Teams relax type checkers, postpone test
 coverage, skip complexity limits, and permit circular dependencies under the illusion of
 moving faster.
 
-Zenith rejects this premise. When guardrails are automated, exhaustive, and
-non-negotiable, engineering velocity actually increases:
+Zenith rejects this premise. Strict, automated quality guardrails were not created
+merely to constrain AI assistants; they serve human engineers directly. When quality
+gates are automated, exhaustive, and non-negotiable, engineering velocity increases
+for developers and AI agents alike:
 
 - **Refactoring Is Fearless**: 100% statement and branch test coverage guarantees that
-  regressions surface immediately. Engineers and AI agents can restructure internal
-  architectures with complete confidence.
+  regressions surface immediately. Human developers and AI agents can restructure
+  internal architectures with complete confidence, knowing that broken edge cases fail
+  in 2 seconds locally.
 - **Cognitive Overhead Drops to Zero**: Automated rules eliminate style debates,
   formatting discussions, and bikeshedding. Code reviews focus exclusively on domain
   logic, data contracts, and system architecture.
 - **Ambiguity Disappears**: Strict static types serve as living machine contracts.
   Developers and AI agents never have to guess what shape an object takes or what values
   a function accepts.
-- **Low-Quality AI Code Is Blocked at the Gate**: Autonomous agents cannot commit
-  untyped objects, convoluted logic, circular dependencies, or fragile workarounds
-  because the quality gate rejects non-compliant code immediately.
+- **Rigor Protects the Repository**: Autonomous agents cannot commit untyped objects,
+  hallucinated imports, convoluted logic, or fragile workarounds because the gate
+  rejects non-compliant code immediately. Human developers receive the exact same safety
+  net against late-night typos, subtle logic flaws, and missed edge cases.
 
 ### The Business ROI: Defending Rigor to Engineering Leadership
 
@@ -150,8 +154,7 @@ Strictness provides the safety; sub-second performance provides the velocity.
 
 ## AI-Ready Architecture
 
-Autonomous AI coding agents (Claude Code, Google Gemini CLI, Antigravity, OpenAI Codex,
-Cursor, Windsurf, Aider) now write and refactor substantial portions of production
+Autonomous AI coding agents now write and refactor substantial portions of production
 codebases.
 
 However, unsupervised AI agents easily produce degraded code:
@@ -171,12 +174,40 @@ flowchart LR
     Check --> Review["Human Review<br/>& PR Attestation"]
 ```
 
+### Elective AI Tooling & Skills
+
+All AI tooling and agent skills in Zenith are **strictly elective**. Zenith does not
+force AI workflows onto teams that prefer pure-human development. During project
+scaffolding, two dedicated Cookiecutter prompts configure your preferred level:
+
+- **`include_agent_skills`**: Determines whether to include the 40+ modular engineering
+  skills and SDD subagent templates in `.agents/`. When set to `false`, the entire
+  `.agents/` directory is omitted.
+- **`ai_tools`**: Selects which AI assistant configuration profiles to scaffold:
+  - `all`: Scaffolds configuration profiles and context links for all 13 supported AI
+    assistants.
+  - `recommended`: Scaffolds the most popular mainstream assistants (Claude Code,
+    Cursor, OpenAI Codex, OpenCode, Google Gemini, GitHub Copilot).
+  - `ide-only` / `cli-only`: Scaffolds targeted configurations matching your preferred
+    form factor.
+  - Custom list: Supply specific comma-separated tools (for example,
+    `claude, cursor, zed`).
+  - `minimal`: Scaffolds only canonical `AGENTS.md` and `AI_POLICY.md` without any
+    tool-specific dot-directories.
+  - `none`: Completely removes all agent configs, instruction files, and context links,
+    yielding a clean traditional Python repository.
+
+Regardless of your choice, the underlying Python architecture, hermetic `uv`
+environment, testing stack, and strict quality gates remain completely identical.
+
 ### Context Discovery
 
 Every Zenith project maintains a canonical `AGENTS.md` in the repository root. This file
 establishes operational boundaries, bug-scoping workflows, and zero-drift conventions,
-symlinked for universal tool compatibility (`CLAUDE.md`, `.cursorrules`,
-`.windsurfrules`).
+symlinked for universal tool compatibility across editor and CLI environments. For a
+complete breakdown of supported configurations and live-testing status across AI coding
+tools, consult the
+[Agentic Tool Compatibility Matrix](skills/index.md#agentic-tool-compatibility-matrix).
 
 ### Modular Agent Skills
 
@@ -220,12 +251,13 @@ flowchart LR
 ```
 
 - **Shared Context**: Humans and AI agents follow the instructions in `AGENTS.md` and
-  modular skills in [`.agents/skills/`](skills/index.md).
+  modular skills in [`.agents/skills/`](skills/index.md) (when AI tooling is enabled).
 - **Hermetic Poe Tasks**: Development tasks execute via
   **[Poe the Poet](tools/poethepoet.md)** inside the hermetic project environment
   (`uv run poe <task>`).
 - **Strict Quality Gates**: Pull requests enforce 100% test coverage, strict typing,
-  complexity ceilings, wheel installation smoke tests, and security audits.
+  complexity ceilings, wheel installation smoke tests, and security audits—safeguarding
+  both human developers and autonomous agents against regressions.
 
 For a detailed breakdown of the CI verification pipeline, see
 [CI/CD Actions](ci-actions.md).

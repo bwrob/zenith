@@ -3,7 +3,7 @@
 #
 # Tool: Aider (https://aider.chat/)
 # Purpose: AI pair programming terminal tool settings.
-# Why it's in Zenith: Auto-loads AGENTS.md and delegates lint/test to poe tasks.
+# Why it's in Zenith: Auto-loads AGENTS.md and delegates lint/test to Poe tasks.
 # ==============================================================================
 
 read:

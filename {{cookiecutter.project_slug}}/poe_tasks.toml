@@ -118,9 +118,11 @@
     cmd  = "rumdl check"
     help = "Lint markdown documentation with rumdl."
 
+{% if cookiecutter.include_agent_skills in [True, "yes", "true", "True", "1"] and cookiecutter.ai_tools.strip().lower() != "none" %}
 [tasks.lint-ste]
     cmd  = "python .agents/skills/guide-ste100/scripts/ste-lint.py .agents/skills"
     help = "Lint agent skills against ASD-STE100 structural rules."
+{% endif %}
 
 [tasks.format-md]
     cmd  = "rumdl fmt"
@@ -178,9 +180,11 @@
         "typos -w",
     ]
 
+{% if cookiecutter.include_agent_skills in [True, "yes", "true", "True", "1"] and cookiecutter.ai_tools.strip().lower() != "none" %}
 [tasks.check-skills]
     cmd  = "python scripts/check_skills.py .agents/skills"
     help = "Validate structural invariants and frontmatter of agent skills in .agents/skills/."
+{% endif %}
 
 [tasks.code-quality]
     help = "Execute the full code quality verification pipeline."
@@ -200,7 +204,9 @@
         "zizmor",
 {% endif %}
         "dependencies",
+{% if cookiecutter.include_agent_skills in [True, "yes", "true", "True", "1"] and cookiecutter.ai_tools.strip().lower() != "none" %}
         "check-skills",
+{% endif %}
     ]
 
     # ------------------------------------------------------------------------------
@@ -329,6 +335,7 @@
     # AI Coding Assistants & Agent Skills
     # ------------------------------------------------------------------------------
 
+{% if cookiecutter.include_agent_skills in [True, "yes", "true", "True", "1"] and cookiecutter.ai_tools.strip().lower() != "none" %}
 [tasks.sync-skills]
     cmd  = "uvx library-skills --all -y"
     help = "Synchronize agent skills from installed library dependencies via library-skills."
@@ -418,3 +425,4 @@
         { ref = "sdd-check-traceability $feature_id" },
         { ref = "test" },
     ]
+{% endif %}

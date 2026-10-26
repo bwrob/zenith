@@ -61,6 +61,27 @@ Before editing code or executing tasks, ensure an isolated, clean working enviro
   from first principles rather than piling on patches.
 - **AI Contribution Policy**: Consult and adhere to `AI_POLICY.md` for human review,
   local verification, and tool disclosure guidelines.
+- **Automatic Skill Activation by Domain**: When working in specific project domains,
+  agents must activate and follow the corresponding workflow skill unconditionally, even
+  without explicit prompt triggers:
+  - **Documentation (`docs/`)**: Always activate and adhere to
+    `workflow-docs-authoring`.
+  - **Pre-PR & Code Audits**: Always activate and adhere to `workflow-code-review`.
+  - **Architecture Decisions (`docs/adr/`)**: Always activate and adhere to
+    `workflow-adr`.
+  - **Changelog & Releases (`docs/changelog.md`)**: Always activate and adhere to
+    `workflow-changelog`.
+  - **Python Implementation & Refactoring**: Always adhere to `guide-python`.
+  - **Skill Authoring (`.agents/skills/`)**: Always activate and adhere to
+    `workflow-skill-creator` and `guide-ste100`.
+  - **Git Operations (branches, commits, PRs)**: Always activate and adhere to
+    `workflow-git`.
+  - **Spec-Driven Features (`specs/`)**: Activate the matching `sdd-*` phase skill.
+  - **Manual Only**: Never self-activate skills marked
+    `disable-model-invocation: true` (`workflow-setup`, `workflow-docs-consumers`,
+    `workflow-inspect-repo`, `workflow-example-sync`). Run them only on explicit user
+    request. The merge-monitoring step above is such a request: read
+    `.agents/skills/workflow-example-sync/SKILL.md` directly.
 
 ## Subagent Orchestration & Work-Sharing Policy
 
@@ -80,7 +101,15 @@ changes:
    place (`Edit` through a symlink resolves to the target; writes to
    anything besides the canonical path are considered a policy violation).
    Run `uv run poe sync-skills-check` after skill edits.
-3. **Per-Agent Context Package**: Do not hand each subagent only a one-line
+3. **Template Skill Isolation**: Skills and subagents inside
+   `{{cookiecutter.project_slug}}/.agents/` ship to generated projects and must
+   have zero awareness of Cookiecutter, the template repository (`hooks/`,
+   `{{cookiecutter.project_slug}}/`, `lint-rendered`, `sync-skills-check`,
+   `audit_rendered.py`, `test_template.py`, `test_repo_conventions.py`),
+   repo-only skills, or `zenith-example`. Keep template-maintenance knowledge in
+   root `AGENTS.md` and repo-only skills (`tool-cookiecutter`,
+   `workflow-update-tools`, `workflow-inspect-repo`, `workflow-example-sync`).
+4. **Per-Agent Context Package**: Do not hand each subagent only a one-line
    mission. Give every agent a package with:
    - the exact file list it may modify,
    - current tool state (config file paths, relevant ignore lists versions,
@@ -88,13 +117,13 @@ changes:
    - the verification command set it must NOT run (or must run) locally,
    - the required format of its final report (files touched, decisions,
      open questions).
-4. **Partial-Work Audit on Cancellation**: When a task is cancelled mid-run
+5. **Partial-Work Audit on Cancellation**: When a task is cancelled mid-run
    (by the user, supervisor, or failure), immediately audit the working tree
    with `git status` and `git diff --stat` for partial edits left by the
    cancelled agent. Either complete the work deliberately, or revert the
    half-done files with consent; never assume scattered partial changes are
    self-consistent.
-5. **No Interdependent Edits in One Batch**: Do not dispatch multiple agents
+6. **No Interdependent Edits in One Batch**: Do not dispatch multiple agents
    whose edits depend on each other's output within a single parallel batch.
    Sequence dependent edits (or perform them in one agent) so review is
    linearized.
@@ -131,6 +160,15 @@ these invariants:
     (`ln -s AGENTS.md .cursorrules`) and `.cursor/rules/zenith.mdc`.
   - **Aider**: `.aider.conf.yml` (auto-loading `AGENTS.md`, wiring `lint-cmd` and
     `test-cmd` to Poe tasks).
+  - **OpenCode**: `opencode.json` (pre-approving hermetic `uv run poe *` commands)
+    and `.opencode/agents/*.md` (project subagents).
+  - **Devin**: `.devin/config.json` (pre-authorizing hermetic `uv run poe:*` commands)
+    and native `AGENTS.md` ingestion.
+  - **Zed**: `.zed/settings.json` (configuring Ruff formatting on save) and
+    `.zed/tasks.json` (wiring one-key task execution for Poe tasks).
+  - **Pi & Oh My Pi**: `.pi/settings.json`, `.pi/APPEND_SYSTEM.md`, and
+    `.omp/SYSTEM.md` symlinks injecting project instructions.
+  - **Hermes Agent**: `HERMES.md` symlink (`ln -s AGENTS.md HERMES.md`).
 - **Scope Hierarchy**: When exploring subdirectories, check for nested `AGENTS.md` or
   `CLAUDE.md` files; localized instructions take precedence within their scope.
 - **Workflow & Tool Guidance**: Consult `.agents/skills/` for lifecycle workflow skills

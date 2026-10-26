@@ -181,7 +181,8 @@ through simulated developer and stakeholder personas before release.
 having deep familiarity with system internals, they easily omit critical onboarding
 context or write prose that feels dry, intimidating, or dogmatic.
 `workflow-docs-consumers` dispatches independent reader agents with distinct
-backgrounds to evaluate docs with fresh eyes.
+backgrounds to evaluate docs with fresh eyes. It is manual only: it costs several
+subagent runs, so an agent starts it only when you ask.
 
 `workflow-docs-consumers` standardizes the persona evaluation protocol:
 
@@ -210,6 +211,8 @@ backgrounds to evaluate docs with fresh eyes.
 
 These skills live in the Zenith template repository (`bwrob/zenith`) to support ongoing
 maintenance, upstream tool tracking, and downstream showcase verification.
+`workflow-inspect-repo` and `workflow-example-sync` are manual only: they clone
+external repositories or push to one, so an agent runs them only when you ask.
 
 ### External Repository Benchmarking (workflow-inspect-repo)
 

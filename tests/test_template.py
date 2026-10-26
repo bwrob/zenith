@@ -132,8 +132,16 @@ def test_agent_instruction_configs_exist(full_project: Path) -> None:
     assert (full_project / "AI_POLICY.md").exists()
     assert (full_project / ".cursorrules").exists()
     assert (full_project / ".windsurfrules").exists()
+    assert (full_project / "HERMES.md").exists()
     assert (full_project / ".claude" / "settings.json").exists()
+    assert (full_project / "opencode.json").exists()
     assert (full_project / ".codex" / "config.toml").exists()
+    assert (full_project / ".devin" / "config.json").exists()
+    assert (full_project / ".zed" / "settings.json").exists()
+    assert (full_project / ".zed" / "tasks.json").exists()
+    assert (full_project / ".pi" / "settings.json").exists()
+    assert (full_project / ".pi" / "APPEND_SYSTEM.md").exists()
+    assert (full_project / ".omp" / "SYSTEM.md").exists()
     assert (full_project / ".aider.conf.yml").exists()
     assert (full_project / ".cursor" / "rules" / "zenith.mdc").exists()
     assert (full_project / ".github" / "copilot-instructions.md").exists()
@@ -410,7 +418,7 @@ def test_subagent_definitions_and_tool_symlinks(full_project: Path) -> None:
         "sdd-reviewer.md",
     ]:
         assert (full_project / ".agents" / "subagents" / subagent).exists()
-        for tool_dir in (".claude", ".gemini", ".cursor"):
+        for tool_dir in (".claude", ".gemini", ".cursor", ".opencode"):
             generated_agent = full_project / tool_dir / "agents" / subagent
             template_agent = TEMPLATE_ROOT / tool_dir / "agents" / subagent
             assert generated_agent.exists()
@@ -969,12 +977,23 @@ def test_readme_and_agent_symlinks(full_project: Path) -> None:
     assert (full_project / "CLAUDE.md").read_text() == agents_text
     assert (full_project / ".cursorrules").read_text() == agents_text
     assert (full_project / ".windsurfrules").read_text() == agents_text
+    assert (full_project / "HERMES.md").read_text() == agents_text
     if (full_project / "CLAUDE.md").is_symlink():  # pragma: no branch
         assert (full_project / "CLAUDE.md").readlink() == Path("AGENTS.md")
         assert (full_project / ".cursorrules").readlink() == Path("AGENTS.md")
         assert (full_project / ".windsurfrules").readlink() == Path("AGENTS.md")
+        assert (full_project / "HERMES.md").readlink() == Path("AGENTS.md")
+        assert (full_project / ".pi" / "APPEND_SYSTEM.md").readlink() == Path(
+            "../AGENTS.md"
+        )
+        assert (full_project / ".omp" / "SYSTEM.md").readlink() == Path("../AGENTS.md")
 
     assert "uv run poe:*" in (full_project / ".claude" / "settings.json").read_text()
+    assert "uv run poe *" in (full_project / "opencode.json").read_text()
+    assert "uv run poe:*" in (full_project / ".devin" / "config.json").read_text()
+    assert "uv" in (full_project / ".zed" / "settings.json").read_text()
+    assert "uv run poe test" in (full_project / ".zed" / "tasks.json").read_text()
+    assert "bash" in (full_project / ".pi" / "settings.json").read_text()
     assert "workspace-write" in (full_project / ".codex" / "config.toml").read_text()
     assert "AGENTS.md" in (full_project / ".aider.conf.yml").read_text()
     copilot_text = (full_project / ".github" / "copilot-instructions.md").read_text()
@@ -1248,3 +1267,162 @@ def test_package_name_keyword_validation(temp_output_dir: Path) -> None:
                 "project_name": "def",
             },
         )
+
+
+def test_ai_tools_invalid_preset_validation(temp_output_dir: Path) -> None:
+    """Test that invalid AI tool names or presets fail pre-gen validation."""
+    with pytest.raises(FailedHookException):
+        cookiecutter(
+            str(TEMPLATE_ROOT),
+            no_input=True,
+            output_dir=str(temp_output_dir),
+            extra_context={
+                "project_name": "Invalid AI Tool Project",
+                "ai_tools": "invalid_assistant",
+            },
+        )
+
+
+def test_ai_tools_empty_validation(temp_output_dir: Path) -> None:
+    """Test that an empty ai_tools string fails pre-gen validation."""
+    with pytest.raises(FailedHookException):
+        cookiecutter(
+            str(TEMPLATE_ROOT),
+            no_input=True,
+            output_dir=str(temp_output_dir),
+            extra_context={
+                "project_name": "Empty AI Tool Project",
+                "ai_tools": "  ",
+            },
+        )
+
+
+def test_ai_tools_none_renders_clean_project(temp_output_dir: Path) -> None:
+    """Test that ai_tools=none completely excludes all AI configurations and skills."""
+    rendered = Path(
+        cookiecutter(
+            str(TEMPLATE_ROOT),
+            no_input=True,
+            output_dir=str(temp_output_dir),
+            extra_context={
+                "project_name": "No AI Project",
+                "ai_tools": "none",
+            },
+        )
+    )
+    assert not (rendered / "AGENTS.md").exists()
+    assert not (rendered / "AI_POLICY.md").exists()
+    assert not (rendered / ".agents").exists()
+    assert not (rendered / "scripts" / "check_skills.py").exists()
+    assert not (rendered / ".claude").exists()
+    assert not (rendered / ".gemini").exists()
+    assert not (rendered / ".codex").exists()
+    assert not (rendered / ".opencode").exists()
+    assert not (rendered / "opencode.json").exists()
+    assert not (rendered / ".cursor").exists()
+    assert not (rendered / ".cursorrules").exists()
+    assert not (rendered / ".windsurfrules").exists()
+    assert not (rendered / ".devin").exists()
+    assert not (rendered / ".zed").exists()
+    assert not (rendered / ".pi").exists()
+    assert not (rendered / ".omp").exists()
+    assert not (rendered / "HERMES.md").exists()
+    assert not (rendered / "CLAUDE.md").exists()
+    assert not (rendered / ".aider.conf.yml").exists()
+    assert not (rendered / ".github" / "copilot-instructions.md").exists()
+
+    poe_text = (rendered / "poe_tasks.toml").read_text()
+    assert "check-skills" not in poe_text
+    assert "sync-skills" not in poe_text
+    assert "sdd-new" not in poe_text
+
+
+def test_ai_tools_minimal_renders_context_only(temp_output_dir: Path) -> None:
+    """Test that ai_tools=minimal preserves AGENTS.md but excludes tool directories."""
+    rendered = Path(
+        cookiecutter(
+            str(TEMPLATE_ROOT),
+            no_input=True,
+            output_dir=str(temp_output_dir),
+            extra_context={
+                "project_name": "Minimal AI Project",
+                "ai_tools": "minimal",
+            },
+        )
+    )
+    assert (rendered / "AGENTS.md").exists()
+    assert (rendered / "AI_POLICY.md").exists()
+    assert not (rendered / ".claude").exists()
+    assert not (rendered / ".gemini").exists()
+    assert not (rendered / ".codex").exists()
+    assert not (rendered / ".opencode").exists()
+    assert not (rendered / "opencode.json").exists()
+    assert not (rendered / ".cursor").exists()
+    assert not (rendered / ".cursorrules").exists()
+    assert not (rendered / ".windsurfrules").exists()
+    assert not (rendered / ".devin").exists()
+    assert not (rendered / ".zed").exists()
+    assert not (rendered / ".pi").exists()
+    assert not (rendered / ".omp").exists()
+    assert not (rendered / "HERMES.md").exists()
+    assert not (rendered / "CLAUDE.md").exists()
+    assert not (rendered / ".aider.conf.yml").exists()
+    assert not (rendered / ".github" / "copilot-instructions.md").exists()
+
+
+def test_ai_tools_custom_subset_rendering(temp_output_dir: Path) -> None:
+    """Test that custom comma-separated tools only scaffold the requested assistants."""
+    rendered = Path(
+        cookiecutter(
+            str(TEMPLATE_ROOT),
+            no_input=True,
+            output_dir=str(temp_output_dir),
+            extra_context={
+                "project_name": "Custom AI Project",
+                "ai_tools": "claude, cursor, zed",
+            },
+        )
+    )
+    assert (rendered / "AGENTS.md").exists()
+    assert (rendered / ".claude" / "settings.json").exists()
+    assert (rendered / "CLAUDE.md").exists()
+    assert (rendered / ".cursor" / "rules" / "zenith.mdc").exists()
+    assert (rendered / ".cursorrules").exists()
+    assert (rendered / ".zed" / "settings.json").exists()
+
+    assert not (rendered / ".gemini").exists()
+    assert not (rendered / ".codex").exists()
+    assert not (rendered / ".opencode").exists()
+    assert not (rendered / "opencode.json").exists()
+    assert not (rendered / ".devin").exists()
+    assert not (rendered / ".pi").exists()
+    assert not (rendered / ".omp").exists()
+    assert not (rendered / "HERMES.md").exists()
+    assert not (rendered / ".windsurfrules").exists()
+    assert not (rendered / ".aider.conf.yml").exists()
+
+
+def test_include_agent_skills_false_prunes_skills(temp_output_dir: Path) -> None:
+    """Test that include_agent_skills=false strips .agents/ while keeping configs."""
+    rendered = Path(
+        cookiecutter(
+            str(TEMPLATE_ROOT),
+            no_input=True,
+            output_dir=str(temp_output_dir),
+            extra_context={
+                "project_name": "No Skills Project",
+                "include_agent_skills": False,
+                "ai_tools": "claude, cursor",
+            },
+        )
+    )
+    assert not (rendered / ".agents").exists()
+    assert not (rendered / "scripts" / "check_skills.py").exists()
+    assert (rendered / ".claude" / "settings.json").exists()
+    assert not (rendered / ".claude" / "agents").exists()
+    assert (rendered / ".cursor" / "rules" / "zenith.mdc").exists()
+    assert not (rendered / ".cursor" / "agents").exists()
+
+    poe_text = (rendered / "poe_tasks.toml").read_text()
+    assert "check-skills" not in poe_text
+    assert "sdd-new" not in poe_text

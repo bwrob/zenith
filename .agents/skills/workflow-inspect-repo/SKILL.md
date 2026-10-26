@@ -3,6 +3,8 @@ description: >-
   Workflow for inspecting, auditing, and benchmarking mature Python project setups and development skills to extract best practices and propose improvements.
   Use when benchmarking external repositories, evaluating tool configurations, or proposing template upgrades.
   Triggers: inspect module, audit repo, benchmark setup, extract skills, inspect-module-setup.
+  Runs only when explicitly requested because it clones and audits external repositories.
+disable-model-invocation: true
 name: workflow-inspect-repo
 version: 1.0.0
 ---
@@ -16,6 +18,10 @@ agent skills of mature Python projects.
 Use this skill when benchmarking Zenith against mature repositories.
 Use it to evaluate modern tooling shifts, analyze agent skills,
 or prepare improvement proposals.
+
+> [!IMPORTANT]
+> This skill operates with `disable-model-invocation: true`.
+> Run it only when the user explicitly asks for a repository audit.
 
 Zenith tracks audit progress, candidate queues, and inspected targets in
 `.agents/skills/inspect-module-setup/`:

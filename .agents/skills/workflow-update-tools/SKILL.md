@@ -90,7 +90,8 @@ of truth for shared skills. Root skills in `.agents/skills/` are relative symlin
 
 > [!IMPORTANT]
 > **Repo-Only Skills**:
-> `tool-cookiecutter`, `update-tools`, `inspect-module-setup`, and `zenith-example-sync`
+> `tool-cookiecutter`, `workflow-update-tools`, `workflow-inspect-repo`, and
+> `workflow-example-sync`
 > belong directly to the root repository. Never copy them into
 > `{{cookiecutter.project_slug}}`.
 
