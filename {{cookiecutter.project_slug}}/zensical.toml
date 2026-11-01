@@ -134,6 +134,7 @@
         pymdownx.tilde = {}
         {% if cookiecutter.include_cli in [True, "yes", "true", "True", "1"] %}
         termynal.include_assets = true
+        termynal.prompt_literal_start = ["$", ">>>"]
         {% endif %}
         toc.permalink = true
         zensical.extensions.preview.targets.include = ["*"]

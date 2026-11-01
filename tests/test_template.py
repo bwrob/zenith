@@ -504,6 +504,12 @@ def test_project_tests_and_docs_layout(full_project: Path) -> None:
     assert (full_project / "tests" / "test_core.py").exists()
     assert (full_project / "tests" / "__snapshots__" / "test_core.ambr").exists()
     assert (full_project / "tests" / "test_cli.py").exists()
+    assert (full_project / "tests" / "conftest.py").exists()
+    conftest_text = (full_project / "tests" / "conftest.py").read_text()
+    assert "def runner() -> CliRunner:" in conftest_text
+    cli_test_text = (full_project / "tests" / "test_cli.py").read_text()
+    assert "def test_cli_help(runner: CliRunner) -> None:" in cli_test_text
+    assert "runner = CliRunner()" not in cli_test_text
     assert (full_project / "docs" / "index.md").exists()
     docs_index_text = (full_project / "docs" / "index.md").read_text()
     assert "diataxis: explanation" in docs_index_text
@@ -783,7 +789,14 @@ def test_zensical_assets_and_navigation(full_project: Path) -> None:
     assert "stylesheets/custom.css" in zensical_text
     assert "stylesheets/termynal.css" not in zensical_text
     assert "javascripts/termynal.js" not in zensical_text
-    assert "termynal.include_assets = true" in zensical_text
+    assert re.search(r"termynal\.include_assets\s*=\s*true", zensical_text) is not None
+    assert (
+        re.search(
+            r'termynal\.prompt_literal_start\s*=\s*\[\s*"\$"\s*,\s*">>>"\s*\]',
+            zensical_text,
+        )
+        is not None
+    )
     assert "javascripts/mathjax.js" in zensical_text
     assert '{ name = "tree"' in zensical_text
     assert "navigation.indexes" in zensical_text
@@ -1192,6 +1205,9 @@ def test_minimal_excludes_cli_files_and_dependencies(minimal_project: Path) -> N
     assert "_lazy" not in init_text
     assert "_LAZY_MEMBERS" not in init_text
     assert not (minimal_project / "tests" / "test_cli.py").exists()
+    minimal_conftest_text = (minimal_project / "tests" / "conftest.py").read_text()
+    assert "runner" not in minimal_conftest_text
+    assert "CliRunner" not in minimal_conftest_text
     assert not (minimal_project / "docs" / "javascripts" / "termynal.js").exists()
     assert not (minimal_project / "docs" / "stylesheets" / "termynal.css").exists()
     assert (minimal_project / "docs" / "stylesheets" / "palette.css").exists()

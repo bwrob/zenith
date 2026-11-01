@@ -40,6 +40,7 @@ registered in `zensical.toml`:
 ```toml
 [project.markdown_extensions]
     termynal.include_assets = true
+    termynal.prompt_literal_start = ["$", ">>>"]
 ```
 
 ### Usage in Markdown
