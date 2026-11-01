@@ -409,7 +409,7 @@ def format_toml_files() -> None:
     taplo_bin = shutil.which("taplo")
     if taplo_bin:
         with contextlib.suppress(OSError, subprocess.SubprocessError):
-            subprocess.run(  # ruff: ignore[subprocess-without-shell-equals-true]
+            subprocess.run(  # ruff: ignore[subprocess-without-shell-equals-true] -- safe execution with argument list without shell interpolation
                 [taplo_bin, "format"],
                 cwd=PROJECT_DIR,
                 check=False,
@@ -424,7 +424,7 @@ def init_prek() -> None:
         return
     if not (PROJECT_DIR / ".git").is_dir():
         try:
-            subprocess.run(  # ruff: ignore[subprocess-without-shell-equals-true]
+            subprocess.run(  # ruff: ignore[subprocess-without-shell-equals-true] -- safe execution with argument list without shell interpolation
                 [git_bin, "init"],
                 cwd=PROJECT_DIR,
                 check=False,
@@ -443,7 +443,7 @@ def init_prek() -> None:
 
     if cmd:
         with contextlib.suppress(OSError, subprocess.SubprocessError):
-            subprocess.run(  # ruff: ignore[subprocess-without-shell-equals-true]
+            subprocess.run(  # ruff: ignore[subprocess-without-shell-equals-true] -- safe execution with argument list without shell interpolation
                 cmd,
                 cwd=PROJECT_DIR,
                 check=False,

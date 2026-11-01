@@ -102,12 +102,12 @@ def sync_example(target_dir: Path, *, lock: bool = True) -> Path:
 
     if lock:
         console.print(f"[bold cyan]Generating uv.lock in {resolved_target}...[/]")
-        subprocess.run(  # ruff: ignore[subprocess-without-shell-equals-true]
+        subprocess.run(  # ruff: ignore[subprocess-without-shell-equals-true] -- safe execution with argument list without shell interpolation
             [run_tool, "lock"], cwd=resolved_target, env=sub_env, check=True
         )
 
     console.print(f"[bold cyan]Formatting rendered files in {resolved_target}...[/]")
-    subprocess.run(  # ruff: ignore[subprocess-without-shell-equals-true]
+    subprocess.run(  # ruff: ignore[subprocess-without-shell-equals-true] -- safe execution with argument list without shell interpolation
         [run_tool, "run", "poe", "fix"], cwd=resolved_target, env=sub_env, check=True
     )
 

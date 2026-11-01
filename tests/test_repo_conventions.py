@@ -39,7 +39,9 @@ def _python_files() -> list[Path]:
     files: list[Path] = []
     for root in scan_roots:
         for path in root.rglob("*.py"):
-            if not skip_parts.isdisjoint(path.parts):
+            if not skip_parts.isdisjoint(path.parts) or any(
+                p.startswith(".venv") for p in path.parts
+            ):
                 continue
             files.append(path)
     return sorted(set(files))
