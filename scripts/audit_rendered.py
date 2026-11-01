@@ -144,7 +144,7 @@ def run_in_dir(uv_bin: str, project_dir: Path) -> list[str]:
         ("check", RUFF_CHECK_ARGS),
         ("format", RUFF_FORMAT_ARGS),
     ):
-        gate = subprocess.run(  # ruff: ignore[subprocess-without-shell-equals-true]
+        gate = subprocess.run(  # ruff: ignore[subprocess-without-shell-equals-true] -- safe execution with argument list without shell interpolation
             # Repo-owned tooling invoked through uv on repo-controlled paths.
             [uv_bin, "run", *args],
             cwd=project_dir,

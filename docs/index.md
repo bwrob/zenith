@@ -41,8 +41,7 @@ purpose: Introduce Zenith, showcase the four architectural pillars, and guide de
 
 Scaffold a production-grade repository in seconds using `uvx`:
 
-<div class="termy">
-
+<!-- termynal -->
 ```console
 $ uvx cookiecutter https://github.com/bwrob/zenith.git
 $ cd my-awesome-service
@@ -54,8 +53,6 @@ All quality gates passed!
 $ uv run poe docs-serve
 Serving documentation at http://127.0.0.1:8000
 ```
-
-</div>
 
 ## The Four Pillars
 

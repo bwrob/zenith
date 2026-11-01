@@ -1,6 +1,6 @@
 exclude = [
     ".temp/**",
-    ".venv/**",
+    ".venv*/**",
     "*cookiecutter.project_slug*/zensical.toml",
     "*cookiecutter.project_slug*/tach.toml",
     "*cookiecutter.project_slug*/pyproject.toml",

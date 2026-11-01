@@ -37,7 +37,9 @@
         "pytest-xdist>=3.8.0",
         "ruff>=0.17.0",
         "rumdl>=0.2.75",
+        "syrupy>=6.1.0",
         "taplo>=0.9.3",
+        "termynal>=0.14.0",
         "typos>=1.30.0",
         "zizmor>=1.23.0",
     ]
@@ -104,3 +106,6 @@
     typos = { cmd = "typos", help = "Check source code and documentation for typos." }
     typos-fix = { cmd = "typos -w", help = "Automatically fix typos across the codebase." }
     zizmor = { cmd = "zizmor --config .zizmor.yml --pedantic --min-severity informational .github/workflows", help = "Audit GitHub Actions workflows for security vulnerabilities with zizmor." }
+
+    [tool.uv.sources]
+        taplo = { path = "../taplo", marker = "sys_platform == 'linux' and (platform_machine == 'aarch64' or platform_machine == 'arm64')" }

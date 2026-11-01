@@ -504,6 +504,12 @@ def test_project_tests_and_docs_layout(full_project: Path) -> None:
     assert (full_project / "tests" / "test_core.py").exists()
     assert (full_project / "tests" / "__snapshots__" / "test_core.ambr").exists()
     assert (full_project / "tests" / "test_cli.py").exists()
+    assert (full_project / "tests" / "conftest.py").exists()
+    conftest_text = (full_project / "tests" / "conftest.py").read_text()
+    assert "def runner() -> CliRunner:" in conftest_text
+    cli_test_text = (full_project / "tests" / "test_cli.py").read_text()
+    assert "def test_cli_help(runner: CliRunner) -> None:" in cli_test_text
+    assert "runner = CliRunner()" not in cli_test_text
     assert (full_project / "docs" / "index.md").exists()
     docs_index_text = (full_project / "docs" / "index.md").read_text()
     assert "diataxis: explanation" in docs_index_text
@@ -512,10 +518,11 @@ def test_project_tests_and_docs_layout(full_project: Path) -> None:
     assert "Built with the <a href=" in docs_index_text
     assert (full_project / "docs" / "changelog.md").exists()
     assert (full_project / "docs" / "javascripts" / "mathjax.js").exists()
-    assert (full_project / "docs" / "javascripts" / "termynal.js").exists()
+    assert not (full_project / "docs" / "javascripts" / "termynal.js").exists()
     assert (full_project / "docs" / "stylesheets" / "palette.css").exists()
     assert (full_project / "docs" / "stylesheets" / "custom.css").exists()
-    assert (full_project / "docs" / "stylesheets" / "termynal.css").exists()
+    assert not (full_project / "docs" / "stylesheets" / "termynal.css").exists()
+    assert "termynal>=" in (full_project / "pyproject.toml").read_text()
     assert (full_project / "docs" / "assets" / "python-logo.svg").exists()
     assert (full_project / "docs" / "assets" / "python-logo.typ").exists()
     assert (full_project / "scripts" / "verify_wheel.py").exists()
@@ -780,8 +787,16 @@ def test_zensical_assets_and_navigation(full_project: Path) -> None:
     zensical_text = (full_project / "zensical.toml").read_text()
     assert "stylesheets/palette.css" in zensical_text
     assert "stylesheets/custom.css" in zensical_text
-    assert "stylesheets/termynal.css" in zensical_text
-    assert "javascripts/termynal.js" in zensical_text
+    assert "stylesheets/termynal.css" not in zensical_text
+    assert "javascripts/termynal.js" not in zensical_text
+    assert re.search(r"termynal\.include_assets\s*=\s*true", zensical_text) is not None
+    assert (
+        re.search(
+            r'termynal\.prompt_literal_start\s*=\s*\[\s*"\$"\s*,\s*">>>"\s*\]',
+            zensical_text,
+        )
+        is not None
+    )
     assert "javascripts/mathjax.js" in zensical_text
     assert '{ name = "tree"' in zensical_text
     assert "navigation.indexes" in zensical_text
@@ -846,11 +861,11 @@ def test_docs_reference_and_diagrams(full_project: Path) -> None:
     assert "::: demo_app.cli" in ref_text
     assert "site/llms.txt" in ref_text
     index_text = (full_project / "docs" / "index.md").read_text()
-    assert 'class="termy"' in index_text
+    assert "<!-- termynal -->" in index_text
     assert '=== "uv (Recommended)"' in index_text
     assert "```tree" in index_text
     getting_started_text = (full_project / "docs" / "getting-started.md").read_text()
-    assert 'class="termy"' in getting_started_text
+    assert "<!-- termynal -->" in getting_started_text
     assert "???+ tip" in getting_started_text
     assert "- [x]" in getting_started_text
     assert "sequenceDiagram" in getting_started_text
@@ -1190,6 +1205,9 @@ def test_minimal_excludes_cli_files_and_dependencies(minimal_project: Path) -> N
     assert "_lazy" not in init_text
     assert "_LAZY_MEMBERS" not in init_text
     assert not (minimal_project / "tests" / "test_cli.py").exists()
+    minimal_conftest_text = (minimal_project / "tests" / "conftest.py").read_text()
+    assert "runner" not in minimal_conftest_text
+    assert "CliRunner" not in minimal_conftest_text
     assert not (minimal_project / "docs" / "javascripts" / "termynal.js").exists()
     assert not (minimal_project / "docs" / "stylesheets" / "termynal.css").exists()
     assert (minimal_project / "docs" / "stylesheets" / "palette.css").exists()
@@ -1204,6 +1222,7 @@ def test_minimal_excludes_cli_files_and_dependencies(minimal_project: Path) -> N
     pyproject_text = (minimal_project / "pyproject.toml").read_text()
     assert 'dependencies = ["rich>=15.0.0"]' in pyproject_text
     assert "typer" not in pyproject_text
+    assert "termynal" not in pyproject_text
 
     tach_text = (minimal_project / "tach.toml").read_text()
     assert '"cli"' not in tach_text

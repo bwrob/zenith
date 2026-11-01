@@ -374,8 +374,6 @@ def main() -> None:
         remove_file("src", package_name, "_lazy.py")
         remove_file("src", package_name, "__main__.py")
         remove_file("tests", "test_cli.py")
-        remove_file("docs", "javascripts", "termynal.js")
-        remove_file("docs", "stylesheets", "termynal.css")
 
     if not include_ci_testing:
         remove_file(".github", "workflows", "python_tests.yaml")
@@ -409,7 +407,7 @@ def format_toml_files() -> None:
     taplo_bin = shutil.which("taplo")
     if taplo_bin:
         with contextlib.suppress(OSError, subprocess.SubprocessError):
-            subprocess.run(  # ruff: ignore[subprocess-without-shell-equals-true]
+            subprocess.run(  # ruff: ignore[subprocess-without-shell-equals-true] -- safe execution with argument list without shell interpolation
                 [taplo_bin, "format"],
                 cwd=PROJECT_DIR,
                 check=False,
@@ -424,7 +422,7 @@ def init_prek() -> None:
         return
     if not (PROJECT_DIR / ".git").is_dir():
         try:
-            subprocess.run(  # ruff: ignore[subprocess-without-shell-equals-true]
+            subprocess.run(  # ruff: ignore[subprocess-without-shell-equals-true] -- safe execution with argument list without shell interpolation
                 [git_bin, "init"],
                 cwd=PROJECT_DIR,
                 check=False,
@@ -443,7 +441,7 @@ def init_prek() -> None:
 
     if cmd:
         with contextlib.suppress(OSError, subprocess.SubprocessError):
-            subprocess.run(  # ruff: ignore[subprocess-without-shell-equals-true]
+            subprocess.run(  # ruff: ignore[subprocess-without-shell-equals-true] -- safe execution with argument list without shell interpolation
                 cmd,
                 cwd=PROJECT_DIR,
                 check=False,
