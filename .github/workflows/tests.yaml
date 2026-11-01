@@ -37,7 +37,7 @@ jobs:
                   enable-cache: true
 
             - name: 🛠️ Install project dependencies
-              run: uv sync
+              run: uv sync --frozen
 
             - name: 🐍 Run ruff linter check
               run: uv run poe lint
@@ -101,7 +101,7 @@ jobs:
                   enable-cache: true
 
             - name: 🛠️ Install project dependencies
-              run: uv sync
+              run: uv sync --frozen
 
             - name: 🧪 Run pytest suite with coverage
               run: uv run poe test
