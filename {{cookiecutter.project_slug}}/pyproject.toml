@@ -68,6 +68,9 @@
         "griffe-warnings-deprecated>=1.1.0",
         "markdown-exec>=1.12.0",
         "mkdocstrings[python]>=1.0.7",
+        {% if cookiecutter.include_cli in [True, "yes", "true", "True", "1"] %}
+        "termynal>=0.14.0",
+        {% endif %}
         "typst>=0.13.0",
         "zensical>=0.0.70",
     ]

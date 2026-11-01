@@ -512,10 +512,11 @@ def test_project_tests_and_docs_layout(full_project: Path) -> None:
     assert "Built with the <a href=" in docs_index_text
     assert (full_project / "docs" / "changelog.md").exists()
     assert (full_project / "docs" / "javascripts" / "mathjax.js").exists()
-    assert (full_project / "docs" / "javascripts" / "termynal.js").exists()
+    assert not (full_project / "docs" / "javascripts" / "termynal.js").exists()
     assert (full_project / "docs" / "stylesheets" / "palette.css").exists()
     assert (full_project / "docs" / "stylesheets" / "custom.css").exists()
-    assert (full_project / "docs" / "stylesheets" / "termynal.css").exists()
+    assert not (full_project / "docs" / "stylesheets" / "termynal.css").exists()
+    assert "termynal>=" in (full_project / "pyproject.toml").read_text()
     assert (full_project / "docs" / "assets" / "python-logo.svg").exists()
     assert (full_project / "docs" / "assets" / "python-logo.typ").exists()
     assert (full_project / "scripts" / "verify_wheel.py").exists()
@@ -780,8 +781,9 @@ def test_zensical_assets_and_navigation(full_project: Path) -> None:
     zensical_text = (full_project / "zensical.toml").read_text()
     assert "stylesheets/palette.css" in zensical_text
     assert "stylesheets/custom.css" in zensical_text
-    assert "stylesheets/termynal.css" in zensical_text
-    assert "javascripts/termynal.js" in zensical_text
+    assert "stylesheets/termynal.css" not in zensical_text
+    assert "javascripts/termynal.js" not in zensical_text
+    assert "termynal.include_assets = true" in zensical_text
     assert "javascripts/mathjax.js" in zensical_text
     assert '{ name = "tree"' in zensical_text
     assert "navigation.indexes" in zensical_text
@@ -1204,6 +1206,7 @@ def test_minimal_excludes_cli_files_and_dependencies(minimal_project: Path) -> N
     pyproject_text = (minimal_project / "pyproject.toml").read_text()
     assert 'dependencies = ["rich>=15.0.0"]' in pyproject_text
     assert "typer" not in pyproject_text
+    assert "termynal" not in pyproject_text
 
     tach_text = (minimal_project / "tach.toml").read_text()
     assert '"cli"' not in tach_text

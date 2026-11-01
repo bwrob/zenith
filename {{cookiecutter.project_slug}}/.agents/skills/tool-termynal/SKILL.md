@@ -23,8 +23,8 @@ terminal output as clean static text.
 
 ## 1. Quick Reference & Core Syntax
 
-Zensical loads Termynal styles and scripts through `docs/stylesheets/termynal.css` and
-`docs/javascripts/termynal.js`.
+Zensical loads Termynal through the `termynal` Python package (`termynal.include_assets = true` in `zensical.toml`),
+automatically embedding the required styles and scripts without manual static assets.
 
 ### Markdown Integration (`.termy`)
 

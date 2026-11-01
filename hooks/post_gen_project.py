@@ -374,8 +374,6 @@ def main() -> None:
         remove_file("src", package_name, "_lazy.py")
         remove_file("src", package_name, "__main__.py")
         remove_file("tests", "test_cli.py")
-        remove_file("docs", "javascripts", "termynal.js")
-        remove_file("docs", "stylesheets", "termynal.css")
 
     if not include_ci_testing:
         remove_file(".github", "workflows", "python_tests.yaml")

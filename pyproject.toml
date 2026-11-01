@@ -39,6 +39,7 @@
         "rumdl>=0.2.75",
         "syrupy>=6.1.0",
         "taplo>=0.9.3",
+        "termynal>=0.14.0",
         "typos>=1.30.0",
         "zizmor>=1.23.0",
     ]

@@ -34,33 +34,28 @@ animates.
 
 ## Configuration in Zenith
 
-Configured in `docs/stylesheets/termynal.css` and `docs/javascripts/termynal.js`,
+Managed as a declared dependency (`termynal>=0.14.0`) in `pyproject.toml` and
 registered in `zensical.toml`:
 
 ```toml
-extra_css = [
-    "stylesheets/termynal.css",
-]
-
-extra_javascript = [
-    "javascripts/termynal.js",
-]
+[project.markdown_extensions]
+    termynal.include_assets = true
 ```
 
 ### Usage in Markdown
 
-````markdown
-<div class="termy">
+Place `<!-- termynal -->` directly before any fenced `console` code block:
 
+````markdown
+<!-- termynal -->
 ```console
 $ uv run my-app greet "World"
 
 ✨ Hello, World!
 ```
-
-</div>
 ````
 
 ## Upstream Documentation
 
+- [Termynal PyPI Package](https://pypi.org/project/termynal/)
 - [Termynal GitHub Repository](https://github.com/ines/termynal)

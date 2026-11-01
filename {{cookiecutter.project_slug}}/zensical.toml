@@ -32,17 +32,11 @@
     extra_css = [
         "stylesheets/palette.css",
         "stylesheets/custom.css",
-        {% if cookiecutter.include_cli in [True, "yes", "true", "True", "1"] %}
-        "stylesheets/termynal.css",
-        {% endif %}
     ]
 
     extra_javascript = [
         "javascripts/mathjax.js",
         "https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js",
-        {% if cookiecutter.include_cli in [True, "yes", "true", "True", "1"] %}
-        "javascripts/termynal.js",
-        {% endif %}
     ]
 
     [project.validation]
@@ -138,6 +132,9 @@
         pymdownx.tabbed.combine_header_slug = true
         pymdownx.tasklist.custom_checkbox = true
         pymdownx.tilde = {}
+        {% if cookiecutter.include_cli in [True, "yes", "true", "True", "1"] %}
+        termynal.include_assets = true
+        {% endif %}
         toc.permalink = true
         zensical.extensions.preview.targets.include = ["*"]
 
