@@ -28,8 +28,8 @@ the CLI on the landing page immediately conveys project ergonomics without requi
 visitors to download large media files.
 
 Unlike recorded videos, visitors can pause animations, select text, and copy commands
-directly from the terminal widget. Zenith wraps this functionality so any standard
-markdown ` ```console ` block contained within `<div class="termy">` automatically
+directly from the terminal widget. Zenith integrates Termynal so any standard
+markdown ` ```console ` block preceded by `<!-- termynal -->` automatically
 animates.
 
 ## Configuration in Zenith
@@ -52,6 +52,9 @@ Place `<!-- termynal -->` directly before any fenced `console` code block:
 $ uv run my-app greet "World"
 
 ✨ Hello, World!
+
+# View help and options
+$ uv run my-app --help
 ```
 ````
 

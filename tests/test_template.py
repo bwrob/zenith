@@ -848,11 +848,11 @@ def test_docs_reference_and_diagrams(full_project: Path) -> None:
     assert "::: demo_app.cli" in ref_text
     assert "site/llms.txt" in ref_text
     index_text = (full_project / "docs" / "index.md").read_text()
-    assert 'class="termy"' in index_text
+    assert "<!-- termynal -->" in index_text
     assert '=== "uv (Recommended)"' in index_text
     assert "```tree" in index_text
     getting_started_text = (full_project / "docs" / "getting-started.md").read_text()
-    assert 'class="termy"' in getting_started_text
+    assert "<!-- termynal -->" in getting_started_text
     assert "???+ tip" in getting_started_text
     assert "- [x]" in getting_started_text
     assert "sequenceDiagram" in getting_started_text

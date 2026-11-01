@@ -299,8 +299,8 @@ documentation.
 Termynal provides lightweight animated terminal widgets that simulate real CLI sessions
 with interactive controls and custom progress delays.
 
-`tool-termynal` teaches agents how to wrap shell sessions in `<div class="termy">` tags
-with appropriate `data-ty` timing attributes.
+`tool-termynal` teaches agents how to create terminal animations with
+`<!-- termynal -->` tags, custom prompts, and progress indicators.
 
 ## Adding Custom Tool Skills
 

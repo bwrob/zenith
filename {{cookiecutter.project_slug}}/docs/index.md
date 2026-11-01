@@ -24,14 +24,13 @@ flowchart LR
 
 ## Quick Start CLI
 
-<div class="termy">
-
+<!-- termynal -->
 ```console
 $ uv run {{ cookiecutter.project_slug }} greet "World"
 
 ✨ Hello, World!
 
-// Inspect CLI options and help
+# Inspect CLI options and help
 $ uv run {{ cookiecutter.project_slug }} --help
 
 <b>Usage: </b><b>{{ cookiecutter.project_slug }} [OPTIONS] COMMAND [ARGS]...</b>
@@ -45,8 +44,6 @@ $ uv run {{ cookiecutter.project_slug }} --help
 │                      greeting.                    │
 ╰───────────────────────────────────────────────────╯
 ```
-
-</div>
 
 {% endif -%}
 

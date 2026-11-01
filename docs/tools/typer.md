@@ -40,8 +40,7 @@ strict type guarantees and clean architectural boundaries.
 The interactive terminal below showcases the Typer CLI running with Rich formatting
 using the **[Termynal](termynal.md)** widget:
 
-<div class="termy">
-
+<!-- termynal -->
 ```console
 $ uv run zenith-example --help
 
@@ -55,12 +54,12 @@ $ uv run zenith-example --help
 │ greet                Display a personalized greeting.            │
 ╰──────────────────────────────────────────────────────────────────╯
 
-// Invoke the greet command
+# Invoke the greet command
 $ uv run zenith-example greet "Developer"
 
 Hello, Developer!
 
-// View greet command help
+# View greet command help
 $ uv run zenith-example greet --help
 
 <b>Usage: </b><b>zenith-example greet [OPTIONS] [NAME]</b>
@@ -74,8 +73,6 @@ Display a personalized greeting.
 │ --help              Show this message and exit.                  │
 ╰──────────────────────────────────────────────────────────────────╯
 ```
-
-</div>
 
 ## Configuration in Zenith
 
