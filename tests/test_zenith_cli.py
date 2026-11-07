@@ -85,6 +85,11 @@ def test_cli_no_input_with_custom_flags(tmp_path: Path) -> None:
                 "--license",
                 "Apache-2.0",
                 "--no-cli",
+                "--no-docs",
+                "--no-mutation",
+                "--no-git",
+                "--sync",
+                "--hooks",
             ]
         )
         assert exit_code == 0
@@ -96,6 +101,11 @@ def test_cli_no_input_with_custom_flags(tmp_path: Path) -> None:
         assert config.python_version == "3.12"
         assert config.license == "Apache-2.0"
         assert config.include_cli is False
+        assert config.include_docs is False
+        assert config.include_mutation_testing is False
+        assert config.init_git is False
+        assert config.run_uv_sync is True
+        assert config.install_git_hooks is True
 
 
 def test_cli_ai_tools_preset(tmp_path: Path) -> None:
@@ -178,9 +188,14 @@ def test_build_reproduce_command_roundtrip() -> None:
         python_version="3.12",
         license="Apache-2.0",
         include_cli=False,
+        include_docs=False,
+        include_mutation_testing=False,
         include_ci_testing=False,
         include_ci_publishing=False,
         include_agent_skills=False,
+        init_git=False,
+        run_uv_sync=True,
+        install_git_hooks=True,
         ai_tools=("cursor", "zed"),
     )
 
@@ -188,8 +203,13 @@ def test_build_reproduce_command_roundtrip() -> None:
     assert cmd.startswith("uvx zenith-template --no-input")
     assert "--name 'Custom Galaxy'" in cmd
     assert "--no-cli" in cmd
+    assert "--no-docs" in cmd
+    assert "--no-mutation" in cmd
     assert "--no-ci" in cmd
     assert "--no-skills" in cmd
+    assert "--no-git" in cmd
+    assert "--sync" in cmd
+    assert "--hooks" in cmd
     assert "--ai-tools cursor,zed" in cmd
 
     # Verify parser roundtrip
@@ -205,9 +225,14 @@ def test_build_reproduce_command_roundtrip() -> None:
     assert reconstructed.python_version == config.python_version
     assert reconstructed.license == config.license
     assert reconstructed.include_cli is False
+    assert reconstructed.include_docs is False
+    assert reconstructed.include_mutation_testing is False
     assert reconstructed.include_ci_testing is False
     assert reconstructed.include_ci_publishing is False
     assert reconstructed.include_agent_skills is False
+    assert reconstructed.init_git is False
+    assert reconstructed.run_uv_sync is True
+    assert reconstructed.install_git_hooks is True
     assert reconstructed.ai_tools == ("cursor", "zed")
 
 
@@ -223,9 +248,17 @@ def test_build_reproduce_command_presets() -> None:
 def test_render_summary_prints_recreate_command(
     tmp_path: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
-    """Verify that render_summary outputs the recreation command."""
-    config = ZenithConfig(project_name="Test Tool")
+    """Verify that render_summary outputs the recreation command and steps."""
+    config = ZenithConfig(project_name="Test Tool", run_uv_sync=False)
     render_summary(tmp_path / "test-tool", config)
     captured = capsys.readouterr()
+    assert "Zenith Project Initialized" in captured.out
     assert "Recreate via CLI:" in captured.out
     assert "uvx zenith-template --no-input" in captured.out
+    assert "uv sync" in captured.out
+
+    # When run_uv_sync is True, uv sync step should not be printed
+    synced_config = ZenithConfig(project_name="Test Tool", run_uv_sync=True)
+    render_summary(tmp_path / "test-tool", synced_config)
+    captured_synced = capsys.readouterr()
+    assert "uv sync" not in captured_synced.out

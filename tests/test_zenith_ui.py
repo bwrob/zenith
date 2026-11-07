@@ -66,11 +66,19 @@ def test_zenith_app_navigation_and_features_screen() -> None:
             assert isinstance(app.screen, FeaturesScreen)
 
             assert app.screen.query_one("#include-cli", Checkbox).value is True
+            assert app.screen.query_one("#include-docs", Checkbox).value is True
+            assert (
+                app.screen.query_one("#include-mutation-testing", Checkbox).value
+                is True
+            )
             assert app.screen.query_one("#include-ci-testing", Checkbox).value is True
             assert (
                 app.screen.query_one("#include-ci-publishing", Checkbox).value is True
             )
             assert app.screen.query_one("#include-agent-skills", Checkbox).value is True
+            assert app.screen.query_one("#init-git", Checkbox).value is True
+            assert app.screen.query_one("#run-uv-sync", Checkbox).value is False
+            assert app.screen.query_one("#install-git-hooks", Checkbox).value is False
 
             ai_list = app.screen.query_one("#ai-tools-list", SelectionList)
             assert set(ai_list.selected) == set(PRESET_RECOMMENDED)
@@ -132,6 +140,8 @@ def test_zenith_app_back_navigation_preserves_state() -> None:
             assert isinstance(app.screen, FeaturesScreen)
 
             # Modify a feature and preset on Screen 2
+            app.screen.query_one("#include-docs", Checkbox).value = False
+            app.screen.query_one("#run-uv-sync", Checkbox).value = True
             await pilot.click("#preset-ide-only")
 
             # Navigate back to Screen 1
@@ -144,6 +154,8 @@ def test_zenith_app_back_navigation_preserves_state() -> None:
             await pilot.click("#next-btn")
             await pilot.pause()
             assert isinstance(app.screen, FeaturesScreen)
+            assert app.screen.query_one("#include-docs", Checkbox).value is False
+            assert app.screen.query_one("#run-uv-sync", Checkbox).value is True
             ai_list = app.screen.query_one("#ai-tools-list", SelectionList)
             assert set(ai_list.selected) == set(PRESET_IDE_ONLY)
 
@@ -164,12 +176,16 @@ def test_zenith_app_submit() -> None:
 
             await pilot.click("#next-btn")
             await pilot.pause()
+            app.screen.query_one("#include-mutation-testing", Checkbox).value = False
+            app.screen.query_one("#run-uv-sync", Checkbox).value = True
             await pilot.click("#preset-ide-only")
             await pilot.click("#submit-btn")
 
             assert app.result is not None
             assert app.result.project_name == "My Nova"
             assert app.result.project_slug == "my-nova"
+            assert app.result.include_mutation_testing is False
+            assert app.result.run_uv_sync is True
             assert set(app.result.ai_tools) == set(PRESET_IDE_ONLY)
 
     asyncio.run(run())

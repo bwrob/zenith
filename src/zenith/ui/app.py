@@ -324,6 +324,16 @@ class FeaturesScreen(Screen[object]):
                     id="include-cli",
                 )
                 yield Checkbox(
+                    "Include documentation website (docs/ & zensical.toml)",
+                    value=cfg.include_docs,
+                    id="include-docs",
+                )
+                yield Checkbox(
+                    "Include mutation testing tooling (cosmic-ray & mutmut)",
+                    value=cfg.include_mutation_testing,
+                    id="include-mutation-testing",
+                )
+                yield Checkbox(
                     "Generate GitHub Actions CI testing workflows",
                     value=cfg.include_ci_testing,
                     id="include-ci-testing",
@@ -337,6 +347,24 @@ class FeaturesScreen(Screen[object]):
                     "Include agent skills suite (.agents/)",
                     value=cfg.include_agent_skills,
                     id="include-agent-skills",
+                )
+
+            yield Label("Project Setup & Automation", classes="section-title")
+            with Vertical():
+                yield Checkbox(
+                    "Initialize Git repository (git init)",
+                    value=cfg.init_git,
+                    id="init-git",
+                )
+                yield Checkbox(
+                    "Run uv sync after scaffolding",
+                    value=cfg.run_uv_sync,
+                    id="run-uv-sync",
+                )
+                yield Checkbox(
+                    "Install Git hooks (prek install)",
+                    value=cfg.install_git_hooks,
+                    id="install-git-hooks",
                 )
 
             yield Label(
@@ -425,6 +453,11 @@ class FeaturesScreen(Screen[object]):
         self.zenith_app.config_state = replace(
             self.zenith_app.config_state,
             include_cli=self.query_one("#include-cli", Checkbox).value,
+            include_docs=self.query_one("#include-docs", Checkbox).value,
+            include_mutation_testing=self.query_one(
+                "#include-mutation-testing",
+                Checkbox,
+            ).value,
             include_ci_testing=self.query_one(
                 "#include-ci-testing",
                 Checkbox,
@@ -437,6 +470,9 @@ class FeaturesScreen(Screen[object]):
                 "#include-agent-skills",
                 Checkbox,
             ).value,
+            init_git=self.query_one("#init-git", Checkbox).value,
+            run_uv_sync=self.query_one("#run-uv-sync", Checkbox).value,
+            install_git_hooks=self.query_one("#install-git-hooks", Checkbox).value,
             ai_tools=tuple(ai_list.selected),
         )
         self.zenith_app.pop_screen()
@@ -448,6 +484,11 @@ class FeaturesScreen(Screen[object]):
         self.zenith_app.config_state = replace(
             self.zenith_app.config_state,
             include_cli=self.query_one("#include-cli", Checkbox).value,
+            include_docs=self.query_one("#include-docs", Checkbox).value,
+            include_mutation_testing=self.query_one(
+                "#include-mutation-testing",
+                Checkbox,
+            ).value,
             include_ci_testing=self.query_one(
                 "#include-ci-testing",
                 Checkbox,
@@ -460,6 +501,9 @@ class FeaturesScreen(Screen[object]):
                 "#include-agent-skills",
                 Checkbox,
             ).value,
+            init_git=self.query_one("#init-git", Checkbox).value,
+            run_uv_sync=self.query_one("#run-uv-sync", Checkbox).value,
+            install_git_hooks=self.query_one("#install-git-hooks", Checkbox).value,
             ai_tools=tuple(ai_list.selected),
         )
         self.zenith_app.finish()

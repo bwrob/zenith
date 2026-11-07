@@ -7,6 +7,7 @@ import shlex
 import sys
 from typing import TYPE_CHECKING
 
+from rich import box
 from rich.console import Console
 from rich.panel import Panel
 
@@ -141,6 +142,22 @@ def build_parser() -> argparse.ArgumentParser:
         help="Generate Typer command-line interface.",
     )
     parser.add_argument(
+        "--include-docs",
+        "--docs",
+        dest="include_docs",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="Include documentation website (docs/ & zensical.toml).",
+    )
+    parser.add_argument(
+        "--include-mutation",
+        "--mutation",
+        dest="include_mutation_testing",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="Include mutation testing tooling (cosmic-ray & mutmut).",
+    )
+    parser.add_argument(
         "--include-ci",
         "--ci",
         dest="include_ci",
@@ -155,6 +172,30 @@ def build_parser() -> argparse.ArgumentParser:
         action=argparse.BooleanOptionalAction,
         default=True,
         help="Include agent skills suite (.agents/).",
+    )
+    parser.add_argument(
+        "--init-git",
+        "--git",
+        dest="init_git",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="Initialize Git repository in scaffolded project.",
+    )
+    parser.add_argument(
+        "--run-uv-sync",
+        "--sync",
+        dest="run_uv_sync",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+        help="Run uv sync after scaffolding.",
+    )
+    parser.add_argument(
+        "--install-git-hooks",
+        "--hooks",
+        dest="install_git_hooks",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+        help="Install Git hooks (prek install) after scaffolding.",
     )
     return parser
 
@@ -213,8 +254,62 @@ def config_from_args(args: argparse.Namespace) -> ZenithConfig:
         include_ci_testing=args.include_ci,
         include_ci_publishing=args.include_ci,
         include_agent_skills=args.include_skills,
+        include_docs=getattr(args, "include_docs", defaults.include_docs),
+        include_mutation_testing=getattr(
+            args,
+            "include_mutation_testing",
+            defaults.include_mutation_testing,
+        ),
+        init_git=getattr(args, "init_git", defaults.init_git),
+        run_uv_sync=getattr(args, "run_uv_sync", defaults.run_uv_sync),
+        install_git_hooks=getattr(
+            args,
+            "install_git_hooks",
+            defaults.install_git_hooks,
+        ),
         ai_tools=_resolve_ai_tools(args.ai_tools),
     )
+
+
+def _build_feature_flags(config: ZenithConfig) -> list[str]:
+    """Collect non-default command-line flags for project features and lifecycle.
+
+    Args:
+        config: Configuration holding feature toggles.
+
+    Returns:
+        List of CLI flag strings.
+
+    """
+    flag_conditions = (
+        (not config.include_cli, "--no-cli"),
+        (not config.include_docs, "--no-docs"),
+        (not config.include_mutation_testing, "--no-mutation"),
+        (not (config.include_ci_testing or config.include_ci_publishing), "--no-ci"),
+        (not config.include_agent_skills, "--no-skills"),
+        (not config.init_git, "--no-git"),
+        (config.run_uv_sync, "--sync"),
+        (config.install_git_hooks, "--hooks"),
+    )
+    return [flag for condition, flag in flag_conditions if condition]
+
+
+def _resolve_ai_tools_arg(ai_tools: tuple[str, ...]) -> str:
+    """Determine the CLI argument value representing selected AI tools.
+
+    Args:
+        ai_tools: Tuple of selected tool identifier strings.
+
+    Returns:
+        Preset name or comma-separated list of tools.
+
+    """
+    if not ai_tools:
+        return "none"
+    for preset_name, preset_tools in AI_TOOL_PRESETS.items():
+        if set(ai_tools) == set(preset_tools):
+            return preset_name
+    return ",".join(ai_tools)
 
 
 def build_reproduce_command(config: ZenithConfig) -> str:
@@ -239,21 +334,9 @@ def build_reproduce_command(config: ZenithConfig) -> str:
         f"--python-version {config.python_version}",
         f"--license {config.license}",
     ]
-
-    if not config.include_cli:
-        parts.append("--no-cli")
-    if not (config.include_ci_testing or config.include_ci_publishing):
-        parts.append("--no-ci")
-    if not config.include_agent_skills:
-        parts.append("--no-skills")
-
-    tools_arg = ",".join(config.ai_tools) if config.ai_tools else "none"
-    for preset_name, preset_tools in AI_TOOL_PRESETS.items():
-        if set(config.ai_tools) == set(preset_tools):
-            tools_arg = preset_name
-            break
+    parts.extend(_build_feature_flags(config))
+    tools_arg = _resolve_ai_tools_arg(config.ai_tools)
     parts.append(f"--ai-tools {tools_arg}")
-
     return " ".join(parts)
 
 
@@ -267,20 +350,33 @@ def render_summary(project_dir: Path, config: ZenithConfig) -> None:
     """
     tools_str = ", ".join(config.ai_tools) if config.ai_tools else "None"
     recreate_cmd = build_reproduce_command(config)
-    summary_text = (
-        f"[bold green]✨ Project successfully scaffolded at:[/bold green]\n"
-        f"  [cyan]{project_dir.resolve()}[/cyan]\n\n"
-        f"[bold]Active AI Tool Integrations:[/bold]\n"
-        f"  [dim]{tools_str}[/dim]\n\n"
-        f"[bold]Recreate via CLI:[/bold]\n"
-        f"  [yellow]{recreate_cmd}[/yellow]\n\n"
-        f"[bold]Next Steps:[/bold]\n"
-        f"  1. [yellow]cd {config.project_slug}[/yellow]\n"
-        f"  2. [yellow]uv sync[/yellow]\n"
-        f"  3. [yellow]uv run poe test[/yellow]\n"
-        f"  4. [yellow]uv run poe code-quality[/yellow]"
+
+    next_steps: list[str] = [f"cd {config.project_slug}"]
+    if not config.run_uv_sync:
+        next_steps.append("uv sync")
+    next_steps.extend(["uv run poe test", "uv run poe code-quality"])
+    steps_formatted = "\n".join(
+        f"  [#38bdf8]{idx}.[/] [#e0f2fe]{step}[/]"
+        for idx, step in enumerate(next_steps, 1)
     )
-    panel = Panel(summary_text, title="Zenith Scaffold Complete", border_style="green")
+
+    summary_text = (
+        f"[bold #38bdf8]✦ Project successfully scaffolded at:[/]\n"
+        f"  [#e0f2fe]{project_dir.resolve()}[/]\n\n"
+        f"[bold #38bdf8]✦ Active AI Tool Integrations:[/]\n"
+        f"  [dim #94a3b8]{tools_str}[/]\n\n"
+        f"[bold #38bdf8]✦ Recreate via CLI:[/]\n"
+        f"  [#38bdf8]{recreate_cmd}[/]\n\n"
+        f"[bold #38bdf8]✦ Next Steps:[/]\n"
+        f"{steps_formatted}"
+    )
+    panel = Panel(
+        summary_text,
+        title="[bold #38bdf8]✦ Zenith Project Initialized ✦[/]",
+        border_style="#38bdf8",
+        box=box.ROUNDED,
+        padding=(1, 2),
+    )
     console.print(panel)
 
 
