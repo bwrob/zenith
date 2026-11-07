@@ -2,12 +2,14 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, ClassVar
+from dataclasses import replace
+from typing import TYPE_CHECKING, ClassVar, cast, override
 
 from textual import on
 from textual.app import App, ComposeResult
 from textual.binding import Binding
 from textual.containers import Horizontal, Vertical, VerticalScroll
+from textual.screen import Screen
 from textual.widgets import (
     Button,
     Checkbox,
@@ -34,88 +36,152 @@ if TYPE_CHECKING:
     from collections.abc import Sequence
 
 
-class ZenithApp(App[ZenithConfig | None]):
-    """Interactive Textual TUI wizard for configuring Zenith projects."""
+ZENITH_CSS = """
+Screen {
+    background: #020408;
+    color: #e0f2fe;
+}
+Header {
+    background: #0f172a;
+    color: #38bdf8;
+}
+Footer {
+    background: #0f172a;
+}
+VerticalScroll {
+    padding: 1 2;
+    background: #020408;
+}
+.brand-title {
+    text-style: bold;
+    color: #38bdf8;
+    margin-top: 1;
+    margin-bottom: 0;
+}
+.brand-subtitle {
+    color: #94a3b8;
+    margin-bottom: 1;
+}
+.section-title {
+    text-style: bold;
+    color: #38bdf8;
+    margin-top: 1;
+    margin-bottom: 1;
+}
+.field-label {
+    color: #94a3b8;
+    margin-top: 1;
+}
+Input {
+    background: #1e293b;
+    border: tall #334155;
+    color: #e0f2fe;
+}
+Input:focus {
+    border: tall #38bdf8;
+}
+Select {
+    background: #1e293b;
+    border: tall #334155;
+    color: #e0f2fe;
+}
+Select:focus {
+    border: tall #38bdf8;
+}
+Checkbox {
+    color: #e0f2fe;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+.preset-bar {
+    height: auto;
+    margin-top: 1;
+    margin-bottom: 1;
+}
+.preset-bar Button {
+    margin-right: 1;
+    background: #1e293b;
+    color: #e0f2fe;
+    border: solid #334155;
+}
+.preset-bar Button:hover {
+    border: solid #38bdf8;
+    color: #38bdf8;
+}
+#preset-recommended {
+    border: solid #0284c7;
+    color: #38bdf8;
+}
+#ai-tools-list {
+    height: 14;
+    border: solid #0284c7;
+    background: #0f172a;
+    color: #e0f2fe;
+    margin-bottom: 1;
+}
+#ai-tools-list:focus {
+    border: solid #38bdf8;
+}
+.actions-bar {
+    height: auto;
+    margin-top: 2;
+    margin-bottom: 2;
+}
+.actions-bar Button {
+    margin-right: 2;
+}
+#next-btn {
+    background: #0284c7;
+    color: #ffffff;
+    border: solid #38bdf8;
+}
+#back-btn {
+    background: #1e293b;
+    color: #e0f2fe;
+    border: solid #334155;
+}
+#submit-btn {
+    background: #0ea5e9;
+    color: #ffffff;
+    border: solid #38bdf8;
+}
+#cancel-btn {
+    background: #1e293b;
+    color: #f43f5e;
+    border: solid #f43f5e;
+}
+"""
 
-    TITLE = "Zenith Project Initializer"
-    SUB_TITLE = "Modern Python 3.12+ Project Scaffolding"
 
-    BINDINGS: ClassVar[list[Binding]] = [
-        Binding("escape", "cancel", "Cancel / Exit"),
-        Binding("ctrl+s", "submit", "Scaffold Project"),
-    ]
-
-    CSS = """
-    Screen {
-        background: $surface;
-    }
-    VerticalScroll {
-        padding: 1 2;
-    }
-    .section-title {
-        text-style: bold;
-        color: $accent;
-        margin-top: 1;
-        margin-bottom: 1;
-    }
-    .field-label {
-        color: $text-muted;
-        margin-top: 1;
-    }
-    .preset-bar {
-        height: auto;
-        margin-top: 1;
-        margin-bottom: 1;
-    }
-    .preset-bar Button {
-        margin-right: 1;
-    }
-    #ai-tools-list {
-        height: 14;
-        border: solid $accent;
-        margin-bottom: 1;
-    }
-    .actions-bar {
-        height: auto;
-        margin-top: 2;
-        margin-bottom: 2;
-    }
-    .actions-bar Button {
-        margin-right: 2;
-    }
-    """
-
-    def __init__(self, initial_config: ZenithConfig | None = None) -> None:
-        """Initialize ZenithApp with default or provided configuration.
-
-        Args:
-            initial_config: Optional baseline configuration defaults.
-
-        """
-        super().__init__()
-        self.initial_config = initial_config or ZenithConfig()
-        self.result: ZenithConfig | None = None
+class MetadataScreen(Screen[None]):
+    """Screen 1: Project Identity and Runtime Licensing."""
 
     def compose(self) -> ComposeResult:
-        """Compose the interactive wizard interface widgets.
+        """Compose the metadata configuration widgets.
 
         Yields:
-            Textual widgets comprising the application interface.
+            Widgets comprising the metadata configuration screen.
 
         """
+        cfg = self.zenith_app.config_state
         yield Header()
         with VerticalScroll():
-            yield Label("Project Metadata", classes="section-title")
+            yield Label("Zenith Project Initializer", classes="brand-title")
+            yield Label(
+                "Step 1 of 2: Project Identity & Licensing",
+                classes="brand-subtitle",
+            )
+
             yield Label("Project Name:", classes="field-label")
             yield Input(
-                value=self.initial_config.project_name,
+                value=cfg.project_name,
                 placeholder="Zenith",
                 id="project-name",
             )
 
             yield Label("Project Slug (Directory name):", classes="field-label")
             yield Input(
-                value=self.initial_config.project_slug,
+                value=cfg.project_slug,
                 placeholder="zenith",
                 id="project-slug",
             )
@@ -125,67 +191,137 @@ class ZenithApp(App[ZenithConfig | None]):
                 classes="field-label",
             )
             yield Input(
-                value=self.initial_config.package_name,
+                value=cfg.package_name,
                 placeholder="zenith",
                 id="package-name",
             )
 
             yield Label("Short Description:", classes="field-label")
             yield Input(
-                value=self.initial_config.description,
+                value=cfg.description,
                 placeholder="Description...",
                 id="description",
             )
 
             yield Label("Author Full Name:", classes="field-label")
-            yield Input(value=self.initial_config.author_name, id="author-name")
+            yield Input(value=cfg.author_name, id="author-name")
 
             yield Label("Author Email:", classes="field-label")
-            yield Input(value=self.initial_config.author_email, id="author-email")
+            yield Input(value=cfg.author_email, id="author-email")
 
-            yield Label("GitHub Username or Organization:", classes="field-label")
-            yield Input(
-                value=self.initial_config.github_username,
-                id="github-username",
+            yield Label(
+                "GitHub Username or Organization:",
+                classes="field-label",
             )
+            yield Input(value=cfg.github_username, id="github-username")
 
             yield Label("Runtime & Licensing", classes="section-title")
             python_options = [(v, v) for v in SUPPORTED_PYTHON_VERSIONS]
             yield Label("Target Python Version:", classes="field-label")
             yield Select(
                 python_options,
-                value=self.initial_config.python_version,
+                value=cfg.python_version,
                 id="python-version",
             )
 
             license_options = [(lic, lic) for lic in SUPPORTED_LICENSES]
             yield Label("Open Source License:", classes="field-label")
-            yield Select(
-                license_options,
-                value=self.initial_config.license,
-                id="license",
+            yield Select(license_options, value=cfg.license, id="license")
+
+            with Horizontal(classes="actions-bar"):
+                yield Button(
+                    "Next: Features & Integrations →",
+                    id="next-btn",
+                    variant="primary",
+                )
+                yield Button("Cancel", id="cancel-btn", variant="error")
+        yield Footer()
+
+    @property
+    def zenith_app(self) -> ZenithApp:
+        """Typed reference to parent ZenithApp."""
+        return cast("ZenithApp", self.app)
+
+    @on(Input.Changed, "#project-name")
+    def on_project_name_changed(self, event: Input.Changed) -> None:
+        """Synchronize slug and package name when project name is altered.
+
+        Args:
+            event: Input change event with updated string.
+
+        """
+        slug_input = self.query_one("#project-slug", Input)
+        pkg_input = self.query_one("#package-name", Input)
+        slug_input.value = slugify(event.value)
+        pkg_input.value = slugify(event.value, separator="_")
+
+    @on(Button.Pressed, "#next-btn")
+    def action_next(self) -> None:
+        """Collect Screen 1 form fields and navigate to Screen 2."""
+        py_val = str(self.query_one("#python-version", Select).value)
+        lic_val = str(self.query_one("#license", Select).value)
+        self.zenith_app.config_state = replace(
+            self.zenith_app.config_state,
+            project_name=self.query_one("#project-name", Input).value.strip(),
+            project_slug=self.query_one("#project-slug", Input).value.strip(),
+            package_name=self.query_one("#package-name", Input).value.strip(),
+            description=self.query_one("#description", Input).value.strip(),
+            author_name=self.query_one("#author-name", Input).value.strip(),
+            author_email=self.query_one("#author-email", Input).value.strip(),
+            github_username=self.query_one(
+                "#github-username",
+                Input,
+            ).value.strip(),
+            python_version=py_val,
+            license=lic_val,
+        )
+        self.zenith_app.push_screen(FeaturesScreen())
+
+    @on(Button.Pressed, "#cancel-btn")
+    def action_cancel(self) -> None:
+        """Abort the wizard and exit without scaffolding."""
+        self.zenith_app.abort()
+
+
+class FeaturesScreen(Screen[None]):
+    """Screen 2: Project Features and AI Integrations."""
+
+    def compose(self) -> ComposeResult:
+        """Compose the features and AI tool integration widgets.
+
+        Yields:
+            Widgets comprising the features and AI integrations screen.
+
+        """
+        cfg = self.zenith_app.config_state
+        yield Header()
+        with VerticalScroll():
+            yield Label("Zenith Project Initializer", classes="brand-title")
+            yield Label(
+                "Step 2 of 2: Features & AI Assistant Tooling",
+                classes="brand-subtitle",
             )
 
-            yield Label("Project Features", classes="section-title")
+            yield Label("Core Project Features", classes="section-title")
             with Vertical():
                 yield Checkbox(
                     "Include Typer/Rich command-line interface",
-                    value=self.initial_config.include_cli,
+                    value=cfg.include_cli,
                     id="include-cli",
                 )
                 yield Checkbox(
                     "Generate GitHub Actions CI testing workflows",
-                    value=self.initial_config.include_ci_testing,
+                    value=cfg.include_ci_testing,
                     id="include-ci-testing",
                 )
                 yield Checkbox(
                     "Generate GitHub Actions publishing workflows",
-                    value=self.initial_config.include_ci_publishing,
+                    value=cfg.include_ci_publishing,
                     id="include-ci-publishing",
                 )
                 yield Checkbox(
                     "Include Zenith agent skills suite (.agents/)",
-                    value=self.initial_config.include_agent_skills,
+                    value=cfg.include_agent_skills,
                     id="include-agent-skills",
                 )
 
@@ -208,13 +344,14 @@ class ZenithApp(App[ZenithConfig | None]):
                 Selection(
                     f"{AI_TOOL_METADATA[tool_id][0]}  ({AI_TOOL_METADATA[tool_id][1]})",
                     tool_id,
-                    tool_id in self.initial_config.ai_tools,
+                    tool_id in cfg.ai_tools,
                 )
                 for tool_id in ALL_AI_TOOLS
             ]
             yield SelectionList[str](*selections, id="ai-tools-list")
 
             with Horizontal(classes="actions-bar"):
+                yield Button("← Back", id="back-btn")
                 yield Button(
                     "Scaffold Project",
                     id="submit-btn",
@@ -223,18 +360,10 @@ class ZenithApp(App[ZenithConfig | None]):
                 yield Button("Cancel", id="cancel-btn", variant="error")
         yield Footer()
 
-    @on(Input.Changed, "#project-name")
-    def on_project_name_changed(self, event: Input.Changed) -> None:
-        """Synchronize slug and package name when project name is altered.
-
-        Args:
-            event: Input alteration event containing the updated value.
-
-        """
-        slug_input = self.query_one("#project-slug", Input)
-        pkg_input = self.query_one("#package-name", Input)
-        slug_input.value = slugify(event.value)
-        pkg_input.value = slugify(event.value, separator="_")
+    @property
+    def zenith_app(self) -> ZenithApp:
+        """Typed reference to parent ZenithApp."""
+        return cast("ZenithApp", self.app)
 
     def _apply_tool_preset(self, tools: Sequence[str]) -> None:
         """Update selection list checkboxes to match specified tool sequence.
@@ -275,28 +404,12 @@ class ZenithApp(App[ZenithConfig | None]):
         """Select CLI-only AI tools preset."""
         self._apply_tool_preset(AI_TOOL_PRESETS["cli-only"])
 
-    @on(Button.Pressed, "#submit-btn")
-    def action_submit(self) -> None:
-        """Collect form values, construct ZenithConfig, and exit successfully."""
+    @on(Button.Pressed, "#back-btn")
+    def action_back(self) -> None:
+        """Persist current feature selections and return to MetadataScreen."""
         ai_list = self.query_one("#ai-tools-list", SelectionList)
-        selected_tools = tuple(ai_list.selected)
-
-        python_val = self.query_one("#python-version", Select).value
-        license_val = self.query_one("#license", Select).value
-
-        self.result = ZenithConfig(
-            project_name=self.query_one("#project-name", Input).value.strip(),
-            project_slug=self.query_one("#project-slug", Input).value.strip(),
-            package_name=self.query_one("#package-name", Input).value.strip(),
-            description=self.query_one("#description", Input).value.strip(),
-            author_name=self.query_one("#author-name", Input).value.strip(),
-            author_email=self.query_one("#author-email", Input).value.strip(),
-            github_username=self.query_one(
-                "#github-username",
-                Input,
-            ).value.strip(),
-            python_version=str(python_val),
-            license=str(license_val),
+        self.zenith_app.config_state = replace(
+            self.zenith_app.config_state,
             include_cli=self.query_one("#include-cli", Checkbox).value,
             include_ci_testing=self.query_one(
                 "#include-ci-testing",
@@ -310,12 +423,83 @@ class ZenithApp(App[ZenithConfig | None]):
                 "#include-agent-skills",
                 Checkbox,
             ).value,
-            ai_tools=selected_tools,
+            ai_tools=tuple(ai_list.selected),
         )
-        self.exit(self.result)
+        self.zenith_app.pop_screen()
+
+    @on(Button.Pressed, "#submit-btn")
+    def action_submit(self) -> None:
+        """Collect features, finalize ZenithConfig, and exit successfully."""
+        ai_list = self.query_one("#ai-tools-list", SelectionList)
+        self.zenith_app.config_state = replace(
+            self.zenith_app.config_state,
+            include_cli=self.query_one("#include-cli", Checkbox).value,
+            include_ci_testing=self.query_one(
+                "#include-ci-testing",
+                Checkbox,
+            ).value,
+            include_ci_publishing=self.query_one(
+                "#include-ci-publishing",
+                Checkbox,
+            ).value,
+            include_agent_skills=self.query_one(
+                "#include-agent-skills",
+                Checkbox,
+            ).value,
+            ai_tools=tuple(ai_list.selected),
+        )
+        self.zenith_app.finish()
 
     @on(Button.Pressed, "#cancel-btn")
     def action_cancel(self) -> None:
-        """Abort the wizard and exit without creating a project."""
+        """Abort the wizard and exit without scaffolding."""
+        self.zenith_app.abort()
+
+
+class ZenithApp(App[ZenithConfig | None]):
+    """Interactive Textual TUI wizard for configuring Zenith projects."""
+
+    TITLE = "Zenith Project Initializer"
+    SUB_TITLE = "Modern Python 3.12+ Scaffolding"
+
+    BINDINGS: ClassVar[list[Binding]] = [
+        Binding("escape", "cancel", "Cancel / Exit"),
+    ]
+
+    CSS = ZENITH_CSS
+
+    def __init__(self, initial_config: ZenithConfig | None = None) -> None:
+        """Initialize ZenithApp with default or provided configuration.
+
+        Args:
+            initial_config: Optional baseline configuration defaults.
+
+        """
+        super().__init__()
+        self.initial_config = initial_config or ZenithConfig()
+        self.config_state = self.initial_config
+        self.result: ZenithConfig | None = None
+
+    @override
+    def get_default_screen(self) -> Screen[object]:
+        """Return the default root screen for the application.
+
+        Returns:
+            The default root screen instance.
+
+        """
+        return MetadataScreen()
+
+    def finish(self) -> None:
+        """Finalize configuration and exit successfully."""
+        self.result = self.config_state
+        self.exit(self.result)
+
+    def abort(self) -> None:
+        """Abort wizard and exit cleanly without result."""
         self.result = None
         self.exit(None)
+
+    def action_cancel(self) -> None:
+        """Handle escape keybinding cancellation."""
+        self.abort()
