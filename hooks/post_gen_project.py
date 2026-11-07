@@ -359,6 +359,8 @@ def setup_agent_instructions(*, include_agent_skills: bool, raw_ai_tools: str) -
 def main() -> None:
     """Generate the final project: prune branches, wire agents, format, install prek."""
     include_cli = to_bool("{{ cookiecutter.include_cli }}")
+    include_docs = to_bool("{{ cookiecutter.include_docs }}")
+    include_mutation_testing = to_bool("{{ cookiecutter.include_mutation_testing }}")
     include_ci_testing = to_bool("{{ cookiecutter.include_ci_testing }}")
     include_ci_publishing = to_bool("{{ cookiecutter.include_ci_publishing }}")
     include_agent_skills = to_bool("{{ cookiecutter.include_agent_skills }}")
@@ -374,6 +376,21 @@ def main() -> None:
         remove_file("src", package_name, "_lazy.py")
         remove_file("src", package_name, "__main__.py")
         remove_file("tests", "test_cli.py")
+
+    if not include_docs:
+        remove_dir("docs")
+        remove_file("zensical.toml")
+        remove_file(".github", "workflows", "docs.yaml")
+        remove_dir(".agents", "skills", "tool-zensical")
+        remove_dir(".agents", "skills", "tool-termynal")
+        remove_dir(".agents", "skills", "tool-typst")
+        remove_dir(".agents", "skills", "workflow-docs-authoring")
+        remove_dir(".agents", "skills", "workflow-docs-consumers")
+
+    if not include_mutation_testing:
+        remove_file("cosmic-ray.toml")
+        remove_dir(".agents", "skills", "tool-cosmic-ray")
+        remove_dir(".agents", "skills", "tool-mutmut")
 
     if not include_ci_testing:
         remove_file(".github", "workflows", "python_tests.yaml")
