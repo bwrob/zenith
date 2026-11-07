@@ -66,8 +66,13 @@ def test_default_config_to_cookiecutter_context() -> None:
     assert context["project_slug"] == "my-project"
     assert context["package_name"] == "my_project"
     assert context["include_cli"] is True
+    assert context["include_docs"] is True
+    assert context["include_mutation_testing"] is True
     assert context["include_ci_testing"] is True
     assert context["include_agent_skills"] is True
+    assert config.init_git is True
+    assert config.run_uv_sync is False
+    assert config.install_git_hooks is False
     assert context["python_version"] == "3.12"
     assert context["license"] == "MIT"
     assert "claude" in context["ai_tools"]

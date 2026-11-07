@@ -107,9 +107,14 @@ class ZenithConfig:
     python_version: str = "3.12"
     license: str = "MIT"
     include_cli: bool = True
+    include_docs: bool = True
+    include_mutation_testing: bool = True
     include_ci_testing: bool = True
     include_ci_publishing: bool = True
     include_agent_skills: bool = True
+    init_git: bool = True
+    run_uv_sync: bool = False
+    install_git_hooks: bool = False
     ai_tools: tuple[str, ...] = PRESET_RECOMMENDED
 
     def to_cookiecutter_context(self) -> dict[str, Any]:
@@ -132,6 +137,8 @@ class ZenithConfig:
             "python_version": self.python_version,
             "license": self.license,
             "include_cli": self.include_cli,
+            "include_docs": self.include_docs,
+            "include_mutation_testing": self.include_mutation_testing,
             "include_ci_testing": self.include_ci_testing,
             "include_ci_publishing": self.include_ci_publishing,
             "include_agent_skills": self.include_agent_skills,
