@@ -1,6 +1,7 @@
 [run]
 branch = true
 source =
+    src
     scripts
     tests
 

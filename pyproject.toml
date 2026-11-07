@@ -37,15 +37,24 @@
     build-backend = "hatchling.build"
     requires      = ["hatchling"]
 
-[tool.hatch.build.targets.wheel.force-include]
-    "cookiecutter.json"             = "zenith/template/cookiecutter.json"
-    "hooks"                         = "zenith/template/hooks"
-    "{{cookiecutter.project_slug}}" = "zenith/template/{{cookiecutter.project_slug}}"
+[tool.hatch.build.targets.wheel]
+    packages = ["src/zenith"]
 
-[tool.hatch.build.targets.sdist.force-include]
-    "cookiecutter.json"             = "cookiecutter.json"
-    "hooks"                         = "hooks"
-    "{{cookiecutter.project_slug}}" = "{{cookiecutter.project_slug}}"
+    [tool.hatch.build.targets.wheel.force-include]
+        "cookiecutter.json"             = "zenith/template/cookiecutter.json"
+        "hooks"                         = "zenith/template/hooks"
+        "{{cookiecutter.project_slug}}" = "zenith/template/{{cookiecutter.project_slug}}"
+
+[tool.hatch.build.targets.sdist]
+    include = [
+        "src/zenith",
+        "cookiecutter.json",
+        "hooks",
+        "{{cookiecutter.project_slug}}",
+        "README.md",
+        "LICENSE",
+        "pyproject.toml",
+    ]
 
 [dependency-groups]
     dev = [
