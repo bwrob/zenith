@@ -62,9 +62,9 @@ def test_default_config_to_cookiecutter_context() -> None:
     config = ZenithConfig()
     context = config.to_cookiecutter_context()
 
-    assert context["project_name"] == "Zenith"
-    assert context["project_slug"] == "zenith"
-    assert context["package_name"] == "zenith"
+    assert context["project_name"] == "My Project"
+    assert context["project_slug"] == "my-project"
+    assert context["package_name"] == "my_project"
     assert context["include_cli"] is True
     assert context["include_ci_testing"] is True
     assert context["include_agent_skills"] is True

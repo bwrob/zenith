@@ -96,16 +96,13 @@ def slugify(value: str, separator: str = "-") -> str:
 class ZenithConfig:
     """Configuration parameters for generating a new Zenith project."""
 
-    project_name: str = "Zenith"
-    project_slug: str = "zenith"
-    package_name: str = "zenith"
-    description: str = (
-        "An opinionated, strict Python project powered by uv, ruff, pyrefly, and"
-        " zensical."
-    )
-    author_name: str = "bwrob"
-    author_email: str = "contact@bwrob.dev"
-    github_username: str = "bwrob"
+    project_name: str = "My Project"
+    project_slug: str = "my-project"
+    package_name: str = "my_project"
+    description: str = "A modern Python project."
+    author_name: str = "Author Name"
+    author_email: str = "author@example.com"
+    github_username: str = "author"
     version: str = "0.1.0"
     python_version: str = "3.13"
     license: str = "MIT"

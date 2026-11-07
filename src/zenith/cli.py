@@ -153,7 +153,7 @@ def build_parser() -> argparse.ArgumentParser:
         dest="include_skills",
         action=argparse.BooleanOptionalAction,
         default=True,
-        help="Include Zenith agent skills suite (.agents/).",
+        help="Include agent skills suite (.agents/).",
     )
     return parser
 

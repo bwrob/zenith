@@ -175,14 +175,14 @@ class MetadataScreen(Screen[None]):
             yield Label("Project Name:", classes="field-label")
             yield Input(
                 value=cfg.project_name,
-                placeholder="Zenith",
+                placeholder="My Project",
                 id="project-name",
             )
 
             yield Label("Project Slug (Directory name):", classes="field-label")
             yield Input(
                 value=cfg.project_slug,
-                placeholder="zenith",
+                placeholder="my-project",
                 id="project-slug",
             )
 
@@ -192,28 +192,40 @@ class MetadataScreen(Screen[None]):
             )
             yield Input(
                 value=cfg.package_name,
-                placeholder="zenith",
+                placeholder="my_project",
                 id="package-name",
             )
 
             yield Label("Short Description:", classes="field-label")
             yield Input(
                 value=cfg.description,
-                placeholder="Description...",
+                placeholder="A modern Python project...",
                 id="description",
             )
 
             yield Label("Author Full Name:", classes="field-label")
-            yield Input(value=cfg.author_name, id="author-name")
+            yield Input(
+                value=cfg.author_name,
+                placeholder="Author Name",
+                id="author-name",
+            )
 
             yield Label("Author Email:", classes="field-label")
-            yield Input(value=cfg.author_email, id="author-email")
+            yield Input(
+                value=cfg.author_email,
+                placeholder="author@example.com",
+                id="author-email",
+            )
 
             yield Label(
                 "GitHub Username or Organization:",
                 classes="field-label",
             )
-            yield Input(value=cfg.github_username, id="github-username")
+            yield Input(
+                value=cfg.github_username,
+                placeholder="username",
+                id="github-username",
+            )
 
             yield Label("Runtime & Licensing", classes="section-title")
             python_options = [(v, v) for v in SUPPORTED_PYTHON_VERSIONS]
@@ -320,13 +332,13 @@ class FeaturesScreen(Screen[None]):
                     id="include-ci-publishing",
                 )
                 yield Checkbox(
-                    "Include Zenith agent skills suite (.agents/)",
+                    "Include agent skills suite (.agents/)",
                     value=cfg.include_agent_skills,
                     id="include-agent-skills",
                 )
 
             yield Label(
-                "AI Assistant Integrations (npx skills style)",
+                "AI Assistant Integrations",
                 classes="section-title",
             )
             with Horizontal(classes="preset-bar"):

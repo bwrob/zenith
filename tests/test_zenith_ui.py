@@ -22,9 +22,9 @@ def test_zenith_app_metadata_screen_initial_state() -> None:
         app = ZenithApp()
         async with app.run_test(size=(120, 100)) as pilot:
             assert isinstance(app.screen, MetadataScreen)
-            assert app.screen.query_one("#project-name", Input).value == "Zenith"
-            assert app.screen.query_one("#project-slug", Input).value == "zenith"
-            assert app.screen.query_one("#package-name", Input).value == "zenith"
+            assert app.screen.query_one("#project-name", Input).value == "My Project"
+            assert app.screen.query_one("#project-slug", Input).value == "my-project"
+            assert app.screen.query_one("#package-name", Input).value == "my_project"
             assert app.screen.query_one("#python-version", Select).value == "3.13"
             assert app.screen.query_one("#license", Select).value == "MIT"
             await pilot.exit(None)
