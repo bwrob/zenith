@@ -17,7 +17,7 @@ MIN_COMMAND_COUNT = 2
 
 
 def test_generate_project_calls_cookiecutter(tmp_path: Path) -> None:
-    """Verify that generate_project invokes cookiecutter with resolved context."""
+    """Verify generate_project calls cookiecutter with context (REQ-005)."""
     config = ZenithConfig(project_name="My Cool App", project_slug="my-cool-app")
     fake_template = tmp_path / "template"
     fake_template.mkdir()
@@ -81,7 +81,7 @@ def test_generate_project_allows_overwrite(tmp_path: Path) -> None:
 
 
 def test_generate_project_runs_post_scaffold_automation(tmp_path: Path) -> None:
-    """Verify that generate_project triggers lifecycle commands when enabled."""
+    """Verify generate_project runs lifecycle commands when enabled (REQ-008)."""
     config = ZenithConfig(
         project_slug="automated-project",
         init_git=True,

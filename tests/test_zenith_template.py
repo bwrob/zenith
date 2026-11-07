@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 
 
 def test_get_template_path_from_repo_root() -> None:
-    """Verify get_template_path locates the local repo root."""
+    """Verify get_template_path locates the local repo root (REQ-002)."""
     path = get_template_path()
     assert path.is_dir()
     assert (path / "cookiecutter.json").is_file()

@@ -43,7 +43,7 @@ def test_cli_parser_defaults() -> None:
 
 
 def test_cli_no_input_invokes_generator(tmp_path: Path) -> None:
-    """Verify that --no-input bypasses TUI and executes generate_project."""
+    """Verify that --no-input bypasses TUI and executes generate_project (REQ-006)."""
     with (
         patch(
             "zenith.cli.generate_project",
@@ -141,7 +141,7 @@ def test_cli_interactive_success(tmp_path: Path) -> None:
 
 
 def test_cli_interactive_cancellation() -> None:
-    """Verify that user cancellation in interactive mode exits with code 130."""
+    """Verify user cancellation in interactive mode exits with code 130 (REQ-007)."""
     mock_app_instance = patch("zenith.cli.ZenithApp").start().return_value
     mock_app_instance.run.return_value = None
     mock_app_instance.result = None
@@ -248,7 +248,7 @@ def test_build_reproduce_command_presets() -> None:
 def test_render_summary_prints_recreate_command(
     tmp_path: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
-    """Verify that render_summary outputs the recreation command and steps."""
+    """Verify that render_summary outputs recreation command and steps (REQ-009)."""
     config = ZenithConfig(project_name="Test Tool", run_uv_sync=False)
     render_summary(tmp_path / "test-tool", config)
     captured = capsys.readouterr()

@@ -14,7 +14,7 @@ def test_package_metadata() -> None:
 
 
 def test_wheel_contents() -> None:
-    """Verify that built wheel contains template files and console scripts."""
+    """Verify that built wheel contains template files and console scripts (REQ-001)."""
     dist_dir = Path("dist")
     wheels = list(dist_dir.glob("zenith_template-*.whl"))
     assert wheels, "No wheel found in dist/ directory"

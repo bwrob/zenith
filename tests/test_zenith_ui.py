@@ -16,7 +16,7 @@ from zenith.ui.app import FeaturesScreen, MetadataScreen, ZenithApp
 
 
 def test_zenith_app_metadata_screen_initial_state() -> None:
-    """Verify that MetadataScreen initializes with expected defaults."""
+    """Verify that MetadataScreen initializes with expected defaults (REQ-003)."""
 
     async def run() -> None:
         app = ZenithApp()
@@ -56,7 +56,7 @@ def test_zenith_app_slugify_reactive() -> None:
 
 
 def test_zenith_app_navigation_and_features_screen() -> None:
-    """Verify forward navigation from MetadataScreen to FeaturesScreen."""
+    """Verify forward navigation from MetadataScreen to FeaturesScreen (REQ-004)."""
 
     async def run() -> None:
         app = ZenithApp()
