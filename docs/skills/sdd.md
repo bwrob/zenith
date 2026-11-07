@@ -41,7 +41,11 @@ SDD enforces four non-negotiable architectural invariants:
    By default (Supervised Mode), agents pause after specification, planning,
    implementation, and review for human sign-off. When the developer passes
    `--autonomous` or `/goal`, the suite runs end-to-end without pausing unless an
-   automated quality gate fails.
+   automated quality gate fails. Agents never approve their own artifacts: `spec.md`
+   and `plan.md` start as `Status: Draft`, and only an explicit developer message
+   flips them to `Approved` with a dated quote in the `Approval` field. Each phase
+   checks an entry gate first, so `/sdd-implement` refuses to start without an
+   approved spec and plan. To run a new feature from scratch, start with `/sdd`.
 4. **Reversibility**: When a task fails quality gates or introduces architectural
    drift, `poe sdd-revert` cleanly rolls back the commit and resets the plan checkbox
    without leaving dirty working trees.
