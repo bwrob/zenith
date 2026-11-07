@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import shlex
 import sys
 from typing import TYPE_CHECKING
 
@@ -113,8 +114,8 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--python-version",
         choices=SUPPORTED_PYTHON_VERSIONS,
-        default="3.13",
-        help="Target Python version (default: 3.13).",
+        default="3.12",
+        help="Target Python version (default: 3.12).",
     )
     parser.add_argument(
         "--license",
@@ -179,7 +180,7 @@ def _resolve_ai_tools(raw: str | None) -> tuple[str, ...]:
     return tuple(items)
 
 
-def _config_from_args(args: argparse.Namespace) -> ZenithConfig:
+def config_from_args(args: argparse.Namespace) -> ZenithConfig:
     """Build a ZenithConfig dataclass instance from parsed command-line arguments.
 
     Args:
@@ -216,7 +217,47 @@ def _config_from_args(args: argparse.Namespace) -> ZenithConfig:
     )
 
 
-def _render_summary(project_dir: Path, config: ZenithConfig) -> None:
+def build_reproduce_command(config: ZenithConfig) -> str:
+    """Build the exact command to recreate this project via CLI.
+
+    Args:
+        config: Configuration used to render the project.
+
+    Returns:
+        Shell-quoted CLI command string.
+
+    """
+    parts = [
+        "uvx zenith-template --no-input",
+        f"--name {shlex.quote(config.project_name)}",
+        f"--slug {shlex.quote(config.project_slug)}",
+        f"--package {shlex.quote(config.package_name)}",
+        f"--description {shlex.quote(config.description)}",
+        f"--author {shlex.quote(config.author_name)}",
+        f"--email {shlex.quote(config.author_email)}",
+        f"--github {shlex.quote(config.github_username)}",
+        f"--python-version {config.python_version}",
+        f"--license {config.license}",
+    ]
+
+    if not config.include_cli:
+        parts.append("--no-cli")
+    if not (config.include_ci_testing or config.include_ci_publishing):
+        parts.append("--no-ci")
+    if not config.include_agent_skills:
+        parts.append("--no-skills")
+
+    tools_arg = ",".join(config.ai_tools) if config.ai_tools else "none"
+    for preset_name, preset_tools in AI_TOOL_PRESETS.items():
+        if set(config.ai_tools) == set(preset_tools):
+            tools_arg = preset_name
+            break
+    parts.append(f"--ai-tools {tools_arg}")
+
+    return " ".join(parts)
+
+
+def render_summary(project_dir: Path, config: ZenithConfig) -> None:
     """Print a success confirmation card with next steps.
 
     Args:
@@ -225,11 +266,14 @@ def _render_summary(project_dir: Path, config: ZenithConfig) -> None:
 
     """
     tools_str = ", ".join(config.ai_tools) if config.ai_tools else "None"
+    recreate_cmd = build_reproduce_command(config)
     summary_text = (
         f"[bold green]✨ Project successfully scaffolded at:[/bold green]\n"
         f"  [cyan]{project_dir.resolve()}[/cyan]\n\n"
         f"[bold]Active AI Tool Integrations:[/bold]\n"
         f"  [dim]{tools_str}[/dim]\n\n"
+        f"[bold]Recreate via CLI:[/bold]\n"
+        f"  [yellow]{recreate_cmd}[/yellow]\n\n"
         f"[bold]Next Steps:[/bold]\n"
         f"  1. [yellow]cd {config.project_slug}[/yellow]\n"
         f"  2. [yellow]uv sync[/yellow]\n"
@@ -254,7 +298,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     args = parser.parse_args(argv if argv is not None else sys.argv[1:])
 
     if not args.no_input and sys.stdin.isatty():
-        initial = _config_from_args(args)
+        initial = config_from_args(args)
         app = ZenithApp(initial_config=initial)
         app.run()
         if app.result is None:
@@ -262,7 +306,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             return 130
         config = app.result
     else:
-        config = _config_from_args(args)
+        config = config_from_args(args)
 
     target_dir = args.output_dir_opt or args.output_dir
     try:
@@ -278,7 +322,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         console.print("\n[yellow]Operation aborted by user.[/yellow]")
         return 130
     else:
-        _render_summary(project_dir, config)
+        render_summary(project_dir, config)
         return 0
 
 

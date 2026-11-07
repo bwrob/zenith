@@ -2,13 +2,20 @@
 
 from __future__ import annotations
 
+import shlex
 from typing import TYPE_CHECKING
 from unittest.mock import patch
 
 import pytest
 
-from zenith.cli import build_parser, main
-from zenith.models import ZenithConfig
+from zenith.cli import (
+    build_parser,
+    build_reproduce_command,
+    config_from_args,
+    main,
+    render_summary,
+)
+from zenith.models import PRESET_RECOMMENDED, ZenithConfig
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -156,3 +163,69 @@ def test_cli_handles_keyboard_interrupt() -> None:
     ):
         exit_code = main(["--no-input"])
         assert exit_code == EXIT_ABORTED
+
+
+def test_build_reproduce_command_roundtrip() -> None:
+    """Verify that build_reproduce_command generates valid reproducible CLI flags."""
+    config = ZenithConfig(
+        project_name="Custom Galaxy",
+        project_slug="custom-galaxy",
+        package_name="custom_galaxy",
+        description="A bespoke interstellar app",
+        author_name="Ada Lovelace",
+        author_email="ada@example.com",
+        github_username="adalovelace",
+        python_version="3.12",
+        license="Apache-2.0",
+        include_cli=False,
+        include_ci_testing=False,
+        include_ci_publishing=False,
+        include_agent_skills=False,
+        ai_tools=("cursor", "zed"),
+    )
+
+    cmd = build_reproduce_command(config)
+    assert cmd.startswith("uvx zenith-template --no-input")
+    assert "--name 'Custom Galaxy'" in cmd
+    assert "--no-cli" in cmd
+    assert "--no-ci" in cmd
+    assert "--no-skills" in cmd
+    assert "--ai-tools cursor,zed" in cmd
+
+    # Verify parser roundtrip
+    args = build_parser().parse_args(shlex.split(cmd)[2:])
+    reconstructed = config_from_args(args)
+    assert reconstructed.project_name == config.project_name
+    assert reconstructed.project_slug == config.project_slug
+    assert reconstructed.package_name == config.package_name
+    assert reconstructed.description == config.description
+    assert reconstructed.author_name == config.author_name
+    assert reconstructed.author_email == config.author_email
+    assert reconstructed.github_username == config.github_username
+    assert reconstructed.python_version == config.python_version
+    assert reconstructed.license == config.license
+    assert reconstructed.include_cli is False
+    assert reconstructed.include_ci_testing is False
+    assert reconstructed.include_ci_publishing is False
+    assert reconstructed.include_agent_skills is False
+    assert reconstructed.ai_tools == ("cursor", "zed")
+
+
+def test_build_reproduce_command_presets() -> None:
+    """Verify that build_reproduce_command maps presets and empty tools."""
+    rec_config = ZenithConfig(ai_tools=PRESET_RECOMMENDED)
+    assert "--ai-tools recommended" in build_reproduce_command(rec_config)
+
+    none_config = ZenithConfig(ai_tools=())
+    assert "--ai-tools none" in build_reproduce_command(none_config)
+
+
+def test_render_summary_prints_recreate_command(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """Verify that render_summary outputs the recreation command."""
+    config = ZenithConfig(project_name="Test Tool")
+    render_summary(tmp_path / "test-tool", config)
+    captured = capsys.readouterr()
+    assert "Recreate via CLI:" in captured.out
+    assert "uvx zenith-template --no-input" in captured.out
