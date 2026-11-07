@@ -8,8 +8,8 @@
     "github_username": "bwrob",
     "version": "0.1.0",
     "python_version": [
-        "3.13",
         "3.12",
+        "3.13",
         "3.14",
         "3.15"
     ],
@@ -46,8 +46,8 @@
         "version": "Initial Project Version",
         "python_version": {
             "__prompt__": "Target Python Version:",
-            "3.13": "Python 3.13 (Current stable, recommended)",
-            "3.12": "Python 3.12 (LTS baseline)",
+            "3.12": "Python 3.12 (LTS baseline, recommended)",
+            "3.13": "Python 3.13 (Current stable)",
             "3.14": "Python 3.14 (Bleeding edge)",
             "3.15": "Python 3.15 (Future / experimental)"
         },

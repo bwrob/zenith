@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, ClassVar, cast, override
 
 from textual import on
 from textual.app import App, ComposeResult
-from textual.binding import Binding
+from textual.binding import Binding, BindingType
 from textual.containers import Horizontal, Vertical, VerticalScroll
 from textual.screen import Screen
 from textual.widgets import (
@@ -153,9 +153,10 @@ Checkbox {
 """
 
 
-class MetadataScreen(Screen[None]):
+class MetadataScreen(Screen[object]):
     """Screen 1: Project Identity and Runtime Licensing."""
 
+    @override
     def compose(self) -> ComposeResult:
         """Compose the metadata configuration widgets.
 
@@ -295,9 +296,10 @@ class MetadataScreen(Screen[None]):
         self.zenith_app.abort()
 
 
-class FeaturesScreen(Screen[None]):
+class FeaturesScreen(Screen[object]):
     """Screen 2: Project Features and AI Integrations."""
 
+    @override
     def compose(self) -> ComposeResult:
         """Compose the features and AI tool integration widgets.
 
@@ -474,7 +476,7 @@ class ZenithApp(App[ZenithConfig | None]):
     TITLE = "Zenith Project Initializer"
     SUB_TITLE = "Modern Python 3.12+ Scaffolding"
 
-    BINDINGS: ClassVar[list[Binding]] = [
+    BINDINGS: ClassVar[list[BindingType]] = [
         Binding("escape", "cancel", "Cancel / Exit"),
     ]
 

@@ -72,7 +72,7 @@ AI_TOOL_METADATA: dict[str, tuple[str, str]] = {
     "windsurf": ("Windsurf", ".windsurfrules symlink to AGENTS.md"),
 }
 
-SUPPORTED_PYTHON_VERSIONS: tuple[str, ...] = ("3.13", "3.12", "3.14", "3.15")
+SUPPORTED_PYTHON_VERSIONS: tuple[str, ...] = ("3.12", "3.13", "3.14", "3.15")
 
 SUPPORTED_LICENSES: tuple[str, ...] = ("MIT", "Apache-2.0", "BSD-3-Clause", "None")
 
@@ -104,7 +104,7 @@ class ZenithConfig:
     author_email: str = "author@example.com"
     github_username: str = "author"
     version: str = "0.1.0"
-    python_version: str = "3.13"
+    python_version: str = "3.12"
     license: str = "MIT"
     include_cli: bool = True
     include_ci_testing: bool = True

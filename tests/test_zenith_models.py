@@ -52,8 +52,8 @@ def test_metadata_covers_all_tools() -> None:
 
 def test_supported_python_versions_and_licenses() -> None:
     """Verify baseline supported Python versions and licenses."""
-    assert "3.13" in SUPPORTED_PYTHON_VERSIONS
-    assert "3.12" in SUPPORTED_PYTHON_VERSIONS
+    assert SUPPORTED_PYTHON_VERSIONS == ("3.12", "3.13", "3.14", "3.15")
+    assert SUPPORTED_PYTHON_VERSIONS[0] == "3.12"
     assert "MIT" in SUPPORTED_LICENSES
 
 
@@ -68,7 +68,7 @@ def test_default_config_to_cookiecutter_context() -> None:
     assert context["include_cli"] is True
     assert context["include_ci_testing"] is True
     assert context["include_agent_skills"] is True
-    assert context["python_version"] == "3.13"
+    assert context["python_version"] == "3.12"
     assert context["license"] == "MIT"
     assert "claude" in context["ai_tools"]
     assert "cursor" in context["ai_tools"]
