@@ -54,6 +54,12 @@ jobs:
             - name: 🎨 Run prettier CSS check
               run: uv run poe format-css
 
+            - name: 📝 Run rumdl Markdown check
+              run: uv run poe lint-md
+
+            - name: 📦 Check declared dependencies with deptry
+              run: uv run poe dependencies
+
             - name: 🔄 Verify skills symlinks
               run: uv run poe sync-skills-check
 
@@ -175,11 +181,6 @@ jobs:
               run: |
                   cd /tmp/canary/zenith-example
                   uv run poe code-quality
-
-            - name: 🪝 Verify git hooks in scaffolded showcase
-              run: |
-                  cd /tmp/canary/zenith-example
-                  uv run prek run --all-files
 
     check:
         name: 🛠️ All Checks Status

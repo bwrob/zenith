@@ -105,6 +105,7 @@
         "zizmor",
         "sync-skills-check",
         "check-skills",
+        "lint-ste",
         "complexity",
     ], help = "Execute the full code quality verification pipeline." }
     complexity = { cmd = "complexipy src scripts tests hooks", help = "Verify cognitive complexity limits with complexipy." }
