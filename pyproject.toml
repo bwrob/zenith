@@ -13,16 +13,48 @@
         "Topic :: Software Development :: Code Generators",
         "Typing :: Typed",
     ]
-    dependencies = ["cookiecutter>=2.7.0", "pyyaml>=6.0.3", "rich>=15.0.0"]
+    dependencies = [
+        "cookiecutter>=2.7.0",
+        "pyyaml>=6.0.3",
+        "rich>=15.0.0",
+        "textual>=8.2.8",
+    ]
     description = "Zenith: An opinionated, strict Cookiecutter template for modern Python projects using uv, ruff, pyrefly, complexipy, zensical, rumdl, tach, deptry, and poethepoet."
-    name = "zenith"
+    name = "zenith-template"
     readme = "README.md"
     requires-python = ">=3.12"
-    version = "0.1.0"
+    version = "0.2.0"
+
+    [project.scripts]
+        zenith          = "zenith.cli:main"
+        zenith-template = "zenith.cli:main"
 
     [project.urls]
         Homepage   = "https://github.com/bwrob/zenith"
         Repository = "https://github.com/bwrob/zenith.git"
+
+[build-system]
+    build-backend = "hatchling.build"
+    requires      = ["hatchling"]
+
+[tool.hatch.build.targets.wheel]
+    packages = ["src/zenith"]
+
+    [tool.hatch.build.targets.wheel.force-include]
+        "cookiecutter.json"             = "zenith/template/cookiecutter.json"
+        "hooks"                         = "zenith/template/hooks"
+        "{{cookiecutter.project_slug}}" = "zenith/template/{{cookiecutter.project_slug}}"
+
+[tool.hatch.build.targets.sdist]
+    include = [
+        "src/zenith",
+        "cookiecutter.json",
+        "hooks",
+        "{{cookiecutter.project_slug}}",
+        "README.md",
+        "LICENSE",
+        "pyproject.toml",
+    ]
 
 [dependency-groups]
     dev = [
@@ -54,7 +86,7 @@
 
 [tool.uv]
     default-groups = ["dev", "docs"]
-    package        = false
+    package        = true
 
 [tool.poe.tasks]
     check-skills = { cmd = "python scripts/check_skills.py .agents/skills", help = "Validate agent skills structural invariants." }
@@ -73,8 +105,8 @@
         "check-skills",
         "complexity",
     ], help = "Execute the full code quality verification pipeline." }
-    complexity = { cmd = "complexipy scripts tests hooks", help = "Verify cognitive complexity limits with complexipy." }
-    dependencies = { cmd = "deptry hooks scripts", help = "Check declared dependencies for repository hooks and scripts." }
+    complexity = { cmd = "complexipy src scripts tests hooks", help = "Verify cognitive complexity limits with complexipy." }
+    dependencies = { cmd = "deptry src hooks scripts", help = "Check declared dependencies for repository hooks and scripts." }
     docs-build = { cmd = "zensical build --strict --clean", help = "Build static HTML documentation site into site/." }
     docs-logo = { cmd = "typst compile assets/zenith-star.typ assets/zenith-star.svg", help = "Compile documentation logotype SVG with Typst." }
     docs-serve = { cmd = "zensical serve", help = "Start live-reloading documentation dev server." }

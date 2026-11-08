@@ -8,8 +8,8 @@
     "github_username": "bwrob",
     "version": "0.1.0",
     "python_version": [
-        "3.13",
         "3.12",
+        "3.13",
         "3.14",
         "3.15"
     ],
@@ -20,6 +20,8 @@
         "None"
     ],
     "include_cli": true,
+    "include_docs": true,
+    "include_mutation_testing": true,
     "include_ci_testing": true,
     "include_ci_publishing": true,
     "include_agent_skills": true,
@@ -46,8 +48,8 @@
         "version": "Initial Project Version",
         "python_version": {
             "__prompt__": "Target Python Version:",
-            "3.13": "Python 3.13 (Current stable, recommended)",
-            "3.12": "Python 3.12 (LTS baseline)",
+            "3.12": "Python 3.12 (LTS baseline, recommended)",
+            "3.13": "Python 3.13 (Current stable)",
             "3.14": "Python 3.14 (Bleeding edge)",
             "3.15": "Python 3.15 (Future / experimental)"
         },
@@ -59,6 +61,8 @@
             "None": "Proprietary / No License (All Rights Reserved)"
         },
         "include_cli": "Scaffold Typer/Rich command-line interface?",
+        "include_docs": "Scaffold documentation website with Zensical (docs/ and zensical.toml)?",
+        "include_mutation_testing": "Include mutation testing tooling (cosmic-ray and mutmut)?",
         "include_ci_testing": "Generate GitHub Actions workflows for CI testing and code quality?",
         "include_ci_publishing": "Generate GitHub Actions workflow for PyPI Trusted Publishing and documentation deployment?",
         "include_agent_skills": "Include Zenith agent skills suite and SDD subagents (.agents/)?",

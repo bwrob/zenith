@@ -1445,3 +1445,39 @@ def test_include_agent_skills_false_prunes_skills(temp_output_dir: Path) -> None
     poe_text = (rendered / "poe_tasks.toml").read_text()
     assert "check-skills" not in poe_text
     assert "sdd-new" not in poe_text
+
+
+def test_include_docs_false_prunes_docs(temp_output_dir: Path) -> None:
+    """Test that include_docs=false prunes docs directory and zensical configuration."""
+    rendered = Path(
+        cookiecutter(
+            str(TEMPLATE_ROOT),
+            no_input=True,
+            output_dir=str(temp_output_dir),
+            extra_context={
+                "project_name": "No Docs Project",
+                "include_docs": False,
+            },
+        )
+    )
+    assert not (rendered / "docs").exists()
+    assert not (rendered / "zensical.toml").exists()
+    assert not (rendered / ".github" / "workflows" / "docs.yaml").exists()
+
+
+def test_include_mutation_testing_false_prunes_mutation(
+    temp_output_dir: Path,
+) -> None:
+    """Test that include_mutation_testing=false prunes cosmic-ray configuration."""
+    rendered = Path(
+        cookiecutter(
+            str(TEMPLATE_ROOT),
+            no_input=True,
+            output_dir=str(temp_output_dir),
+            extra_context={
+                "project_name": "No Mutation Project",
+                "include_mutation_testing": False,
+            },
+        )
+    )
+    assert not (rendered / "cosmic-ray.toml").exists()

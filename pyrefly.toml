@@ -19,8 +19,8 @@ project-excludes = [
     "**/.venv",
     "**/{{cookiecutter.project_slug}}",
 ]
-project-includes = ["scripts", "tests", "hooks"]
-python-version = "3.13.0"
+project-includes = ["src", "scripts", "tests", "hooks"]
+python-version = "3.12.0"
 search-path = [
     ".",
     ".agents/skills/guide-ste100/scripts",
