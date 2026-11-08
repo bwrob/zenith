@@ -2,7 +2,7 @@
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/{{ cookiecutter.github_username }}/{{ cookiecutter.project_slug }}/main/docs/assets/python-banner-dark.svg">
     <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/{{ cookiecutter.github_username }}/{{ cookiecutter.project_slug }}/main/docs/assets/python-banner-light.svg">
-    <img src="https://raw.githubusercontent.com/{{ cookiecutter.github_username }}/{{ cookiecutter.project_slug }}/main/docs/assets/python-banner-dark.svg" alt="{{ cookiecutter.project_name }}" width="320">
+    <img src="https://raw.githubusercontent.com/{{ cookiecutter.github_username }}/{{ cookiecutter.project_slug }}/main/docs/assets/python-banner-dark.svg" alt="{{ cookiecutter.project_name }}" width="430">
   </picture>
 </p>
 

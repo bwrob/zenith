@@ -301,8 +301,8 @@
 [tasks.docs-logo]
     help = "Compile documentation banner SVGs with Typst."
     sequence = [
-        { cmd = "typst compile docs/assets/python-banner-dark.typ docs/assets/python-banner-dark.svg" },
-        { cmd = "typst compile docs/assets/python-banner-light.typ docs/assets/python-banner-light.svg" },
+        { cmd = "typst compile --font-path docs/assets/fonts docs/assets/python-banner-dark.typ docs/assets/python-banner-dark.svg" },
+        { cmd = "typst compile --font-path docs/assets/fonts docs/assets/python-banner-light.typ docs/assets/python-banner-light.svg" },
         { cmd = "python -c \"import shutil; shutil.copyfile('docs/assets/python-banner-dark.svg', 'docs/assets/python-banner.svg')\"" },
     ]
 

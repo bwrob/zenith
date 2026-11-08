@@ -412,6 +412,26 @@ wheels = [
 ]
 
 [[package]]
+name = "fontpkg"
+version = "0.2.2"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/6a/6f/5842ce5789ac3486d3cd1b52ab32bcd34f2da478bbae6fe3bc18dbd39856/fontpkg-0.2.2.tar.gz", hash = "sha256:feca3d345f1f3c700a0c86de52b5d1de6f41cc703ae92fa5428ebc88c3246bba", size = 8965, upload-time = "2026-08-19T16:52:50.793Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/53/9d/ee4223909fe6ed696b0cd528d63c7c4c1ae410fa91c59fb6c2c8ffc8f811/fontpkg-0.2.2-py3-none-any.whl", hash = "sha256:18891ee877139922f5be6ea421df630376fab2440b7dba2754652f7daf809dea", size = 8793, upload-time = "2026-08-19T16:52:50.032Z" },
+]
+
+[[package]]
+name = "fontpkg-space-grotesk"
+version = "2.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "fontpkg" },
+]
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/02/1b/7a64498dec0b2d1cd59d1fcbbeadbba3ac59d46e7087a1a7c04800516f63/fontpkg_space_grotesk-2.0-py3-none-any.whl", hash = "sha256:aebb9c6c82325e29fe81d36543df2b99d8290ad78f9779f786e2df64c2a4c908", size = 70974, upload-time = "2026-09-07T01:01:36.501Z" },
+]
+
+[[package]]
 name = "ghp-import"
 version = "2.1.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1359,6 +1379,7 @@ dev = [
     { name = "zizmor" },
 ]
 docs = [
+    { name = "fontpkg-space-grotesk" },
     { name = "griffe-warnings-deprecated" },
     { name = "markdown-exec" },
     { name = "mkdocstrings", extra = ["python"] },
@@ -1396,6 +1417,7 @@ dev = [
     { name = "zizmor", specifier = ">=1.23.0" },
 ]
 docs = [
+    { name = "fontpkg-space-grotesk", specifier = ">=2.0" },
     { name = "griffe-warnings-deprecated", specifier = ">=1.1.0" },
     { name = "markdown-exec", specifier = ">=1.12.0" },
     { name = "mkdocstrings", extras = ["python"], specifier = ">=1.0.7" },

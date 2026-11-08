@@ -78,6 +78,7 @@
         "zizmor>=1.23.0",
     ]
     docs = [
+        "fontpkg-space-grotesk>=2.0",
         "griffe-warnings-deprecated>=1.1.0",
         "markdown-exec>=1.12.0",
         "mkdocstrings[python]>=1.0.7",
@@ -112,8 +113,8 @@
     dependencies = { cmd = "deptry src hooks scripts", help = "Check declared dependencies for repository hooks and scripts." }
     docs-build = { cmd = "zensical build --strict --clean", help = "Build static HTML documentation site into site/." }
     docs-logo = { sequence = [
-        { cmd = "typst compile assets/zenith-banner-dark.typ assets/zenith-banner-dark.svg" },
-        { cmd = "typst compile assets/zenith-banner-light.typ assets/zenith-banner-light.svg" },
+        { cmd = "typst compile --font-path assets/fonts assets/zenith-banner-dark.typ assets/zenith-banner-dark.svg" },
+        { cmd = "typst compile --font-path assets/fonts assets/zenith-banner-light.typ assets/zenith-banner-light.svg" },
         { cmd = "python -c \"import shutil; shutil.copyfile('assets/zenith-banner-dark.svg', 'assets/zenith-banner.svg'); shutil.copyfile('assets/zenith-banner-dark.svg', 'docs/assets/zenith-banner-dark.svg'); shutil.copyfile('assets/zenith-banner-light.svg', 'docs/assets/zenith-banner-light.svg'); shutil.copyfile('assets/zenith-banner-dark.svg', 'docs/assets/zenith-banner.svg')\"" },
     ], help = "Compile documentation banner SVGs with Typst." }
     docs-serve = { cmd = "zensical serve", help = "Start live-reloading documentation dev server." }

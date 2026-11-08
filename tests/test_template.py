@@ -532,6 +532,9 @@ def test_project_tests_and_docs_layout(full_project: Path) -> None:
     assert (full_project / "docs" / "assets" / "python-banner-dark.typ").exists()
     assert (full_project / "docs" / "assets" / "python-banner-light.svg").exists()
     assert (full_project / "docs" / "assets" / "python-banner-light.typ").exists()
+    assert (
+        full_project / "docs" / "assets" / "fonts" / "SpaceGrotesk[wght].ttf"
+    ).exists()
     assert "python-banner-dark.svg" in (full_project / "README.md").read_text()
     assert "python-banner-light.svg" in (full_project / "README.md").read_text()
     assert "python-banner-dark.svg" in (full_project / "docs" / "index.md").read_text()

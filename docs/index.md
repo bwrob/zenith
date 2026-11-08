@@ -4,8 +4,8 @@ purpose: Introduce Zenith, showcase the four architectural pillars, and guide de
 ---
 
 <p align="center">
-  <img src="assets/zenith-banner-dark.svg#gh-dark-mode-only" alt="Zenith" width="340">
-  <img src="assets/zenith-banner-light.svg#gh-light-mode-only" alt="Zenith" width="340">
+  <img src="assets/zenith-banner-dark.svg#gh-dark-mode-only" alt="Zenith" width="420">
+  <img src="assets/zenith-banner-light.svg#gh-light-mode-only" alt="Zenith" width="420">
 </p>
 
 <p align="center" style="font-size: 1.15rem; font-weight: 500;">
