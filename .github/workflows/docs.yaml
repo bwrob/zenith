@@ -4,26 +4,22 @@ on:
     push:
         branches:
             - main
+    pull_request:
+        branches:
+            - main
     workflow_dispatch:
 
 permissions:
     contents: read
 
 concurrency:
-    group: "pages"
-    cancel-in-progress: false
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
 
 jobs:
-    deploy:
-        name: 🚀 Deploy Documentation to GitHub Pages
-        environment:
-            name: github-pages
-            url: ${{ steps.deployment.outputs.page_url }}
+    build:
+        name: 📖 Build Documentation
         runs-on: ubuntu-latest
-        permissions:
-            contents: read
-            pages: write # Required to deploy site artifacts to GitHub Pages
-            id-token: write # Required for GitHub Pages OIDC authentication
         steps:
             - name: 🛠️ Check out repository
               uses: actions/checkout@v7
@@ -35,9 +31,6 @@ jobs:
               with:
                   python-version: "3.13"
                   enable-cache: true
-
-            - name: Configure GitHub Pages
-              uses: actions/configure-pages@v6
 
             - name: Install documentation dependencies
               run: uv sync --group docs
@@ -57,10 +50,24 @@ jobs:
                   echo '```' >> "$GITHUB_STEP_SUMMARY"
 
             - name: Upload Pages artifact
+              if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
               uses: actions/upload-pages-artifact@v5
               with:
                   path: site
 
+    deploy:
+        name: 🚀 Deploy Documentation to GitHub Pages
+        needs: build
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        environment:
+            name: github-pages
+            url: ${{ steps.deployment.outputs.page_url }}
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+            pages: write # Required to deploy site artifacts to GitHub Pages
+            id-token: write # Required for GitHub Pages OIDC authentication
+        steps:
             - name: Deploy to GitHub Pages
               id: deployment
               uses: actions/deploy-pages@v5

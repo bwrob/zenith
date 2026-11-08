@@ -1100,13 +1100,6 @@ wheels = [
 
 [[package]]
 name = "taplo"
-source = { directory = "../taplo" }
-resolution-markers = [
-    "(platform_machine == 'aarch64' and sys_platform == 'linux') or (platform_machine == 'arm64' and sys_platform == 'linux')",
-]
-
-[[package]]
-name = "taplo"
 version = "0.9.3"
 source = { registry = "https://pypi.org/simple" }
 resolution-markers = [
@@ -1120,6 +1113,14 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/ef/cc/656aed22a59cf4c50dcaaa66aaa570d4a1412acdd8ea429120a6bb00f336/taplo-0.9.3-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:33f12648f273478d7330cb3529c82f48f388501e1122e0bea78bce5ff5972b8b", size = 4468935, upload-time = "2024-08-19T10:22:08.106Z" },
     { url = "https://files.pythonhosted.org/packages/21/15/d8db1db6382b444122fa1a66fe5fe0dd5b04bfbe68c74bdb5345aec11eb2/taplo-0.9.3-py3-none-win32.whl", hash = "sha256:9ab7df76a3facc6d0dd2fe2dae3e8eb52fa458d31d27878d5eac14f5cbc0abac", size = 3482612, upload-time = "2024-08-19T10:22:10.904Z" },
     { url = "https://files.pythonhosted.org/packages/42/3c/df6641d7e2e84a6dd4de3b3a4426db7f6a7270c05bbdeadd523645c9c45f/taplo-0.9.3-py3-none-win_amd64.whl", hash = "sha256:7d80b630b93fb43cee99d1e1ee07b616236dc5615efaf7cd51074b4cffc33bab", size = 3985843, upload-time = "2024-08-19T10:22:13.446Z" },
+]
+
+[[package]]
+name = "taplo"
+version = "0.10.0"
+source = { git = "https://github.com/tamasfe/taplo.git?tag=release-taplo-cli-0.10.0#20a9145169437bb1a5629577094f20c01e83369b" }
+resolution-markers = [
+    "(platform_machine == 'aarch64' and sys_platform == 'linux') or (platform_machine == 'arm64' and sys_platform == 'linux')",
 ]
 
 [[package]]
@@ -1351,8 +1352,8 @@ dev = [
     { name = "ruff" },
     { name = "rumdl" },
     { name = "syrupy" },
-    { name = "taplo", source = { directory = "../taplo" }, marker = "(platform_machine == 'aarch64' and sys_platform == 'linux') or (platform_machine == 'arm64' and sys_platform == 'linux')" },
     { name = "taplo", version = "0.9.3", source = { registry = "https://pypi.org/simple" }, marker = "(platform_machine != 'aarch64' and platform_machine != 'arm64') or sys_platform != 'linux'" },
+    { name = "taplo", version = "0.10.0", source = { git = "https://github.com/tamasfe/taplo.git?tag=release-taplo-cli-0.10.0#20a9145169437bb1a5629577094f20c01e83369b" }, marker = "(platform_machine == 'aarch64' and sys_platform == 'linux') or (platform_machine == 'arm64' and sys_platform == 'linux')" },
     { name = "termynal" },
     { name = "typos" },
     { name = "zizmor" },
@@ -1389,7 +1390,7 @@ dev = [
     { name = "rumdl", specifier = ">=0.2.75" },
     { name = "syrupy", specifier = ">=6.1.0" },
     { name = "taplo", marker = "(platform_machine != 'aarch64' and platform_machine != 'arm64') or sys_platform != 'linux'", specifier = ">=0.9.3" },
-    { name = "taplo", marker = "(platform_machine == 'aarch64' and sys_platform == 'linux') or (platform_machine == 'arm64' and sys_platform == 'linux')", directory = "../taplo" },
+    { name = "taplo", marker = "(platform_machine == 'aarch64' and sys_platform == 'linux') or (platform_machine == 'arm64' and sys_platform == 'linux')", git = "https://github.com/tamasfe/taplo.git?tag=release-taplo-cli-0.10.0" },
     { name = "termynal", specifier = ">=0.14.0" },
     { name = "typos", specifier = ">=1.30.0" },
     { name = "zizmor", specifier = ">=1.23.0" },

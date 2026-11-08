@@ -107,9 +107,11 @@ def test_generate_project_runs_post_scaffold_automation(tmp_path: Path) -> None:
         assert result == target_dir
         called_cmds = [call.args[0] for call in mock_cmd.call_args_list]
         assert ["uv", "sync"] in called_cmds
+        assert ["uv", "run", "taplo", "format"] in called_cmds
         assert ["uv", "run", "prek", "install"] in called_cmds
         assert any("Scaffolding project template" in s for s in steps)
         assert any("uv sync" in s for s in steps)
+        assert any("taplo format" in s for s in steps)
         assert any("prek install" in s for s in steps)
 
 

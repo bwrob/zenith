@@ -58,6 +58,8 @@ def _run_post_scaffold(
     if config.run_uv_sync:
         on_step("Synchronizing Python environment (uv sync)...")
         run_cmd(["uv", "sync"], cwd=project_dir)
+        on_step("Formatting TOML files (uv run taplo format)...")
+        run_cmd(["uv", "run", "taplo", "format"], cwd=project_dir)
 
     if config.install_git_hooks and (project_dir / ".git").is_dir():
         on_step("Installing Git hooks (prek install)...")

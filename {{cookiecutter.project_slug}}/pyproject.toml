@@ -8,9 +8,7 @@
 # ==============================================================================
 
 [project]
-    authors = [
-        { name = "{{ cookiecutter.author_name }}", email = "{{ cookiecutter.author_email }}" },
-    ]
+    authors = [{ name = "{{ cookiecutter.author_name }}", email = "{{ cookiecutter.author_email }}" }]
     classifiers = [
         "Development Status :: 3 - Alpha",
         "Intended Audience :: Developers",
@@ -29,16 +27,16 @@
         "Topic :: Software Development :: Libraries :: Python Modules",
         "Typing :: Typed",
     ]
-    dependencies = [ "rich>=15.0.0"{% if cookiecutter.include_cli in [True, "yes", "true", "True", "1"] %}, "typer>=0.16.0"{% endif %} ]
+    dependencies = ["rich>=15.0.0"{% if cookiecutter.include_cli in [True, "yes", "true", "True", "1"] %}, "typer>=0.16.0"{% endif %}]
     description = "{{ cookiecutter.description }}"
     {% if cookiecutter.license != "None" %}
-    license = "{{ cookiecutter.license }}"
-    license-files = [ "LICENSE" ]
+    license       = "{{ cookiecutter.license }}"
+    license-files = ["LICENSE"]
     {% endif %}
-    name = "{{ cookiecutter.project_slug }}"
-    readme = "README.md"
+    name            = "{{ cookiecutter.project_slug }}"
+    readme          = "README.md"
     requires-python = ">={{ cookiecutter.python_version }}"
-    version = "{{ cookiecutter.version }}"
+    version         = "{{ cookiecutter.version }}"
 
     [project.urls]
         Documentation = "https://{{ cookiecutter.github_username }}.github.io/{{ cookiecutter.project_slug }}/"
@@ -101,7 +99,7 @@
     ]
 
 [tool.uv]
-    default-groups = [ "dev", "test", "lint", "docs", "mutation" ]
+    default-groups = ["dev", "test", "lint", "docs", "mutation"]
     package        = true
     # Supply-chain protection buffer against zero-day compromised upstream releases.
     # Uncomment to exclude packages published in the last N days during resolution
@@ -112,21 +110,24 @@
     # constraint-dependencies = [ "urllib3>=2.6.3" ]
     # build-constraint-dependencies = [ "uv_build>=0.12.7,<0.13.0" ]
 
-[tool.uv.build-backend]
-    source-include = [
-        "tests/**",
-        "poe_tasks.toml",
-        "ruff.toml",
-        "pytest.ini",
-        ".coveragerc",
-        "tach.toml",
-        ".zizmor.yml",
-        "cosmic-ray.toml",
-    ]
+    [tool.uv.build-backend]
+        source-include = [
+            "tests/**",
+            "poe_tasks.toml",
+            "ruff.toml",
+            "pytest.ini",
+            ".coveragerc",
+            "tach.toml",
+            ".zizmor.yml",
+            "cosmic-ray.toml",
+        ]
 
 [tool.mutmut]
     runner       = "pytest"
-    source_paths = [ "src/" ]
+    source_paths = ["src/"]
 
 [tool.poe]
     include = "poe_tasks.toml"
+
+    [tool.uv.sources]
+        taplo = { git = "https://github.com/tamasfe/taplo.git", tag = "release-taplo-cli-0.10.0", marker = "sys_platform == 'linux' and (platform_machine == 'aarch64' or platform_machine == 'arm64')" }

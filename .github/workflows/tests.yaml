@@ -54,6 +54,12 @@ jobs:
             - name: 🎨 Run prettier CSS check
               run: uv run poe format-css
 
+            - name: 📝 Run rumdl Markdown check
+              run: uv run poe lint-md
+
+            - name: 📦 Check declared dependencies with deptry
+              run: uv run poe dependencies
+
             - name: 🔄 Verify skills symlinks
               run: uv run poe sync-skills-check
 
@@ -75,6 +81,9 @@ jobs:
             - name: 🛡️ Run zizmor GitHub Actions security audit
               run: uv run poe zizmor
 
+            - name: 🔍 Audit rendered template variants
+              run: uv run poe lint-rendered
+
     test:
         name: 🐍 Template Test Suite (${{ matrix.os }}, py${{ matrix.python-version }})
         runs-on: ${{ matrix.os }}
@@ -82,9 +91,11 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                os: [ubuntu-latest, macos-latest]
+                os: [ubuntu-latest]
                 python-version: ["3.12", "3.13", "3.14"]
                 include:
+                    - os: macos-latest
+                      python-version: "3.13"
                     - os: windows-latest
                       python-version: "3.13"
 
@@ -115,12 +126,69 @@ jobs:
                       exit 1
                   fi
 
+    canary:
+        name: 🎡 Zenith Wheel Showcase Canary
+        runs-on: ubuntu-latest
+        timeout-minutes: 15
+        steps:
+            - name: 🛠️ Check out repository
+              uses: actions/checkout@v7
+              with:
+                  persist-credentials: false
+
+            - name: 🛠️ Install uv and use Python 3.13
+              uses: astral-sh/setup-uv@v10.3.0
+              with:
+                  python-version: "3.13"
+                  enable-cache: true
+
+            - name: 🎡 Build zenith-template wheel
+              run: uv build --wheel --out-dir dist
+
+            - name: 🚀 Scaffold zenith-example using only built wheel
+              run: |
+                  WHEEL_PATH=$(find dist -name "zenith_template-*.whl" | head -n 1)
+                  mkdir -p /tmp/canary
+                  cd /tmp/canary
+                  uvx --from "$GITHUB_WORKSPACE/$WHEEL_PATH" zenith-template \
+                      --no-input \
+                      --name "Zenith Example" \
+                      --slug "zenith-example" \
+                      --package "zenith_example" \
+                      --description "Demonstration and showcase repository instantiated from the Zenith template." \
+                      --author "bwrob" \
+                      --email "contact@bwrob.dev" \
+                      --github "bwrob" \
+                      --python-version "3.13" \
+                      --license "MIT" \
+                      --include-cli \
+                      --include-docs \
+                      --include-mutation \
+                      --include-ci \
+                      --include-skills \
+                      --ai-tools all \
+                      --init-git \
+                      --run-uv-sync \
+                      --install-git-hooks \
+                      .
+
+            - name: 🧪 Run test suite in scaffolded showcase
+              run: |
+                  cd /tmp/canary/zenith-example
+                  uv run poe test
+
+            - name: 🎨 Run code quality in scaffolded showcase
+              run: |
+                  cd /tmp/canary/zenith-example
+                  uv run poe code-quality
+
     check:
         name: 🛠️ All Checks Status
         if: always()
         needs:
             - quality
             - test
+            - canary
         runs-on: ubuntu-latest
         steps:
             - name: Decide whether all required jobs succeeded
