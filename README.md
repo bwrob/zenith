@@ -1,7 +1,9 @@
-# Zenith
-
 <p align="center">
-  <img src="assets/zenith-star.svg" alt="Zenith Emblem" width="160">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/bwrob/zenith/main/assets/zenith-banner-dark.svg">
+    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/bwrob/zenith/main/assets/zenith-banner-light.svg">
+    <img src="https://raw.githubusercontent.com/bwrob/zenith/main/assets/zenith-banner-dark.svg" alt="Zenith" width="420">
+  </picture>
 </p>
 
 [![Template: Cookiecutter](https://img.shields.io/badge/template-cookiecutter-D4B830.svg)](https://github.com/cookiecutter/cookiecutter)
