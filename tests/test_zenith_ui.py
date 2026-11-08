@@ -227,3 +227,30 @@ def test_zenith_app_escape_key_cancels() -> None:
             assert app.result is None
 
     asyncio.run(run())
+
+
+def test_zenith_app_features_screen_scroll_and_non_overlapping_layout() -> None:
+    """Verify FeaturesScreen sections do not overlap and scroll on compact heights."""
+
+    async def run() -> None:
+        app = ZenithApp()
+        async with app.run_test(size=(100, 30)) as pilot:
+            vs1 = app.screen.query_one("VerticalScroll")
+            vs1.scroll_to_widget(app.screen.query_one("#next-btn"))
+            await pilot.pause()
+            await pilot.click("#next-btn")
+            await pilot.pause()
+
+            assert isinstance(app.screen, FeaturesScreen)
+            vs2 = app.screen.query_one("VerticalScroll")
+            assert vs2.max_scroll_y > 0
+
+            skills_box = app.screen.query_one("#include-agent-skills", Checkbox)
+            git_box = app.screen.query_one("#init-git", Checkbox)
+            ai_list = app.screen.query_one("#ai-tools-list", SelectionList)
+
+            assert git_box.region.y >= skills_box.region.bottom
+            assert ai_list.region.y >= git_box.region.bottom
+            await pilot.exit(None)
+
+    asyncio.run(run())

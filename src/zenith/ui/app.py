@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING, ClassVar, cast, override
 from textual import on
 from textual.app import App, ComposeResult
 from textual.binding import Binding, BindingType
-from textual.containers import Horizontal, Vertical, VerticalScroll
+from textual.containers import Horizontal, VerticalScroll
 from textual.screen import Screen
 from textual.widgets import (
     Button,
@@ -51,6 +51,11 @@ Footer {
 VerticalScroll {
     padding: 1 2;
     background: #020408;
+    scrollbar-color: #38bdf8;
+    scrollbar-background: #0f172a;
+}
+Vertical {
+    height: auto;
 }
 .brand-title {
     text-style: bold;
@@ -317,55 +322,53 @@ class FeaturesScreen(Screen[object]):
             )
 
             yield Label("Core Project Features", classes="section-title")
-            with Vertical():
-                yield Checkbox(
-                    "Include Typer/Rich command-line interface",
-                    value=cfg.include_cli,
-                    id="include-cli",
-                )
-                yield Checkbox(
-                    "Include documentation website (docs/ & zensical.toml)",
-                    value=cfg.include_docs,
-                    id="include-docs",
-                )
-                yield Checkbox(
-                    "Include mutation testing tooling (cosmic-ray & mutmut)",
-                    value=cfg.include_mutation_testing,
-                    id="include-mutation-testing",
-                )
-                yield Checkbox(
-                    "Generate GitHub Actions CI testing workflows",
-                    value=cfg.include_ci_testing,
-                    id="include-ci-testing",
-                )
-                yield Checkbox(
-                    "Generate GitHub Actions publishing workflows",
-                    value=cfg.include_ci_publishing,
-                    id="include-ci-publishing",
-                )
-                yield Checkbox(
-                    "Include agent skills suite (.agents/)",
-                    value=cfg.include_agent_skills,
-                    id="include-agent-skills",
-                )
+            yield Checkbox(
+                "Include Typer/Rich command-line interface",
+                value=cfg.include_cli,
+                id="include-cli",
+            )
+            yield Checkbox(
+                "Include documentation website (docs/ & zensical.toml)",
+                value=cfg.include_docs,
+                id="include-docs",
+            )
+            yield Checkbox(
+                "Include mutation testing tooling (cosmic-ray & mutmut)",
+                value=cfg.include_mutation_testing,
+                id="include-mutation-testing",
+            )
+            yield Checkbox(
+                "Generate GitHub Actions CI testing workflows",
+                value=cfg.include_ci_testing,
+                id="include-ci-testing",
+            )
+            yield Checkbox(
+                "Generate GitHub Actions publishing workflows",
+                value=cfg.include_ci_publishing,
+                id="include-ci-publishing",
+            )
+            yield Checkbox(
+                "Include agent skills suite (.agents/)",
+                value=cfg.include_agent_skills,
+                id="include-agent-skills",
+            )
 
             yield Label("Project Setup & Automation", classes="section-title")
-            with Vertical():
-                yield Checkbox(
-                    "Initialize Git repository (git init)",
-                    value=cfg.init_git,
-                    id="init-git",
-                )
-                yield Checkbox(
-                    "Run uv sync after scaffolding",
-                    value=cfg.run_uv_sync,
-                    id="run-uv-sync",
-                )
-                yield Checkbox(
-                    "Install Git hooks (prek install)",
-                    value=cfg.install_git_hooks,
-                    id="install-git-hooks",
-                )
+            yield Checkbox(
+                "Initialize Git repository (git init)",
+                value=cfg.init_git,
+                id="init-git",
+            )
+            yield Checkbox(
+                "Run uv sync after scaffolding",
+                value=cfg.run_uv_sync,
+                id="run-uv-sync",
+            )
+            yield Checkbox(
+                "Install Git hooks (prek install)",
+                value=cfg.install_git_hooks,
+                id="install-git-hooks",
+            )
 
             yield Label(
                 "AI Assistant Integrations",
