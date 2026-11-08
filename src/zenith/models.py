@@ -3,7 +3,8 @@
 from __future__ import annotations
 
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from pathlib import Path
 from typing import Any
 
 ALL_AI_TOOLS: tuple[str, ...] = (
@@ -96,6 +97,7 @@ def slugify(value: str, separator: str = "-") -> str:
 class ZenithConfig:
     """Configuration parameters for generating a new Zenith project."""
 
+    output_dir: str = field(default_factory=lambda: str(Path.cwd()))
     project_name: str = "My Project"
     project_slug: str = "my-project"
     package_name: str = "my_project"

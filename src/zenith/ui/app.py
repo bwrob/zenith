@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import replace
+from pathlib import Path
 from typing import TYPE_CHECKING, ClassVar, cast, override
 
 from textual import on
@@ -178,6 +179,13 @@ class MetadataScreen(Screen[object]):
                 classes="brand-subtitle",
             )
 
+            yield Label("Root Directory:", classes="field-label")
+            yield Input(
+                value=cfg.output_dir,
+                placeholder=str(Path.cwd()),
+                id="output-dir",
+            )
+
             yield Label("Project Name:", classes="field-label")
             yield Input(
                 value=cfg.project_name,
@@ -276,10 +284,12 @@ class MetadataScreen(Screen[object]):
     @on(Button.Pressed, "#next-btn")
     def action_next(self) -> None:
         """Collect Screen 1 form fields and navigate to Screen 2."""
+        out_dir = self.query_one("#output-dir", Input).value.strip() or str(Path.cwd())
         py_val = str(self.query_one("#python-version", Select).value)
         lic_val = str(self.query_one("#license", Select).value)
         self.zenith_app.config_state = replace(
             self.zenith_app.config_state,
+            output_dir=out_dir,
             project_name=self.query_one("#project-name", Input).value.strip(),
             project_slug=self.query_one("#project-slug", Input).value.strip(),
             package_name=self.query_one("#package-name", Input).value.strip(),

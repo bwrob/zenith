@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import shlex
 import sys
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 from rich import box
@@ -25,7 +26,6 @@ from zenith.ui.app import ZenithApp
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
-    from pathlib import Path
 
 console = Console()
 
@@ -232,6 +232,12 @@ def config_from_args(args: argparse.Namespace) -> ZenithConfig:
 
     """
     defaults = ZenithConfig()
+    raw_dir = getattr(args, "output_dir_opt", None) or getattr(
+        args,
+        "output_dir",
+        None,
+    )
+    output_dir = raw_dir if raw_dir and raw_dir != "." else defaults.output_dir
     name = args.project_name or defaults.project_name
     fallback_slug = slugify(name) if args.project_name else defaults.project_slug
     slug = args.project_slug or fallback_slug
@@ -241,6 +247,7 @@ def config_from_args(args: argparse.Namespace) -> ZenithConfig:
     package = args.package_name or fallback_pkg
 
     return ZenithConfig(
+        output_dir=output_dir,
         project_name=name,
         project_slug=slug,
         package_name=package,
@@ -281,7 +288,9 @@ def _build_feature_flags(config: ZenithConfig) -> list[str]:
         List of CLI flag strings.
 
     """
+    has_custom_dir = Path(config.output_dir).resolve() != Path.cwd().resolve()
     flag_conditions = (
+        (has_custom_dir, f"--output-dir {shlex.quote(config.output_dir)}"),
         (not config.include_cli, "--no-cli"),
         (not config.include_docs, "--no-docs"),
         (not config.include_mutation_testing, "--no-mutation"),
@@ -404,11 +413,10 @@ def main(argv: Sequence[str] | None = None) -> int:
     else:
         config = config_from_args(args)
 
-    target_dir = args.output_dir_opt or args.output_dir
     try:
         project_dir = generate_project(
             config,
-            output_dir=target_dir,
+            output_dir=config.output_dir,
             overwrite=args.overwrite,
         )
     except (FileExistsError, FileNotFoundError) as err:

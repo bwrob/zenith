@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+from pathlib import Path
 
 from textual.widgets import Checkbox, Input, Select, SelectionList
 
@@ -22,6 +23,7 @@ def test_zenith_app_metadata_screen_initial_state() -> None:
         app = ZenithApp()
         async with app.run_test(size=(120, 100)) as pilot:
             assert isinstance(app.screen, MetadataScreen)
+            assert app.screen.query_one("#output-dir", Input).value == str(Path.cwd())
             assert app.screen.query_one("#project-name", Input).value == "My Project"
             assert app.screen.query_one("#project-slug", Input).value == "my-project"
             assert app.screen.query_one("#package-name", Input).value == "my_project"
@@ -170,6 +172,7 @@ def test_zenith_app_submit() -> None:
     async def run() -> None:
         app = ZenithApp()
         async with app.run_test(size=(120, 100)) as pilot:
+            app.screen.query_one("#output-dir", Input).value = "/custom/workspace"
             name_input = app.screen.query_one("#project-name", Input)
             name_input.value = "My Nova"
             await pilot.pause()
@@ -182,6 +185,7 @@ def test_zenith_app_submit() -> None:
             await pilot.click("#submit-btn")
 
             assert app.result is not None
+            assert app.result.output_dir == "/custom/workspace"
             assert app.result.project_name == "My Nova"
             assert app.result.project_slug == "my-nova"
             assert app.result.include_mutation_testing is False

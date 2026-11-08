@@ -178,6 +178,7 @@ def test_cli_handles_keyboard_interrupt() -> None:
 def test_build_reproduce_command_roundtrip() -> None:
     """Verify that build_reproduce_command generates valid reproducible CLI flags."""
     config = ZenithConfig(
+        output_dir="/custom/output",
         project_name="Custom Galaxy",
         project_slug="custom-galaxy",
         package_name="custom_galaxy",
@@ -201,6 +202,7 @@ def test_build_reproduce_command_roundtrip() -> None:
 
     cmd = build_reproduce_command(config)
     assert cmd.startswith("uvx zenith-template --no-input")
+    assert "--output-dir /custom/output" in cmd
     assert "--name 'Custom Galaxy'" in cmd
     assert "--no-cli" in cmd
     assert "--no-docs" in cmd
@@ -215,6 +217,7 @@ def test_build_reproduce_command_roundtrip() -> None:
     # Verify parser roundtrip
     args = build_parser().parse_args(shlex.split(cmd)[2:])
     reconstructed = config_from_args(args)
+    assert reconstructed.output_dir == config.output_dir
     assert reconstructed.project_name == config.project_name
     assert reconstructed.project_slug == config.project_slug
     assert reconstructed.package_name == config.package_name
