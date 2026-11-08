@@ -276,10 +276,9 @@ def _setup_codex_subagents(subagents_src: pathlib.Path) -> None:
             continue
 
         codex_agent_path.write_text(
-            f"name = {json.dumps(agent_name, ensure_ascii=False)}\n"
-            f"description = {json.dumps(description, ensure_ascii=False)}\n"
-            "developer_instructions = "
-            f"{json.dumps(instructions, ensure_ascii=False)}\n",
+            f"description            = {json.dumps(description, ensure_ascii=False)}\n"
+            f"developer_instructions = {json.dumps(instructions, ensure_ascii=False)}\n"
+            f"name                   = {json.dumps(agent_name, ensure_ascii=False)}\n",
             encoding="utf-8",
         )
 
@@ -422,10 +421,15 @@ def main() -> None:
 def format_toml_files() -> None:
     """Format generated TOML files with Taplo if available in PATH."""
     taplo_bin = shutil.which("taplo")
+    cmd: list[str] | None = None
     if taplo_bin:
+        cmd = [taplo_bin, "format"]
+    elif shutil.which("uvx"):
+        cmd = ["uvx", "taplo", "format"]
+    if cmd:
         with contextlib.suppress(OSError, subprocess.SubprocessError):
             subprocess.run(  # ruff: ignore[subprocess-without-shell-equals-true] -- safe execution with argument list without shell interpolation
-                [taplo_bin, "format"],
+                cmd,
                 cwd=PROJECT_DIR,
                 check=False,
                 capture_output=True,
