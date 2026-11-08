@@ -1,6 +1,6 @@
 ---
 diataxis: explanation
-purpose: Introduce {{ cookiecutter.project_name }}, summarize its core architecture, and link to getting-started and API reference documentation.
+purpose: Introduce {{ cookiecutter.project_name }}, show installation and CLI usage, and link to getting-started and API reference documentation.
 ---
 
 <p align="center">
@@ -11,6 +11,20 @@ purpose: Introduce {{ cookiecutter.project_name }}, summarize its core architect
 Welcome to the documentation for **{{ cookiecutter.project_name }}**.
 
 {{ cookiecutter.description }}
+
+## Installation
+
+=== "uv (Recommended)"
+
+    ```bash
+    uv add {{ cookiecutter.project_slug }}
+    ```
+
+=== "pip"
+
+    ```bash
+    pip install {{ cookiecutter.project_slug }}
+    ```
 
 {% if cookiecutter.include_cli in [True, "yes", "true", "True", "1"] -%}
 
@@ -39,29 +53,10 @@ $ uv run {{ cookiecutter.project_slug }} --help
 
 {% endif -%}
 
-## Installation
-
-=== "uv (Recommended)"
-
-```bash
-uv add {{ cookiecutter.project_slug }}
-```
-
-=== "pip"
-
-```bash
-pip install {{ cookiecutter.project_slug }}
-```
-
-> [!TIP]
-> Always run project commands via `uv run poe <task>` or `uv run <command>`. This
-> guarantees hermetic execution inside the managed virtual environment without manual
-> activation.
-
 ## Highlights
 
 {% include "docs/_tool_stack.md" %}
-## Architecture & Project Layout
+## Project Layout
 
 ```python exec="on"
 from pathlib import Path
@@ -108,16 +103,13 @@ for line in lines:
 print("```")
 ```
 
-> [!NOTE]
-> The directory tree above is rendered dynamically at documentation build time using
-> the `markdown-exec` plugin with the ` ```tree ` fence.
-
 ## Next Steps
 
-- Follow the [Getting Started](getting-started.md) guide to set up your environment.
-- Review the [API Reference](reference.md) for module details.
+- Follow the [Getting Started](getting-started.md) guide to set up your development
+  environment.
+- Review the [API Reference](reference.md) for module and function details.
 - Consult [Architecture Decision Records (ADRs)](adr/index.md) for key design choices.
-- Review the [Changelog](changelog.md) for release history.
+- Check the [Changelog](changelog.md) for release history.
 
 ---
 

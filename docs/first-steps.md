@@ -20,15 +20,15 @@ environments, and packages. Before generating a project, install `uv`:
 
 === "macOS & Linux"
 
-```shell
-curl -LsSf https://astral.sh/uv/install.sh | sh
-```
+    ```shell
+    curl -LsSf https://astral.sh/uv/install.sh | sh
+    ```
 
 === "Windows"
 
-```powershell
-powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
-```
+    ```powershell
+    powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+    ```
 
 > [!TIP]
 > **You do not need to install Python or Rust manually.** `uv` downloads and manages
@@ -182,19 +182,15 @@ project's `.venv` interpreter:
 
 === "VS Code & Cursor"
 
-```text
-1. Open the Command Palette (`Cmd+Shift+P` on macOS, `Ctrl+Shift+P` on Linux/Windows).
-2. Run "Python: Select Interpreter".
-3. Select `./.venv/bin/python` (or `.\.venv\Scripts\python.exe` on Windows).
-```
+    1. Open the Command Palette (`Cmd+Shift+P` on macOS, `Ctrl+Shift+P` on Linux/Windows).
+    2. Run **Python: Select Interpreter**.
+    3. Select `./.venv/bin/python` (or `.\.venv\Scripts\python.exe` on Windows).
 
 === "PyCharm"
 
-```text
-1. Open Settings -> Project -> Python Interpreter.
-2. Click "Add Interpreter" -> "Add Local Interpreter".
-3. Choose "Existing Environment" and select `./.venv/bin/python` (or `.\.venv\Scripts\python.exe`).
-```
+    1. Open **Settings** -> **Project** -> **Python Interpreter**.
+    2. Click **Add Interpreter** -> **Add Local Interpreter**.
+    3. Choose **Existing Environment** and select `./.venv/bin/python` (or `.\.venv\Scripts\python.exe`).
 
 ## Working with Quality Gates
 

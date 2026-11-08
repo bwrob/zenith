@@ -1,6 +1,6 @@
 ---
 diataxis: explanation
-purpose: Introduce Zenith, showcase the four architectural pillars, and guide developers to quickstart workflows.
+purpose: Introduce Zenith, showcase the four architectural pillars, and guide developers from quickstart scaffolding to the full documentation suite.
 ---
 
 <p align="center">
@@ -9,35 +9,89 @@ purpose: Introduce Zenith, showcase the four architectural pillars, and guide de
 </p>
 
 <p align="center" style="font-size: 1.15rem; font-weight: 500;">
-  An opinionated template for modern Python 3.12+ services, packages, and autonomous AI agents.
+  An opinionated project template and interactive CLI for Python 3.12+ packages, services, and AI-assisted engineering.
 </p>
 
-> [!NOTE]
-> **What Zenith Is**: Zenith is a [Cookiecutter](tools/cookiecutter.md) project
-> template and interactive CLI (`zenith-template`) for Python 3.12+. Rather than a
-> runtime library you import, it generates a complete repository with fast Rust-based
-> tooling, CI workflows, and optional AI agent skills.
->
-> **Human-First, AI-Optional**: Every AI config and agent skill is elective during
-> scaffolding. You can generate a purely traditional Python repository (`--ai-tools
-> none`) or include configs and skills for your preferred coding assistants.
+Starting a production Python repository usually means spending days wiring linters, type
+checkers, test coverage, and CI pipelines—or copying decaying configuration files from
+an older project. **Zenith** (`zenith-template`) is a
+[Cookiecutter](tools/cookiecutter.md) template and terminal wizard that generates a
+complete, ready-to-ship Python 3.12+ repository in seconds.
+
+Every generated project is **human-first and AI-optional**: you can scaffold a purely
+traditional Python repository (`--ai-tools none`), enable configurations only for your
+preferred coding assistants, or include the full suite of modular agent skills.
+
+## The Four Pillars
+
+<div class="grid cards" markdown>
+
+-   **[Modern Rust-Based Tooling](tools/index.md)**
+
+    ---
+
+    Sub-second local feedback powered by **[uv](tools/uv.md)**,
+    **[Ruff](tools/ruff.md)**, **[Pyrefly](tools/pyrefly.md)**,
+    **[Tach](tools/tach.md)**, **[Deptry](tools/deptry.md)**,
+    **[complexipy](tools/complexipy.md)**, and
+    **[Zensical](tools/zensical.md)**—all orchestrated through
+    **[Poe the Poet](tools/poethepoet.md)** for identical local and CI runs.
+
+-   **[Automated Quality Guardrails](philosophy.md)**
+
+    ---
+
+    Enforced locally via **[prek](tools/prek.md)** hooks and in CI: **100% statement and
+    branch coverage** (`fail_under = 100`), strict static typing, cognitive complexity
+    limits (`<= 10`), module boundary checks, and GitHub Actions security auditing.
+
+-   **[Hermetic Delivery & CI/CD](ci-actions.md)**
+
+    ---
+
+    Multi-OS test matrices across Python 3.12–3.15, lowest-direct dependency checks,
+    isolated wheel and sdist smoke tests, GitHub Pages docs deployment, and PyPI
+    Trusted Publishing with PEP 740 provenance attestations.
+
+-   **[Elective AI Agent Readiness](skills/index.md)**
+
+    ---
+
+    Pre-wired context discovery (`AGENTS.md`), 36 modular `.agents/skills/`, and a
+    Spec-Driven Development (`sdd`) lifecycle across
+    [13 coding assistants](skills/index.md#agentic-tool-compatibility-matrix)—or zero
+    AI files when disabled.
+
+</div>
 
 ## Quick Start
 
-> [!TIP]
-> **Prerequisites & First Steps**
-> Zenith requires Astral **`uv`**. If you do not have `uv` installed yet:
->
-> ```bash
-> curl -LsSf https://astral.sh/uv/install.sh | sh
-> ```
->
-> If terms like virtual environments, `uv`, or project scaffolding are unfamiliar, start
-> with the [First Steps & Core Concepts](first-steps.md) guide.
+Scaffold a new project using the interactive terminal wizard, headless CLI flags, or
+Cookiecutter:
 
-Scaffold a new repository with the interactive terminal wizard via `uvx` (see
-[First Steps & Core Concepts](first-steps.md) for headless CLI flags and wizard
-options):
+=== "Interactive Wizard (Recommended)"
+
+    ```bash
+    uvx zenith-template
+    ```
+
+=== "Headless CLI"
+
+    ```bash
+    uvx zenith-template --no-input --name "My Project" --ai-tools recommended --sync
+    ```
+
+=== "Cookiecutter"
+
+    ```bash
+    uvx cookiecutter gh:bwrob/zenith
+    ```
+
+Requires [Astral `uv`](https://docs.astral.sh/uv/getting-started/installation/). New to
+`uv`, virtual environments, or project templates? Start with
+[First Steps & Core Concepts](first-steps.md).
+
+Once generated, verify your repository immediately:
 
 <!-- termynal -->
 ```console
@@ -53,139 +107,119 @@ $ uv run poe docs-serve
 Serving documentation at http://127.0.0.1:8000
 ```
 
-## The Four Pillars
+## What Gets Generated
 
-<div class="grid cards" markdown>
-
--   **[Modern Rust-Based Tooling](tools/index.md)**
-
-    ---
-
-    Fast local feedback powered by **[uv](tools/uv.md)**,
-    **[Ruff](tools/ruff.md)**, **[Pyrefly](tools/pyrefly.md)**,
-    **[Tach](tools/tach.md)**, **[Deptry](tools/deptry.md)**,
-    **[complexipy](tools/complexipy.md)**, and
-    **[Zensical](tools/zensical.md)**. All tasks run through
-    **[Poe the Poet](tools/poethepoet.md)** for identical local and CI execution.
-
--   **[First-Class AI Agent Readiness](skills/index.md)**
-
-    ---
-
-    Built for autonomous pair-programming when desired, yet completely elective.
-    Scaffold all assistants, select your preferred tools, or exclude AI configs
-    entirely. Audited in the
-    [Agentic Tool Matrix](skills/index.md#agentic-tool-compatibility-matrix).
-
--   **[Automated Quality Guardrails](philosophy.md)**
-
-    ---
-
-    Enforced locally and in CI: **100% statement and branch coverage**
-    (`fail_under = 100`), strict static typing with Pyrefly, cognitive complexity
-    limits (`<= 10`), module layer boundaries, and workflow security auditing.
-
--   **[Hermetic Delivery & CI/CD](ci-actions.md)**
-
-    ---
-
-    Multi-OS test matrices across Python 3.12–3.15, lowest-direct dependency checks,
-    isolated wheel and sdist smoke tests, GitHub Pages docs deployment, and PyPI
-    Trusted Publishing with PEP 740 provenance attestations.
-
-</div>
-
-## Architecture at a Glance
-
-Generated projects separate domain logic, CLI entry points, tests, and documentation:
+Generated projects use a `src/` layout that separates domain logic, CLI entry points,
+tests, documentation, and automation configs:
 
 ```tree
 my-project/
     src/my_project/             # Core package source, lazy exports, and Typer CLI
     tests/                      # Unit, property (Hypothesis), and snapshot tests
     docs/                       # Zensical documentation site with live preview
-    .agents/skills/             # Modular agent skills (workflows, tools, style guides)
-    pyproject.toml              # Dependencies and packaging standards (PEP 621)
-    poe_tasks.toml              # Hermetic task runner commands (Poe the Poet)
-    AGENTS.md                   # Canonical AI agent instructions and boundary rules
+    .github/workflows/          # CI test matrix, docs deployment, and PyPI publishing
+    .agents/skills/             # Elective agent skills (workflows, tools, style guides)
+    pyproject.toml              # Dependencies and PEP 621 package metadata
+    poe_tasks.toml              # Unified task runner definitions (Poe the Poet)
+    prek.toml                   # Fast pre-commit and pre-push verification hooks
 ```
 
-### Scaffolded Code Out of the Box
-
-Every generated project starts with strictly typed modules and a test suite combining
-unit, snapshot, and property-based checks:
+Every repository starts with strictly typed modules and a passing test suite combining
+unit, snapshot, and property-based checks. Want to inspect a complete rendered project
+with live GitHub Actions runs before scaffolding? Browse
+**[bwrob/zenith-example on GitHub](https://github.com/bwrob/zenith-example)**.
 
 === "src/my_project/core.py"
 
-```python
-"""Core functions for my-project."""
+    ```python
+    """Core functions for my-project."""
 
 
-def get_greeting(name: str) -> str:
-    """Return a personalized greeting message."""
-    clean_name = name.strip()
-    if not clean_name:
-        clean_name = "World"
-    return f"Hello, {clean_name}!"
-```
+    def get_greeting(name: str) -> str:
+        """Return a personalized greeting message."""
+        clean_name = name.strip()
+        if not clean_name:
+            clean_name = "World"
+        return f"Hello, {clean_name}!"
+    ```
 
 === "src/my_project/cli.py"
 
-```python
-"""Command line interface for my-project."""
+    ```python
+    """Command line interface for my-project."""
 
-from typing import Annotated
+    from __future__ import annotations
 
-import typer
-from my_project.core import get_greeting
-from rich.console import Console
+    from typing import Annotated
 
-app: typer.Typer = typer.Typer(
-    name="my-project",
-    no_args_is_help=True,
-    rich_markup_mode="rich",
-)
-console: Console = Console()
+    import typer
+    from my_project.core import get_greeting
+    from rich.console import Console
+
+    app: typer.Typer = typer.Typer(
+        name="my-project",
+        no_args_is_help=True,
+        rich_markup_mode="rich",
+    )
+    console: Console = Console()
 
 
-@app.command()
-def greet(
-    name: Annotated[
-        str,
-        typer.Argument(help="The name to greet."),
-    ] = "World",
-) -> None:
-    """Display a personalized greeting."""
-    greeting = get_greeting(name)
-    console.print(f"[bold green]✨ {greeting}[/bold green]")
-```
+    @app.command()
+    def greet(
+        name: Annotated[
+            str,
+            typer.Argument(help="The name to greet."),
+        ] = "World",
+    ) -> None:
+        """Display a personalized greeting."""
+        greeting = get_greeting(name)
+        console.print(f"[bold green]✨ {greeting}[/bold green]")
+    ```
 
 === "tests/test_core.py"
 
-```python
-"""Unit tests for core functionality."""
+    ```python
+    """Unit tests for core functionality."""
 
-from hypothesis import given, strategies
-from my_project.core import get_greeting
-
-
-def test_get_greeting_default() -> None:
-    """Test get_greeting with empty string defaults to World."""
-    assert get_greeting("") == "Hello, World!"
-    assert get_greeting("   ") == "Hello, World!"
+    from hypothesis import given, strategies
+    from my_project.core import get_greeting
 
 
-@given(strategies.text())
-def test_get_greeting_property(name: str) -> None:
-    """Property-based test: get_greeting always returns a well-formed greeting."""
-    greeting = get_greeting(name)
-    assert greeting.startswith("Hello, ")
-    assert greeting.endswith("!")
-```
+    def test_get_greeting_default() -> None:
+        """Test get_greeting with empty string defaults to World."""
+        assert get_greeting("") == "Hello, World!"
+        assert get_greeting("   ") == "Hello, World!"
 
-> [!TIP]
-> **Explore the Live Showcase Repository**
->
-> Browse instantiated code, commit history, and GitHub Actions runs in
-> **[bwrob/zenith-example on GitHub](https://github.com/bwrob/zenith-example)**.
-> For release notes and version history, see the **[Changelog](changelog.md)**.
+
+    @given(strategies.text())
+    def test_get_greeting_property(name: str) -> None:
+        """Property-based test: get_greeting always returns a well-formed greeting."""
+        greeting = get_greeting(name)
+        assert greeting.startswith("Hello, ")
+        assert greeting.endswith("!")
+    ```
+
+## Everyday Commands
+
+All development workflows run hermetically through
+**[Poe the Poet](tools/poethepoet.md)** (`uv run poe <task>`):
+
+| Command                       | Purpose                                                                                |
+| :---------------------------- | :------------------------------------------------------------------------------------- |
+| `uv run poe test`             | Run `pytest` across CPU cores and enforce 100% statement and branch coverage.          |
+| `uv run poe code-quality`     | Run the full static quality pipeline (Ruff, Taplo, Prettier, rumdl, Pyrefly, Tach).    |
+| `uv run poe fix`              | Auto-fix Python lint/format issues, TOML/Markdown formatting, and common spelling.     |
+| `uv run poe docs-serve`       | Start the local live-reloading Zensical documentation server at `127.0.0.1:8000`.      |
+| `uv run poe docs-build`       | Build the static HTML documentation site in `--strict` mode.                           |
+| `uv run prek run --all-files` | Run all configured `pre-commit` formatting and validation hooks across the repository. |
+
+## Explore the Documentation
+
+| Guide                                             | What You Will Find                                                                                          |
+| :------------------------------------------------ | :---------------------------------------------------------------------------------------------------------- |
+| **[First Steps & Core Concepts](first-steps.md)** | Plain-English onboarding for `uv`, `poe`, interactive scaffolding, and adding your first feature.           |
+| **[Philosophy & Project Sizing](philosophy.md)**  | Architectural trade-offs, strict quality guardrails, and deciding when Zenith fits your project.            |
+| **[Tooling Stack Reference](tools/index.md)**     | Deep-dives and exact configuration breakdowns for all 22 integrated tools.                                  |
+| **[CI/CD Pipelines](ci-actions.md)**              | GitHub Actions test matrices, Dependabot pass-through gates, and PyPI Trusted Publishing.                   |
+| **[Agent Skills Architecture](skills/index.md)**  | Compatibility across 13 coding assistants, `.agents/skills/` taxonomy, and Spec-Driven Development (`sdd`). |
+| **[Changelog](changelog.md)**                     | Release history, version milestones, and upgrade notes.                                                     |
