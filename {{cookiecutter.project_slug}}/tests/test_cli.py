@@ -2,14 +2,17 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
 from unittest.mock import patch
 
 import pytest
-from typer.testing import CliRunner
 
 import {{ cookiecutter.package_name }}
 from {{ cookiecutter.package_name }}.__main__ import main as module_main
 from {{ cookiecutter.package_name }}.cli import app, main
+
+if TYPE_CHECKING:
+    from typer.testing import CliRunner
 
 
 def test_cli_help(runner: CliRunner) -> None:

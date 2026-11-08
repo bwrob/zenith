@@ -140,4 +140,4 @@
     zizmor = { cmd = "zizmor --config .zizmor.yml --pedantic --min-severity informational .github/workflows", help = "Audit GitHub Actions workflows for security vulnerabilities with zizmor." }
 
     [tool.uv.sources]
-        taplo = { path = "../taplo", marker = "sys_platform == 'linux' and (platform_machine == 'aarch64' or platform_machine == 'arm64')" }
+        taplo = { git = "https://github.com/tamasfe/taplo.git", tag = "release-taplo-cli-0.10.0", marker = "sys_platform == 'linux' and (platform_machine == 'aarch64' or platform_machine == 'arm64')" }

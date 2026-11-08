@@ -130,3 +130,6 @@
 
 [tool.poe]
     include = "poe_tasks.toml"
+
+[tool.uv.sources]
+    taplo = { git = "https://github.com/tamasfe/taplo.git", tag = "release-taplo-cli-0.10.0", marker = "sys_platform == 'linux' and (platform_machine == 'aarch64' or platform_machine == 'arm64')" }
