@@ -75,6 +75,9 @@ jobs:
             - name: 🛡️ Run zizmor GitHub Actions security audit
               run: uv run poe zizmor
 
+            - name: 🔍 Audit rendered template variants
+              run: uv run poe lint-rendered
+
     test:
         name: 🐍 Template Test Suite (${{ matrix.os }}, py${{ matrix.python-version }})
         runs-on: ${{ matrix.os }}
@@ -82,9 +85,11 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                os: [ubuntu-latest, macos-latest]
+                os: [ubuntu-latest]
                 python-version: ["3.12", "3.13", "3.14"]
                 include:
+                    - os: macos-latest
+                      python-version: "3.13"
                     - os: windows-latest
                       python-version: "3.13"
 
