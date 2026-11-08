@@ -421,14 +421,14 @@ wheels = [
 ]
 
 [[package]]
-name = "fontpkg-space-grotesk"
+name = "fontpkg-cinzel"
 version = "2.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "fontpkg" },
 ]
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/02/1b/7a64498dec0b2d1cd59d1fcbbeadbba3ac59d46e7087a1a7c04800516f63/fontpkg_space_grotesk-2.0-py3-none-any.whl", hash = "sha256:aebb9c6c82325e29fe81d36543df2b99d8290ad78f9779f786e2df64c2a4c908", size = 70974, upload-time = "2026-09-07T01:01:36.501Z" },
+    { url = "https://files.pythonhosted.org/packages/c0/0f/370070cbf2cd9195bebd84e5eabff89d5f92d966cf21f34b26547f01c099/fontpkg_cinzel-2.0-py3-none-any.whl", hash = "sha256:8cccc36b6e101a96fbe2fea3f3a51cb9207e7a98e09ac41b20d159a410ec7c45", size = 66225, upload-time = "2026-09-22T01:37:05.032Z" },
 ]
 
 [[package]]
@@ -1379,7 +1379,7 @@ dev = [
     { name = "zizmor" },
 ]
 docs = [
-    { name = "fontpkg-space-grotesk" },
+    { name = "fontpkg-cinzel" },
     { name = "griffe-warnings-deprecated" },
     { name = "markdown-exec" },
     { name = "mkdocstrings", extra = ["python"] },
@@ -1417,7 +1417,7 @@ dev = [
     { name = "zizmor", specifier = ">=1.23.0" },
 ]
 docs = [
-    { name = "fontpkg-space-grotesk", specifier = ">=2.0" },
+    { name = "fontpkg-cinzel", specifier = ">=2.0" },
     { name = "griffe-warnings-deprecated", specifier = ">=1.1.0" },
     { name = "markdown-exec", specifier = ">=1.12.0" },
     { name = "mkdocstrings", extras = ["python"], specifier = ">=1.0.7" },

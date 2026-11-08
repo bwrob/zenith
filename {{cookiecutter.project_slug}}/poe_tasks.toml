@@ -299,12 +299,8 @@
     help = "Build production static documentation into site/."
 
 [tasks.docs-logo]
+    cmd  = "python -c \"import fontpkg, shutil, typst; fp = [str(fontpkg.path('Cinzel').parent)]; typst.compile('docs/assets/python-banner-dark.typ', output='docs/assets/python-banner-dark.svg', font_paths=fp); typst.compile('docs/assets/python-banner-light.typ', output='docs/assets/python-banner-light.svg', font_paths=fp); shutil.copyfile('docs/assets/python-banner-dark.svg', 'docs/assets/python-banner.svg')\""
     help = "Compile documentation banner SVGs with Typst."
-    sequence = [
-        { cmd = "typst compile --font-path docs/assets/fonts docs/assets/python-banner-dark.typ docs/assets/python-banner-dark.svg" },
-        { cmd = "typst compile --font-path docs/assets/fonts docs/assets/python-banner-light.typ docs/assets/python-banner-light.svg" },
-        { cmd = "python -c \"import shutil; shutil.copyfile('docs/assets/python-banner-dark.svg', 'docs/assets/python-banner.svg')\"" },
-    ]
 
 [tasks.publish-docs]
     help = "Build and deploy Zensical docs to gh-pages via clean orphan branch."
