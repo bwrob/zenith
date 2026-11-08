@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/bwrob/zenith/main/assets/zenith-banner.svg" alt="Zenith" width="400">
+  <img src="https://raw.githubusercontent.com/bwrob/zenith/main/assets/zenith-banner.svg" alt="Zenith" width="460">
 </p>
 
 [![Template: Cookiecutter](https://img.shields.io/badge/template-cookiecutter-D4B830.svg)](https://github.com/cookiecutter/cookiecutter)

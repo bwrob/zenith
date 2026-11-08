@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/{{ cookiecutter.github_username }}/{{ cookiecutter.project_slug }}/main/docs/assets/python-banner.svg" alt="{{ cookiecutter.project_name }}" width="360">
+  <img src="https://raw.githubusercontent.com/{{ cookiecutter.github_username }}/{{ cookiecutter.project_slug }}/main/docs/assets/python-banner.svg" alt="{{ cookiecutter.project_name }}" width="440">
 </p>
 
 {% include "_badges.md" %}

@@ -4,7 +4,7 @@ purpose: Introduce Zenith, showcase the four architectural pillars, and guide de
 ---
 
 <p align="center">
-  <img src="assets/zenith-banner.svg" alt="Zenith" width="400">
+  <img src="assets/zenith-banner.svg" alt="Zenith" width="460">
 </p>
 
 <p align="center" style="font-size: 1.15rem; font-weight: 500;">
