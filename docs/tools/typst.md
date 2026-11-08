@@ -47,16 +47,23 @@ Source file located at `docs/assets/python-logo.typ` (or `assets/zenith-star.svg
 
 Wired into `poe_tasks.toml` through the `docs-logo` task:
 
-```toml
-[tasks.docs-logo]
-cmd = "typst compile docs/assets/python-banner.typ docs/assets/python-banner.svg"
-help = "Compile documentation banner SVG with Typst."
+```python exec="1" result="toml"
+from pathlib import Path
+
+path = Path("{{cookiecutter.project_slug}}/poe_tasks.toml")
+if not path.exists():
+    path = Path("poe_tasks.toml")
+content = path.read_text()
+if "[tasks.docs-logo]" in content:
+    start = content.index("[tasks.docs-logo]")
+    end = content.find("\n\n[", start + 1)
+    print(content[start : end if end != -1 else len(content)].strip())
 ```
 
 ## Key Invocations
 
 ```bash
-uv run poe docs-logo         # Re-compile SVG banner from Typst source
+uv run poe docs-logo         # Re-compile SVG banners (dark/light) from Typst source
 uv run typst compile file.typ file.svg
 ```
 

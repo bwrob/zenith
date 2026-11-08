@@ -299,8 +299,12 @@
     help = "Build production static documentation into site/."
 
 [tasks.docs-logo]
-    cmd  = "typst compile docs/assets/python-banner.typ docs/assets/python-banner.svg"
-    help = "Compile documentation banner SVG with Typst."
+    help = "Compile documentation banner SVGs with Typst."
+    sequence = [
+        { cmd = "typst compile docs/assets/python-banner-dark.typ docs/assets/python-banner-dark.svg" },
+        { cmd = "typst compile docs/assets/python-banner-light.typ docs/assets/python-banner-light.svg" },
+        { cmd = "python -c \"import shutil; shutil.copyfile('docs/assets/python-banner-dark.svg', 'docs/assets/python-banner.svg')\"" },
+    ]
 
 [tasks.publish-docs]
     help = "Build and deploy Zensical docs to gh-pages via clean orphan branch."

@@ -130,6 +130,8 @@ respect-gitignore = true
         "img",
         "kbd",
         "p",
+        "picture",
+        "source",
         "span",
         "sub",
         "summary",

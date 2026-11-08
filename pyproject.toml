@@ -112,9 +112,10 @@
     dependencies = { cmd = "deptry src hooks scripts", help = "Check declared dependencies for repository hooks and scripts." }
     docs-build = { cmd = "zensical build --strict --clean", help = "Build static HTML documentation site into site/." }
     docs-logo = { sequence = [
-        { cmd = "typst compile assets/zenith-banner.typ assets/zenith-banner.svg" },
-        { cmd = "python -c \"import shutil; shutil.copyfile('assets/zenith-banner.svg', 'docs/assets/zenith-banner.svg')\"" },
-    ], help = "Compile documentation banner SVG with Typst." }
+        { cmd = "typst compile assets/zenith-banner-dark.typ assets/zenith-banner-dark.svg" },
+        { cmd = "typst compile assets/zenith-banner-light.typ assets/zenith-banner-light.svg" },
+        { cmd = "python -c \"import shutil; shutil.copyfile('assets/zenith-banner-dark.svg', 'assets/zenith-banner.svg'); shutil.copyfile('assets/zenith-banner-dark.svg', 'docs/assets/zenith-banner-dark.svg'); shutil.copyfile('assets/zenith-banner-light.svg', 'docs/assets/zenith-banner-light.svg'); shutil.copyfile('assets/zenith-banner-dark.svg', 'docs/assets/zenith-banner.svg')\"" },
+    ], help = "Compile documentation banner SVGs with Typst." }
     docs-serve = { cmd = "zensical serve", help = "Start live-reloading documentation dev server." }
     fix = { ignore_fail = "return_zero", sequence = [
         { cmd = "ruff check --fix" },

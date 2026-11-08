@@ -4,7 +4,8 @@ purpose: Introduce {{ cookiecutter.project_name }}, summarize its core architect
 ---
 
 <p align="center">
-  <img src="assets/python-banner.svg" alt="{{ cookiecutter.project_name }}" width="440">
+  <img src="assets/python-banner-dark.svg#gh-dark-mode-only" alt="{{ cookiecutter.project_name }}" width="320">
+  <img src="assets/python-banner-light.svg#gh-light-mode-only" alt="{{ cookiecutter.project_name }}" width="320">
 </p>
 
 Welcome to the documentation for **{{ cookiecutter.project_name }}**.
