@@ -5,283 +5,153 @@ purpose: Provide operational procedures for version control, changelog curation,
 
 # Workflow Skills
 
-Modern software engineering with AI coding assistants is only as reliable as the
-processes governing it. Without explicit procedural guardrails, agents tend to cut
-corners: staging unverified files, guessing changelog entries from commit titles,
-skipping pre-commit test runs, or forgetting why an architectural decision was made.
+The **`workflow-*`** skills define repeatable procedures for Git operations, pre-PR code
+reviews, changelog maintenance, architecture decision records, documentation authoring,
+and environment setup.
 
-The **`workflow-*`** skill suite codifies the operational rituals, version control
-practices, quality checkpoints, and governance workflows of the repository into
-predictable, repeatable procedures. Rather than prescribing a rigid, robotic script,
-each workflow skill provides clear intent, rationale, and execution steps that both
-human developers and AI agents can execute with confidence.
+> [!TIP]
+> **Looking for Spec-Driven Development?** The `sdd-*` skills (`sdd`, `sdd-spec`,
+> `sdd-plan`, `sdd-implement`, `sdd-review`) are documented in the
+> **[Spec-Driven Development Suite](sdd.md)** guide.
 
-## Core Template Workflows
+## Template Workflow Skills
 
-These skills are included in every project scaffolded from Zenith to guide day-to-day
-development.
+These eight workflow skills ship in every generated Zenith project (when
+`include_agent_skills` is enabled):
 
-### Git Hygiene & Commit Governance (workflow-git)
+| Skill                                                                               | Activation  | Trigger Domain                                     | Verification Gate                                                |
+| :---------------------------------------------------------------------------------- | :---------- | :------------------------------------------------- | :--------------------------------------------------------------- |
+| [`workflow-git`](#git-hygiene-workflow-git)                                         | Mandatory   | Branches, staging, commits, and pull requests      | `poe code-quality`, `poe test`, `prek run --all-files`           |
+| [`workflow-code-review`](#pre-flight-code-review-workflow-code-review)              | Mandatory   | Pre-PR audits and code review requests             | `poe code-quality`, `poe test`, `poe verify-wheel`, `prek`       |
+| [`workflow-changelog`](#changelog-curation-workflow-changelog)                      | Mandatory   | Editing `docs/changelog.md` or preparing a release | `rumdl check docs/changelog.md`, `poe docs-build`                |
+| [`workflow-adr`](#architecture-decision-records-workflow-adr)                       | Mandatory   | Creating or updating records in `docs/adr/`        | `rumdl check docs/adr/`, `poe docs-build`                        |
+| [`workflow-docs-authoring`](#documentation-authoring-workflow-docs-authoring)       | Mandatory   | Authoring or editing documentation in `docs/`      | `poe format-md`, `poe lint-md`, `poe test`, `poe docs-build`     |
+| [`workflow-skill-creator`](#skill-authoring-workflow-skill-creator)                 | Mandatory   | Creating or modifying skills in `.agents/skills/`  | `poe lint-ste`, `poe check-skills`                               |
+| [`workflow-setup`](#environment-bootstrap-workflow-setup)                           | Manual only | Bootstrapping or repairing the local `.venv`       | `uv sync`, `prek install`, `poe test`, `poe code-quality`        |
+| [`workflow-docs-consumers`](#documentation-consumer-review-workflow-docs-consumers) | Manual only | Stress-testing docs with simulated reader personas | Persona reports written to `.temp/docs-review/<persona-slug>.md` |
 
-**What it is**: The version control protocol governing how code changes are inspected,
-staged, committed, and submitted as pull requests.
+### Git Hygiene (workflow-git)
 
-**Why it's in Zenith**: Unsupervised AI assistants frequently run `git add .` or
-`git commit -am "fix"`, inadvertently sweeping intermediate scratch files, broken tests,
-or unformatted files into Git history. `workflow-git` establishes a zero-tolerance
-policy for indiscriminate staging. It requires:
+Governs how branches are named, how files are staged and committed, and how pull
+requests are opened and monitored:
 
-- **Targeted Staging**: Staging verified files individually (`git add <file>`), never
-  using blanket commands like `git add .` or `git add -A`.
-- **Pre-Commit Gate Enforcement**: Verifying that `uv run poe test` (100% test coverage)
-  and `uv run poe code-quality` pass before staging or committing any code.
-- **Conventional Commits**: Structuring commit messages using standard types (`feat`,
-  `fix`, `docs`, `refactor`, `test`, `ci`, `chore`) so release automation and changelog
-  generators remain fully deterministic.
-- **AI Attribution & Disclosure**: Automatically injecting an AI disclosure checklist
-  into pull request descriptions, documenting active AI tools and verifying local test
-  execution.
+- **Explicit path staging**: Requires `git add <file1> <file2>` and forbids blanket
+  staging (`git add .`, `git add -A`, `git commit -am`) so scratch or untracked files
+  are never swept into commits.
+- **Reason-focused Conventional Commits**: Formats commit headers as
+  `<type>(<scope>): <imperative summary>` stating *why* the change was made, plus
+  `Co-authored-by` trailers when AI assistants contributed.
+- **Shell-safe outbound CLI calls**: Uses single-quoted heredocs
+  (`--body-file - <<'EOF'`) when calling `gh pr create` so Markdown backticks are never
+  expanded by the shell.
+- **Post-push CI monitoring**: Requires watching triggered GitHub Actions runs via
+  `gh run list` and `gh run watch` until all remote jobs pass.
 
 ### Pre-Flight Code Review (workflow-code-review)
 
-**What it is**: An adversarial self-audit checklist that an agent or developer runs
-before submitting changes or opening a pull request.
+Runs a 6-point audit before opening a pull request or when asked to review a diff:
 
-**Why it's in Zenith**: Even when tests pass, code can harbor subtle architectural debt:
-unbounded type parameters, dead commented-out code, leaky module boundaries, or
-unplanned public API exports. `workflow-code-review` acts as an automated first line of
-defense for project stewardship.
+- **Read-only review contract**: When asked to review a working tree or PR diff, the
+  agent reports grounded findings (`file:line` + concrete failing input or violated
+  rule) and stops without making unrequested edits.
+- **6-Point Review Matrix**: Checks `AI_POLICY.md` compliance (no diff-narrative
+  comments), Tach layer boundaries and Griffe public API compatibility
+  (`poe check-api`), Python 3.12+ typing and the no-`# noqa` rule, cognitive complexity
+  (`<= 10`), 100% branch coverage, and wheel packaging (`poe verify-wheel`).
 
-Before presenting work for human review, the workflow verifies:
+### Changelog Curation (workflow-changelog)
 
-1. **AI Policy Compliance**: Verifies zero dead code, zero suppressed type diagnostics
-   without rationale, and honest disclosure of any AI assistance per `AI_POLICY.md`.
-2. **Architectural Invariants**: Runs `uv run poe dependencies` to verify module
-   boundaries and verify that circular dependencies do not exist.
-3. **Type Precision**: Verifies that Meta Pyrefly reports zero type errors and that
-   models leverage PEP 695 type parameter syntax and structural protocols.
-4. **Coverage Invariants**: Asserts that 100% branch and statement coverage is intact.
-
-### Source-Checked Changelog Curation (workflow-changelog)
-
-**What it is**: A disciplined maintenance workflow for `docs/changelog.md` following
+Maintains `docs/changelog.md` following
 [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/) and
-[Semantic Versioning 2.0.0](https://semver.org/spec/v2.0.0.html).
+[Semantic Versioning 2.0.0](https://semver.org/spec/v2.0.0.html):
 
-**Why it's in Zenith**: LLMs typically generate changelogs by skimming commit messages.
-Because commit titles often miss edge cases, omit breaking change nuances, or describe
-internal implementation details instead of user impact, resulting release notes quickly
-degrade.
-
-`workflow-changelog` enforces a **source-verified invariant**: the agent must inspect
-Git diffs, pull request descriptions, and public API symbols before drafting entries.
-It categorizes changes under standard subsections (`Added`, `Changed`, `Deprecated`,
-`Removed`, `Fixed`, `Security`) and maintains automated tag comparison links at the
-bottom of the document.
+- **Source-checked entries**: Inspects actual Git diffs (`git diff vX.Y.Z..HEAD`), pull
+  request bodies (`gh pr view`), and public API changes rather than guessing release
+  notes from commit subjects alone.
+- **Standard categories**: Groups changes under `Added`, `Changed`, `Deprecated`,
+  `Removed`, `Fixed`, and `Security`, and updates tag comparison links at the bottom of
+  the file.
 
 ### Architecture Decision Records (workflow-adr)
 
-**What it is**: A structured decision-logging workflow using the
-[MADR 3.0.0](https://adr.github.io/madr/) (Markdown Architectural Decision Records)
-format.
+Logs architectural choices in `docs/adr/` using the
+[MADR 3.0.0](https://adr.github.io/madr/) format:
 
-**Why it's in Zenith**: In active codebases, teams frequently revisit why an
-architectural choice was made. When libraries or boundaries are modified without
-recording the historical context and trade-offs, future contributors inevitably propose
-reversing intentional decisions, repeating past debates.
+- Creates sequential, zero-padded files (`docs/adr/0002-<kebab-case-title>.md`) from
+  `docs/adr/template.md`.
+- Records status (`Proposed`, `Accepted`, `Rejected`, `Superseded`, `Deprecated`),
+  context, evaluated options, and trade-offs.
+- Updates the index table in `docs/adr/index.md` and registers new records in
+  `zensical.toml`.
 
-`workflow-adr` creates sequential, zero-padded records in `docs/adr/` (for example,
-`0001-record-architecture-decisions.md`). Each record captures decision status,
-context, options considered, and chosen outcomes, while automatically updating
-`docs/adr/index.md` and registering navigation in `zensical.toml`.
+### Documentation Authoring (workflow-docs-authoring)
 
-### Environment Bootstrap & Recovery (workflow-setup)
+Enforces structural and writing standards across `docs/`:
 
-**What it is**: A zero-friction runbook for bootstrapping a clean development
-environment or recovering from a corrupted virtual environment.
+- **Golden Source of Truth ("Do Not Repeat, Link")**: Every concept, CLI flag, and API
+  signature has one canonical home. Public Python APIs are rendered with `mkdocstrings`
+  (`::: package.module`), and runnable examples are transcluded via `pymdownx.snippets`
+  (`--8<--`).
+- **Diátaxis frontmatter preamble**: Every Markdown page in `docs/` begins with
+  non-renderable `diataxis:` (`tutorial | how-to | reference | explanation`) and
+  `purpose:` YAML frontmatter.
+- **Human-first anti-slop prose**: Bans throat-clearing intros, circular definitions,
+  and hollow marketing buzzwords (`seamless`, `robust`, `delve`, `game-changer`,
+  `empower`). Note that ASD-STE100 is strictly enforced on `.agents/skills/` and Python
+  docstrings, not on user-facing prose in `docs/`.
 
-**Why it's in Zenith**: Modern Python toolchains can become tangled when global Python
-installations conflict with local virtual environments. `workflow-setup` leverages
-Astral `uv` to establish hermetic, reproducible environments in seconds without
-requiring manual virtualenv activation or global tool installation.
+### Skill Authoring (workflow-skill-creator)
 
-It executes the standard onboarding sequence:
+Governs how new skills in `.agents/skills/` are structured and validated:
+
+- **5-prefix taxonomy**: Restricts skill directory names to `sdd-*`, `workflow-*`,
+  `tool-*`, `guide-*`, or `domain-*`.
+- **Progressive disclosure layout**: Keeps `SKILL.md` concise and places reusable
+  artifacts in `templates/`, `references/`, `examples/`, and `scripts/`.
+- **Automated verification**: Validates ASD-STE100 compliance with `uv run poe lint-ste`
+  and structural frontmatter rules with `uv run poe check-skills`. (To pull skills from
+  installed third-party packages, generated projects also provide
+  `uv run poe sync-skills` via `library-skills`.)
+
+### Environment Bootstrap (workflow-setup)
+
+Manual-only runbook (`disable-model-invocation: true`) for initializing or repairing the
+local development environment:
 
 ```bash
-uv sync                      # Hermetically installs all pinned dependencies
-uv run prek install          # Installs Rust-native Git pre-commit hooks
-uv run poe test              # Verifies the test suite passes locally
-uv run poe code-quality      # Confirms linting, types, and formatting pass
+uv sync                      # Install locked dependencies into .venv
+uv run prek install          # Install pre-commit and pre-push Git hooks
+uv run poe test              # Verify unit tests and 100% coverage locally
+uv run poe code-quality      # Verify linters, formatters, types, and boundaries
 ```
-
-### Skill Authoring & Standards (workflow-skill-creator)
-
-**What it is**: The meta-skill that governs designing, structuring, and maintaining new
-agent capabilities in Zenith repositories.
-
-**Why it's in Zenith**: Ad-hoc agent skills quickly degrade into bloated prompt dumps
-that overwhelm LLM context windows and cause hallucinated tool flags.
-
-`workflow-skill-creator` enforces the core architectural invariants of Zenith skills:
-
-- **5-Prefix Taxonomy**: Restricts skill names to `sdd-*`, `workflow-*`, `tool-*`,
-  `guide-*`, or `domain-*` to prevent naming collisions and guarantee predictable
-  discovery.
-- **Progressive Disclosure**: Keeps `SKILL.md` lean, placing detailed reference manuals,
-  templates, and code recipes in dedicated subdirectories (`references/`, `templates/`,
-  `examples/`, `scripts/`). The runner loads full text into context only when needed.
-- **Simplified Technical English (ASD-STE100)**: Enforces clear, unambiguous language
-  verified by an automated linter across agent skills and Python docstrings.
-- **Template Synchronization**: Automatically handles symlink wiring between template
-  sources and repository links via `uv run poe sync-skills`.
-
-### Human-Centered Documentation Authoring (workflow-docs-authoring)
-
-**What it is**: The operational authoring workflow and writing standard for creating
-clear, human-centered technical documentation in `docs/`.
-
-**Why it's in Zenith**: AI assistants frequently produce wordy, passive prose that
-re-states the obvious without providing actionable value. Furthermore, documentation
-degrades when multiple guides duplicate the same configuration, causing instructions to
-drift out of sync.
-
-`workflow-docs-authoring` enforces core architectural and writing rules:
-
-- **Human-First Prose Without Rigid STE Enforcement**: User documentation in `docs/`
-  prioritizes natural, human-centered readability. While STE-100 principles serve as
-  helpful suggestions for clarity, STE-100 is not enforced as a rigid rule in docs.
-  Strict STE-100 compliance is reserved for agent skills and code docstrings.
-- **Diátaxis Information Architecture**: Classifies every page into one of four intent
-  quadrants (*Tutorials*, *How-To Guides*, *Reference*, *Explanation*). Enforces scope
-  through a mandatory non-renderable YAML frontmatter preamble (`diataxis:` and
-  `purpose:`). Guides page splitting when content drifts across boundaries.
-- **Documentation-Driven Design (DDD)**: Drafts user guides and tutorials in lockstep
-  with interface design. Friction in writing docs serves as an immediate design smell
-  prompting public API simplification.
-- **Golden Source of Truth ("Do Not Repeat, Link")**: Every option, architecture
-  decision, and API behavior has a single canonical location. Documentation links
-  directly to canonical sources (`docs/adr/`, `mkdocstrings`, `docs/tools/`)
-  instead of duplicating text. Code snippets are complete, standalone runnable, and
-  transcluded from continuous CI-tested files via `pymdownx.snippets` (`--8<--`).
-- **Progressive Disclosure & Editor DX**: Focuses mainstream guides on the primary 80%
-  use path, quarantining advanced complexity into dedicated reference pages. Ensures
-  all Python examples carry explicit typing so developer editors autocomplete cleanly.
-- **Anti-AI-Slop Writing Standards**: Eliminates hollow filler, circular definitions,
-  and marketing buzzwords (`seamless`, `robust`, `delve`, `game-changer`, `empower`).
-  Mandates direct, active-voice instructions, honest negative-space analysis
-  (limitations and trade-offs), and structural verification with `uv run poe format-md`,
-  `uv run poe lint-md`, and `uv run poe docs-build`.
 
 ### Documentation Consumer Review (workflow-docs-consumers)
 
-**What it is**: The operational procedure for stress-testing technical documentation
-through simulated developer and stakeholder personas before release.
+Manual-only workflow (`disable-model-invocation: true`) that dispatches read-only
+subagents representing five reader personas (*Junior Developer*, *Opinionated Senior
+Pythonista*, *Tech Lead & Engineering Manager*, *DevOps Engineer*, *Solo Prototyper*).
+Each persona writes a review artifact to `.temp/docs-review/<persona-slug>.md`, which
+the lead agent compacts into concrete file-by-file edit proposals.
 
-**Why it's in Zenith**: Documentation authors suffer from the curse of knowledge:
-having deep familiarity with system internals, they easily omit critical onboarding
-context or write prose that feels dry, intimidating, or dogmatic.
-`workflow-docs-consumers` dispatches independent reader agents with distinct
-backgrounds to evaluate docs with fresh eyes. It is manual only: it costs several
-subagent runs, so an agent starts it only when you ask.
+## Upstream Maintainer Skills (Template Repository Only)
 
-`workflow-docs-consumers` standardizes the persona evaluation protocol:
+These three skills exist only in the upstream Zenith template repository and are omitted
+from generated projects:
 
-- **Multi-Persona Simulation**: Evaluates documentation through five distinct,
-  high-contrast developer archetypes (*The Junior Developer*,
-  *The Opinionated Senior Pythonista*, *The Tech Lead & Engineering Manager*,
-  *The DevOps Engineer*, and *The Solo Prototyper*).
-- **Parallel Subagent Dispatch**: Dispatches selected persona subagents concurrently
-  with clean context and read-only permissions, eliminating serial latency and mutual
-  bias.
-- **Common Artifact Storage**: Each persona writes its full evaluation report artifact
-  directly to `.temp/docs-review/<persona-slug>.md`.
-- **Main-Thread Compaction & Proposals**: The lead orchestrator collects all reports,
-  deduplicates repeated issues, reconciles competing persona tensions through
-  progressive disclosure, and formulates concrete file-by-file update proposals
-  before implementing edits.
+| Skill                   | Activation  | Purpose in `bwrob/zenith`                                                                                                            |
+| :---------------------- | :---------- | :----------------------------------------------------------------------------------------------------------------------------------- |
+| `workflow-update-tools` | On demand   | Upgrades tool versions in root and template `pyproject.toml` and updates matching `tool-*` skills in lockstep                        |
+| `workflow-inspect-repo` | Manual only | Audits external open-source Python repositories across 9 engineering pillars to benchmark practices for Zenith                       |
+| `workflow-example-sync` | Manual only | Renders Zenith into `bwrob/zenith-example` via `scripts/sync_example.py` and verifies downstream CI across Linux, macOS, and Windows |
 
----
+## Creating a Custom Workflow Skill
 
-> [!TIP]
-> **Looking for Spec-Driven Development?**
-> The `sdd-*` skills (`sdd`, `sdd-spec`, `sdd-plan`, `sdd-implement`, `sdd-review`)
-> now form a dedicated group. See the [Spec-Driven Development Suite](sdd.md) guide.
-
-## Maintainer Workflow Skills
-
-These skills live in the Zenith template repository (`bwrob/zenith`) to support ongoing
-maintenance, upstream tool tracking, and downstream showcase verification.
-`workflow-inspect-repo` and `workflow-example-sync` are manual only: they clone
-external repositories or push to one, so an agent runs them only when you ask.
-
-### External Repository Benchmarking (workflow-inspect-repo)
-
-**What it is**: A 9-pillar audit framework for benchmarking mature open-source Python
-projects to identify industry best practices.
-
-**Why it's in Zenith**: Zenith tracks Python ecosystem trends by evaluating mature
-repositories (such as projects from Astral, Meta, and Tiangolo). Rather than adopting
-tools on hype, `workflow-inspect-repo` systematically evaluates external repositories
-across 9 engineering pillars:
-
-1. Packaging & Dependency Resolution (`uv`, PEP 621)
-2. Linting & Formatting Standards (`ruff`, preview rules)
-3. Static Typing Depth (`pyrefly`, `mypy`, PEP 695)
-4. Testing Rigor & Mutation Testing (`pytest`, `mutmut`, `cosmic-ray`)
-5. Architecture & Layer Enforcement (`tach`)
-6. CI/CD Workflows & Security (`zizmor`, GitHub Actions)
-7. Documentation Architecture (`zensical`, `termynal`)
-8. Agentic Engineering & Discovery (`AGENTS.md`, modular skills)
-9. Developer Ergonomics & Task Runners (`poethepoet`, `prek`)
-
-Findings synthesize into actionable improvement proposals for Zenith.
-
-### Dependency Upgrades & Skill Sync (workflow-update-tools)
-
-**What it is**: The maintenance protocol for upgrading tool versions in `pyproject.toml`
-and synchronizing matching agent skills.
-
-**Why it's in Zenith**: Developer tools evolve rapidly. When Ruff introduces new preview
-rule sets, Pyrefly updates type parameter rules, or `uv` changes CLI flags, updating
-`pyproject.toml` alone is not enough. If agent skills are not updated in tandem, AI
-coding assistants will continue using obsolete flags or generate outdated
-configurations.
-
-`workflow-update-tools` pairs every dependency bump with:
-
-1. Research into upstream release notes and breaking changes.
-2. Configuration updates across `pyproject.toml`, `ruff.toml`, and `prek.toml`.
-3. Synchronized updates to matching `tool-*` skills to reflect new flags and syntax.
-4. Downstream verification in the showcase repository.
-
-### Live Showcase Synchronization (workflow-example-sync)
-
-**What it is**: The synchronization bridge and downstream canary verification protocol
-between Zenith and the live showcase repository `bwrob/zenith-example`.
-
-**Why it's in Zenith**: A Cookiecutter template cannot be proven by unit tests
-alone—it requires a living downstream repository where generated code is committed,
-dependencies are locked, tests are executed, and documentation is deployed across real
-CI runners.
-
-`workflow-example-sync` governs this lifecycle:
-
-- Generates an instantiated project into `../zenith-example` using
-  `scripts/sync_example.py`.
-- Formats rendered files and locks dependencies with `uv lock`.
-- Runs downstream test suites, type analysis, and pre-commit hooks.
-- Monitors GitHub Actions CI workflow runs across Linux, macOS, and Windows to guarantee
-  that template modifications never break downstream users.
-
-## Authoring Custom Workflow Skills
-
-When your project introduces specialized development processes—such as deployment
-pipelines, database migrations, or incident triage—codify them as custom workflow
-skills:
+To codify a team-specific operational process (such as database migrations or release
+deployments), scaffold a `workflow-<name>` directory:
 
 ```bash
 mkdir -p .agents/skills/workflow-deploy/{templates,scripts,references}
 ```
 
-By adding a `SKILL.md` with clear triggers and instructions, you provide human teammates
-and AI agents with an identical, verifiable operational playbook.
+Author `.agents/skills/workflow-deploy/SKILL.md` and validate it with
+`uv run poe lint-ste` and `uv run poe check-skills`.

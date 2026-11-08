@@ -5,30 +5,18 @@ purpose: Teach newcomers modern Python concepts, tooling rationale, and end-to-e
 
 # First Steps & Core Concepts
 
-If you are comfortable writing Python scripts but feel intimidated by modern
-tooling, virtual environments, or quality gates, you are in the right place.
+Zenith is a **project starter generator** (powered by Cookiecutter), not a runtime
+library that you `import zenith` into your code. Running the generator creates a
+standalone Python repository on your machine with directory layouts, test runners, and
+static checks already wired up.
 
-Zenith produces production-grade Python projects. While it uses modern
-standards, you do not need to be an expert in compiler design or DevOps to use it.
-This guide introduces the core concepts and workflows in plain English.
+This tutorial walks through installing `uv`, generating your first project, running the
+CLI and test suite, and fixing common quality gate errors.
 
-## What Zenith Actually Is
+## Step 0: Install Uv
 
-Zenith is a **project starter generator** (powered by Cookiecutter).
-
-- **What it is NOT**: A library that you `import zenith` into your code.
-- **What it IS**: A command-line wizard that builds a clean project folder on your
-  computer with standard directory layouts, automated test runners, and code checkers
-  already wired up.
-
-Instead of spending days setting up configuration files, Zenith gives you a
-production-grade foundation in seconds.
-
-## Step 0: Installing Uv
-
-Modern Python projects use **`uv`** as an all-in-one package and environment manager.
-
-Before scaffolding a Zenith project, install `uv` on your machine:
+Zenith projects use **[uv](tools/uv.md)** to manage Python interpreters, virtual
+environments, and packages. Before generating a project, install `uv`:
 
 === "macOS & Linux"
 
@@ -43,26 +31,25 @@ powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | ie
 ```
 
 > [!TIP]
-> **You do not need to install Python 3.13 manually.** `uv` automatically downloads and
-> manages the correct Python version for your project. Furthermore, while several Zenith
-> tools are written in Rust for performance, you do **not** need to install Rust or
-> Cargo—everything runs as pre-compiled packages managed by `uv`.
+> **You do not need to install Python or Rust manually.** `uv` downloads and manages
+> the requested Python version automatically, and every Rust-based tool in Zenith ships
+> as a pre-compiled binary wheel.
 
 ## Your First 5 Minutes: Zero to Running Code
 
-Follow these steps to create a project and run its first commands.
+Follow these four steps to generate a project and run its first commands.
 
 ### 1. Scaffold Your Project
 
-Launch the interactive **Zenith Project Initializer** terminal wizard directly through
-`uvx` (which runs tools without permanent installation):
+Launch the interactive **Zenith Project Initializer** wizard with `uvx` (which runs CLI
+tools in an ephemeral environment without global installation):
 
 ```shell
 uvx zenith-template
 ```
 
-The two-screen terminal wizard guides you through project identity, licensing, optional
-components, post-scaffold automation, and multi-select AI assistant integrations:
+The two-screen terminal wizard prompts for project metadata, optional features,
+post-generation hooks, and AI assistant integrations:
 
 | Screen / Field            | Meaning & Purpose                                                                                                                 | Default Value                    |
 | :------------------------ | :-------------------------------------------------------------------------------------------------------------------------------- | :------------------------------- |
@@ -80,51 +67,44 @@ components, post-scaffold automation, and multi-select AI assistant integrations
 | **AI Assistant Presets**  | Multi-select checkbox list with presets (`recommended`, `all`, `ide-only`, `cli-only`, `none`)                                    | `recommended`                    |
 
 For non-interactive scripting or CI usage, pass `--no-input` (every wizard run also
-prints the exact CLI command to recreate your selections):
+prints the exact CLI command to reproduce your selections):
 
 ```shell
-uvx zenith-template --no-input --name "My Awesome Service" --ai-tools recommended --sync
+uvx zenith-template --no-input --name "My Project" --ai-tools recommended --sync
 ```
 
-Alternatively, you can render the repository directly via raw Cookiecutter
+You can also render the template directly via Cookiecutter
 (`uvx cookiecutter https://github.com/bwrob/zenith.git`).
 
 > [!NOTE]
-> **AI Tooling Is 100% Elective**
->
-> Zenith does not force AI tooling onto your repository. If you develop without AI
-> assistants or prefer a traditional Python project, set `ai_tools` to `none` and
-> `include_agent_skills` to `false`. The generator completely removes all agent
-> configuration files, skills, and context symlinks.
->
-> The strict quality gates (100% test coverage, strict typing, complexity limits) remain
-> identical—accelerating human developers just as effectively as autonomous agents.
-
-If you are unsure about any prompt, simply press `Enter` to accept the default. You can
-adjust these settings at any time in `pyproject.toml`.
+> **AI Tooling Is Elective**: If you prefer a repository without AI agent configs, set
+> `ai_tools` to `none` and `include_agent_skills` to `false` (or pass
+> `--ai-tools none --no-skills`). The generator strips all agent instruction files,
+> `.agents/` skills, and tool dot-directories while keeping the Python toolchain and
+> quality gates intact.
 
 ### 2. Enter and Sync Your Project
 
-Move into your new folder and initialize your environment:
+Move into the generated folder and synchronize its virtual environment:
 
 ```shell
-cd my-awesome-service
+cd my-project
 uv sync
 ```
 
-`uv sync` creates a private project sandbox (a virtual environment) and downloads
-all necessary tools.
+`uv sync` creates a local `.venv/` directory and installs all locked dependencies from
+`uv.lock`.
 
 ### 3. Run Your Application
 
-If you enabled the command-line interface (CLI) during setup, your project is
-already an executable application:
+When scaffolded with `include_cli` enabled (the default), your project includes a
+working Typer CLI:
 
 ```console
-$ uv run my-awesome-service --help
-Usage: my-awesome-service [OPTIONS] COMMAND [ARGS]...
+$ uv run my-project --help
+Usage: my-project [OPTIONS] COMMAND [ARGS]...
 
-  High performance analytics engine
+  A modern Python project.
 
 Options:
   -v, --version  Show version and exit.
@@ -134,229 +114,124 @@ Commands:
   greet  Display a personalized greeting.
 ```
 
-Run the built-in `greet` command:
+Run the `greet` command:
 
 ```console
-$ uv run my-awesome-service greet "Developer"
+$ uv run my-project greet "Developer"
 ✨ Hello, Developer!
 ```
 
-### 4. Check Your Live Documentation
+### 4. Preview Live Documentation
 
-Every project includes a live-reloading documentation website powered by Zensical:
+Start the local **[Zensical](tools/zensical.md)** documentation server:
 
 ```console
 $ uv run poe docs-serve
 Serving documentation at http://127.0.0.1:8000
 ```
 
-Open `http://127.0.0.1:8000` in your browser. Any edits you make to markdown files in
-`docs/` will update live automatically in your browser.
+Open `http://127.0.0.1:8000` in your browser. Edits to Markdown files in `docs/` reload
+automatically.
 
-## Where Do I Actually Write Code
+## Project Layout & Everyday Workflows
 
-A scaffolded Zenith repository has many files, but your daily work happens in only
-a few places:
+Your day-to-day work happens inside `src/`, `tests/`, and `docs/`, while the `.toml`
+files in the repository root configure the background toolchain:
 
 ```tree
-my-awesome-service/
-    src/my_awesome_service/     # 🟢 YOUR WORKSPACE: All application code lives here!
-    tests/                      # 🟢 YOUR TESTS: Automated tests for your code
-    docs/                       # 🟢 YOUR DOCS: Markdown documentation files
-    pyproject.toml              # 🟡 PROJECT SETTINGS: Dependencies and metadata
-    poe_tasks.toml              # 🔒 TASK RUNNER: Pre-tuned task shortcuts
-    ruff.toml                   # 🔒 GUARDRAILS: Pre-tuned linter rules
-    pyrefly.toml                # 🔒 GUARDRAILS: Pre-tuned type checker settings
-    tach.toml                   # 🔒 GUARDRAILS: Pre-tuned module boundaries
+my-project/
+    src/my_project/     # Application source code
+    tests/              # Unit and property-based test suite
+    docs/               # Markdown documentation and ADRs
+    pyproject.toml      # Package metadata and dependencies
+    poe_tasks.toml      # Task runner shortcuts (uv run poe <task>)
+    ruff.toml           # Linter and formatter configuration
+    pyrefly.toml        # Static type checker configuration
+    tach.toml           # Module layer boundary rules
 ```
 
-> [!NOTE]
-> **The "Engine Room" Rule: Zero Configuration by Default, Full Control When Needed**
-> The files ending in `.toml` in the project root are pre-configured guardrails. For
-> everyday feature development, you do not need to edit or configure them—they work out
-> of the box like a pre-tuned engine. When senior engineers or platform teams need to
-> customize linting rules, type boundaries, or tasks, every setting lives in an
-> explicit, decoupled file rather than an opaque global environment.
+### How the CLI Entry Point Is Wired
 
-### How Does the Project CLI Script Work?
-
-When you scaffold a project with `include_cli: true`, Cookiecutter registers a
-command-line script in `pyproject.toml` under `[project.scripts]`:
+When `include_cli` is enabled, `pyproject.toml` registers a console script under
+`[project.scripts]`:
 
 ```toml
 [project.scripts]
-my-awesome-service = "my_awesome_service.cli:app"
+my-project = "my_project.__main__:main"
 ```
 
-This tells `uv` to look inside `src/my_awesome_service/cli.py` and run the Typer `app`
-function whenever you invoke `uv run my-awesome-service`. If you build new modules or
-functions in `src/my_awesome_service/`, you can call them from `cli.py` or import them
-into other modules.
+Running `uv run my-project` calls `main()` in `src/my_project/__main__.py`, which
+dispatches to the Typer `app` defined in `src/my_project/cli.py`.
 
-### The Quick Translation Guide: from Tutorial Python to Zenith
+### Translating Classic Python Commands to Zenith
 
-If you learned Python through courses or tutorials, you likely used traditional tools.
-Here is how your existing habits translate directly into Zenith:
+| Classic Command                   | Zenith Equivalent                 | Why                                                                                      |
+| :-------------------------------- | :-------------------------------- | :--------------------------------------------------------------------------------------- |
+| `pip install <pkg>`               | `uv add <pkg>`                    | Installs the package into `.venv` and records the version constraint in `pyproject.toml` |
+| `pip install -r requirements.txt` | `uv sync`                         | Installs exact pinned wheels and hashes from `uv.lock`                                   |
+| `source .venv/bin/activate`       | `uv run <command>`                | Runs commands inside `.venv` without manual shell activation                             |
+| `python script.py`                | `uv run python -m my_project.cli` | Executes with `src/` on `sys.path` inside the project environment                        |
+| `pytest`                          | `uv run poe test`                 | Runs `pytest` with 100% statement and branch coverage enforcement                        |
+| Manual linter / formatter runs    | `uv run poe fix`                  | Formats Python, TOML, Markdown, YAML, and CSS and auto-fixes lint issues                 |
+| Pre-PR static checks              | `uv run poe code-quality`         | Runs Ruff, Taplo, Prettier, rumdl, typos, Pyrefly, complexipy, zizmor, Tach, and Deptry  |
 
-| Traditional Pattern               | Zenith Modern Pattern         | Why Zenith Uses It                                                                                                                   |
-| :-------------------------------- | :---------------------------- | :----------------------------------------------------------------------------------------------------------------------------------- |
-| `pip install <package>`           | `uv add <package>`            | `uv add` installs packages in milliseconds and records them in `pyproject.toml`.                                                     |
-| `pip install -r requirements.txt` | `uv sync`                     | `uv sync` reads `uv.lock` for 100% deterministic, reproducible environments.                                                         |
-| `source .venv/bin/activate`       | `uv run <command>`            | `uv run` executes within `.venv` automatically without manual activation (though `.venv` remains there if you prefer activating it). |
-| `python script.py`                | `uv run python -m pkg.module` | Prevents import resolution errors and ensures `src/` is correctly mapped on `sys.path`.                                              |
-| `pytest`                          | `uv run poe test`             | Executes pytest with parallel multi-core execution (`-n auto`), 100% coverage gating, and zero-warning tolerance.                    |
+### Connecting Your Editor
 
-### Connecting Your Editor or IDE
-
-When you open a scaffolded project in an editor (such as VS Code, Cursor, or PyCharm),
-the editor may default to your system Python. This causes false red or yellow squiggly
-lines under imports like `import typer`.
-
-To connect your editor to the project virtual environment:
+If your editor highlights imports like `import typer` as unresolved, point it at the
+project's `.venv` interpreter:
 
 === "VS Code & Cursor"
 
 ```text
-1. Open the Command Palette using `Cmd+Shift+P` (macOS) or `Ctrl+Shift+P` (Windows/Linux).
-2. Type and select **Python: Select Interpreter**.
-3. Choose the interpreter located in your project directory: `./.venv/bin/python`
-   (or `.\.venv\Scripts\python.exe` on Windows).
+1. Open the Command Palette (`Cmd+Shift+P` on macOS, `Ctrl+Shift+P` on Linux/Windows).
+2. Run "Python: Select Interpreter".
+3. Select `./.venv/bin/python` (or `.\.venv\Scripts\python.exe` on Windows).
 ```
 
 === "PyCharm"
 
 ```text
-1. Open **Settings** (or **Preferences** on macOS) and navigate to **Project > Python Interpreter**.
-2. Click **Add Interpreter** and choose **Add Local Interpreter**.
-3. Select **Existing Environment** and browse to `./.venv/bin/python` (or `.\.venv\Scripts\python.exe`).
+1. Open Settings -> Project -> Python Interpreter.
+2. Click "Add Interpreter" -> "Add Local Interpreter".
+3. Choose "Existing Environment" and select `./.venv/bin/python` (or `.\.venv\Scripts\python.exe`).
 ```
 
-Once connected, your editor will auto-complete functions, resolve all imports, and
-provide instant type feedback while you write code.
+## Working with Quality Gates
 
-## Everyday Workflows
+Zenith projects enforce test coverage, complexity limits, and static types on every
+run.
 
-Use these tasks for common development work after setup.
+### 100% Statement and Branch Coverage
 
-### How to Add a New Package
+`uv run poe test` enforces **100% statement and branch coverage** across `src/` and
+`tests/`. If you add a function without tests, coverage reports the exact missed lines.
 
-Whenever a tutorial says `pip install <package>`, use `uv add` instead:
-
-```shell
-uv add httpx
-```
-
-This installs the package into your private sandbox and records it in `pyproject.toml`
-automatically.
-
-### How to Run a Python Script
-
-Instead of running global `python my_script.py`, prefix your commands with `uv run`:
-
-```shell
-uv run python -m my_awesome_service.cli
-```
-
-`uv run` ensures your script runs inside your isolated project sandbox where all
-installed packages are available.
-
-### How to Run Project Tasks
-
-Zenith uses **Poe the Poet** as a task shortcut runner. Instead of memorizing long
-terminal flags, use these four commands:
-
-- `uv run poe test`: Runs your automated test suite.
-- `uv run poe fix`: Automatically formats your code and fixes style issues.
-- `uv run poe code-quality`: Runs static checks (types, linters, complexity).
-- `uv run poe docs-serve`: Launches your documentation website locally at
-  `http://localhost:8000`.
-
-## Understanding Quality Gates (Why Are Tests Failing?)
-
-When you run `uv run poe test`, Zenith checks test coverage.
-
-Zenith has a strict rule: **100% test coverage**. This means every line of code you
-write in `src/` must have a corresponding test in `tests/`.
-
-If you write a new function without a test, `uv run poe test` stops and highlights
-the un-tested line in red. **Nothing is broken.** The tool is simply reminding you
-to write a test.
-
-### A Hands-on Experiment: Breaking and Satisfying the Guardrail
-
-Let's see what happens when you write code without a test:
-
-**Step 1: Write an un-tested function** in `src/my_awesome_service/calculator.py`:
+**1. Add an untested function** in `src/my_project/calculator.py`:
 
 ```python
-def add(a: int, b: int) -> int:
-    """Add two numbers together."""
-    return a + b
-```
-
-**Step 2: Run `uv run poe test` to see the guardrail in action**:
-
-```console
-$ uv run poe test
-================================ tests coverage ================================
-Name                                  Stmts   Miss Branch BrPart  Cover   Missing
----------------------------------------------------------------------------------
-src/my_awesome_service/calculator.py      2      1      0      0    50%   3
----------------------------------------------------------------------------------
-TOTAL                                    35      1      4      0    97%
-
-FAIL Required test coverage of 100% not reached. Total coverage: 97.14%
-```
-
-The test runner shows exactly which line is missing test coverage (line 3 in
-`calculator.py`).
-
-**Step 3: Add the matching test** in `tests/test_calculator.py`:
-
-```python
-from my_awesome_service.calculator import add
+from __future__ import annotations
 
 
-def test_add() -> None:
-    assert add(2, 3) == 5
-```
-
-**Step 4: Re-run `uv run poe test`**:
-
-```console
-$ uv run poe test
-================================ tests coverage ================================
-TOTAL                                    35      0      4      0   100%
-
-Required test coverage of 100.0% reached. Total coverage: 100.00%
-======================== 3 passed in 0.45s ========================
-```
-
-The gate turns green, confirming that all statements and branches are tested.
-
-### What About Branch Coverage and Missing Branches?
-
-Zenith measures both **line coverage** and **branch coverage** (`branch = true`). A
-branch occurs whenever code makes a decision (`if/else`, `try/except`, `while`).
-
-For example, imagine you write an integer division function:
-
-```python
 def divide(a: int, b: int) -> int:
+    """Divide *a* by *b* using integer division."""
     if b == 0:
-        raise ValueError("Cannot divide by zero")
+        msg = "Cannot divide by zero"
+        raise ValueError(msg)
     return a // b
 ```
 
-If your test only calls `divide(10, 2)`, line 3 is never executed, and `coverage`
-flags a `BrPart 1 Missing` violation. Even if you don't miss lines, failing to test both
-sides of a conditional path fails the build.
+**2. Run `uv run poe test`**:
 
-To satisfy the branch coverage gate, test the exception path using `pytest.raises`:
+If your test only checks `divide(10, 2)`, lines 7–8 (`if b == 0`) are never executed
+and Coverage.py flags both missed statements and a partial branch (`BrPart`).
+
+**3. Cover both branches** in `tests/test_calculator.py`:
 
 ```python
+from __future__ import annotations
+
 import pytest
-from my_awesome_service.calculator import divide
+from my_project.calculator import divide
 
 
 def test_divide_success() -> None:
@@ -368,113 +243,67 @@ def test_divide_zero_raises() -> None:
         divide(10, 0)
 ```
 
-### What Does "Cognitive Complexity <= 10" Mean?
+Re-running `uv run poe test` now reaches 100% statement and branch coverage.
 
-`complexipy` checks how difficult a function is for human working memory to read and
-maintain. Unlike raw line counts, cognitive complexity measures nested logic: `for`
-loops inside `if` statements inside `while` blocks increment the complexity score.
+### Running a Single Test During Development
 
-**The Fix**: When a function exceeds a score of 10, simply extract the inner loop or
-conditional body into a small, descriptive helper function. This keeps functions
-bite-sized, easy to read, and painless to unit test.
-
-### How to Run and Debug an Individual Test
-
-`uv run poe test` enforces 100% statement and branch coverage across the **entire**
-codebase. When you are drafting a new feature, running whole-suite coverage on a single
-test file will fail because untouched files are also measured.
-
-During active development, run individual tests directly through `pytest`:
+Because `uv run poe test` checks coverage across the entire package, running it against
+a single test file while drafting code will fail coverage on untouched modules. Run
+`pytest` directly while iterating, then run `uv run poe test` when ready:
 
 ```shell
-# Run a specific test file
-uv run pytest tests/test_calculator.py
+# Run one test file without failing on global coverage
+uv run pytest tests/test_calculator.py --no-cov
 
-# Run a specific test by function name
-uv run pytest tests/test_calculator.py -k test_divide_zero_raises
+# Run a single test function by name
+uv run pytest tests/test_calculator.py -k test_divide_zero_raises --no-cov
 
-# Drop into the interactive Python debugger (PDB) on failure
+# Drop into the Python debugger (pdb) on failure
 uv run pytest tests/test_calculator.py --pdb
 ```
 
-You can also place `breakpoint()` anywhere in your code or tests to pause execution and
-inspect variables interactively. Once your isolated test passes, run `uv run poe test`
-to verify project-wide coverage before committing.
+### Cognitive Complexity Limit
 
-### When Quality Gates Fail: Troubleshooting Triads
+**[complexipy](tools/complexipy.md)** scores how deeply nested a function's control flow
+is (`if`, `for`, `while`, `try/except`). When a function exceeds a score of **10**,
+extract nested blocks into small helper functions or replace conditional chains with
+early returns.
 
-When `uv run poe code-quality` or `prek` flags an issue, follow these steps:
+### Troubleshooting Quality Gate Failures
 
-#### 1. Formatting or Style Errors (Ruff)
+When `uv run poe code-quality` or `prek` flags an issue, use these steps to resolve it:
 
-- **Symptom**: `ruff:check` or `ruff:format` reports missing whitespace, unused imports,
-  or formatting violations.
-- **Root Cause**: Code was written or edited without running the automated formatter.
-- **Resolution**: Run `uv run poe fix`. Poe formats code and auto-fixes auto-resolvable
-  lint rules immediately.
+#### 1. Formatting or Lint Errors (Ruff, Taplo, Rumdl, Prettier)
 
-#### 2. Static Type Violations (Pyrefly)
+- **Symptom**: `uv run poe code-quality` reports unformatted files, unsorted imports, or
+  lint violations.
+- **Root Cause**: Files were edited without running the project formatters.
+- **Resolution**: Run `uv run poe fix` to format all code, configuration, and Markdown
+  files in place.
 
-- **Symptom**: `pyrefly check` reports `Expected int, got str | None`.
-- **Root Cause**: A function receives or returns an optional value that may be `None` at
-  runtime.
-- **Resolution**: Add an explicit check before using the variable:
+#### 2. Static Type Errors or Missing Coverage (Pyrefly)
 
-  ```python
-  value: str | None = None
-  if value is None:
-      raise ValueError("Value cannot be None")
-  ```
+- **Symptom**: `pyrefly check` reports `Expected int, got str | None`, or
+  `pyrefly coverage` reports untyped symbols.
+- **Root Cause**: A variable can be `None` at runtime without a narrowing check, or a
+  parameter/return/module attribute lacks an explicit type annotation.
+- **Resolution**: Narrow optional values before use (`if value is None: raise ...`) and
+  add explicit type annotations instead of `Any`.
 
-  Avoid using `# type: ignore` or untyped `Any`—explicit guards preserve runtime safety
-  and satisfy the type checker.
+#### 3. Git Hook Rejects a Commit or Push (Prek)
 
-#### 3. Pre-Commit Hook Blocks Your Commit (Prek)
-
-- **Symptom**: Running `git commit -m "..."` stops and prints `Failed` on a hook.
-- **Root Cause**: Code in your staging area violates a linting, formatting, or security
-  rule.
-- **Resolution**: Your code is **completely safe**—Git hooks never delete or lose your
-  edits.
-  1. Inspect the terminal output to see which hook failed.
-  2. Run `uv run poe fix` to resolve formatting and linting.
-  3. Re-stage the modified files (`git add <file>`) and run `git commit` again.
-
-## Step-by-Step Recap: What Just Happened
-
-Here is the mental model to remember as you build:
-
-1. **`uv` is your engine**: It manages your Python versions and packages inside an
-   isolated sandbox. You never need to worry about broken system Python installs.
-2. **Your code lives in `src/`**: Focus your energy on `src/` and `tests/`. The `.toml`
-   files in the root directory are background guardrails that stay out of your way.
-3. **`uv add` is your `pip install`**: When you need a library, type `uv add <package>`.
-4. **`uv run poe ...` are your project controls**: Run `poe test` to verify your code,
-   `poe fix` to auto-format, and `poe code-quality` to check types and boundaries.
-5. **Red tests are safety nets**: When a quality gate flags an error, it is pointing out
-   an un-tested branch or type mismatch before code reaches production.
-
-## Plain-English Tool Glossary
-
-Zenith includes several tools that run quietly in the background. Here is what each
-tool does for you:
-
-| Tool             | What It Does for You     | Why It Is Helpful                                                                   |
-| ---------------- | ------------------------ | ----------------------------------------------------------------------------------- |
-| **`uv`**         | Package & Python Manager | Installs libraries fast and manages Python versions without breaking your computer. |
-| **`ruff`**       | Code Cleaner & Formatter | Formats code styling and catches syntax bugs in milliseconds.                       |
-| **`pyrefly`**    | Type Safety Inspector    | Analyzes type hints so you do not accidentally pass incompatible data to functions. |
-| **`poe`**        | Shortcut Command Runner  | Provides easy commands like `uv run poe test` instead of long commands.             |
-| **`prek`**       | Git Commit Guard         | Checks your code automatically when you run `git commit` to block invalid commits.  |
-| **`tach`**       | Architecture Protector   | Prevents circular imports and keeps modules separated cleanly.                      |
-| **`complexipy`** | Simplicity Checker       | Warns you if a function has too many nested loops or branches.                      |
-| **`zensical`**   | Documentation Engine     | Turns markdown files in `docs/` into a searchable website.                          |
-| **`typos`**      | Spell Checker            | Catches spelling mistakes in your code and documentation.                           |
+- **Symptom**: `git commit` or `git push` exits non-zero and prints `Failed` on a hook.
+- **Root Cause**: Staged files violate a `pre-commit` formatter/linter check, or the
+  branch fails a `pre-push` check (`pyrefly`, `complexipy`, `tach`).
+- **Resolution**:
+  1. Run `uv run poe fix` to auto-format files.
+  2. Re-read any modified files, stage them (`git add <file>`), and re-run `git commit`.
 
 ## Where to Go Next
 
-Now that you understand the basic workflow:
-
-- Explore [The Tooling Stack](tools/index.md) to learn more about each individual tool.
-- Read [The Zenith Philosophy](philosophy.md) for the design principles behind the
-  guardrails.
+- Browse the **[Tooling Stack](tools/index.md)** for configuration details and CLI
+  commands for every tool in Zenith.
+- Read the **[Zenith Philosophy](philosophy.md)** for the trade-offs behind strict
+  guardrails and brownfield adoption strategies.
+- See **[CI/CD Actions](ci-actions.md)** for the GitHub Actions workflows and PyPI
+  Trusted Publishing setup.

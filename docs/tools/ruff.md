@@ -7,70 +7,58 @@ purpose: Document strict Python linting, rule presets, inline diagnostic overrid
 
 [![Tool: Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 
-`Ruff` is an extremely fast Python linter and code formatter written in Rust by Astral.
-It replaces Flake8, Black, isort, pydocstyle, pyupgrade, autoflake, and dozens of Flake8
-plugins.
-
-## What It Does
-
-Ruff performs comprehensive static analysis and automatic code formatting on Python
-source code. It replaces more than a dozen legacy tools—including Flake8, Black, isort,
-pydocstyle, and pyupgrade—with a single Rust-native binary that implements over 800 lint
-rules covering code style, complexity, performance, docstring standards, and potential
-runtime flaws.
-
-In addition to drop-in formatting compatibility with Black, Ruff organizes import
-statements deterministically and applies safe in-place fixes across codebases in tens of
-milliseconds.
-
-## Why It's in Zenith
-
-Zenith integrates Ruff with all rule categories and preview rules enabled
-(`select = ["ALL"]`) to establish a zero-drift standard of code excellence. Enabling
-preview rules catches subtle defects early, such as mutable default arguments, unclosed
-file handles, insecure pseudorandom generators, and unparenthesized generator
-expressions.
-
-Because Ruff operates at sub-second speeds even across large multi-module repositories,
-formatting and lint checks run before every commit and during CI without introducing
-developer latency or style debates.
+`Ruff` is Astral's Rust-based Python linter and code formatter, replacing Flake8, Black,
+isort, pydocstyle, pyupgrade, and dozens of lint plugins in a single binary. Zenith
+enables the full rule catalog (`select = ["ALL"]`) with `preview = true` and docstring
+code formatting (`docstring-code-format = true`).
 
 ## Configuration in Zenith
 
 Configured in `ruff.toml` at the project root:
 
 ```python exec="1" result="toml"
+import re
 from pathlib import Path
 
 path = Path("{{cookiecutter.project_slug}}/ruff.toml")
 if not path.exists():
     path = Path("ruff.toml")
-print(path.read_text().strip())
+text = path.read_text(encoding="utf-8")
+text = re.sub(r"^# =+[^\n]*\n(?:#[^\n]*\n)*# =+[^\n]*\n+", "", text)
+print(text.strip())
 ```
 
-### Key Policy Highlights
+## Key Policy Rules
 
-- **Mandatory Future Annotations**:
-  `required-imports = ["from __future__ import annotations"]` (via rule `I002`) and
-  `future-annotations = true` ensure that every Python module defers runtime annotation
-  evaluation. This eliminates runtime typing overhead, supports postponed typing syntax
-  across all files, and allows `flake8-type-checking` to safely move type-only imports
-  into `if TYPE_CHECKING:` blocks.
-- **Absolute Imports Mandate**: `ban-relative-imports = "all"` eliminates ambiguous
-  relative imports (`from ..module import func`), ensuring every import path is explicit
-  and readable.
-- **Docstring Code Formatting**: `docstring-code-format = true` automatically formats
-  Python snippets embedded inside docstrings.
-- **Trailing Comma & Formatter Compatibility**: Disables `COM812` and `ISC001` to
-  prevent conflicts between the linter and formatter.
+- **No `# noqa` comments (`# ruff: ignore[rule-name]` only)**: Bare `# noqa` directives
+  and letter-digit rule codes (`E501`, `S603`, `PLR0913`) are banned across the
+  codebase. When a suppression is genuinely required, use Ruff's native directive with
+  the **full lowercase rule name** and an explanatory comment:
+
+  ```python
+  # side-effect import registers plugin handlers at startup
+  import my_project.plugins  # ruff: ignore[unused-import]
+  ```
+
+  For module-level rules (such as `complex-structure`), place `# ruff: ignore[...]` on
+  line 1 of the file.
+- **Full rule names in `ruff.toml`**: Every entry in `ignore` and `per-file-ignores`
+  uses the descriptive rule name (`"missing-trailing-comma"`, `"assert"`,
+  `"suspicious-subprocess-import"`) rather than opaque letter-digit codes.
+- **Mandatory `from __future__ import annotations`**: Enforced via
+  `isort.required-imports` and `future-annotations = true`, allowing
+  `flake8-type-checking` to move type-only imports into `if TYPE_CHECKING:` blocks
+  safely while keeping runtime annotations on Pydantic/dataclasses/Typer intact.
+- **Absolute imports only**: `ban-relative-imports = "all"` prohibits
+  `from .foo import bar`.
 
 ## Key Invocations
 
 ```bash
-uv run poe lint          # Lint source files with ruff check
-uv run poe format        # Format code with ruff format
-uv run poe format-check  # Verify code format without mutating files
-uv run poe fix           # Auto-fix lint violations and apply formatting
+uv run poe lint          # Run ruff check --config ruff.toml
+uv run poe format        # Format Python files and docstring snippets
+uv run poe format-check  # Verify formatting without modifying files
+uv run poe fix           # Auto-fix lint issues and format all files
 ```
 
 ## Upstream Documentation

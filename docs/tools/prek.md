@@ -7,85 +7,89 @@ purpose: Document Git pre-commit lifecycle hooks, automated fixers, and hook ins
 
 [![Tool: prek](https://img.shields.io/badge/prek-enabled-brightgreen)](https://github.com/j178/prek)
 
-`prek` is a fast Git hook runner written in Rust. In Zenith, it validates
-code hygiene, detects secrets, verifies schemas, and enforces formatting before
-commits are created.
+`prek` is a Rust-native Git hook runner compatible with the `pre-commit` ecosystem. In
+Zenith, `prek` installs both **`pre-commit`** and **`pre-push`** hooks
+(`default_install_hook_types = ["pre-commit", "pre-push"]`) to keep individual commits
+sub-second while running whole-project static checks before `git push`.
 
-## What It Does
+## Two-Stage Hook Architecture
 
-`prek` manages Git hook lifecycles. It intercepts `git commit` commands to run
-automated inspections across staged files.
+`prek.toml` splits local hooks across `pre-commit` and `pre-push` stages.
 
-Zenith configures `prek` through `prek.toml` with multiple validation layers:
+### Stage 1: Pre-Commit (Staged Files Only)
 
-- **File Sanitization**: Trims trailing whitespace, fixes end-of-file newlines,
-  validates merge and case conflicts, and blocks oversized files.
-- **Secret Detection**: Runs `gitleaks` to detect hardcoded credentials, API keys,
-  and sensitive tokens.
-- **Manifest Validation**: Runs `validate-pyproject` to ensure `pyproject.toml`
-  schema integrity.
-- **Code Formatters**: Runs `ruff`, `taplo`, `rumdl`, and `prettier` directly on
-  staged files.
-- **Local Quality Gates**: Executes `pyrefly`, `complexipy`, and `tach` to ensure
-  code meets strict typing, cognitive complexity, and layer boundary standards before
-  leaving the workstation.
+Runs on `git commit` across staged files, scheduled by `[priorities]` so file-mutating
+formatters never race on the same file:
 
-## Why It's in Zenith
+- **Priority 0–2 (File hygiene)**: Fixes mixed line endings, trims trailing whitespace
+  (excluding `.ambr` snapshots), and ensures newline at end of file.
+- **Priority 3 (`uv-lock`)**: Ensures `uv.lock` stays synchronized with
+  `pyproject.toml`.
+- **Priority 4 (`independent_formatters`)**: Formats JSON (`pretty-format-json`), YAML
+  (`prettier`), CSS (`prettier-css`), and TOML (`taplo-format`).
+- **Priority 5–6 (`source_fix` & `python_format`)**: Formats Markdown and embedded code
+  blocks (`rumdl-fmt`), auto-fixes Python lint issues (`ruff-check --fix`), and formats
+  Python files (`ruff-format`).
+- **Priority 7 (`checks`)**: Checks for merge/case conflicts, oversized files
+  (`> 2000 KB`), valid YAML/JSON/XML/TOML syntax, `pyproject.toml` schema validity
+  (`validate-pyproject`), hardcoded secrets (`gitleaks`), and spelling errors (`typos`).
 
-Zenith standardizes on modern, fast, Rust-native developer tooling. Unlike
-traditional Python hook runners, `prek` executes hooks in milliseconds without
-Python interpreter startup latency or global virtual environment overhead.
+### Stage 2: Pre-Push (Whole-Project Static Gates)
 
-`prek` establishes an automated local barrier that prevents defective code,
-unformatted files, and accidental secret disclosures from ever entering the Git
-commit history.
+Runs on `git push` (`pass_filenames = false`) when Python or tool config files have
+changed:
+
+- **`pyrefly`**: Runs `uv run pyrefly check`.
+- **`pyrefly-coverage`**: Runs
+  `uv run pyrefly coverage check src --fail-under 100 --strict`.
+- **`complexipy`**: Runs `uv run complexipy src tests`.
+- **`tach`**: Runs `uv run tach check`.
+
+> [!NOTE]
+> **Why `uv run prek run --all-files` Only Runs `pre-commit` Stage Hooks by Default**:
+> Because `default_stages = ["pre-commit"]`, `uv run prek run --all-files` executes the
+> `pre-commit` hooks. To run the `pre-push` hooks manually on demand, pass
+> `--hook-stage pre-push` (`uv run prek run --hook-stage pre-push --all-files`) or run
+> `uv run poe code-quality`.
 
 ## Configuration in Zenith
 
 Configured in `prek.toml` at the project root:
 
 ```python exec="1" result="toml"
+import re
 from pathlib import Path
 
 path = Path("{{cookiecutter.project_slug}}/prek.toml")
 if not path.exists():
     path = Path("prek.toml")
-print(path.read_text().strip())
+text = path.read_text(encoding="utf-8")
+text = re.sub(r"^# =+[^\n]*\n(?:#[^\n]*\n)*# =+[^\n]*\n+", "", text)
+print(text.strip())
 ```
-
-## Architectural Rationale
-
-Local hooks call tools directly so they can process staged file paths and return
-reliable exit codes.
-
-### Direct Invocations Vs. Poe Tasks
-
-In Zenith, local hooks in `prek.toml` invoke tools directly using `uv run <tool>`
-(for example, `uv run pyrefly check` or `uv run tach check`) rather than delegating
-to task aliases (`uv run poe type-check`):
-
-1. **Staged File Argument Passing**: `prek` passes the list of staged filenames
-   directly to hook commands. Direct tool invocations receive and process these file
-   arguments natively. In contrast, wrapping calls in task runners can misroute or
-   drop path arguments.
-2. **Subprocess Overhead Elimination**: Direct `uv run <tool>` invocations avoid
-   nested subprocess wrappers (prek → shell → uv → poe → python → tool), keeping
-   local Git commit operations instantaneous.
-3. **Deterministic Exit Codes**: Direct commands propagate exit codes straight to
-   Git without an intermediate task runner layer.
 
 ## Key Invocations
 
 ```bash
-uv run prek install             # Install Git commit hooks into .git/hooks/
-uv run prek run --all-files     # Execute all hooks across the entire repository
-uv run prek run <hook_id> -a    # Execute a specific hook across all files
-uv run prek update              # Update hook repositories to their latest revs
-uv run prek validate-config     # Validate configuration syntax
+# Install pre-commit and pre-push hooks into .git/hooks/
+uv run prek install
+
+# Run all pre-commit hooks across the repository
+uv run prek run --all-files
+
+# Run pre-push hooks (pyrefly, complexipy, tach)
+uv run prek run --hook-stage pre-push --all-files
+
+# Run a single hook by ID or alias (e.g. prettier-css)
+uv run prek run <hook_id> --all-files
+
+# Update external hook repositories and validate prek.toml
+uv run prek autoupdate
+uv run prek validate-config
 ```
 
 ## Upstream Documentation
 
 - [prek Official Documentation](https://prek.j178.dev/)
 - [prek GitHub Repository](https://github.com/j178/prek)
-- [prek Schema Documentation](https://www.schemastore.org/prek.json)
+- [prek JSON Schema](https://www.schemastore.org/prek.json)

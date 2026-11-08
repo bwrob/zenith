@@ -7,49 +7,31 @@ purpose: Document GitHub Flavored Markdown linting, formatting rules, and embedd
 
 [![Tool: rumdl](https://img.shields.io/badge/markdown-rumdl-orange.svg)](https://github.com/rvben/rumdl)
 
-`rumdl` is a high-performance Markdown linter and formatter written in Rust. It enforces
-strict CommonMark and GitHub Flavored Markdown (GFM) standards, and directly checks
-embedded code blocks.
-
-## What It Does
-
-`rumdl` analyzes Markdown files across the codebase to enforce CommonMark and GitHub
-Flavored Markdown specifications. It checks heading hierarchies, list indentation,
-and table formatting.
-
-Rumdl also integrates with Python linters like Ruff to check embedded Python code
-blocks (` ```python `). This guarantees that examples never contain broken syntax,
-invalid imports, or outdated conventions.
-
-## Why It's in Zenith
-
-Legacy Markdown linters require Node.js or Ruby runtimes. Zenith chooses rumdl to
-eliminate `npm` dependencies, keeping development environments strictly hermetic with
-Rust and Python binaries.
-
-Automated Markdown formatting (`rumdl fmt`) ensures documentation authored by developers
-and AI agents adheres to identical formatting standards and maintains clean Git diffs.
+`rumdl` is a Rust-based Markdown linter and formatter that enforces GitHub Flavored
+Markdown (GFM) structure, an 88-character prose/code line limit, and embedded Python
+code block linting/formatting via **[Ruff](ruff.md)** (`[code-block-tools]`).
 
 ## Configuration in Zenith
 
 Configured in `rumdl.toml` at the project root:
 
 ```python exec="1" result="toml"
+import re
 from pathlib import Path
 
 path = Path("{{cookiecutter.project_slug}}/rumdl.toml")
 if not path.exists():
     path = Path("rumdl.toml")
-print(path.read_text().strip())
+text = path.read_text(encoding="utf-8")
+text = re.sub(r"^# =+[^\n]*\n(?:#[^\n]*\n)*# =+[^\n]*\n+", "", text)
+print(text.strip())
 ```
 
 ## Key Invocations
 
 ```bash
-uv run rumdl check           # Check all Markdown files
-uv run rumdl fmt             # Auto-format Markdown files
-uv run poe lint-md           # Wired development task in Poe
-uv run poe format-md         # Wired formatting task in Poe
+uv run poe lint-md           # Lint Markdown files and Python code blocks
+uv run poe format-md         # Auto-format Markdown tables, prose, and snippets
 ```
 
 ## Upstream Documentation

@@ -7,60 +7,53 @@ purpose: Document GitHub Actions static security auditing and pipeline risk anal
 
 [![Tool: zizmor](https://img.shields.io/badge/security-zizmor-red.svg)](https://woodruffw.github.io/zizmor/)
 
-`zizmor` is a static security analysis tool for GitHub Actions CI/CD workflows written
-in Rust by William Woodruff.
+`zizmor` is a Rust-based static security analyzer for GitHub Actions workflows
+(`.github/workflows/*.yaml`). It detects script injection vulnerabilities (unquoted
+`${{ github.event.* }}` interpolations inside `run:` blocks), overly broad
+`permissions:` scopes, dangerous `pull_request_target` checkouts, and cache poisoning
+vectors.
 
-## What It Does
-
-`zizmor` parses GitHub Actions YAML workflow manifests to detect security
-vulnerabilities, insecure patterns, and potential attack vectors. It identifies
-unescaped context interpolations that expose steps to script injection, flags workflows
-lacking explicit minimal permission blocks, and warns against unpinned third-party
-actions referencing mutable branch heads.
-
-By checking for patterns where fork pull requests or untrusted triggers could
-exfiltrate secrets, zizmor secures CI pipelines before changes are deployed.
-
-## Why It's in Zenith
-
-Continuous integration pipelines represent high-value attack surfaces because they hold
-deployment credentials, PyPI release tokens, and code signing keys. AI coding assistants
-frequently introduce insecure CI patterns, such as unquoted GitHub event contexts in run
-steps.
-
-Zenith runs zizmor as an automated security quality gate in both prek hooks and
-scheduled CI pipelines, guaranteeing that infrastructure-as-code remains hardened
-against supply-chain and injection attacks.
+Zenith runs `zizmor` in `--pedantic` mode (`--min-severity informational`) as part of
+`uv run poe code-quality` and CI quality gates.
 
 ## Configuration in Zenith
 
 Configured in `.zizmor.yml` at the project root:
 
 ```python exec="1" result="yaml"
+import re
 from pathlib import Path
 
 path = Path("{{cookiecutter.project_slug}}/.zizmor.yml")
 if not path.exists():
     path = Path(".zizmor.yml")
-print(path.read_text().strip())
+text = path.read_text(encoding="utf-8")
+text = re.sub(r"^# =+[^\n]*\n(?:#[^\n]*\n)*# =+[^\n]*\n+", "", text)
+print(text.strip())
 ```
 
-And integrated into `prek.toml`:
+And wired in `poe_tasks.toml`:
 
 ```toml
-[[repos]]
-repo = "https://github.com/woodruffw/zizmor-pre-commit"
-rev = "v1.4.1"
-hooks = [
-    { id = "zizmor", name = "🛡️ zizmor · Audit GitHub Actions workflows" },
-]
+[tasks.zizmor]
+    cmd  = "zizmor --config .zizmor.yml --pedantic --min-severity informational .github/workflows"
+    help = "Audit GitHub Actions workflows for security vulnerabilities with zizmor."
 ```
+
+> [!NOTE]
+> **Why `unpinned-uses` Is Disabled by Default**: Scaffolded workflows pin actions to
+> version tags (such as `actions/checkout@v6`) so Dependabot can update them cleanly. If
+> your organization mandates full 40-character commit SHA pinning for third-party
+> actions, remove the `unpinned-uses` block from `.zizmor.yml`.
 
 ## Key Invocations
 
 ```bash
-uv run zizmor .github/workflows/   # Run static security audit on CI workflows
-uv run prek run zizmor -a          # Run zizmor via prek
+# Run pedantic audit via Poe
+uv run poe zizmor
+
+# Direct CLI invocation
+uv run zizmor --config .zizmor.yml --pedantic --min-severity informational .github/workflows
 ```
 
 ## Upstream Documentation

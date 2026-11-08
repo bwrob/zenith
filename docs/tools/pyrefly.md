@@ -7,101 +7,49 @@ purpose: Document strict static type checking, generic type parameters, and type
 
 [![Tool: Pyrefly](https://img.shields.io/badge/types-pyrefly%20strict-blueviolet.svg)](https://github.com/facebook/pyrefly)
 
-`Pyrefly` is Meta's static type checker for Python written in Rust. It
-provides fast type inference, strict sound type validation, and native support for
-modern Python 3.12+ type system syntax.
-
-## What It Does
-
-Pyrefly validates type soundness across Python codebases by evaluating Abstract Syntax
-Trees in Rust. It natively supports modern Python 3.12+ features—including PEP 695
-generic syntax (`def get_item[T](items: list[T]) -> T:`), type aliases, and structural
-subtyping through `typing.Protocol` without requiring inheritance.
-
-By validating function boundaries at compile time, Pyrefly catches missing type
-annotations, implicit dynamic conversions, and unsafe coercions with instant feedback.
-
-## Why It's in Zenith
-
-Zenith runs Pyrefly in its highest-assurance configuration (`preset = "strict"`). This
-eliminates implicit `Any` and ensures that every public interface, parameter, and return
-value is explicitly typed and sound.
-
-Autonomous AI agents frequently introduce loose type annotations or unconstrained
-generics when generating code. Operating Pyrefly in strict mode acts as an automated
-anti-hallucination guardrail, blocking untyped code from passing quality gates before
-human review.
+`Pyrefly` is Meta's Rust-based static type checker for Python. Zenith configures Pyrefly
+with `preset = "strict"`, `infer-with-first-use = false`, and
+`enabled-ignores = ["pyrefly"]`, and enforces **100% strict type coverage** across
+`src/` via `pyrefly coverage check`.
 
 ## Configuration in Zenith
 
 Configured in `pyrefly.toml` at the project root:
 
 ```python exec="1" result="toml"
+import re
 from pathlib import Path
 
 path = Path("{{cookiecutter.project_slug}}/pyrefly.toml")
 if not path.exists():
     path = Path("pyrefly.toml")
-print(path.read_text().strip())
+text = path.read_text(encoding="utf-8")
+text = re.sub(r"^# =+[^\n]*\n(?:#[^\n]*\n)*# =+[^\n]*\n+", "", text)
+text = text.replace("{{ cookiecutter.python_version }}", "3.12")
+print(text.strip())
 ```
 
-### Strict Mode Invariants
+## Strict Mode & Type Completeness Rules
 
-Under strict mode, all function parameters and return types must be fully annotated.
-Implicit `Any` inference is strictly prohibited, structural protocols are validated at
-call sites, and any untyped third-party libraries require explicit stub declarations or
-typed wrappers.
-
-### Editor Experience & Alternative Type Checkers
-
-Developers typically author code inside VS Code, Cursor, PyCharm, or Neovim:
-
-- **Editor Language Servers (LSP)**: If your editor uses Pylance or Pyright for inline
-  completions, Pyrefly operates harmoniously in the background, executing in
-  milliseconds during `uv run poe type-check`, `prek` pre-commit hooks, and CI
-  pipelines.
-- **Third-Party Stubs & PEP 561**: Pyrefly automatically ingests inline types from PEP
-  561 compliant libraries and community `typeshed` definitions. For legacy untyped
-  dependencies, install typeshed stubs (e.g. `uv add --dev types-requests`) or wrap
-  external APIs in typed boundary adapters.
-- **Flexibility**: If your organization mandates `mypy` or `pyright`, you can swap type
-  checkers at any time by updating the `[tasks.type-check]` command in `poe_tasks.toml`.
-
-## Type Coverage & Completeness Enforcement
-
-Beyond checking type correctness, Pyrefly provides native type coverage and completeness
-measurement via `pyrefly coverage`:
-
-- **Coverage Metrics**: Evaluates all typables across your package—function return
-  types, parameters, module-level variables, and class attributes.
-- **Strict Coverage (`--strict`)**: Annotations that resolve to `Any` count as untyped.
-  Only sound, concrete types satisfy the threshold.
-- **Public API Completeness (`--public-only`)**: Checks symbols reachable from public
-  modules via re-export chains, guaranteeing PEP 561 completeness for library consumers.
-- **Automated Gate**: Zenith wires `uv run poe type-coverage`
-  (`pyrefly coverage check src --fail-under 100 --strict`) directly into
-  `poe code-quality` and CI pipelines.
+- **100% strict type coverage (`poe type-coverage`)**:
+  `pyrefly coverage check src --fail-under 100 --strict` verifies that every function
+  parameter, return type, class attribute, and module-level variable in `src/` has an
+  explicit annotation. Under `--strict`, annotations that resolve to `Any` count as
+  untyped and fail the gate.
+- **Scoped `# pyrefly: ignore[code]` only**: Because `enabled-ignores = ["pyrefly"]`,
+  generic `# type: ignore` comments are ignored. Suppressions must name the specific
+  Pyrefly error code (`# pyrefly: ignore[bad-assignment]`) with a rationale comment.
+- **Editor integration**: Pyrefly runs via LSP or alongside Pylance/Pyright in VS Code,
+  Cursor, Zed, and Neovim, and executes on `pre-push` via `prek` and in
+  `uv run poe code-quality`.
 
 ## Key Invocations
 
 ```bash
-# Run static type analysis across project.
-uv run pyrefly check
-
-# Enforce 100% strict type coverage.
-uv run pyrefly coverage check src --fail-under 100 --strict
-
-# Check public API completeness.
-uv run pyrefly coverage check src --public-only
-
-# Generate detailed JSON coverage report.
-uv run pyrefly coverage report src
-
-# Run the strict type-checking task in Poe.
-uv run poe type-check
-
-# Run the type-coverage gate in Poe.
-uv run poe type-coverage
+uv run poe type-check                              # Run pyrefly check
+uv run poe type-coverage                           # Enforce 100% strict coverage
+uv run poe type-coverage-report                    # Output JSON coverage report
+uv run pyrefly coverage check src --public-only    # Verify PEP 561 public API types
 ```
 
 ## Upstream Documentation
