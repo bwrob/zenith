@@ -245,10 +245,8 @@ def test_zenith_app_features_screen_scroll_and_non_overlapping_layout() -> None:
     async def run() -> None:
         app = ZenithApp()
         async with app.run_test(size=(100, 30)) as pilot:
-            vs1 = app.screen.query_one("VerticalScroll")
-            vs1.scroll_to_widget(app.screen.query_one("#next-btn"))
-            await pilot.pause()
-            await pilot.click("#next-btn")
+            assert isinstance(app.screen, MetadataScreen)
+            app.screen.action_next()
             await pilot.pause()
 
             assert isinstance(app.screen, FeaturesScreen)

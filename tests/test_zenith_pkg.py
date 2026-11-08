@@ -2,10 +2,14 @@
 
 from __future__ import annotations
 
+import subprocess
 import zipfile
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 from zenith import __version__
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 def test_package_metadata() -> None:
@@ -13,11 +17,15 @@ def test_package_metadata() -> None:
     assert __version__ == "0.2.0"
 
 
-def test_wheel_contents() -> None:
+def test_wheel_contents(tmp_path: Path) -> None:
     """Verify that built wheel contains template files and console scripts (REQ-001)."""
-    dist_dir = Path("dist")
-    wheels = list(dist_dir.glob("zenith_template-*.whl"))
-    assert wheels, "No wheel found in dist/ directory"
+    subprocess.run(  # ruff: ignore[subprocess-without-shell-equals-true] -- fixed uv build argument list
+        ["uv", "build", "--wheel", "--out-dir", str(tmp_path)],  # ruff: ignore[start-process-with-partial-path] -- uv resolved on standard PATH
+        check=True,
+        capture_output=True,
+    )
+    wheels = list(tmp_path.glob("zenith_template-*.whl"))
+    assert wheels, "No wheel found in output directory"
 
     wheel_path = wheels[0]
     with zipfile.ZipFile(wheel_path) as z:
