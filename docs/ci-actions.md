@@ -43,7 +43,26 @@ spikes, circular imports, and undeclared dependencies before human review begins
 Mandatory 100% statement and branch coverage enforces complete assertion depth,
 lowest-direct resolution proves that declared minimum dependency bounds in
 `pyproject.toml` actually work, and `UV_EXCLUDE_NEWER` establishes an explicit package
-cutoff timestamp to shield builds against upstream supply-chain disruptions.
+cutoff timestamp to shield builds against upstream supply-chain disruptions. All matrix
+and quality jobs fan into a single **`🛠️ All Checks Status`** pass-gate job so branch
+rulesets only need to require one status check.
+
+> [!IMPORTANT]
+> **Enable Repository Auto-Merge for the Pass Gate**
+>
+> When a branch ruleset requires the **`🛠️ All Checks Status`** pass gate before
+> merging, `dependabot-automerge.yaml` (`🤖 Enable Auto-Merge for Dependabot`) queues
+> Dependabot pull requests via `gh pr merge --auto --squash` while checks are still
+> running. In newly created GitHub repositories, you must enable auto-merge:
+>
+> 1. Navigate to **Settings** → **General** → **Pull Requests** and check **Allow
+>    auto-merge** (or run `gh repo edit --enable-auto-merge`).
+> 2. Under **Settings** → **Rules** → **Rulesets**, require status checks to pass before
+>    merging and select **`🛠️ All Checks Status`**.
+>
+> Without **Allow auto-merge** enabled, the `🤖 Enable Auto-Merge for Dependabot` job
+> fails with `GraphQL: Auto merge is not allowed for this repository
+> (enablePullRequestAutoMerge)` whenever a pass gate is active.
 
 ### Test Redistribution Workflow
 
