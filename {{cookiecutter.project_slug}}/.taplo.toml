@@ -10,7 +10,7 @@
 exclude = [
     ".agents/skills/**/templates/**",
     ".temp/**",
-    ".venv/**",
+    ".venv*/**",
     "build/**",
     "dist/**",
     "site/**",

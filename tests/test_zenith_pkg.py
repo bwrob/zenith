@@ -34,6 +34,7 @@ def test_wheel_contents(tmp_path: Path) -> None:
         assert "zenith/cli.py" in names
         assert "zenith/template/cookiecutter.json" in names
         assert "zenith/template/hooks/post_gen_project.py" in names
+        assert "zenith/template/templates/licenses/_mit.txt" in names
         assert any(
             name.startswith("zenith/template/{{cookiecutter.project_slug}}")
             for name in names

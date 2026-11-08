@@ -43,6 +43,7 @@
     [tool.hatch.build.targets.wheel.force-include]
         "cookiecutter.json"             = "zenith/template/cookiecutter.json"
         "hooks"                         = "zenith/template/hooks"
+        "templates"                     = "zenith/template/templates"
         "{{cookiecutter.project_slug}}" = "zenith/template/{{cookiecutter.project_slug}}"
 
 [tool.hatch.build.targets.sdist]
@@ -50,6 +51,7 @@
         "src/zenith",
         "cookiecutter.json",
         "hooks",
+        "templates",
         "{{cookiecutter.project_slug}}",
         "README.md",
         "LICENSE",
