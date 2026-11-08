@@ -414,11 +414,16 @@ def main(argv: Sequence[str] | None = None) -> int:
         config = config_from_args(args)
 
     try:
-        project_dir = generate_project(
-            config,
-            output_dir=config.output_dir,
-            overwrite=args.overwrite,
-        )
+        with console.status(
+            "[bold #38bdf8]✦ Initializing Zenith project...[/]",
+            spinner="dots",
+        ) as status:
+            project_dir = generate_project(
+                config,
+                output_dir=config.output_dir,
+                overwrite=args.overwrite,
+                on_step=lambda msg: status.update(f"[bold #38bdf8]✦ {msg}[/]"),
+            )
     except (FileExistsError, FileNotFoundError) as err:
         console.print(f"[bold red]Error:[/bold red] {err}")
         return 1

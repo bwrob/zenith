@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import contextlib
 from dataclasses import replace
 from pathlib import Path
 from typing import TYPE_CHECKING, ClassVar, cast, override
@@ -77,6 +78,15 @@ Vertical {
 .field-label {
     color: #94a3b8;
     margin-top: 1;
+}
+.target-preview {
+    color: #38bdf8;
+    margin-top: 0;
+    margin-bottom: 1;
+}
+.target-warning {
+    color: #f43f5e;
+    text-style: bold;
 }
 Input {
     background: #1e293b;
@@ -159,6 +169,31 @@ Checkbox {
 """
 
 
+def format_target_preview(output_dir: str, project_slug: str) -> tuple[str, bool]:
+    """Compute the resolved destination path label and collision warning state.
+
+    Args:
+        output_dir: Root directory input string.
+        project_slug: Project directory slug string.
+
+    Returns:
+        Tuple of `(formatted_label_text, has_collision_warning)`.
+
+    """
+    base_raw = output_dir.strip() or str(Path.cwd())
+    slug_raw = project_slug.strip() or "my-project"
+    target_path = (Path(base_raw).expanduser() / slug_raw).resolve()
+    has_collision = False
+    with contextlib.suppress(OSError):
+        has_collision = target_path.is_dir() and any(target_path.iterdir())
+    if has_collision:
+        return (
+            f"⚠ Target directory exists and is not empty: {target_path}",
+            True,
+        )
+    return (f"✦ Target: {target_path}", False)
+
+
 class MetadataScreen(Screen[object]):
     """Screen 1: Project Identity and Runtime Licensing."""
 
@@ -199,6 +234,14 @@ class MetadataScreen(Screen[object]):
                 placeholder="my-project",
                 id="project-slug",
             )
+            preview_text, is_warning = format_target_preview(
+                cfg.output_dir,
+                cfg.project_slug,
+            )
+            preview_classes = (
+                "target-preview target-warning" if is_warning else "target-preview"
+            )
+            yield Label(preview_text, id="target-preview", classes=preview_classes)
 
             yield Label(
                 "Python Package Name (Import identifier):",
@@ -280,6 +323,16 @@ class MetadataScreen(Screen[object]):
         pkg_input = self.query_one("#package-name", Input)
         slug_input.value = slugify(event.value)
         pkg_input.value = slugify(event.value, separator="_")
+
+    @on(Input.Changed, "#output-dir, #project-slug")
+    def on_target_inputs_changed(self) -> None:
+        """Update the live destination preview and collision warning label."""
+        out_val = self.query_one("#output-dir", Input).value
+        slug_val = self.query_one("#project-slug", Input).value
+        preview_text, is_warning = format_target_preview(out_val, slug_val)
+        preview_label = self.query_one("#target-preview", Label)
+        preview_label.update(preview_text)
+        preview_label.set_class(is_warning, "target-warning")
 
     @on(Button.Pressed, "#next-btn")
     def action_next(self) -> None:

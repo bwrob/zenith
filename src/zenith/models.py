@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+import contextlib
 import re
+import subprocess  # ruff: ignore[suspicious-subprocess-import] -- query git config for default author metadata
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -93,6 +95,30 @@ def slugify(value: str, separator: str = "-") -> str:
     return re.sub(r"[-\s_]+", separator, cleaned)
 
 
+def git_config_value(key: str, default: str) -> str:
+    """Read a configuration value from global or local Git configuration.
+
+    Args:
+        key: Git configuration key (such as `user.name` or `user.email`).
+        default: Fallback string when the key is unset or Git is unavailable.
+
+    Returns:
+        Configured Git value or `default`.
+
+    """
+    with contextlib.suppress(OSError, subprocess.SubprocessError):
+        result = subprocess.run(  # ruff: ignore[subprocess-without-shell-equals-true] -- fixed git config argument list
+            ["git", "config", "--get", key],  # ruff: ignore[start-process-with-partial-path] -- git resolved on standard PATH
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=1,
+        )
+        if result.returncode == 0 and result.stdout.strip():
+            return result.stdout.strip()
+    return default
+
+
 @dataclass(frozen=True, slots=True)
 class ZenithConfig:
     """Configuration parameters for generating a new Zenith project."""
@@ -102,8 +128,12 @@ class ZenithConfig:
     project_slug: str = "my-project"
     package_name: str = "my_project"
     description: str = "A modern Python project."
-    author_name: str = "Author Name"
-    author_email: str = "author@example.com"
+    author_name: str = field(
+        default_factory=lambda: git_config_value("user.name", "Author Name"),
+    )
+    author_email: str = field(
+        default_factory=lambda: git_config_value("user.email", "author@example.com"),
+    )
     github_username: str = "author"
     version: str = "0.1.0"
     python_version: str = "3.12"

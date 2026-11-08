@@ -12,7 +12,13 @@ from cookiecutter.main import cookiecutter
 from zenith.template import get_template_path
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from zenith.models import ZenithConfig
+
+
+def _noop_step(_message: str) -> None:
+    """Ignore step status notifications when no callback is provided."""
 
 
 def run_cmd(cmd: list[str], cwd: Path) -> None:
@@ -32,21 +38,29 @@ def run_cmd(cmd: list[str], cwd: Path) -> None:
         )
 
 
-def _run_post_scaffold(project_dir: Path, config: ZenithConfig) -> None:
+def _run_post_scaffold(
+    project_dir: Path,
+    config: ZenithConfig,
+    on_step: Callable[[str], None] = _noop_step,
+) -> None:
     """Execute optional post-scaffolding lifecycle automation steps.
 
     Args:
         project_dir: Path to the generated project directory.
         config: Configuration containing lifecycle flags.
+        on_step: Callback invoked with a human-readable description before each step.
 
     """
     if config.init_git and not (project_dir / ".git").is_dir():
+        on_step("Initializing Git repository (git init)...")
         run_cmd(["git", "init"], cwd=project_dir)
 
     if config.run_uv_sync:
+        on_step("Synchronizing Python environment (uv sync)...")
         run_cmd(["uv", "sync"], cwd=project_dir)
 
     if config.install_git_hooks and (project_dir / ".git").is_dir():
+        on_step("Installing Git hooks (prek install)...")
         run_cmd(["uv", "run", "prek", "install"], cwd=project_dir)
 
 
@@ -55,6 +69,7 @@ def generate_project(
     output_dir: Path | str = ".",
     *,
     overwrite: bool = False,
+    on_step: Callable[[str], None] = _noop_step,
 ) -> Path:
     """Generate a new Zenith project from the bundled template.
 
@@ -62,6 +77,7 @@ def generate_project(
         config: Project configuration settings.
         output_dir: Destination directory where project folder will be created.
         overwrite: Whether to overwrite existing files in destination directory.
+        on_step: Callback invoked with a human-readable description before each step.
 
     Returns:
         Path to the scaffolded project directory.
@@ -80,6 +96,7 @@ def generate_project(
     template_path = get_template_path()
     context = config.to_cookiecutter_context()
 
+    on_step(f"Scaffolding project template into {target_dir.name}...")
     result = cookiecutter(
         template=str(template_path),
         extra_context=context,
@@ -88,5 +105,5 @@ def generate_project(
         overwrite_if_exists=overwrite,
     )
     project_path = Path(result)
-    _run_post_scaffold(project_path, config)
+    _run_post_scaffold(project_path, config, on_step=on_step)
     return project_path

@@ -97,16 +97,20 @@ def test_generate_project_runs_post_scaffold_automation(tmp_path: Path) -> None:
         (target_dir / ".git").mkdir(parents=True, exist_ok=True)
         return str(target_dir)
 
+    steps: list[str] = []
     with (
         patch("zenith.generator.get_template_path", return_value=fake_template),
         patch("zenith.generator.cookiecutter", side_effect=fake_cookiecutter),
         patch("zenith.generator.run_cmd") as mock_cmd,
     ):
-        result = generate_project(config, output_dir=tmp_path)
+        result = generate_project(config, output_dir=tmp_path, on_step=steps.append)
         assert result == target_dir
         called_cmds = [call.args[0] for call in mock_cmd.call_args_list]
         assert ["uv", "sync"] in called_cmds
         assert ["uv", "run", "prek", "install"] in called_cmds
+        assert any("Scaffolding project template" in s for s in steps)
+        assert any("uv sync" in s for s in steps)
+        assert any("prek install" in s for s in steps)
 
 
 def test_generate_project_runs_git_init_when_git_missing(tmp_path: Path) -> None:

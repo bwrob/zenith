@@ -44,10 +44,24 @@ def test_cli_parser_defaults() -> None:
 
 def test_cli_no_input_invokes_generator(tmp_path: Path) -> None:
     """Verify that --no-input bypasses TUI and executes generate_project (REQ-006)."""
+
+    def fake_generate(
+        _config: ZenithConfig,
+        output_dir: Path | str = ".",
+        *,
+        overwrite: bool = False,
+        on_step: object = None,
+    ) -> Path:
+        assert overwrite is False
+        assert output_dir == str(tmp_path)
+        assert callable(on_step)
+        on_step("Scaffolding...")
+        return tmp_path / "zenith"
+
     with (
         patch(
             "zenith.cli.generate_project",
-            return_value=tmp_path / "zenith",
+            side_effect=fake_generate,
         ) as mock_gen,
         patch("zenith.cli.ZenithApp") as mock_app,
     ):
@@ -56,9 +70,7 @@ def test_cli_no_input_invokes_generator(tmp_path: Path) -> None:
         mock_app.assert_not_called()
         mock_gen.assert_called_once()
         config = mock_gen.call_args.args[0]
-        output_dir = mock_gen.call_args.kwargs.get("output_dir")
         assert isinstance(config, ZenithConfig)
-        assert output_dir == str(tmp_path)
 
 
 def test_cli_no_input_with_custom_flags(tmp_path: Path) -> None:

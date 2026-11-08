@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+import subprocess
+from unittest.mock import patch
+
 from zenith.models import (
     AI_TOOL_METADATA,
     AI_TOOL_PRESETS,
@@ -14,6 +17,7 @@ from zenith.models import (
     SUPPORTED_LICENSES,
     SUPPORTED_PYTHON_VERSIONS,
     ZenithConfig,
+    git_config_value,
     slugify,
 )
 
@@ -24,6 +28,32 @@ def test_slugify_conversions() -> None:
     assert slugify("My Cool Project", separator="_") == "my_cool_project"
     assert slugify("Project @ 2026!!!") == "project-2026"
     assert slugify("   trimmed   ") == "trimmed"
+
+
+def test_git_config_value_reads_and_falls_back() -> None:
+    """Verify git_config_value returns configured value or falls back cleanly."""
+    ok_proc = subprocess.CompletedProcess(
+        args=["git", "config", "--get", "user.name"],
+        returncode=0,
+        stdout="Ada Lovelace\n",
+        stderr="",
+    )
+    with patch("zenith.models.subprocess.run", return_value=ok_proc):
+        assert git_config_value("user.name", "Author Name") == "Ada Lovelace"
+
+    empty_proc = subprocess.CompletedProcess(
+        args=["git", "config", "--get", "user.name"],
+        returncode=1,
+        stdout="",
+        stderr="",
+    )
+    with patch("zenith.models.subprocess.run", return_value=empty_proc):
+        assert git_config_value("user.name", "Author Name") == "Author Name"
+
+    with patch("zenith.models.subprocess.run", side_effect=OSError("git missing")):
+        assert git_config_value("user.email", "author@example.com") == (
+            "author@example.com"
+        )
 
 
 def test_presets_completeness() -> None:

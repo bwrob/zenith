@@ -5,15 +5,21 @@ from __future__ import annotations
 import asyncio
 from pathlib import Path
 
-from textual.widgets import Checkbox, Input, Select, SelectionList
+from textual.widgets import Checkbox, Input, Label, Select, SelectionList
 
 from zenith.models import (
     ALL_AI_TOOLS,
     PRESET_CLI_ONLY,
     PRESET_IDE_ONLY,
     PRESET_RECOMMENDED,
+    ZenithConfig,
 )
-from zenith.ui.app import FeaturesScreen, MetadataScreen, ZenithApp
+from zenith.ui.app import (
+    FeaturesScreen,
+    MetadataScreen,
+    ZenithApp,
+    format_target_preview,
+)
 
 
 def test_zenith_app_metadata_screen_initial_state() -> None:
@@ -255,6 +261,40 @@ def test_zenith_app_features_screen_scroll_and_non_overlapping_layout() -> None:
 
             assert git_box.region.y >= skills_box.region.bottom
             assert ai_list.region.y >= git_box.region.bottom
+            await pilot.exit(None)
+
+    asyncio.run(run())
+
+
+def test_zenith_app_target_preview_and_collision_warning(tmp_path: Path) -> None:
+    """Verify live target path preview and collision warning on MetadataScreen."""
+    existing_dir = tmp_path / "existing-app"
+    existing_dir.mkdir()
+    (existing_dir / "README.md").write_text("existing", encoding="utf-8")
+
+    text_warn, is_warn = format_target_preview(str(tmp_path), "existing-app")
+    assert is_warn is True
+    assert "Target directory exists and is not empty" in text_warn
+
+    text_ok, is_ok = format_target_preview(str(tmp_path), "fresh-app")
+    assert is_ok is False
+    assert "✦ Target:" in text_ok
+
+    async def run() -> None:
+        cfg = ZenithConfig(
+            output_dir=str(tmp_path),
+            project_name="Existing App",
+            project_slug="existing-app",
+        )
+        app = ZenithApp(initial_config=cfg)
+        async with app.run_test(size=(120, 100)) as pilot:
+            preview = app.screen.query_one("#target-preview", Label)
+            assert preview.has_class("target-warning")
+
+            slug_input = app.screen.query_one("#project-slug", Input)
+            slug_input.value = "fresh-app"
+            await pilot.pause()
+            assert not preview.has_class("target-warning")
             await pilot.exit(None)
 
     asyncio.run(run())
