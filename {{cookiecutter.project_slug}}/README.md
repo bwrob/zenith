@@ -1,7 +1,5 @@
-# {{ cookiecutter.project_name }}
-
 <p align="center">
-  <img src="docs/assets/python-logo.svg" alt="Python Logotype" width="140">
+  <img src="https://raw.githubusercontent.com/{{ cookiecutter.github_username }}/{{ cookiecutter.project_slug }}/main/docs/assets/python-banner.svg" alt="{{ cookiecutter.project_name }}" width="360">
 </p>
 
 {% include "_badges.md" %}
@@ -178,7 +176,7 @@ Inline equations like $E = mc^2$ and $\Omega(n)$ are supported out of the box.
 | **Interactive REPL**     | `uv run poe repl`                 | Launches interactive Python REPL with package pre-loaded                        |
 | **Docs**                 | `uv run poe docs-serve`           | Starts local Zensical documentation server                                      |
 | **Build Docs**           | `uv run poe docs-build`           | Compiles documentation into `site/`                                             |
-| **Logotype**             | `uv run poe docs-logo`            | Compiles documentation logotype SVG with Typst                                  |
+| **Banner**               | `uv run poe docs-logo`            | Compiles documentation banner SVG with Typst                                    |
 | **Verify Wheel**         | `uv run poe verify-wheel`         | Verifies clean package and entry-point imports in an isolated wheel environment |
 
 ## Configuration Blueprint

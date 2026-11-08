@@ -27,6 +27,10 @@ line-length = 88
 respect-gitignore = true
 
 [per-file-ignores]
+    # Banner at top replaces H1 title.
+    "**/README.md"     = ["MD041"]
+    "**/docs/index.md" = ["MD041"]
+
     # GFM treats this Zensical admonition as an indented code block.
     "**/docs/getting-started.md" = ["MD046"]
 

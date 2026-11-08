@@ -49,14 +49,14 @@ Wired into `poe_tasks.toml` through the `docs-logo` task:
 
 ```toml
 [tasks.docs-logo]
-cmd = "typst compile docs/assets/python-logo.typ docs/assets/python-logo.svg"
-help = "Compile documentation logotype SVG with Typst."
+cmd = "typst compile docs/assets/python-banner.typ docs/assets/python-banner.svg"
+help = "Compile documentation banner SVG with Typst."
 ```
 
 ## Key Invocations
 
 ```bash
-uv run poe docs-logo         # Re-compile SVG logotype from Typst source
+uv run poe docs-logo         # Re-compile SVG banner from Typst source
 uv run typst compile file.typ file.svg
 ```
 

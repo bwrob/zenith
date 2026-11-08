@@ -111,7 +111,10 @@
     complexity = { cmd = "complexipy src scripts tests hooks", help = "Verify cognitive complexity limits with complexipy." }
     dependencies = { cmd = "deptry src hooks scripts", help = "Check declared dependencies for repository hooks and scripts." }
     docs-build = { cmd = "zensical build --strict --clean", help = "Build static HTML documentation site into site/." }
-    docs-logo = { cmd = "typst compile assets/zenith-star.typ assets/zenith-star.svg", help = "Compile documentation logotype SVG with Typst." }
+    docs-logo = { sequence = [
+        { cmd = "typst compile assets/zenith-banner.typ assets/zenith-banner.svg" },
+        { cmd = "python -c \"import shutil; shutil.copyfile('assets/zenith-banner.svg', 'docs/assets/zenith-banner.svg')\"" },
+    ], help = "Compile documentation banner SVG with Typst." }
     docs-serve = { cmd = "zensical serve", help = "Start live-reloading documentation dev server." }
     fix = { ignore_fail = "return_zero", sequence = [
         { cmd = "ruff check --fix" },
