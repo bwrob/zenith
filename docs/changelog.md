@@ -13,24 +13,56 @@ and this project adheres to
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-11-08
+
+### Fixed
+
+- Packaged `templates/` directory into `zenith-template` wheel (`force-include`) and
+  source distribution (`include`), resolving `TemplateNotFound: 'licenses/_mit.txt'`
+  when scaffolding from the standalone wheel via `uvx zenith-template`.
+- Configured official upstream Taplo Git source (`release-taplo-cli-0.10.0`) for Linux
+  ARM (`aarch64` and `arm64`) platforms in root and template `pyproject.toml`.
+- Formatted template TOML configuration files (`poe_tasks.toml`, `pyproject.toml`,
+  `tach.toml`, `zensical.toml`) and Codex subagent configurations to adhere to Taplo
+  alignment and key ordering rules.
+- Automated TOML formatting via `uv run taplo format` following `uv sync` in
+  `generator.py`.
+- Synchronized quality tasks between local Poe task runner and CI (added `deptry` and
+  `rumdl` to CI; added `lint-ste` to local `poe code-quality`).
+
+### Changed
+
+- Streamlined CI test matrix across Python 3.12, 3.13, and 3.14 on Linux with stable
+  Python 3.13 on macOS and Windows, eliminating redundant cross-platform version
+  combinations.
+- Decoupled documentation build and deployment in `.github/workflows/docs.yaml`,
+  validating strict Zensical documentation builds on pull requests without deploying.
+- Added end-to-end wheel showcase canary test (`canary`) in
+  `.github/workflows/tests.yaml` and rendered template variants audit (`lint-rendered`)
+  in the quality pipeline.
+
+## [0.2.0] - 2026-11-08
+
 ### Added
 
+- Interactive terminal wizard and CLI for `zenith-template` powered by Textual and Typer
+  (`uvx zenith-template`).
+- Programmatic scaffolding API (`generate_project`) and configuration models
+  (`ZenithConfig`).
+- Automated post-scaffold lifecycle automation (`git init`, `uv sync`, `prek install`).
+- Trusted Publishing CI/CD workflow (`.github/workflows/publish.yaml`) to build, attest,
+  and publish `zenith-template` to PyPI.
+- Dedicated Zenith documentation website configured with Zensical, Catppuccin hue-based
+  theming, MathJax, and Termynal terminal animations.
+- Documentation and guides for all integrated tools and agent workflows.
 - New `workflow-docs-authoring` agent skill enforcing human-first technical writing,
   Documentation-Driven Design, the golden source of truth rule ("do not repeat, link"),
-  and tested snippet transclusion in CI, alongside progressive disclosure, editor
-  ergonomics, the Diátaxis architecture, and Troubleshooting Triads.
+  and tested snippet transclusion in CI.
 - New `workflow-docs-consumers` agent skill providing automated stress-testing and
   review of technical documentation through independent simulated developer and
   stakeholder personas.
 - Standardized non-renderable Diátaxis YAML frontmatter preambles across all
-  documentation pages in the repository and template.
-- Dedicated Zenith documentation website configured with Zensical, Catppuccin hue-based
-  theming, MathJax, and Termynal terminal animations.
-- Tooling guides for all 22 integrated tools.
-- Detailed agent skill architecture guides for lifecycle workflows in `.agents/skills/`.
-- Deep-dive philosophy guide outlining Modern Rust Tooling, AI-Ready Engineering,
-  Ruthless Guardrails, and Project Sizing.
-- GitHub Pages automated deployment workflow (`.github/workflows/docs.yaml`).
+  documentation pages.
 
 ## [0.1.0] - 2026-10-18
 
@@ -92,5 +124,7 @@ and this project adheres to
     `sync-example.yaml`.
   - Automated dependency pull request merging via Dependabot and Renovate.
 
-[unreleased]: https://github.com/bwrob/zenith/compare/v0.1.0...HEAD
+[unreleased]: https://github.com/bwrob/zenith/compare/v0.2.1...HEAD
+[0.2.1]: https://github.com/bwrob/zenith/compare/v0.2.0...v0.2.1
+[0.2.0]: https://github.com/bwrob/zenith/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/bwrob/zenith/releases/tag/v0.1.0
