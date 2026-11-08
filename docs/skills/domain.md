@@ -6,39 +6,29 @@ purpose: Instruct project authors on creating, structuring, and maintaining cust
 # Domains
 
 > [!IMPORTANT]
-> **Strict Reservation Notice**: The **`domain-*`** skill prefix is **strictly reserved
-> for the author and maintainers of the instantiated project**. The Zenith template
-> intentionally ships with zero `domain-*` skills out-of-the-box, ensuring that your
-> application domain namespace remains clean and free of naming collisions with upstream
-> template updates.
+> **Reserved Namespace**: The **`domain-*`** skill prefix is reserved exclusively for
+> the authors of generated projects. Zenith ships zero `domain-*` skills out of the box
+> so your application's business rules never collide with upstream template updates.
 
-## What Are Domain Skills?
+## Purpose of Domain Skills
 
-While generic AI coding assistants understand Python syntax, pytest fixtures, and
-standard library modules, they have
-**zero context about your proprietary business domain**.
+AI coding assistants know Python syntax and standard libraries, but they have no prior
+knowledge of your proprietary business rules—such as pricing tiers, legal state
+transitions, tenant isolation boundaries, or regulatory constraints (HIPAA, GDPR,
+PCI-DSS).
 
-Without domain guidance, autonomous AI agents tend to:
+**Domain skills (`domain-*`)** capture those business invariants in `.agents/skills/` so
+agents load them automatically when editing domain modules.
 
-- Make invalid assumptions about customer billing calculations or subscription tiers.
-- Invent unauthorized order state transitions.
-- Misunderstand tenant isolation or authentication boundaries.
-- Implement business logic that violates regulatory compliance (such as HIPAA, GDPR,
-  PCI-DSS).
+## Directory Layout & Frontmatter
 
-**Domain Skills (`domain-*`) codify business rules, domain invariants, entity
-lifecycles, and proprietary service logic into structured runbooks that AI agents load
-when working on domain code.**
-
-## Anatomy of a Domain Skill
-
-Domain skills follow the standard Zenith progressive disclosure architecture:
+Domain skills use the same progressive disclosure layout as built-in skills:
 
 ```tree
 .agents/skills/domain-billing/
-├── SKILL.md          # Core business rules, state transitions, calculation logic
-├── templates/        # JSON payload schemas, webhook response templates
-└── references/       # Payment gateway API specifications, pricing matrices
+├── SKILL.md          # Core business rules, state transitions, and invariants
+├── templates/        # JSON payload schemas or webhook fixtures
+└── references/       # Gateway API specs and pricing tables
 ```
 
 ### Example Frontmatter
@@ -55,23 +45,24 @@ version: 1.0.0
 ---
 ```
 
-## Recommended Patterns
+## Structuring Domain Rules
 
-Use tables and state diagrams to make domain rules easy for agents to apply.
+Use tables and state diagrams so agents can apply domain constraints without guessing.
 
-### Invariant Tables
+### 1. Invariant Tables
 
-Define core domain constraints in clear, non-negotiable tables:
+Express tier limits, quotas, and rounding rules as tables rather than prose paragraphs:
 
 | Subscription Tier | Seat Limit | API Request Cap | Storage Quota |
-| ----------------- | ---------- | --------------- | ------------- |
+| :---------------- | :--------- | :-------------- | :------------ |
 | **Starter**       | Up to 5    | 10,000 / month  | 5 GB          |
 | **Professional**  | Up to 25   | 100,000 / month | 50 GB         |
 | **Enterprise**    | Unlimited  | Custom          | Unlimited     |
 
-### State Machine Lifecycles
+### 2. State Machine Lifecycles
 
-Document valid state transitions so agents never introduce illegal states:
+Define valid entity state transitions in a Mermaid state diagram so agents never add
+unauthorized transitions:
 
 ```mermaid
 stateDiagram-v2
@@ -83,31 +74,15 @@ stateDiagram-v2
     Fulfilled --> [*]
 ```
 
-### Edge Case Matrices
+### 3. Boundary & Edge-Case Rules
 
-Document how the domain handles boundary conditions (for example, leap year billing,
-fractional cent rounding, concurrent subscription upgrades).
+List concrete edge cases (for example, leap-year billing periods, half-to-even currency
+rounding, idempotency keys on webhook retries) and link to the corresponding domain
+models in `src/`.
 
-## Common Domain Skills
+## Creating a Domain Skill
 
-Here are typical domain skills you can scaffold in your Zenith project:
-
-- **`domain-auth`**: Session lifecycles, JWT claims, OAuth2 token refreshing, and RBAC
-  permission hierarchies.
-- **`domain-billing`**: Subscription models, tax calculation rules, discount codes, and
-  payment retry schedules.
-- **`domain-order-fulfillment`**: Cart checkout workflows, shipping provider
-  dispatching, and refund approval thresholds.
-- **`domain-data-ingestion`**: Sensor telemetry normalization, schema migration
-  invariants, and dead-letter queue routing.
-- **`domain-compliance`**: PII masking protocols, audit log retention requirements, and
-  data export contracts.
-
-## Authoring Domain Skills
-
-Use the
-[Skill Creator (workflow-skill-creator)](workflow.md)
-workflow:
+Follow [`workflow-skill-creator`](workflow.md#skill-authoring-workflow-skill-creator):
 
 1. Create the skill directory:
 
@@ -115,11 +90,12 @@ workflow:
    mkdir -p .agents/skills/domain-<name>/{templates,references}
    ```
 
-2. Author `SKILL.md` with active voice, concise rules, and explicit triggers following
+2. Write `.agents/skills/domain-<name>/SKILL.md` following
    [ASD-STE100](guide.md#simplified-technical-english-guide-ste100).
-3. Register the skill in your project's `AGENTS.md`.
-4. Validate compliance:
+3. Add the skill to the domain activation list in your project's `AGENTS.md`.
+4. Validate frontmatter and STE-100 rules:
 
    ```bash
+   uv run poe lint-ste
    uv run poe check-skills
    ```

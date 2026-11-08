@@ -7,56 +7,43 @@ purpose: Document cognitive complexity measurement, threshold scoring, and funct
 
 [![Tool: complexipy](https://img.shields.io/badge/complexity-complexipy-crimson.svg)](https://github.com/rohaquinlop/complexipy)
 
-`complexipy` is an extremely fast cognitive complexity analyzer for Python code written
-in Rust. It measures how difficult functions and methods are for a human or AI agent to
-read and understand.
+`complexipy` is a Rust-based cognitive complexity analyzer for Python. Unlike cyclomatic
+complexity (which counts linear branches equally), cognitive complexity penalizes deeply
+nested control structures (`if`, `for`, `while`, `try/except`), recursion, and mixed
+boolean operator chains.
 
-## What It Does
-
-Cognitive complexity measures the mental effort required to understand the control flow
-of code. Unlike Cyclomatic Complexity, which simply counts independent linear execution
-paths, Cognitive Complexity penalizes nested control structures, recursion, cascading
-conditional ladders, and convoluted boolean expressions.
-
-`complexipy` performs this analysis in milliseconds, generating detailed terminal
-reports that pinpoint exact lines where cognitive overhead spikes.
-
-## Why It's in Zenith
-
-Deeply nested logic and tangled branching are the primary sources of regression bugs in
-production software. AI coding assistants frequently write deeply nested code when
-attempting to patch complex functionality.
-
-Zenith enforces a hard ceiling of **cognitive complexity <= 10** per function or method.
-Functions that exceed 10 points fail CI immediately, prompting developers and AI agents
-to refactor logic into small, composable functions with early returns, structural
-pattern matching, or dispatch tables.
+Zenith enforces a strict ceiling of **`max-complexity-allowed = 10`** per function or
+method across both `src/` and `tests/`.
 
 ## Configuration in Zenith
 
 Configured in `complexipy.toml` at the project root:
 
 ```python exec="1" result="toml"
+import re
 from pathlib import Path
 
 path = Path("{{cookiecutter.project_slug}}/complexipy.toml")
 if not path.exists():
     path = Path("complexipy.toml")
-print(path.read_text().strip())
+text = path.read_text(encoding="utf-8")
+text = re.sub(r"^# =+[^\n]*\n(?:#[^\n]*\n)*# =+[^\n]*\n+", "", text)
+print(text.strip())
 ```
 
-### Complexity Threshold Guidelines
+## Reducing Complexity Above 10
 
-Scores between 1 and 5 indicate simple, easily testable logic. Scores between 6 and 10
-represent acceptable complexity for orchestration or algorithm dispatch. Any score above
-10 is strictly prohibited in Zenith and must be refactored via helper extraction or
-dispatch logic.
+When a function exceeds a score of 10:
+
+1. **Replace nested `if/else` blocks with guard clauses** (early `return` or `raise`).
+2. **Extract inner loop bodies** into small, pure helper functions.
+3. **Replace long `if/elif` chains** with a dictionary dispatch table or `match/case`.
 
 ## Key Invocations
 
 ```bash
-uv run complexipy src tests    # Run cognitive complexity analysis
-uv run poe complexity          # Wired development task in Poe
+uv run poe complexity          # Run complexipy src tests (fails if any function > 10)
+uv run complexipy src tests    # Direct CLI invocation
 ```
 
 ## Upstream Documentation

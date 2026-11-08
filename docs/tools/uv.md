@@ -7,142 +7,138 @@ purpose: Document package management, environment synchronization, and Python ru
 
 [![Tool: uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
 
-`uv` is an extremely fast Python package and project manager written in Rust by Astral.
-It serves as a unified replacement for `pip`, `pip-tools`, `virtualenv`, `poetry`, and
-`pyenv`.
-
-## What It Does
-
-`uv` handles the complete lifecycle of Python application and library development. Using
-an advanced PubGrub resolution algorithm, it resolves cross-platform dependency graphs
-up to a hundred times faster than legacy package managers. It produces deterministic
-`uv.lock` manifests that lock exact wheels, cryptographic hashes, and platform markers,
-guaranteeing reproducible environments across developer machines and continuous
-integration runners.
-
-Beyond dependency management, `uv` provisions isolated virtual environments
-automatically, compiles production-ready wheels and source distributions through its
-native `uv_build` backend, and executes ephemeral command-line tools via `uvx` without
-polluting the global system.
-
-## Why It's in Zenith
-
-Zenith adopts `uv` as its foundational environment engine to eliminate latency from
-developer and AI agent feedback loops. Sub-second environment synchronization
-(`uv sync`) keeps automated refactoring and testing completely frictionless.
-
-Executing all project tasks hermetically through `uv run <command>` guarantees that
-tools run against pinned project dependencies rather than system Python, preventing host
-environment contamination. Combined with declarative dependency groups (`dev`, `test`,
-`docs`) and native PEP 517 packaging, `uv` provides a unified, zero-drift foundation for
-modern Python engineering.
+`uv` is Astral's Rust-based Python package, dependency, and environment manager. In
+Zenith projects, `uv` manages Python interpreter downloads, `.venv/` creation,
+cross-platform `uv.lock` resolution, isolated command execution (`uv run`), and PEP 517
+wheel/sdist builds via the native `uv_build` backend.
 
 ## Configuration in Zenith
 
-`uv` is configured declaratively in `pyproject.toml`:
+Configured in `pyproject.toml`:
 
 ```toml
 [build-system]
     build-backend = "uv_build"
-    requires      = ["uv_build>=0.5.0"]
-
-[tool.uv]
-    package = true
+    requires      = ["uv_build>=0.12.7,<0.14.0"]
 
 [dependency-groups]
     dev = [
         "poethepoet>=0.42.0",
         "prek>=0.5.5",
-        "pyrefly>=0.0.1",
-        "ruff>=0.17.0",
-        "tach>=0.28.0",
-        "taplo>=0.9.3",
-        "typos>=1.30.0",
-        "complexipy>=0.5.0",
-        "zizmor>=1.4.1",
-        "rumdl>=0.0.8",
-    ]
-    test = [
-        "pytest>=8.0.0",
-        "pytest-cov>=6.0.0",
-        "pytest-xdist>=3.6.0",
-        "pytest-randomly>=3.16.0",
-        "syrupy>=4.8.0",
-        "hypothesis>=6.124.0",
-        "cosmic-ray>=8.3.0",
+        { include-group = "test" },
+        { include-group = "lint" },
+        { include-group = "docs" },
+        { include-group = "mutation" },
     ]
     docs = [
-        "zensical>=0.0.8",
-        "mkdocstrings[python]>=0.28.0",
+        "fontpkg-cinzel>=2.0",
+        "griffe-warnings-deprecated>=1.1.0",
         "markdown-exec>=1.12.0",
-        "pymdown-extensions>=10.14.0",
+        "mkdocstrings[python]>=1.0.7",
+        "termynal>=0.14.0",
         "typst>=0.13.0",
+        "zensical>=0.0.70",
     ]
+    lint = [
+        "complexipy>=8.0.0",
+        "deptry>=0.25.1",
+        "griffe>=1.5.0",
+        "pyrefly>=1.3.0",
+        "ruff>=0.17.0",
+        "rumdl>=0.2.75",
+        "tach>=0.35.0",
+        "taplo>=0.9.3",
+        "typos>=1.30.0",
+        "zizmor>=1.23.0",
+    ]
+    mutation = [
+        "cosmic-ray>=8.7.0",
+        "mutmut>=3.8.0",
+    ]
+    test = [
+        "hypothesis>=6.125.0",
+        "pytest>=9.0.0",
+        "pytest-cov>=7.0.0",
+        "pytest-randomly>=3.16.0",
+        "pytest-sugar>=1.1.1",
+        "pytest-xdist>=3.8.0",
+        "syrupy>=6.1.0",
+    ]
+
+[tool.uv]
+    default-groups = ["dev", "test", "lint", "docs", "mutation"]
+    package        = true
+
+    [tool.uv.build-backend]
+        source-include = [
+            "tests/**",
+            "poe_tasks.toml",
+            "ruff.toml",
+            "pytest.ini",
+            ".coveragerc",
+            "tach.toml",
+            ".zizmor.yml",
+            "cosmic-ray.toml",
+        ]
 ```
 
-### Supply-Chain Protection
+### Supply-Chain Cooldown & Vulnerability Audits
 
-In GitHub Actions workflows (`.github/workflows/python_tests.yaml`), Zenith configures:
-
-```yaml
-env:
-    UV_EXCLUDE_NEWER: "2026-10-18T00:00:00Z"
-```
-
-This prevents newly released upstream dependencies or malicious zero-day supply-chain
-packages from breaking continuous integration builds until maintainers intentionally
-update locks.
+- **Release cooldown (`UV_EXCLUDE_NEWER` / `exclude-newer`)**: In CI workflows
+  (`python_tests.yaml` and `test_redistribute.yaml`), unpinned resolution steps set
+  `UV_EXCLUDE_NEWER` to a 7-day rolling cutoff so newly published upstream releases
+  have a 7-day window for community vetting before entering unpinned test jobs. You can
+  also uncomment `exclude-newer = "7 days"` under `[tool.uv]` in `pyproject.toml` to
+  apply the same buffer during local `uv lock` updates.
+- **Lockfile CVE auditing (`uv audit`)**: Run `uv run poe audit` (`uv audit`) to scan
+  all locked packages in `uv.lock` against advisory databases.
 
 ## Key Invocations
 
 ```bash
-uv sync                       # Synchronize project environment with uv.lock
-uv sync --frozen              # Strict sync in CI/Docker (fails if lockfile is out of date)
-uv sync --group test          # Sync with test dependency group
-uv run poe test               # Run Poe tasks inside managed environment
-uv build                      # Build sdist and wheel distributions
-uv lock --upgrade             # Upgrade dependency pins in uv.lock
+uv sync                                         # Sync .venv with uv.lock
+uv sync --frozen --group test                   # Strict CI sync for one group
+uv sync --group test --resolution lowest-direct # Resolve minimum bounds
+uv add <package>                                # Add a runtime dependency
+uv add --group lint <package>                   # Add to a dependency group
+uv run poe test                                 # Run a Poe task inside .venv
+uv run poe audit                                # Audit uv.lock for CVEs
+uv build                                        # Build wheel and sdist
+uv lock --upgrade                               # Upgrade locked versions
 ```
 
-## Production Multi-Stage Containerization
+## Multi-Stage Docker Build
 
-For containerized microservices, `uv` enables lean, multi-stage Docker builds with
-BuildKit cache mounts and bytecode precompilation:
+For containerized deployments, use `uv sync --frozen --no-dev --no-editable` with
+BuildKit cache mounts:
 
 ```dockerfile
 # syntax=docker/dockerfile:1.7
 FROM python:3.12-slim-bookworm AS builder
 
-# Copy uv binary directly from official image
-COPY --from=ghcr.io/astral-sh/uv:0.5.0 /uv /bin/uv
-
-# Compile bytecode and copy packages instead of hardlinking
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/uv
 ENV UV_COMPILE_BYTECODE=1 UV_LINK_MODE=copy
 
 WORKDIR /app
 
-# Install production dependencies using BuildKit cache mounts
 RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=uv.lock,target=uv.lock \
     --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
     uv sync --frozen --no-dev --no-editable
 
-# Stage 2: Final lightweight runtime image
+COPY src /app/src
+COPY README.md LICENSE pyproject.toml uv.lock /app/
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv sync --frozen --no-dev --no-editable
+
 FROM python:3.12-slim-bookworm AS runtime
 
 WORKDIR /app
-
-# Copy isolated virtual environment and application source
 COPY --from=builder /app/.venv /app/.venv
-COPY src /app/src
-
-# Set PATH to use the virtual environment binaries automatically
 ENV PATH="/app/.venv/bin:$PATH"
-
-# Run as non-root user for container security
 USER nobody
 
-ENTRYPOINT ["python", "-m", "my_awesome_service.cli"]
+ENTRYPOINT ["my-project"]
 ```
 
 ## Upstream Documentation

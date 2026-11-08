@@ -170,6 +170,7 @@
         [project.plugins.llmstxt.sections]
             "Agent Skills" = [
                 "skills/index.md",
+                "skills/sdd.md",
                 "skills/workflow.md",
                 "skills/tool.md",
                 "skills/guide.md",
@@ -185,13 +186,14 @@
             "Tooling Stack" = [
                 "tools/index.md",
                 "tools/uv.md",
+                "tools/poethepoet.md",
+                "tools/prek.md",
                 "tools/ruff.md",
                 "tools/pyrefly.md",
                 "tools/complexipy.md",
                 "tools/tach.md",
                 "tools/deptry.md",
                 "tools/griffe.md",
-                "tools/poethepoet.md",
                 "tools/zensical.md",
                 "tools/rumdl.md",
                 "tools/typos.md",

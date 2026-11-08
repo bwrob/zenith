@@ -5,13 +5,10 @@ purpose: Catalog the integrated developer tooling stack spanning workflow, code 
 
 # Zenith Tooling Stack
 
-Zenith replaces fragmented Python tooling with a fast, Rust-based toolchain
-configured with automated quality checks.
+Zenith replaces fragmented Python tooling with a pre-wired, predominantly Rust-native
+toolchain configured through dedicated root files.
 
 ## Tool Architecture & Categories
-
-The diagram below maps the complete Zenith tool ecosystem across four operational
-pillars:
 
 ```mermaid
 flowchart TB
@@ -79,88 +76,64 @@ flowchart TB
     click termy "termynal/" "Explore Termynal documentation"
 ```
 
-Click any tool above to view its technical specifications, architectural rationale in
-Zenith, configuration showcases, and upstream references.
+## Daily Essentials Vs. Background Guardrails
 
-## Two-Tier Tooling Architecture: Daily Essentials Vs. Hardening
+You do not need to memorize CLI flags for twenty tools. Day-to-day commands go through
+`uv` and `poe`, while the remaining tools run automatically inside `uv run poe fix`,
+`uv run poe code-quality`, and `prek` Git hooks:
 
-Seeing over twenty tools can feel overwhelming. Zenith organizes its tooling into two
-distinct tiers so developers can focus immediately on shipping code:
+| Tier                             | Tools                                                                                                                  | How You Interact with Them                                      |
+| :------------------------------- | :--------------------------------------------------------------------------------------------------------------------- | :-------------------------------------------------------------- |
+| **Tier 1: Daily Commands**       | **`uv`**, **`poe`**, **`pytest`**, **`ruff`**, **`typer`**, **`zensical`**                                             | `uv add`, `uv run poe test`, `uv run poe fix`, `poe docs-serve` |
+| **Tier 2: Automated Guardrails** | **`pyrefly`**, **`tach`**, **`deptry`**, **`complexipy`**, **`griffe`**, **`typos`**, **`zizmor`**, **`mutmut`**, etc. | Executed by `uv run poe code-quality`, `prek`, and CI workflows |
 
-| Tier                                  | Tools                                                                                               | When You Use Them                     | Interaction Pattern                                            |
-| :------------------------------------ | :-------------------------------------------------------------------------------------------------- | :------------------------------------ | :------------------------------------------------------------- |
-| **Tier 1: Daily Velocity Essentials** | **`uv`**, **`ruff`**, **`pytest`**, **`poe`**, **`typer`**                                          | Every minute while writing code       | Direct commands: `uv run poe test`, `uv run poe fix`, `uv add` |
-| **Tier 2: Hardening & Auditing**      | **`tach`**, **`complexipy`**, **`pyrefly`**, **`deptry`**, **`griffe`**, **`mutmut`**, **`zizmor`** | Background guardrails before PR merge | Automated: Runs in `uv run poe code-quality` and CI pipelines  |
+## Why Dedicated Configuration Files?
 
-You do not need to learn or configure Tier 2 tools on Day 1. They operate as automated
-safety nets that prevent architectural rot, loose typing, and security leaks.
+Although many Python tools support `[tool.*]` tables inside `pyproject.toml`, Zenith
+places each tool's configuration in its own root file (`ruff.toml`, `pyrefly.toml`,
+`tach.toml`, `complexipy.toml`, `poe_tasks.toml`, `pytest.ini`, `.coveragerc`,
+`.taplo.toml`, `prek.toml`, `rumdl.toml`, `typos.toml`, `.zizmor.yml`,
+`cosmic-ray.toml`):
 
-## Customizing or Pruning Tools
-
-Zenith's tools are decoupled and modular. If your team does not need architectural
-boundary enforcement (`tach`), complexity ceilings (`complexipy`), or mutation testing
-(`mutmut`), you can prune them in three simple steps without breaking other tasks:
-
-1. **Remove from Composite Tasks (`poe_tasks.toml`)**: Open `poe_tasks.toml` and remove
-   the tool's command from the `code-quality` task array.
-2. **Remove from Git Hooks (`prek.toml`)**:
-   Open `prek.toml` and remove the hook entry so `git commit` does not execute it.
-3. **Remove from Dependencies (`pyproject.toml`)**: Remove the package from
-   `[dependency-groups.dev]` in `pyproject.toml` and run `uv sync`. You can then safely
-   delete the tool's standalone `.toml` configuration file.
-
-## Dedicated Configuration Files
-
-Most modern Python tools—such as Ruff, Pytest, Coverage, and Taplo—support defining
-configuration directly inside `pyproject.toml` using `[tool.*]` tables. While
-consolidating settings into a single file appears convenient, Zenith intentionally
-standardizes on **separate, dedicated configuration files per tool** whenever possible
-(`ruff.toml`, `pyrefly.toml`, `complexipy.toml`, `tach.toml`, `poe_tasks.toml`,
-`pytest.ini`, `.coveragerc`, `.taplo.toml`, `prek.toml`):
-
-- **Focused, High-Signal Code Reviews**: Updating a linter rule, adjusting type check
-  settings, or revising task scripts creates a clean Git diff in that tool's specific
-  file. Pull requests remain easy to review without noise in the core packaging
-  manifest.
-- **Prevents Monolithic File Bloat**: Storing configuration for 15+ developer tools in
-  `pyproject.toml` results in a file stretching hundreds of lines. This bloat obscures
-  essential PEP 621 package metadata, dependencies, and build specifications.
-- **Granular Git Blame & History**: Each tool configuration retains an independent
-  commit history. Inspecting `git log ruff.toml` or `git blame tach.toml` surfaces the
-  exact context, author, and pull request for architectural decisions over time.
-- **Tool-Native Schema Support**: Dedicated files allow language servers, editors, and
-  formatters to attach dedicated JSON/TOML schemas directly without schema interference.
+- **Keep `pyproject.toml` focused on packaging**: Package metadata, dependencies, and
+  PEP 517 build settings stay under 140 lines instead of scrolling past hundreds of
+  lines of linter and type-checker rules.
+- **Clean Git diffs and blame history**: Changing a Ruff rule or Tach module boundary
+  touches only `ruff.toml` or `tach.toml`.
+- **Direct editor schema binding**: Language servers (Taplo, YAML, INI) attach each
+  tool's schema to its dedicated filename automatically.
 
 > [!TIP]
-> **Consolidation Is Supported**: If your organization prefers a single unified
-> `pyproject.toml`, modern tools like Ruff, Coverage, Taplo, and Mutmut natively support
-> `[tool.*]` tables. You can freely consolidate sections into `pyproject.toml` and
-> delete the standalone config files without breaking tool behavior.
+> **Pruning or Consolidating Tools**: Every tool is decoupled. To remove a tool you do
+> not need, delete its entry from `poe_tasks.toml` (`code-quality`), `prek.toml`, and
+> `pyproject.toml` (`[dependency-groups]`), delete its config file, and run `uv sync`.
+> Conversely, if your team prefers a single `pyproject.toml`, tools like Ruff, Coverage,
+> and Taplo can be moved into `[tool.*]` sections.
 
 ## Tooling Matrix
 
-| Tool                                | Group                      | Primary Role                                                               | Upstream Documentation                                                         |
-| ----------------------------------- | -------------------------- | -------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
-| **[uv](uv.md)**                     | Build & Workflow           | Package manager, virtual environments, lockfiles, and PEP 517 builds       | [docs.astral.sh/uv](https://docs.astral.sh/uv/)                                |
-| **[Poe the Poet](poethepoet.md)**   | Build & Workflow           | Declarative development task runner integrated with uv                     | [poethepoet.natn.io](https://poethepoet.natn.io/)                              |
-| **[prek](prek.md)**                 | Build & Workflow           | Rust Git hook runner and local quality gate automation                     | [prek.j178.dev](https://prek.j178.dev/)                                        |
-| **[Typer](typer.md)**               | Build & Workflow           | Type-safe CLI framework with Rich terminal rendering                       | [typer.tiangolo.com](https://typer.tiangolo.com/)                              |
-| **[Cookiecutter](cookiecutter.md)** | Build & Workflow           | Project templating engine powering Zenith generation                       | [cookiecutter.readthedocs.io](https://cookiecutter.readthedocs.io/)            |
-| **[Ruff](ruff.md)**                 | Code Quality               | Fast Python linter and formatter with preview rules                        | [docs.astral.sh/ruff](https://docs.astral.sh/ruff/)                            |
-| **[Pyrefly](pyrefly.md)**           | Code Quality               | Meta's strict type checker and 100% type coverage engine                   | [github.com/facebook/pyrefly](https://github.com/facebook/pyrefly)             |
-| **[Tach](tach.md)**                 | Code Quality               | Modular boundary enforcement, circular dependency blocker                  | [github.com/gauge-sh/tach](https://github.com/gauge-sh/tach)                   |
-| **[Deptry](deptry.md)**             | Code Quality               | Detect missing, unused, and transitive package dependencies                | [github.com/osprey-oss/deptry](https://github.com/osprey-oss/deptry)           |
-| **[complexipy](complexipy.md)**     | Code Quality               | Fast cognitive complexity analyzer enforcing max <= 10                     | [github.com/rohaquinlop/complexipy](https://github.com/rohaquinlop/complexipy) |
-| **[Griffe](griffe.md)**             | Code Quality               | Static AST analysis and breaking public API change detector                | [mkdocstrings.github.io/griffe](https://mkdocstrings.github.io/griffe/)        |
-| **[typos](typos.md)**               | Code Quality               | High-performance source code and doc spell checker                         | [github.com/crate-ci/typos](https://github.com/crate-ci/typos)                 |
-| **[pytest](pytest.md)**             | Testing & Security         | Fixture-based test framework with parallel, property, and snapshot plugins | [docs.pytest.org](https://docs.pytest.org/)                                    |
-| **[Coverage.py](coverage.md)**      | Testing & Security         | 100% statement and branch test coverage engine                             | [coverage.readthedocs.io](https://coverage.readthedocs.io/)                    |
-| **[mutmut](mutmut.md)**             | Testing & Security         | Fast AST mutation testing for local TDD loops (macOS/Linux)                | [mutmut.readthedocs.io](https://mutmut.readthedocs.io/)                        |
-| **[Cosmic Ray](cosmic-ray.md)**     | Testing & Security         | AST mutation testing evaluating test suite assertiveness                   | [cosmic-ray.readthedocs.io](https://cosmic-ray.readthedocs.io/)                |
-| **[zizmor](zizmor.md)**             | Testing & Security         | Static security analysis tool for GitHub Actions workflows                 | [woodruffw.github.io/zizmor](https://woodruffw.github.io/zizmor/)              |
-| **[Zensical](zensical.md)**         | Documentation & Formatting | Fast TOML-based static documentation generator                             | [github.com/zensical/zensical](https://github.com/zensical/zensical)           |
-| **[rumdl](rumdl.md)**               | Documentation & Formatting | Rust-native Markdown linter and embedded code checker                      | [github.com/rvben/rumdl](https://github.com/rvben/rumdl)                       |
-| **[Taplo](taplo.md)**               | Documentation & Formatting | Consistent TOML formatting and schema validation                           | [taplo.tamasfe.dev](https://taplo.tamasfe.dev/)                                |
-| **[Prettier](prettier.md)**         | Documentation & Formatting | Opinionated formatter for YAML workflows and CSS stylesheets               | [prettier.io](https://prettier.io/)                                            |
-| **[Typst](typst.md)**               | Documentation & Formatting | Markup-based layout engine for compiling SVG documentation assets          | [typst.app/docs](https://typst.app/docs/)                                      |
-| **[Termynal](termynal.md)**         | Documentation & Formatting | Lightweight terminal animation widget for documentation                    | [github.com/ines/termynal](https://github.com/ines/termynal)                   |
+| Tool                                | Group                      | Config File                       | Role in Zenith                                                            | Upstream Docs                                                                  |
+| :---------------------------------- | :------------------------- | :-------------------------------- | :------------------------------------------------------------------------ | :----------------------------------------------------------------------------- |
+| **[uv](uv.md)**                     | Build & Workflow           | `pyproject.toml`, `uv.lock`       | Package manager, virtual environments, lockfiles, and `uv_build` wheels   | [docs.astral.sh/uv](https://docs.astral.sh/uv/)                                |
+| **[Poe the Poet](poethepoet.md)**   | Build & Workflow           | `poe_tasks.toml`                  | Hermetic task runner (`uv run poe <task>`)                                | [poethepoet.natn.io](https://poethepoet.natn.io/)                              |
+| **[prek](prek.md)**                 | Build & Workflow           | `prek.toml`                       | Rust-native `pre-commit` and `pre-push` Git hook runner                   | [prek.j178.dev](https://prek.j178.dev/)                                        |
+| **[Typer](typer.md)**               | Build & Workflow           | `src/<pkg>/cli.py`                | Type-safe CLI framework with Rich terminal output *(when CLI enabled)*    | [typer.tiangolo.com](https://typer.tiangolo.com/)                              |
+| **[Cookiecutter](cookiecutter.md)** | Build & Workflow           | `cookiecutter.json`, `hooks/`     | Template engine used by `zenith-template` to scaffold projects            | [cookiecutter.readthedocs.io](https://cookiecutter.readthedocs.io/)            |
+| **[Ruff](ruff.md)**                 | Code Quality               | `ruff.toml`                       | Python linter (`select = ["ALL"]`, `preview = true`) and code formatter   | [docs.astral.sh/ruff](https://docs.astral.sh/ruff/)                            |
+| **[Pyrefly](pyrefly.md)**           | Code Quality               | `pyrefly.toml`                    | Strict static type checker and 100% type coverage verifier                | [github.com/facebook/pyrefly](https://github.com/facebook/pyrefly)             |
+| **[Tach](tach.md)**                 | Code Quality               | `tach.toml`                       | Module layer boundary enforcer and circular import blocker                | [github.com/gauge-sh/tach](https://github.com/gauge-sh/tach)                   |
+| **[Deptry](deptry.md)**             | Code Quality               | `pyproject.toml`                  | Checks for missing, unused, and transitive package imports                | [github.com/osprey-oss/deptry](https://github.com/osprey-oss/deptry)           |
+| **[complexipy](complexipy.md)**     | Code Quality               | `complexipy.toml`                 | Cognitive complexity analyzer enforcing `<= 10` per function              | [github.com/rohaquinlop/complexipy](https://github.com/rohaquinlop/complexipy) |
+| **[Griffe](griffe.md)**             | Code Quality               | `poe_tasks.toml`, `zensical.toml` | Static AST parser for API docs and breaking API change detection          | [mkdocstrings.github.io/griffe](https://mkdocstrings.github.io/griffe/)        |
+| **[typos](typos.md)**               | Code Quality               | `typos.toml`                      | Code-aware spell checker for source code and documentation                | [github.com/crate-ci/typos](https://github.com/crate-ci/typos)                 |
+| **[pytest](pytest.md)**             | Testing & Security         | `pytest.ini`                      | Test runner with `xdist`, `randomly`, `sugar`, `syrupy`, and `hypothesis` | [docs.pytest.org](https://docs.pytest.org/)                                    |
+| **[Coverage.py](coverage.md)**      | Testing & Security         | `.coveragerc`                     | Enforces 100% statement and branch coverage across `src/` and `tests/`    | [coverage.readthedocs.io](https://coverage.readthedocs.io/)                    |
+| **[mutmut](mutmut.md)**             | Testing & Security         | `pyproject.toml`                  | Fast AST mutation testing for local TDD loops on macOS and Linux          | [mutmut.readthedocs.io](https://mutmut.readthedocs.io/)                        |
+| **[Cosmic Ray](cosmic-ray.md)**     | Testing & Security         | `cosmic-ray.toml`                 | SQLite-backed cross-platform AST mutation testing (Linux, macOS, Windows) | [cosmic-ray.readthedocs.io](https://cosmic-ray.readthedocs.io/)                |
+| **[zizmor](zizmor.md)**             | Testing & Security         | `.zizmor.yml`                     | Static security analyzer for `.github/workflows/*.yaml`                   | [woodruffw.github.io/zizmor](https://woodruffw.github.io/zizmor/)              |
+| **[Zensical](zensical.md)**         | Documentation & Formatting | `zensical.toml`                   | Static documentation site generator with `mkdocstrings` and `llmstxt`     | [github.com/zensical/zensical](https://github.com/zensical/zensical)           |
+| **[rumdl](rumdl.md)**               | Documentation & Formatting | `rumdl.toml`                      | Rust Markdown linter/formatter and embedded Python code block checker     | [github.com/rvben/rumdl](https://github.com/rvben/rumdl)                       |
+| **[Taplo](taplo.md)**               | Documentation & Formatting | `.taplo.toml`                     | TOML formatter and schema validator                                       | [taplo.tamasfe.dev](https://taplo.tamasfe.dev/)                                |
+| **[Prettier](prettier.md)**         | Documentation & Formatting | `.prettierrc.yaml`, `prek.toml`   | YAML and CSS formatter executed via `prek`                                | [prettier.io](https://prettier.io/)                                            |
+| **[Typst](typst.md)**               | Documentation & Formatting | `docs/assets/*.typ`               | Compiles `.typ` vector source files into SVG documentation banners/logos  | [typst.app/docs](https://typst.app/docs/)                                      |
+| **[Termynal](termynal.md)**         | Documentation & Formatting | `zensical.toml`                   | Renders `<!-- termynal -->` console fences as animated terminal widgets   | [github.com/ines/termynal](https://github.com/ines/termynal)                   |

@@ -7,84 +7,51 @@ purpose: Document 100% statement and branch coverage enforcement and report anal
 
 [![Tool: Coverage.py](https://img.shields.io/badge/coverage-100%25-brightgreen.svg)](https://coverage.readthedocs.io/)
 
-`Coverage.py` is the industry-standard code coverage measurement engine for Python. It
-monitors program execution during automated test runs, measuring which statements were
-executed and evaluating conditional branch decisions.
-
-## What It Does
-
-`Coverage.py` measures both statement execution and branch coverage across Python
-packages. Rather than merely recording which lines were executed, branch analysis
-determines whether every conditional path (`if`, `elif`, `else`, `while`, and exception
-clauses) was evaluated for both true and false outcomes.
-
-During test runs, `Coverage.py` compiles precise execution statistics into a binary
-`.coverage` database. It produces detailed terminal reports pinpointing missing line
-numbers (`coverage report -m`), machine-readable XML manifests (`coverage.xml`) for
-continuous integration reporting, and interactive HTML dashboards highlighting exact
-covered and missed branches in source files.
-
-## Why It's in Zenith
-
-Zenith establishes a non-negotiable engineering standard:
-**100% mandatory statement and branch test coverage** (`fail_under = 100` and
-`branch = true`). In Zenith, untested code is considered uncommitted code: if even a
-single statement or conditional branch is missed, continuous integration pipelines fail
-immediately.
-
-In AI-native workflows, 100% coverage provides a critical structural invariant.
-Autonomous coding agents frequently introduce partial implementations, dead branches, or
-untested error-handling paths. Mandating full coverage prevents untested code from
-reaching `main`, while liberating developers to execute major architectural refactors
-without fear of regression.
-
-### Pragmatic Coverage: Platform Margins & Custom Thresholds
-
-While 100% statement and branch coverage is the default posture, real-world engineering
-requires pragmatic handling of operating systems and type guards:
-
-- **Built-in Exclusions**: Zenith's `.coveragerc` pre-configures `exclude_also` rules
-  for non-executable constructs:
-  - `if TYPE_CHECKING:` guards (active only during static type analysis).
-  - Protocol definitions and `@abstractmethod` signatures.
-  - Defensive unreachable fallbacks (`assert_never`, `raise NotImplementedError`).
-- **Platform-Specific Code**: When code branches on specific OS platforms (e.g.
-  `if sys.platform == "win32"`), use `# pragma: no cover` accompanied by a brief
-  rationale comment, or combine coverage artifacts across your CI matrix runners using
-  `coverage combine`.
-- **Customizing Thresholds**: If your application domain involves heavy external
-  sockets, C-extensions, or hardware drivers where exhaustive branch coverage yields low
-  engineering ROI, you can pragmatically adjust `fail_under = 90` directly inside
-  `.coveragerc`.
+`Coverage.py` measures statement and conditional branch coverage across both
+`src/<package_name>` and `tests`. Zenith sets `branch = true` and `fail_under = 100` in
+`.coveragerc`, and enables subprocess and `_exit` patching (`patch = subprocess _exit`)
+so child-process CLI calls are tracked accurately.
 
 ## Configuration in Zenith
 
 Configured in `.coveragerc` at the project root:
 
 ```python exec="1" result="ini"
+import re
 from pathlib import Path
 
 path = Path("{{cookiecutter.project_slug}}/.coveragerc")
 if not path.exists():
     path = Path(".coveragerc")
-print(path.read_text().strip())
+text = path.read_text(encoding="utf-8")
+text = re.sub(r"^# =+[^\n]*\n(?:#[^\n]*\n)*# =+[^\n]*\n+", "", text)
+text = text.replace("{{ cookiecutter.package_name }}", "my_project")
+print(text.strip())
 ```
+
+## Built-in Exclusions & Pragmatic Overrides
+
+- **Pre-configured `exclude_also` patterns**: Non-executable typing constructs
+  (`if TYPE_CHECKING:`, `Protocol` classes, `@abstractmethod`, `@overload`),
+  unreachable exhaustiveness checks (`assert_never`, `raise NotImplementedError`,
+  `return NotImplemented`), and `if __name__ == "__main__":` guards are excluded
+  automatically.
+- **Targeted exclusions (`# pragma: no cover` / `# pragma: no branch`)**: For
+  OS-specific branches (such as `if sys.platform == "win32":`) that only execute on one
+  platform, add `# pragma: no cover` or `# pragma: no branch`.
+- **Adjusting the coverage threshold**: For hardware-interfacing or early prototype
+  projects where 100% coverage is impractical, adjust `fail_under` under `[report]` in
+  `.coveragerc`.
 
 ## Key Invocations
 
 ```bash
-# Run test suite with mandatory 100% coverage enforcement
-uv run poe test
-
-# Display terminal coverage report with missing lines
-uv run coverage report -m
-
-# Generate interactive HTML dashboard into htmlcov/
-uv run poe coverage
+uv run poe test              # Run pytest with terminal missing-line and XML coverage reports
+uv run poe coverage          # Generate interactive HTML report in htmlcov/index.html
+uv run coverage report -m    # Print missing lines and partial branches from last run
 ```
 
 ## Upstream Documentation
 
-For advanced coverage analysis, exclusion patterns, and reporting configurations,
-consult the [Coverage.py documentation](https://coverage.readthedocs.io/) and the
-[Coverage.py GitHub repository](https://github.com/nedbat/coveragepy).
+- [Coverage.py Documentation](https://coverage.readthedocs.io/)
+- [Coverage.py GitHub Repository](https://github.com/nedbat/coveragepy)

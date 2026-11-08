@@ -27,15 +27,16 @@ respect-gitignore = true
     "docs/skills/workflow.md" = ["MD063"]
 
     # GFM treats Zensical tabs and admonitions as indented code blocks.
+    "docs/first-steps.md" = ["MD046"]
     "docs/tools/typer.md" = ["MD046"]
 
     # Banner at top replaces H1 title.
     "README.md"     = ["MD041"]
-    "docs/index.md" = ["MD041"]
+    "docs/index.md" = ["MD041", "MD046"]
 
     # Jinja partials render their own blank lines after generation.
     "??cookiecutter.project_slug??/README.md"     = ["MD022", "MD041"]
-    "??cookiecutter.project_slug??/docs/index.md" = ["MD022", "MD041"]
+    "??cookiecutter.project_slug??/docs/index.md" = ["MD022", "MD041", "MD046"]
 
     # Conditional list branches create false positives before generation.
     "??cookiecutter.project_slug??/AGENTS.md" = ["MD032"]

@@ -7,45 +7,16 @@ purpose: Document vector layout markup, SVG logo authoring, and mathematical dia
 
 [![Tool: Typst](https://img.shields.io/badge/typesetting-typst-239dad.svg)](https://typst.app)
 
-`Typst` is a modern markup-based typesetting and document layout engine written in Rust.
-In Zenith projects, Typst is used to programmatically generate clean,
-resolution-independent vector SVG logotypes for documentation.
-
-## What It Does
-
-Typst pairs the document layout power of LaTeX with a modern, ergonomic scripting
-language. It compiles text-based `.typ` files into resolution-independent `.svg` vector
-graphics or `.pdf` outputs in milliseconds.
-
-In Zenith projects, visual emblems, icons, and logotypes are constructed
-programmatically with Typst's canvas shapes, gradients, and typography engines—treating
-design assets as version-controlled code rather than binary image blobs.
-
-## Why It's in Zenith
-
-Zenith enforces a "code-as-asset" philosophy: all project assets, including branding and
-documentation imagery, should be plain text files that can be edited by humans or AI
-agents, diffed in Git, and built deterministically.
-
-The Typst logotype source directly defines the celestial Python hues (`#387eb8` blue and
-`#ffc331` gold) used throughout documentation stylesheets, eliminating binary media
-tracking from the repository.
+`Typst` is a Rust-based typesetting and vector layout engine. Generated Zenith projects
+store documentation hero banners and logos as plain-text `.typ` source files under
+`docs/assets/` (`python-banner-dark.typ`, `python-banner-light.typ`, and
+`python-logo.typ`), compiling them into theme-aware `.svg` files via
+`uv run poe docs-logo`.
 
 ## Configuration in Zenith
 
-Source file located at `docs/assets/python-logo.typ` (or `assets/zenith-star.svg`):
-
-```typst
-#set page(width: auto, height: auto, margin: 0pt, fill: none)
-
-#let python-blue = rgb("#387eb8")
-#let python-gold = rgb("#ffc331")
-
-// Vector geometry rendering of the logotype
-#rect(width: 120pt, height: 120pt, radius: 16pt, fill: python-blue)
-```
-
-Wired into `poe_tasks.toml` through the `docs-logo` task:
+Wired in `poe_tasks.toml` through the `docs-logo` task (using `typst` and
+`fontpkg-cinzel` from the `docs` dependency group):
 
 ```python exec="1" result="toml"
 from pathlib import Path
@@ -53,7 +24,7 @@ from pathlib import Path
 path = Path("{{cookiecutter.project_slug}}/poe_tasks.toml")
 if not path.exists():
     path = Path("poe_tasks.toml")
-content = path.read_text()
+content = path.read_text(encoding="utf-8")
 if "[tasks.docs-logo]" in content:
     start = content.index("[tasks.docs-logo]")
     end = content.find("\n\n[", start + 1)
@@ -63,8 +34,8 @@ if "[tasks.docs-logo]" in content:
 ## Key Invocations
 
 ```bash
-uv run poe docs-logo         # Re-compile SVG banners (dark/light) from Typst source
-uv run typst compile file.typ file.svg
+uv run poe docs-logo                         # Compile dark/light SVG banners from docs/assets/*.typ
+uv run typst compile docs/assets/python-logo.typ docs/assets/python-logo.svg
 ```
 
 ## Upstream Documentation
