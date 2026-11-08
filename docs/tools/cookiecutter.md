@@ -43,7 +43,10 @@ print(Path("cookiecutter.json").read_text().strip())
 ## Key Invocations
 
 ```bash
-# Scaffold a new project from remote repository
+# Recommended: launch the interactive Zenith Textual setup wizard
+uvx zenith-template
+
+# Or scaffold directly via raw Cookiecutter from GitHub
 uvx cookiecutter https://github.com/bwrob/zenith.git
 
 # Scaffold locally during template development

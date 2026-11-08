@@ -54,30 +54,40 @@ Follow these steps to create a project and run its first commands.
 
 ### 1. Scaffold Your Project
 
-Run Cookiecutter directly through `uvx` (which runs tools without permanent
-installation):
+Launch the interactive **Zenith Project Initializer** terminal wizard directly through
+`uvx` (which runs tools without permanent installation):
 
 ```shell
-uvx cookiecutter https://github.com/bwrob/zenith.git
+uvx zenith-template
 ```
 
-Cookiecutter will prompt you for a few project settings:
+The two-screen terminal wizard guides you through project identity, licensing, optional
+components, post-scaffold automation, and multi-select AI assistant integrations:
 
-| Prompt                  | Meaning & Purpose                                      | Recommended Choice / Default       |
-| :---------------------- | :----------------------------------------------------- | :--------------------------------- |
-| `project_name`          | Human-readable title of your project                   | `My Awesome Service`               |
-| `project_slug`          | Directory and distribution package name                | `my_awesome_service`               |
-| `package_name`          | Import identifier in `src/`                            | Auto-derived from `project_slug`   |
-| `description`           | Short summary for README & package metadata            | Press `Enter` to customize         |
-| `author_name` / `email` | Your details for packaging metadata                    | Your name and email                |
-| `github_username`       | GitHub user or organization name                       | Your GitHub handle                 |
-| `python_version`        | Target Python runtime                                  | `3.13` (current stable)            |
-| `license`               | Open-source or proprietary license                     | `MIT`, `Apache-2.0`, `None`        |
-| `include_cli`           | Scaffold a ready-to-run Typer command-line application | `true` (recommended for CLIs/apps) |
-| `include_ci_testing`    | Generate GitHub Actions CI test & quality workflows    | `true`                             |
-| `include_ci_publishing` | Generate GitHub Actions PyPI & docs deploy workflow    | `true`                             |
-| `include_agent_skills`  | Include Zenith agent skills suite and SDD subagents    | `true` (or `false` for pure-human) |
-| `ai_tools`              | AI assistant configs to scaffold (presets or custom)   | `all`, `recommended`, or `none`    |
+| Screen / Field            | Meaning & Purpose                                                                                                                 | Default Value                    |
+| :------------------------ | :-------------------------------------------------------------------------------------------------------------------------------- | :------------------------------- |
+| **Root Directory**        | Parent directory where the project folder is created                                                                              | Current working directory (`.`)  |
+| **Project Name**          | Human-readable title of your project                                                                                              | `My Project`                     |
+| **Project Slug**          | Directory and distribution package name                                                                                           | Auto-derived (`my-project`)      |
+| **Python Package Name**   | Import identifier in `src/`                                                                                                       | Auto-derived (`my_project`)      |
+| **Short Description**     | Summary for `README.md` and `pyproject.toml`                                                                                      | `A modern Python project.`       |
+| **Author Name / Email**   | Packaging metadata (auto-detected from `git config`)                                                                              | Git `user.name` and `user.email` |
+| **GitHub Username**       | GitHub user or organization handle                                                                                                | `author`                         |
+| **Target Python Version** | Minimum Python runtime (`3.12`–`3.15`)                                                                                            | `3.12`                           |
+| **Open Source License**   | License file and metadata (`MIT`, `Apache-2.0`, etc.)                                                                             | `MIT`                            |
+| **Core Features**         | Toggle CLI (`--no-cli`), Docs (`--no-docs`), Mutation testing (`--no-mutation`), CI (`--no-ci`), and Agent Skills (`--no-skills`) | All enabled (`true`)             |
+| **Setup & Automation**    | Toggle `git init` (`--no-git`), `uv sync` (`--sync`), and `prek install` (`--hooks`)                                              | `git init` enabled (`true`)      |
+| **AI Assistant Presets**  | Multi-select checkbox list with presets (`recommended`, `all`, `ide-only`, `cli-only`, `none`)                                    | `recommended`                    |
+
+For non-interactive scripting or CI usage, pass `--no-input` (every wizard run also
+prints the exact CLI command to recreate your selections):
+
+```shell
+uvx zenith-template --no-input --name "My Awesome Service" --ai-tools recommended --sync
+```
+
+Alternatively, you can render the repository directly via raw Cookiecutter
+(`uvx cookiecutter https://github.com/bwrob/zenith.git`).
 
 > [!NOTE]
 > **AI Tooling Is 100% Elective**

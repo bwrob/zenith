@@ -68,26 +68,32 @@ For full guides, detailed architectural deep-dives, and tool configurations, vis
 
 ## Quick Start
 
-Scaffold a new project in seconds using `uvx`:
+Launch the interactive **Zenith Terminal Setup Wizard** directly via `uvx`:
+
+```bash
+uvx zenith-template
+```
+
+For headless automation or CI pipelines, pass `--no-input` and configuration flags:
+
+```bash
+uvx zenith-template --no-input --name "My Service" --ai-tools recommended --sync
+```
+
+Or scaffold directly with raw `cookiecutter`:
 
 ```bash
 uvx cookiecutter https://github.com/bwrob/zenith.git
 ```
 
-Or using a local `cookiecutter` install:
-
-```bash
-cookiecutter gh:bwrob/zenith
-```
-
 ### Initializing the Project
 
 ```bash
-cd my-awesome-service
-uv sync
+cd my-project
+uv sync                     # Skip if you checked "Run uv sync" or passed --sync
 uv run poe test             # Runs test suite (100% coverage enforced)
-uv run poe code-quality      # Runs full linter, formatter, type, and complexity gate
-uv run poe docs-serve        # Starts live-reloading documentation server
+uv run poe code-quality     # Runs full linter, formatter, type, and complexity gate
+uv run poe docs-serve       # Starts live-reloading documentation server
 ```
 
 ## Essential Tasks

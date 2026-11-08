@@ -39,12 +39,15 @@ purpose: Introduce Zenith, showcase the four architectural pillars, and guide de
 > If terms like virtual environments, `uv`, or project scaffolding are unfamiliar, start
 > with the [First Steps & Core Concepts](first-steps.md) guide.
 
-Scaffold a production-grade repository in seconds using `uvx`:
+Scaffold a production-grade repository in seconds with the interactive terminal wizard
+via `uvx` (see [First Steps & Core Concepts](first-steps.md) for headless CLI flags and
+wizard options):
 
 <!-- termynal -->
 ```console
-$ uvx cookiecutter https://github.com/bwrob/zenith.git
-$ cd my-awesome-service
+$ uvx zenith-template
+✦ Project successfully scaffolded at ./my-project
+$ cd my-project
 $ uv sync
 $ uv run poe test
 100% test coverage reached (statements and branches).
