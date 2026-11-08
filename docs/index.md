@@ -13,17 +13,14 @@ purpose: Introduce Zenith, showcase the four architectural pillars, and guide de
 </p>
 
 > [!NOTE]
-> **What Zenith Is**: Zenith is a production-grade [Cookiecutter](tools/cookiecutter.md)
-> project template for Python 3.12+. Rather than a runtime library you import, it
-> scaffolds a complete, pre-configured repository with sub-second developer tooling and
-> autonomous AI agent workflows—so you can write production code from commit zero
-> without tooling debt.
+> **What Zenith Is**: Zenith is a [Cookiecutter](tools/cookiecutter.md) project
+> template and interactive CLI (`zenith-template`) for Python 3.12+. Rather than a
+> runtime library you import, it generates a complete repository with fast Rust-based
+> tooling, CI workflows, and optional AI agent skills.
 >
-> **Human-First, AI-Accelerated**: Zenith works identically as a pure human-driven
-> developer workflow. All AI tooling and agent skills are 100% elective during
-> scaffolding. The strict quality gates—100% test coverage, strict typing, complexity
-> limits, and layer boundaries—help human developers just as much as AI agents by
-> providing instant feedback, fearless refactoring, and zero review bikeshedding.
+> **Human-First, AI-Optional**: Every AI config and agent skill is elective during
+> scaffolding. You can generate a purely traditional Python repository (`--ai-tools
+> none`) or include configs and skills for your preferred coding assistants.
 
 ## Quick Start
 
@@ -38,9 +35,9 @@ purpose: Introduce Zenith, showcase the four architectural pillars, and guide de
 > If terms like virtual environments, `uv`, or project scaffolding are unfamiliar, start
 > with the [First Steps & Core Concepts](first-steps.md) guide.
 
-Scaffold a production-grade repository in seconds with the interactive terminal wizard
-via `uvx` (see [First Steps & Core Concepts](first-steps.md) for headless CLI flags and
-wizard options):
+Scaffold a new repository with the interactive terminal wizard via `uvx` (see
+[First Steps & Core Concepts](first-steps.md) for headless CLI flags and wizard
+options):
 
 <!-- termynal -->
 ```console
@@ -58,16 +55,13 @@ Serving documentation at http://127.0.0.1:8000
 
 ## The Four Pillars
 
-Zenith eliminates scaffolding debt and quality decay from commit zero across four
-foundational pillars:
-
 <div class="grid cards" markdown>
 
 -   **[Modern Rust-Based Tooling](tools/index.md)**
 
     ---
 
-    Sub-second developer loops powered by **[uv](tools/uv.md)**,
+    Fast local feedback powered by **[uv](tools/uv.md)**,
     **[Ruff](tools/ruff.md)**, **[Pyrefly](tools/pyrefly.md)**,
     **[Tach](tools/tach.md)**, **[Deptry](tools/deptry.md)**,
     **[complexipy](tools/complexipy.md)**, and
@@ -80,36 +74,35 @@ foundational pillars:
 
     Built for autonomous pair-programming when desired, yet completely elective.
     Scaffold all assistants, select your preferred tools, or exclude AI configs
-    entirely for a traditional Python repository. Audited in the
+    entirely. Audited in the
     [Agentic Tool Matrix](skills/index.md#agentic-tool-compatibility-matrix).
 
 -   **[Automated Quality Guardrails](philosophy.md)**
 
     ---
 
-    Rigor that accelerates humans and agents alike: **100% mandatory test coverage**
+    Enforced locally and in CI: **100% statement and branch coverage**
     (`fail_under = 100`), strict static typing with Pyrefly, cognitive complexity
-    limits (<= 10), module boundary enforcement, and CI security auditing.
+    limits (`<= 10`), module layer boundaries, and workflow security auditing.
 
 -   **[Hermetic Delivery & CI/CD](ci-actions.md)**
 
     ---
 
-    Zero-drift automation: multi-version matrix testing across Python 3.12–3.15,
-    isolated wheel package smoke tests, automated documentation publishing, and PyPI
-    Trusted Publishing with supply-chain safeguards.
+    Multi-OS test matrices across Python 3.12–3.15, lowest-direct dependency checks,
+    isolated wheel and sdist smoke tests, GitHub Pages docs deployment, and PyPI
+    Trusted Publishing with PEP 740 provenance attestations.
 
 </div>
 
 ## Architecture at a Glance
 
-Scaffolded projects enforce strict separation between domain logic, public interfaces,
-and automated quality guardrails:
+Generated projects separate domain logic, CLI entry points, tests, and documentation:
 
 ```tree
-my-awesome-service/
-    src/my_awesome_service/     # Core package source, public API, and optional Typer CLI
-    tests/                      # Comprehensive test suite with 100% coverage gate
+my-project/
+    src/my_project/             # Core package source, lazy exports, and Typer CLI
+    tests/                      # Unit, property (Hypothesis), and snapshot tests
     docs/                       # Zensical documentation site with live preview
     .agents/skills/             # Modular agent skills (workflows, tools, style guides)
     pyproject.toml              # Dependencies and packaging standards (PEP 621)
@@ -117,69 +110,77 @@ my-awesome-service/
     AGENTS.md                   # Canonical AI agent instructions and boundary rules
 ```
 
-### Production-Grade Code by Default
+### Scaffolded Code Out of the Box
 
-Every generated repository produces strictly typed, immutable, and fully tested
-Python out of the box:
+Every generated project starts with strictly typed modules and a test suite combining
+unit, snapshot, and property-based checks:
 
-=== "src/my_awesome_service/core.py"
+=== "src/my_project/core.py"
 
 ```python
-"""Core domain logic with strict typing and immutability."""
-
-from dataclasses import dataclass
+"""Core functions for my-project."""
 
 
-@dataclass(frozen=True, slots=True)
-class Greeter:
-    """Greeting domain entity."""
-
-    recipient: str
-
-    def format(self) -> str:
-        """Format greeting with recipient."""
-        return f"Hello, {self.recipient}!"
+def get_greeting(name: str) -> str:
+    """Return a personalized greeting message."""
+    clean_name = name.strip()
+    if not clean_name:
+        clean_name = "World"
+    return f"Hello, {clean_name}!"
 ```
 
-=== "src/my_awesome_service/cli.py"
+=== "src/my_project/cli.py"
 
 ```python
-"""Command line interface powered by Typer and Rich."""
+"""Command line interface for my-project."""
 
 from typing import Annotated
 
 import typer
-from my_awesome_service.core import Greeter
+from my_project.core import get_greeting
 from rich.console import Console
 
-app = typer.Typer(no_args_is_help=True)
-console = Console()
+app: typer.Typer = typer.Typer(
+    name="my-project",
+    no_args_is_help=True,
+    rich_markup_mode="rich",
+)
+console: Console = Console()
 
 
 @app.command()
 def greet(
-    name: Annotated[str, typer.Argument(help="Name to greet.")] = "World",
+    name: Annotated[
+        str,
+        typer.Argument(help="The name to greet."),
+    ] = "World",
 ) -> None:
     """Display a personalized greeting."""
-    greeter = Greeter(recipient=name)
-    console.print(f"[bold green]✨ {greeter.format()}[/bold green]")
+    greeting = get_greeting(name)
+    console.print(f"[bold green]✨ {greeting}[/bold green]")
 ```
 
-=== "tests/test_cli.py"
+=== "tests/test_core.py"
 
 ```python
-"""Automated CLI test suite with 100% coverage gate."""
+"""Unit tests for core functionality."""
 
-from my_awesome_service.cli import app
-from typer.testing import CliRunner
-
-runner = CliRunner()
+from hypothesis import given, strategies
+from my_project.core import get_greeting
 
 
-def test_greet() -> None:
-    result = runner.invoke(app, ["greet", "Zenith"])
-    assert result.exit_code == 0
-    assert "✨ Hello, Zenith!" in result.stdout
+def test_get_greeting_default() -> None:
+    """Test get_greeting with empty string defaults to World."""
+    assert get_greeting("") == "Hello, World!"
+    assert get_greeting("   ") == "Hello, World!"
+
+
+@given(strategies.text())
+def test_get_greeting_property(name: str) -> None:
+    """Property-based test: get_greeting always returns a well-formed greeting."""
+    greeting = get_greeting(name)
+    assert greeting.startswith("Hello, ")
+    assert greeting.endswith("!")
 ```
 
 > [!TIP]
