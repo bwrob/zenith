@@ -12,6 +12,7 @@ from textual.app import App, ComposeResult
 from textual.binding import Binding, BindingType
 from textual.containers import Horizontal, VerticalScroll
 from textual.screen import Screen
+from textual.validation import ValidationResult, Validator
 from textual.widgets import (
     Button,
     Checkbox,
@@ -33,9 +34,19 @@ from zenith.models import (
     ZenithConfig,
     slugify,
 )
+from zenith.validation import (
+    validate_author_email,
+    validate_author_name,
+    validate_description,
+    validate_github_username,
+    validate_output_dir,
+    validate_package_name,
+    validate_project_name,
+    validate_project_slug,
+)
 
 if TYPE_CHECKING:
-    from collections.abc import Sequence
+    from collections.abc import Callable, Sequence
 
 
 ZENITH_CSS = """
@@ -95,6 +106,21 @@ Input {
 }
 Input:focus {
     border: tall #38bdf8;
+}
+Input.-invalid {
+    border: tall #f43f5e;
+}
+Input.-invalid:focus {
+    border: tall #f43f5e;
+}
+.field-error {
+    color: #f43f5e;
+    margin-top: 0;
+    margin-bottom: 0;
+    display: none;
+}
+.field-error.visible {
+    display: block;
 }
 Select {
     background: #1e293b;
@@ -169,6 +195,63 @@ Checkbox {
 """
 
 
+class CallableValidator(Validator):
+    """Textual Validator adapter wrapping a pure validation function."""
+
+    def __init__(self, check: Callable[[str], str | None]) -> None:
+        """Initialize the validator with a pure check callable.
+
+        Args:
+            check: Callable returning an error message string or `None` when valid.
+
+        """
+        super().__init__()
+        self._check = check
+
+    @override
+    def validate(self, value: str) -> ValidationResult:
+        """Validate `value` using the wrapped callable.
+
+        Args:
+            value: Field string value to validate.
+
+        Returns:
+            ValidationResult indicating success or failure with description.
+
+        """
+        error = self._check(value)
+        if error is not None:
+            return self.failure(error)
+        return self.success()
+
+
+METADATA_FIELD_VALIDATORS: dict[str, Callable[[str], str | None]] = {
+    "output-dir": validate_output_dir,
+    "project-name": validate_project_name,
+    "project-slug": validate_project_slug,
+    "package-name": validate_package_name,
+    "description": validate_description,
+    "author-name": validate_author_name,
+    "author-email": validate_author_email,
+    "github-username": validate_github_username,
+}
+
+
+def _first_error(result: ValidationResult | None) -> str | None:
+    """Extract the first failure message from a Textual ValidationResult.
+
+    Args:
+        result: ValidationResult returned by a Textual Input, or `None`.
+
+    Returns:
+        First failure description string, or `None` when valid.
+
+    """
+    if result is None or result.is_valid:
+        return None
+    return next((str(desc) for desc in result.failure_descriptions), "Invalid value.")
+
+
 def format_target_preview(output_dir: str, project_slug: str) -> tuple[str, bool]:
     """Compute the resolved destination path label and collision warning state.
 
@@ -218,22 +301,32 @@ class MetadataScreen(Screen[object]):
             yield Input(
                 value=cfg.output_dir,
                 placeholder=str(Path.cwd()),
+                validators=[CallableValidator(METADATA_FIELD_VALIDATORS["output-dir"])],
                 id="output-dir",
             )
+            yield Label("", id="output-dir-error", classes="field-error")
 
             yield Label("Project Name:", classes="field-label")
             yield Input(
                 value=cfg.project_name,
                 placeholder="My Project",
+                validators=[
+                    CallableValidator(METADATA_FIELD_VALIDATORS["project-name"])
+                ],
                 id="project-name",
             )
+            yield Label("", id="project-name-error", classes="field-error")
 
             yield Label("Project Slug (Directory name):", classes="field-label")
             yield Input(
                 value=cfg.project_slug,
                 placeholder="my-project",
+                validators=[
+                    CallableValidator(METADATA_FIELD_VALIDATORS["project-slug"])
+                ],
                 id="project-slug",
             )
+            yield Label("", id="project-slug-error", classes="field-error")
             preview_text, is_warning = format_target_preview(
                 cfg.output_dir,
                 cfg.project_slug,
@@ -250,29 +343,45 @@ class MetadataScreen(Screen[object]):
             yield Input(
                 value=cfg.package_name,
                 placeholder="my_project",
+                validators=[
+                    CallableValidator(METADATA_FIELD_VALIDATORS["package-name"])
+                ],
                 id="package-name",
             )
+            yield Label("", id="package-name-error", classes="field-error")
 
             yield Label("Short Description:", classes="field-label")
             yield Input(
                 value=cfg.description,
                 placeholder="A modern Python project...",
+                validators=[
+                    CallableValidator(METADATA_FIELD_VALIDATORS["description"])
+                ],
                 id="description",
             )
+            yield Label("", id="description-error", classes="field-error")
 
             yield Label("Author Full Name:", classes="field-label")
             yield Input(
                 value=cfg.author_name,
                 placeholder="Author Name",
+                validators=[
+                    CallableValidator(METADATA_FIELD_VALIDATORS["author-name"])
+                ],
                 id="author-name",
             )
+            yield Label("", id="author-name-error", classes="field-error")
 
             yield Label("Author Email:", classes="field-label")
             yield Input(
                 value=cfg.author_email,
                 placeholder="author@example.com",
+                validators=[
+                    CallableValidator(METADATA_FIELD_VALIDATORS["author-email"])
+                ],
                 id="author-email",
             )
+            yield Label("", id="author-email-error", classes="field-error")
 
             yield Label(
                 "GitHub Username or Organization:",
@@ -281,8 +390,12 @@ class MetadataScreen(Screen[object]):
             yield Input(
                 value=cfg.github_username,
                 placeholder="username",
+                validators=[
+                    CallableValidator(METADATA_FIELD_VALIDATORS["github-username"])
+                ],
                 id="github-username",
             )
+            yield Label("", id="github-username-error", classes="field-error")
 
             yield Label("Runtime & Licensing", classes="section-title")
             python_options = [(v, v) for v in SUPPORTED_PYTHON_VERSIONS]
@@ -290,12 +403,18 @@ class MetadataScreen(Screen[object]):
             yield Select(
                 python_options,
                 value=cfg.python_version,
+                allow_blank=False,
                 id="python-version",
             )
 
             license_options = [(lic, lic) for lic in SUPPORTED_LICENSES]
             yield Label("Open Source License:", classes="field-label")
-            yield Select(license_options, value=cfg.license, id="license")
+            yield Select(
+                license_options,
+                value=cfg.license,
+                allow_blank=False,
+                id="license",
+            )
 
             with Horizontal(classes="actions-bar"):
                 yield Button(
@@ -310,6 +429,59 @@ class MetadataScreen(Screen[object]):
     def zenith_app(self) -> ZenithApp:
         """Typed reference to parent ZenithApp."""
         return cast("ZenithApp", self.app)
+
+    def on_mount(self) -> None:
+        """Validate initial field values without stealing focus."""
+        self._validate_all_fields(focus_first=False)
+
+    def _set_field_error(self, input_id: str, error: str | None) -> None:
+        """Update inline error label visibility and message for a field.
+
+        Args:
+            input_id: DOM ID of the validated Input widget.
+            error: Error message string or `None` when valid.
+
+        """
+        error_label = self.query_one(f"#{input_id}-error", Label)
+        error_label.update(error or "")
+        error_label.set_class(error is not None, "visible")
+
+    def _validate_all_fields(self, *, focus_first: bool = True) -> bool:
+        """Validate all metadata inputs and update inline error indicators.
+
+        Args:
+            focus_first: Whether to focus the first invalid input widget.
+
+        Returns:
+            `True` when all metadata fields are valid, `False` otherwise.
+
+        """
+        first_invalid: Input | None = None
+        for input_id in METADATA_FIELD_VALIDATORS:
+            input_widget = self.query_one(f"#{input_id}", Input)
+            error = _first_error(input_widget.validate(input_widget.value))
+            self._set_field_error(input_id, error)
+            if error is not None and first_invalid is None:
+                first_invalid = input_widget
+
+        if first_invalid is not None:
+            if focus_first:
+                first_invalid.focus()
+            return False
+        return True
+
+    @on(Input.Changed)
+    def on_any_input_changed(self, event: Input.Changed) -> None:
+        """Update inline validation error message when any input changes.
+
+        Args:
+            event: Input change event carrying the validation result.
+
+        """
+        input_id = event.input.id
+        if input_id not in METADATA_FIELD_VALIDATORS:
+            return
+        self._set_field_error(input_id, _first_error(event.validation_result))
 
     @on(Input.Changed, "#project-name")
     def on_project_name_changed(self, event: Input.Changed) -> None:
@@ -336,7 +508,9 @@ class MetadataScreen(Screen[object]):
 
     @on(Button.Pressed, "#next-btn")
     def action_next(self) -> None:
-        """Collect Screen 1 form fields and navigate to Screen 2."""
+        """Validate Screen 1 fields and navigate to Screen 2 when valid."""
+        if not self._validate_all_fields(focus_first=True):
+            return
         out_dir = self.query_one("#output-dir", Input).value.strip() or str(Path.cwd())
         py_val = str(self.query_one("#python-version", Select).value)
         lic_val = str(self.query_one("#license", Select).value)

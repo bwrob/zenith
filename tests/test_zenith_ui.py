@@ -296,3 +296,131 @@ def test_zenith_app_target_preview_and_collision_warning(tmp_path: Path) -> None
             await pilot.exit(None)
 
     asyncio.run(run())
+
+
+def test_zenith_app_blocks_invalid_slug_and_package_with_dot() -> None:
+    """Verify dots in slug or package name show inline errors and block Next."""
+
+    async def run() -> None:
+        app = ZenithApp()
+        async with app.run_test(size=(120, 100)) as pilot:
+            slug_input = app.screen.query_one("#project-slug", Input)
+            slug_error = app.screen.query_one("#project-slug-error", Label)
+
+            slug_input.value = "my.project"
+            await pilot.pause()
+            assert slug_error.has_class("visible")
+            assert slug_input.has_class("-invalid")
+
+            await pilot.click("#next-btn")
+            await pilot.pause()
+            assert isinstance(app.screen, MetadataScreen)
+            assert app.focused is slug_input
+
+            slug_input.value = "my-project"
+            await pilot.pause()
+            assert not slug_error.has_class("visible")
+
+            pkg_input = app.screen.query_one("#package-name", Input)
+            pkg_error = app.screen.query_one("#package-name-error", Label)
+            pkg_input.value = "my.package"
+            await pilot.pause()
+            assert pkg_error.has_class("visible")
+
+            await pilot.click("#next-btn")
+            await pilot.pause()
+            assert isinstance(app.screen, MetadataScreen)
+            assert app.focused is pkg_input
+
+            pkg_input.value = "my_package"
+            await pilot.pause()
+            assert not pkg_error.has_class("visible")
+
+            await pilot.click("#next-btn")
+            await pilot.pause()
+            assert isinstance(app.screen, FeaturesScreen)
+            await pilot.exit(None)
+
+    asyncio.run(run())
+
+
+def test_zenith_app_validates_derived_fields_from_project_name() -> None:
+    """Verify invalid project names that produce bad slugs/packages block Next."""
+
+    async def run() -> None:
+        app = ZenithApp()
+        async with app.run_test(size=(120, 100)) as pilot:
+            name_input = app.screen.query_one("#project-name", Input)
+            slug_error = app.screen.query_one("#project-slug-error", Label)
+            pkg_error = app.screen.query_one("#package-name-error", Label)
+
+            name_input.value = "..."
+            await pilot.pause()
+            assert slug_error.has_class("visible")
+            assert pkg_error.has_class("visible")
+
+            await pilot.click("#next-btn")
+            await pilot.pause()
+            assert isinstance(app.screen, MetadataScreen)
+
+            name_input.value = "123"
+            await pilot.pause()
+            assert not slug_error.has_class("visible")
+            assert pkg_error.has_class("visible")
+
+            await pilot.click("#next-btn")
+            await pilot.pause()
+            assert isinstance(app.screen, MetadataScreen)
+            app.screen.on_any_input_changed(Input.Changed(Input(id="untracked"), ""))
+            await pilot.exit(None)
+
+    asyncio.run(run())
+
+
+def test_zenith_app_validates_all_metadata_fields(tmp_path: Path) -> None:
+    """Verify validation on output_dir, description, author, email, and github."""
+    existing_file = tmp_path / "not-a-dir.txt"
+    existing_file.write_text("file", encoding="utf-8")
+
+    async def run() -> None:
+        cfg = ZenithConfig(
+            author_email="invalid-email",
+            github_username="my.org",
+        )
+        app = ZenithApp(initial_config=cfg)
+        async with app.run_test(size=(120, 100)) as pilot:
+            # Initial invalid config should show errors immediately on mount
+            assert app.screen.query_one("#author-email-error", Label).has_class(
+                "visible"
+            )
+            assert app.screen.query_one("#github-username-error", Label).has_class(
+                "visible"
+            )
+
+            await pilot.click("#next-btn")
+            await pilot.pause()
+            assert isinstance(app.screen, MetadataScreen)
+
+            # Fix email and github, then break output_dir, description, author_name
+            app.screen.query_one("#author-email", Input).value = "ada@example.com"
+            app.screen.query_one("#github-username", Input).value = "adalovelace"
+            app.screen.query_one("#output-dir", Input).value = str(existing_file)
+            app.screen.query_one("#description", Input).value = ""
+            app.screen.query_one("#author-name", Input).value = 'Bad "Name"'
+            await pilot.pause()
+
+            assert app.screen.query_one("#output-dir-error", Label).has_class("visible")
+            assert app.screen.query_one("#description-error", Label).has_class(
+                "visible"
+            )
+            assert app.screen.query_one("#author-name-error", Label).has_class(
+                "visible"
+            )
+
+            await pilot.click("#next-btn")
+            await pilot.pause()
+            assert isinstance(app.screen, MetadataScreen)
+            app.screen.on_any_input_changed(Input.Changed(Input(id="untracked"), ""))
+            await pilot.exit(None)
+
+    asyncio.run(run())
