@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING
 from unittest.mock import patch
 
 import pytest
+from cookiecutter.exceptions import CookiecutterException
 
 from zenith.cli import (
     build_parser,
@@ -277,3 +278,23 @@ def test_render_summary_prints_recreate_command(
     render_summary(tmp_path / "test-tool", synced_config)
     captured_synced = capsys.readouterr()
     assert "uv sync" not in captured_synced.out
+
+
+def test_cli_no_input_rejects_invalid_config(tmp_path: Path) -> None:
+    """Verify --no-input validates config before invoking generate_project."""
+    with patch("zenith.cli.generate_project") as mock_gen:
+        exit_code = main(
+            ["--no-input", "--output-dir", str(tmp_path), "--slug", "my.bad.slug"]
+        )
+        assert exit_code == 1
+        mock_gen.assert_not_called()
+
+
+def test_cli_handles_cookiecutter_exception(tmp_path: Path) -> None:
+    """Verify CookiecutterException is caught and returns exit code 1."""
+    with patch(
+        "zenith.cli.generate_project",
+        side_effect=CookiecutterException("Hook failed"),
+    ):
+        exit_code = main(["--no-input", "--output-dir", str(tmp_path)])
+        assert exit_code == 1

@@ -4,8 +4,9 @@ from __future__ import annotations
 
 import asyncio
 from pathlib import Path
+from unittest.mock import patch
 
-from textual.widgets import Checkbox, Input, Label, Select, SelectionList
+from textual.widgets import Button, Checkbox, Input, Label, Select, SelectionList
 
 from zenith.models import (
     ALL_AI_TOOLS,
@@ -293,6 +294,288 @@ def test_zenith_app_target_preview_and_collision_warning(tmp_path: Path) -> None
             slug_input.value = "fresh-app"
             await pilot.pause()
             assert not preview.has_class("target-warning")
+            await pilot.exit(None)
+
+    asyncio.run(run())
+
+
+def test_zenith_app_blocks_invalid_slug_and_package_with_dot() -> None:
+    """Verify dots in slug or package name show inline errors and block Next."""
+
+    async def run() -> None:
+        app = ZenithApp()
+        async with app.run_test(size=(120, 100)) as pilot:
+            slug_input = app.screen.query_one("#project-slug", Input)
+            slug_error = app.screen.query_one("#project-slug-error", Label)
+
+            slug_input.value = "my.project"
+            await pilot.pause()
+            assert slug_error.has_class("visible")
+            assert slug_input.has_class("-invalid")
+
+            await pilot.click("#next-btn")
+            await pilot.pause()
+            assert isinstance(app.screen, MetadataScreen)
+            assert app.focused is slug_input
+
+            slug_input.value = "my-project"
+            await pilot.pause()
+            assert not slug_error.has_class("visible")
+
+            pkg_input = app.screen.query_one("#package-name", Input)
+            pkg_error = app.screen.query_one("#package-name-error", Label)
+            pkg_input.value = "my.package"
+            await pilot.pause()
+            assert pkg_error.has_class("visible")
+
+            await pilot.click("#next-btn")
+            await pilot.pause()
+            assert isinstance(app.screen, MetadataScreen)
+            assert app.focused is pkg_input
+
+            pkg_input.value = "my_package"
+            await pilot.pause()
+            assert not pkg_error.has_class("visible")
+
+            await pilot.click("#next-btn")
+            await pilot.pause()
+            assert isinstance(app.screen, FeaturesScreen)
+            await pilot.exit(None)
+
+    asyncio.run(run())
+
+
+def test_zenith_app_validates_derived_fields_from_project_name() -> None:
+    """Verify invalid project names that produce bad slugs/packages block Next."""
+
+    async def run() -> None:
+        app = ZenithApp()
+        async with app.run_test(size=(120, 100)) as pilot:
+            name_input = app.screen.query_one("#project-name", Input)
+            slug_error = app.screen.query_one("#project-slug-error", Label)
+            pkg_error = app.screen.query_one("#package-name-error", Label)
+
+            name_input.value = "..."
+            await pilot.pause()
+            assert slug_error.has_class("visible")
+            assert pkg_error.has_class("visible")
+
+            await pilot.click("#next-btn")
+            await pilot.pause()
+            assert isinstance(app.screen, MetadataScreen)
+
+            name_input.value = "123"
+            await pilot.pause()
+            assert not slug_error.has_class("visible")
+            assert pkg_error.has_class("visible")
+
+            await pilot.click("#next-btn")
+            await pilot.pause()
+            assert isinstance(app.screen, MetadataScreen)
+            await pilot.exit(None)
+
+    asyncio.run(run())
+
+
+def test_zenith_app_validates_all_metadata_fields(tmp_path: Path) -> None:
+    """Verify validation on output_dir, description, author, email, and github."""
+    existing_file = tmp_path / "not-a-dir.txt"
+    existing_file.write_text("file", encoding="utf-8")
+
+    async def run() -> None:
+        cfg = ZenithConfig(
+            author_email="invalid-email",
+            github_username="my.org",
+        )
+        app = ZenithApp(initial_config=cfg)
+        async with app.run_test(size=(120, 100)) as pilot:
+            # Initial invalid config should show errors immediately on mount
+            assert app.screen.query_one("#author-email-error", Label).has_class(
+                "visible"
+            )
+            assert app.screen.query_one("#github-username-error", Label).has_class(
+                "visible"
+            )
+
+            await pilot.click("#next-btn")
+            await pilot.pause()
+            assert isinstance(app.screen, MetadataScreen)
+
+            # Fix email and github, then break output_dir, description, author_name
+            app.screen.query_one("#author-email", Input).value = "ada@example.com"
+            app.screen.query_one("#github-username", Input).value = "adalovelace"
+            app.screen.query_one("#output-dir", Input).value = str(existing_file)
+            app.screen.query_one("#description", Input).value = ""
+            app.screen.query_one("#author-name", Input).value = 'Bad "Name"'
+            await pilot.pause()
+
+            assert app.screen.query_one("#output-dir-error", Label).has_class("visible")
+            assert app.screen.query_one("#description-error", Label).has_class(
+                "visible"
+            )
+            assert app.screen.query_one("#author-name-error", Label).has_class(
+                "visible"
+            )
+
+            await pilot.click("#next-btn")
+            await pilot.pause()
+            assert isinstance(app.screen, MetadataScreen)
+            app.screen.on_any_input_changed(Input.Changed(Input(id="untracked"), ""))
+            await pilot.exit(None)
+
+    asyncio.run(run())
+
+
+def test_zenith_app_prereq_warning_banner() -> None:
+    """Verify missing prerequisite tools display a warning banner on MetadataScreen."""
+
+    async def run() -> None:
+        with patch(
+            "zenith.ui.metadata_screen.check_prerequisites", return_value=["uv"]
+        ):
+            app = ZenithApp()
+            async with app.run_test(size=(120, 100)) as pilot:
+                banner = app.screen.query_one("#prereq-warning", Label)
+                assert banner.has_class("visible")
+                await pilot.exit(None)
+
+    asyncio.run(run())
+
+
+def test_zenith_app_collision_blocks_until_overwrite_enabled(tmp_path: Path) -> None:
+    """Verify non-empty target blocks Next unless overwrite checkbox is checked."""
+    existing_dir = tmp_path / "existing-app"
+    existing_dir.mkdir()
+    (existing_dir / "README.md").write_text("existing", encoding="utf-8")
+
+    async def run() -> None:
+        cfg = ZenithConfig(
+            output_dir=str(tmp_path),
+            project_name="Existing App",
+            project_slug="existing-app",
+        )
+        app = ZenithApp(initial_config=cfg)
+        async with app.run_test(size=(120, 100)) as pilot:
+            overwrite_box = app.screen.query_one("#overwrite-target", Checkbox)
+            assert overwrite_box.has_class("visible")
+            assert overwrite_box.value is False
+
+            await pilot.click("#next-btn")
+            await pilot.pause()
+            assert isinstance(app.screen, MetadataScreen)
+            assert app.screen.query_one("#project-slug-error", Label).has_class(
+                "visible"
+            )
+
+            overwrite_box.value = True
+            await pilot.pause()
+            await pilot.click("#next-btn")
+            await pilot.pause()
+            assert isinstance(app.screen, FeaturesScreen)
+            assert app.overwrite is True
+            await pilot.exit(None)
+
+    asyncio.run(run())
+
+
+def test_zenith_app_preserves_manual_slug_and_package_edits() -> None:
+    """Verify editing project_name does not clobber customized slug or package."""
+
+    async def run() -> None:
+        app = ZenithApp()
+        async with app.run_test(size=(120, 100)) as pilot:
+            name_input = app.screen.query_one("#project-name", Input)
+            slug_input = app.screen.query_one("#project-slug", Input)
+            pkg_input = app.screen.query_one("#package-name", Input)
+
+            pkg_input.value = "custom_pkg"
+            await pilot.pause()
+
+            name_input.value = "Renamed Project"
+            await pilot.pause()
+            assert slug_input.value == "renamed-project"
+            assert pkg_input.value == "custom_pkg"
+
+            slug_input.value = "custom-slug"
+            await pilot.pause()
+            name_input.value = "Another Name"
+            await pilot.pause()
+            assert slug_input.value == "custom-slug"
+            assert pkg_input.value == "custom_pkg"
+            await pilot.exit(None)
+
+    asyncio.run(run())
+
+
+def test_zenith_app_coupled_git_hooks_and_keyboard_submit() -> None:
+    """Verify #init-git disables #install-git-hooks and Enter submits last input."""
+
+    async def run() -> None:
+        app = ZenithApp()
+        async with app.run_test(size=(120, 100)) as pilot:
+            # Enter on a non-last input advances focus; Enter on last input advances
+            name_input = app.screen.query_one("#project-name", Input)
+            name_input.focus()
+            await pilot.press("enter")
+            await pilot.pause()
+            assert isinstance(app.screen, MetadataScreen)
+
+            gh_input = app.screen.query_one("#github-username", Input)
+            gh_input.focus()
+            await pilot.press("enter")
+            await pilot.pause()
+            assert isinstance(app.screen, FeaturesScreen)
+
+            init_git = app.screen.query_one("#init-git", Checkbox)
+            hooks_box = app.screen.query_one("#install-git-hooks", Checkbox)
+            hooks_box.value = True
+            await pilot.pause()
+            assert hooks_box.value is True
+
+            init_git.value = False
+            await pilot.pause()
+            assert hooks_box.disabled is True
+            assert hooks_box.value is False
+
+            init_git.value = True
+            await pilot.pause()
+            assert hooks_box.disabled is False
+            await pilot.exit(None)
+
+    asyncio.run(run())
+
+
+def test_zenith_app_summary_strip_ai_counter_and_ctrl_n() -> None:
+    """Verify Ctrl+N, Step 1 summary strip, and live AI tools counter/preset state."""
+
+    async def run() -> None:
+        app = ZenithApp()
+        async with app.run_test(size=(120, 100)) as pilot:
+            await pilot.press("ctrl+n")
+            await pilot.pause()
+            assert isinstance(app.screen, FeaturesScreen)
+
+            summary = app.screen.query_one("#step1-summary", Label)
+            summary_text = str(summary.content)
+            assert "my_project" in summary_text
+            assert "Python 3.12" in summary_text
+            assert "MIT" in summary_text
+
+            heading = app.screen.query_one("#ai-tools-heading", Label)
+            assert f"({len(PRESET_RECOMMENDED)} / {len(ALL_AI_TOOLS)} selected)" in str(
+                heading.content
+            )
+            assert (
+                app.screen.query_one("#preset-recommended", Button).variant == "primary"
+            )
+
+            await pilot.click("#preset-none")
+            await pilot.pause()
+            assert f"(0 / {len(ALL_AI_TOOLS)} selected)" in str(heading.content)
+            assert app.screen.query_one("#preset-none", Button).variant == "primary"
+            assert (
+                app.screen.query_one("#preset-recommended", Button).variant == "default"
+            )
             await pilot.exit(None)
 
     asyncio.run(run())

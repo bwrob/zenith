@@ -222,3 +222,36 @@ def test_template_skills_omit_repo_only_references() -> None:
         if term in path.read_text(encoding="utf-8").lower()
     ]
     assert not offenders
+
+
+MAX_PYTHON_FILE_LINES = 700
+
+
+def test_python_files_max_700_lines() -> None:
+    """Enforce a 700-line ceiling on every Python file in the repository."""
+    offenders: list[str] = []
+    for path in _python_files():
+        if not path.is_file():
+            continue
+        line_count = len(path.read_text(encoding="utf-8").splitlines())
+        if line_count > MAX_PYTHON_FILE_LINES:
+            offenders.append(f"{path} ({line_count} lines)")
+    assert not offenders, (
+        f"Python files exceeding {MAX_PYTHON_FILE_LINES} lines: {offenders}"
+    )
+
+
+def test_python_files_max_700_lines_detects_violation(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Verify that Python files exceeding 700 lines are detected and reported."""
+    non_file = tmp_path / "dir.py"
+    non_file.mkdir()
+    big_file = tmp_path / "too_big.py"
+    big_file.write_text("x = 1\n" * (MAX_PYTHON_FILE_LINES + 1), encoding="utf-8")
+    monkeypatch.setattr(
+        "tests.test_repo_conventions._python_files",
+        lambda: [non_file, big_file],
+    )
+    with pytest.raises(AssertionError, match="exceeding 700 lines"):
+        test_python_files_max_700_lines()
