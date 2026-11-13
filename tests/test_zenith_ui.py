@@ -430,7 +430,9 @@ def test_zenith_app_prereq_warning_banner() -> None:
     """Verify missing prerequisite tools display a warning banner on MetadataScreen."""
 
     async def run() -> None:
-        with patch("zenith.ui.app.check_prerequisites", return_value=["uv"]):
+        with patch(
+            "zenith.ui.metadata_screen.check_prerequisites", return_value=["uv"]
+        ):
             app = ZenithApp()
             async with app.run_test(size=(120, 100)) as pilot:
                 banner = app.screen.query_one("#prereq-warning", Label)
