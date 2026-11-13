@@ -35,6 +35,7 @@ from zenith.models import (
     slugify,
 )
 from zenith.validation import (
+    check_prerequisites,
     validate_author_email,
     validate_author_name,
     validate_description,
@@ -120,6 +121,22 @@ Input.-invalid:focus {
     display: none;
 }
 .field-error.visible {
+    display: block;
+}
+.prereq-warning {
+    color: #f59e0b;
+    text-style: bold;
+    margin-bottom: 1;
+    display: none;
+}
+.prereq-warning.visible {
+    display: block;
+}
+.overwrite-checkbox {
+    display: none;
+    margin-bottom: 1;
+}
+.overwrite-checkbox.visible {
     display: block;
 }
 Select {
@@ -289,6 +306,14 @@ class MetadataScreen(Screen[object]):
 
         """
         cfg = self.zenith_app.config_state
+        missing_tools = check_prerequisites()
+        prereq_msg = (
+            f"⚠ Missing required tool(s) on PATH: {', '.join(missing_tools)}. "
+            "Scaffolding will fail until installed."
+            if missing_tools
+            else ""
+        )
+        prereq_classes = "prereq-warning visible" if missing_tools else "prereq-warning"
         yield Header()
         with VerticalScroll():
             yield Label("Zenith Project Initializer", classes="brand-title")
@@ -296,6 +321,7 @@ class MetadataScreen(Screen[object]):
                 "Step 1 of 2: Project Identity & Licensing",
                 classes="brand-subtitle",
             )
+            yield Label(prereq_msg, id="prereq-warning", classes=prereq_classes)
 
             yield Label("Root Directory:", classes="field-label")
             yield Input(
@@ -335,6 +361,15 @@ class MetadataScreen(Screen[object]):
                 "target-preview target-warning" if is_warning else "target-preview"
             )
             yield Label(preview_text, id="target-preview", classes=preview_classes)
+            overwrite_classes = (
+                "overwrite-checkbox visible" if is_warning else "overwrite-checkbox"
+            )
+            yield Checkbox(
+                "Overwrite existing files in target directory",
+                value=self.zenith_app.overwrite,
+                id="overwrite-target",
+                classes=overwrite_classes,
+            )
 
             yield Label(
                 "Python Package Name (Import identifier):",
@@ -431,7 +466,10 @@ class MetadataScreen(Screen[object]):
         return cast("ZenithApp", self.app)
 
     def on_mount(self) -> None:
-        """Validate initial field values without stealing focus."""
+        """Initialize auto-sync tracking and validate initial field values."""
+        cfg = self.zenith_app.config_state
+        self._last_auto_slug: str = slugify(cfg.project_name)
+        self._last_auto_pkg: str = slugify(cfg.project_name, separator="_")
         self._validate_all_fields(focus_first=False)
 
     def _set_field_error(self, input_id: str, error: str | None) -> None:
@@ -485,16 +523,22 @@ class MetadataScreen(Screen[object]):
 
     @on(Input.Changed, "#project-name")
     def on_project_name_changed(self, event: Input.Changed) -> None:
-        """Synchronize slug and package name when project name is altered.
+        """Synchronize non-customized slug and package name with project name.
 
         Args:
             event: Input change event with updated string.
 
         """
+        new_slug = slugify(event.value)
+        new_pkg = slugify(event.value, separator="_")
         slug_input = self.query_one("#project-slug", Input)
         pkg_input = self.query_one("#package-name", Input)
-        slug_input.value = slugify(event.value)
-        pkg_input.value = slugify(event.value, separator="_")
+        if slug_input.value == self._last_auto_slug:
+            slug_input.value = new_slug
+        if pkg_input.value == self._last_auto_pkg:
+            pkg_input.value = new_pkg
+        self._last_auto_slug = new_slug
+        self._last_auto_pkg = new_pkg
 
     @on(Input.Changed, "#output-dir, #project-slug")
     def on_target_inputs_changed(self) -> None:
@@ -505,6 +549,21 @@ class MetadataScreen(Screen[object]):
         preview_label = self.query_one("#target-preview", Label)
         preview_label.update(preview_text)
         preview_label.set_class(is_warning, "target-warning")
+        overwrite_box = self.query_one("#overwrite-target", Checkbox)
+        overwrite_box.set_class(is_warning, "visible")
+
+    @on(Input.Submitted)
+    def on_input_submitted(self, event: Input.Submitted) -> None:
+        """Advance focus on Enter, or proceed to Step 2 from the last input.
+
+        Args:
+            event: Input submission event triggered by pressing Enter.
+
+        """
+        if event.input.id == "github-username":
+            self.action_next()
+            return
+        self.focus_next()
 
     @on(Button.Pressed, "#next-btn")
     def action_next(self) -> None:
@@ -512,6 +571,18 @@ class MetadataScreen(Screen[object]):
         if not self._validate_all_fields(focus_first=True):
             return
         out_dir = self.query_one("#output-dir", Input).value.strip() or str(Path.cwd())
+        slug_val = self.query_one("#project-slug", Input).value.strip()
+        _, has_collision = format_target_preview(out_dir, slug_val)
+        overwrite_checked = self.query_one("#overwrite-target", Checkbox).value
+        if has_collision and not overwrite_checked:
+            self._set_field_error(
+                "project-slug",
+                "Target directory is not empty. "
+                "Change slug/directory or enable overwrite.",
+            )
+            self.query_one("#overwrite-target", Checkbox).focus()
+            return
+        self.zenith_app.overwrite = overwrite_checked
         py_val = str(self.query_one("#python-version", Select).value)
         lic_val = str(self.query_one("#license", Select).value)
         self.zenith_app.config_state = replace(
@@ -540,6 +611,10 @@ class MetadataScreen(Screen[object]):
 
 class FeaturesScreen(Screen[object]):
     """Screen 2: Project Features and AI Integrations."""
+
+    BINDINGS: ClassVar[list[BindingType]] = [
+        Binding("ctrl+s", "submit", "Scaffold Project"),
+    ]
 
     @override
     def compose(self) -> ComposeResult:
@@ -603,7 +678,8 @@ class FeaturesScreen(Screen[object]):
             )
             yield Checkbox(
                 "Install Git hooks (prek install)",
-                value=cfg.install_git_hooks,
+                value=cfg.install_git_hooks and cfg.init_git,
+                disabled=not cfg.init_git,
                 id="install-git-hooks",
             )
 
@@ -686,11 +762,29 @@ class FeaturesScreen(Screen[object]):
         """Select CLI-only AI tools preset."""
         self._apply_tool_preset(AI_TOOL_PRESETS["cli-only"])
 
-    @on(Button.Pressed, "#back-btn")
-    def action_back(self) -> None:
-        """Persist current feature selections and return to MetadataScreen."""
+    @on(Checkbox.Changed, "#init-git")
+    def on_init_git_changed(self, event: Checkbox.Changed) -> None:
+        """Enable or disable Git hooks checkbox based on Git initialization.
+
+        Args:
+            event: Checkbox change event for `#init-git`.
+
+        """
+        hooks_box = self.query_one("#install-git-hooks", Checkbox)
+        hooks_box.disabled = not event.value
+        if not event.value:
+            hooks_box.value = False
+
+    def _collect_features(self) -> ZenithConfig:
+        """Collect feature checkboxes and AI tool selections into ZenithConfig.
+
+        Returns:
+            Updated ZenithConfig instance.
+
+        """
         ai_list = self.query_one("#ai-tools-list", SelectionList)
-        self.zenith_app.config_state = replace(
+        init_git = self.query_one("#init-git", Checkbox).value
+        return replace(
             self.zenith_app.config_state,
             include_cli=self.query_one("#include-cli", Checkbox).value,
             include_docs=self.query_one("#include-docs", Checkbox).value,
@@ -710,42 +804,24 @@ class FeaturesScreen(Screen[object]):
                 "#include-agent-skills",
                 Checkbox,
             ).value,
-            init_git=self.query_one("#init-git", Checkbox).value,
+            init_git=init_git,
             run_uv_sync=self.query_one("#run-uv-sync", Checkbox).value,
-            install_git_hooks=self.query_one("#install-git-hooks", Checkbox).value,
+            install_git_hooks=(
+                init_git and self.query_one("#install-git-hooks", Checkbox).value
+            ),
             ai_tools=tuple(ai_list.selected),
         )
+
+    @on(Button.Pressed, "#back-btn")
+    def action_back(self) -> None:
+        """Persist current feature selections and return to MetadataScreen."""
+        self.zenith_app.config_state = self._collect_features()
         self.zenith_app.pop_screen()
 
     @on(Button.Pressed, "#submit-btn")
     def action_submit(self) -> None:
         """Collect features, finalize ZenithConfig, and exit successfully."""
-        ai_list = self.query_one("#ai-tools-list", SelectionList)
-        self.zenith_app.config_state = replace(
-            self.zenith_app.config_state,
-            include_cli=self.query_one("#include-cli", Checkbox).value,
-            include_docs=self.query_one("#include-docs", Checkbox).value,
-            include_mutation_testing=self.query_one(
-                "#include-mutation-testing",
-                Checkbox,
-            ).value,
-            include_ci_testing=self.query_one(
-                "#include-ci-testing",
-                Checkbox,
-            ).value,
-            include_ci_publishing=self.query_one(
-                "#include-ci-publishing",
-                Checkbox,
-            ).value,
-            include_agent_skills=self.query_one(
-                "#include-agent-skills",
-                Checkbox,
-            ).value,
-            init_git=self.query_one("#init-git", Checkbox).value,
-            run_uv_sync=self.query_one("#run-uv-sync", Checkbox).value,
-            install_git_hooks=self.query_one("#install-git-hooks", Checkbox).value,
-            ai_tools=tuple(ai_list.selected),
-        )
+        self.zenith_app.config_state = self._collect_features()
         self.zenith_app.finish()
 
     @on(Button.Pressed, "#cancel-btn")
@@ -766,16 +842,23 @@ class ZenithApp(App[ZenithConfig | None]):
 
     CSS = ZENITH_CSS
 
-    def __init__(self, initial_config: ZenithConfig | None = None) -> None:
+    def __init__(
+        self,
+        initial_config: ZenithConfig | None = None,
+        *,
+        overwrite: bool = False,
+    ) -> None:
         """Initialize ZenithApp with default or provided configuration.
 
         Args:
             initial_config: Optional baseline configuration defaults.
+            overwrite: Whether to allow overwriting a non-empty target directory.
 
         """
         super().__init__()
         self.initial_config = initial_config or ZenithConfig()
         self.config_state = self.initial_config
+        self.overwrite = overwrite
         self.result: ZenithConfig | None = None
 
     @override

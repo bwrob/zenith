@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import asyncio
 from pathlib import Path
+from unittest.mock import patch
 
 from textual.widgets import Checkbox, Input, Label, Select, SelectionList
 
@@ -371,7 +372,6 @@ def test_zenith_app_validates_derived_fields_from_project_name() -> None:
             await pilot.click("#next-btn")
             await pilot.pause()
             assert isinstance(app.screen, MetadataScreen)
-            app.screen.on_any_input_changed(Input.Changed(Input(id="untracked"), ""))
             await pilot.exit(None)
 
     asyncio.run(run())
@@ -421,6 +421,123 @@ def test_zenith_app_validates_all_metadata_fields(tmp_path: Path) -> None:
             await pilot.pause()
             assert isinstance(app.screen, MetadataScreen)
             app.screen.on_any_input_changed(Input.Changed(Input(id="untracked"), ""))
+            await pilot.exit(None)
+
+    asyncio.run(run())
+
+
+def test_zenith_app_prereq_warning_banner() -> None:
+    """Verify missing prerequisite tools display a warning banner on MetadataScreen."""
+
+    async def run() -> None:
+        with patch("zenith.ui.app.check_prerequisites", return_value=["uv"]):
+            app = ZenithApp()
+            async with app.run_test(size=(120, 100)) as pilot:
+                banner = app.screen.query_one("#prereq-warning", Label)
+                assert banner.has_class("visible")
+                await pilot.exit(None)
+
+    asyncio.run(run())
+
+
+def test_zenith_app_collision_blocks_until_overwrite_enabled(tmp_path: Path) -> None:
+    """Verify non-empty target blocks Next unless overwrite checkbox is checked."""
+    existing_dir = tmp_path / "existing-app"
+    existing_dir.mkdir()
+    (existing_dir / "README.md").write_text("existing", encoding="utf-8")
+
+    async def run() -> None:
+        cfg = ZenithConfig(
+            output_dir=str(tmp_path),
+            project_name="Existing App",
+            project_slug="existing-app",
+        )
+        app = ZenithApp(initial_config=cfg)
+        async with app.run_test(size=(120, 100)) as pilot:
+            overwrite_box = app.screen.query_one("#overwrite-target", Checkbox)
+            assert overwrite_box.has_class("visible")
+            assert overwrite_box.value is False
+
+            await pilot.click("#next-btn")
+            await pilot.pause()
+            assert isinstance(app.screen, MetadataScreen)
+            assert app.screen.query_one("#project-slug-error", Label).has_class(
+                "visible"
+            )
+
+            overwrite_box.value = True
+            await pilot.pause()
+            await pilot.click("#next-btn")
+            await pilot.pause()
+            assert isinstance(app.screen, FeaturesScreen)
+            assert app.overwrite is True
+            await pilot.exit(None)
+
+    asyncio.run(run())
+
+
+def test_zenith_app_preserves_manual_slug_and_package_edits() -> None:
+    """Verify editing project_name does not clobber customized slug or package."""
+
+    async def run() -> None:
+        app = ZenithApp()
+        async with app.run_test(size=(120, 100)) as pilot:
+            name_input = app.screen.query_one("#project-name", Input)
+            slug_input = app.screen.query_one("#project-slug", Input)
+            pkg_input = app.screen.query_one("#package-name", Input)
+
+            pkg_input.value = "custom_pkg"
+            await pilot.pause()
+
+            name_input.value = "Renamed Project"
+            await pilot.pause()
+            assert slug_input.value == "renamed-project"
+            assert pkg_input.value == "custom_pkg"
+
+            slug_input.value = "custom-slug"
+            await pilot.pause()
+            name_input.value = "Another Name"
+            await pilot.pause()
+            assert slug_input.value == "custom-slug"
+            assert pkg_input.value == "custom_pkg"
+            await pilot.exit(None)
+
+    asyncio.run(run())
+
+
+def test_zenith_app_coupled_git_hooks_and_keyboard_submit() -> None:
+    """Verify #init-git disables #install-git-hooks and Enter submits last input."""
+
+    async def run() -> None:
+        app = ZenithApp()
+        async with app.run_test(size=(120, 100)) as pilot:
+            # Enter on a non-last input advances focus; Enter on last input advances
+            name_input = app.screen.query_one("#project-name", Input)
+            name_input.focus()
+            await pilot.press("enter")
+            await pilot.pause()
+            assert isinstance(app.screen, MetadataScreen)
+
+            gh_input = app.screen.query_one("#github-username", Input)
+            gh_input.focus()
+            await pilot.press("enter")
+            await pilot.pause()
+            assert isinstance(app.screen, FeaturesScreen)
+
+            init_git = app.screen.query_one("#init-git", Checkbox)
+            hooks_box = app.screen.query_one("#install-git-hooks", Checkbox)
+            hooks_box.value = True
+            await pilot.pause()
+            assert hooks_box.value is True
+
+            init_git.value = False
+            await pilot.pause()
+            assert hooks_box.disabled is True
+            assert hooks_box.value is False
+
+            init_git.value = True
+            await pilot.pause()
+            assert hooks_box.disabled is False
             await pilot.exit(None)
 
     asyncio.run(run())

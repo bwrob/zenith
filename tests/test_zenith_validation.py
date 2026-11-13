@@ -3,12 +3,16 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
+from unittest.mock import patch
 
 import pytest
 
+from zenith.models import ZenithConfig
 from zenith.validation import (
+    check_prerequisites,
     validate_author_email,
     validate_author_name,
+    validate_config,
     validate_description,
     validate_github_username,
     validate_output_dir,
@@ -133,3 +137,25 @@ def test_validate_github_username_valid(valid_user: str) -> None:
 def test_validate_github_username_invalid(invalid_user: str) -> None:
     """Verify GitHub username validator rejects dots, bad hyphens, and >39 chars."""
     assert validate_github_username(invalid_user) is not None
+
+
+def test_check_prerequisites() -> None:
+    """Verify check_prerequisites reports missing uv or git binaries."""
+
+    def _missing_uv(name: str) -> str | None:
+        return None if name == "uv" else "/usr/bin/git"
+
+    with patch("zenith.validation.shutil.which", return_value="/usr/bin/tool"):
+        assert check_prerequisites() == []
+
+    with patch("zenith.validation.shutil.which", side_effect=_missing_uv):
+        assert check_prerequisites() == ["uv"]
+
+
+def test_validate_config() -> None:
+    """Verify validate_config validates all ZenithConfig metadata fields."""
+    assert validate_config(ZenithConfig()) == []
+
+    bad = ZenithConfig(project_slug="my.app", author_email="bad-email")
+    errors = dict(validate_config(bad))
+    assert set(errors) == {"project_slug", "author_email"}

@@ -8,6 +8,7 @@ import sys
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+from cookiecutter.exceptions import CookiecutterException
 from rich import box
 from rich.console import Console
 from rich.panel import Panel
@@ -23,6 +24,7 @@ from zenith.models import (
     slugify,
 )
 from zenith.ui.app import ZenithApp
+from zenith.validation import validate_config
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -389,6 +391,22 @@ def render_summary(project_dir: Path, config: ZenithConfig) -> None:
     console.print(panel)
 
 
+def _has_validation_errors(config: ZenithConfig) -> bool:
+    """Validate configuration and print any field errors to the console.
+
+    Args:
+        config: Configuration to validate.
+
+    Returns:
+        `True` if validation errors were found, `False` otherwise.
+
+    """
+    validation_errors = validate_config(config)
+    for field_name, error_msg in validation_errors:
+        console.print(f"[bold red]Error ({field_name}):[/bold red] {error_msg}")
+    return bool(validation_errors)
+
+
 def main(argv: Sequence[str] | None = None) -> int:
     """Run the Zenith CLI entry point.
 
@@ -404,14 +422,19 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     if not args.no_input and sys.stdin.isatty():
         initial = config_from_args(args)
-        app = ZenithApp(initial_config=initial)
+        app = ZenithApp(initial_config=initial, overwrite=args.overwrite)
         app.run()
         if app.result is None:
             console.print("[yellow]Project generation cancelled.[/yellow]")
             return 130
         config = app.result
+        overwrite = app.overwrite
     else:
         config = config_from_args(args)
+        overwrite = args.overwrite
+
+    if _has_validation_errors(config):
+        return 1
 
     try:
         with console.status(
@@ -421,10 +444,10 @@ def main(argv: Sequence[str] | None = None) -> int:
             project_dir = generate_project(
                 config,
                 output_dir=config.output_dir,
-                overwrite=args.overwrite,
+                overwrite=overwrite,
                 on_step=lambda msg: status.update(f"[bold #38bdf8]✦ {msg}[/]"),
             )
-    except (FileExistsError, FileNotFoundError) as err:
+    except (FileExistsError, FileNotFoundError, CookiecutterException) as err:
         console.print(f"[bold red]Error:[/bold red] {err}")
         return 1
     except KeyboardInterrupt:

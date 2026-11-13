@@ -5,7 +5,14 @@ from __future__ import annotations
 import contextlib
 import keyword
 import re
+import shutil
 from pathlib import Path
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
+
+    from zenith.models import ZenithConfig
 
 PROJECT_SLUG_PATTERN: re.Pattern[str] = re.compile(r"^[-a-zA-Z0-9_]+$")
 PACKAGE_NAME_PATTERN: re.Pattern[str] = re.compile(r"^[a-zA-Z][_a-zA-Z0-9]*$")
@@ -221,3 +228,47 @@ def validate_github_username(value: str) -> str | None:
             "single hyphens, up to 39 characters."
         )
     return None
+
+
+def check_prerequisites() -> list[str]:
+    """Check whether required external CLI tools are available on `PATH`.
+
+    Returns
+    -------
+    list[str]
+        List of missing tool names (e.g. `["uv", "git"]`).
+
+    """
+    return [tool for tool in ("uv", "git") if shutil.which(tool) is None]
+
+
+def validate_config(config: ZenithConfig) -> list[tuple[str, str]]:
+    """Validate all metadata fields of a `ZenithConfig` instance.
+
+    Parameters
+    ----------
+    config : ZenithConfig
+        Configuration instance to validate.
+
+    Returns
+    -------
+    list[tuple[str, str]]
+        List of `(field_name, error_message)` pairs for invalid fields.
+
+    """
+    checks: tuple[tuple[str, str, Callable[[str], str | None]], ...] = (
+        ("output_dir", config.output_dir, validate_output_dir),
+        ("project_name", config.project_name, validate_project_name),
+        ("project_slug", config.project_slug, validate_project_slug),
+        ("package_name", config.package_name, validate_package_name),
+        ("description", config.description, validate_description),
+        ("author_name", config.author_name, validate_author_name),
+        ("author_email", config.author_email, validate_author_email),
+        ("github_username", config.github_username, validate_github_username),
+    )
+    errors: list[tuple[str, str]] = []
+    for field_name, value, validator in checks:
+        error = validator(value)
+        if error is not None:
+            errors.append((field_name, error))
+    return errors
