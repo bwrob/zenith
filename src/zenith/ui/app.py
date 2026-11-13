@@ -139,6 +139,13 @@ Input.-invalid:focus {
 .overwrite-checkbox.visible {
     display: block;
 }
+.step-summary {
+    color: #94a3b8;
+    background: #0f172a;
+    border: solid #1e293b;
+    padding: 0 1;
+    margin-bottom: 1;
+}
 Select {
     background: #1e293b;
     border: tall #334155;
@@ -297,6 +304,10 @@ def format_target_preview(output_dir: str, project_slug: str) -> tuple[str, bool
 class MetadataScreen(Screen[object]):
     """Screen 1: Project Identity and Runtime Licensing."""
 
+    BINDINGS: ClassVar[list[BindingType]] = [
+        Binding("ctrl+n", "next", "Next Step"),
+    ]
+
     @override
     def compose(self) -> ComposeResult:
         """Compose the metadata configuration widgets.
@@ -343,7 +354,7 @@ class MetadataScreen(Screen[object]):
             )
             yield Label("", id="project-name-error", classes="field-error")
 
-            yield Label("Project Slug (Directory name):", classes="field-label")
+            yield Label("Project Slug (Directory & PyPI name):", classes="field-label")
             yield Input(
                 value=cfg.project_slug,
                 placeholder="my-project",
@@ -505,6 +516,7 @@ class MetadataScreen(Screen[object]):
         if first_invalid is not None:
             if focus_first:
                 first_invalid.focus()
+                first_invalid.scroll_visible()
             return False
         return True
 
@@ -580,7 +592,9 @@ class MetadataScreen(Screen[object]):
                 "Target directory is not empty. "
                 "Change slug/directory or enable overwrite.",
             )
-            self.query_one("#overwrite-target", Checkbox).focus()
+            overwrite_box = self.query_one("#overwrite-target", Checkbox)
+            overwrite_box.focus()
+            overwrite_box.scroll_visible()
             return
         self.zenith_app.overwrite = overwrite_checked
         py_val = str(self.query_one("#python-version", Select).value)
@@ -625,6 +639,11 @@ class FeaturesScreen(Screen[object]):
 
         """
         cfg = self.zenith_app.config_state
+        target_path = (Path(cfg.output_dir).expanduser() / cfg.project_slug).resolve()
+        summary_text = (
+            f"Target: {target_path} · Package: {cfg.package_name} · "
+            f"Python {cfg.python_version} · {cfg.license}"
+        )
         yield Header()
         with VerticalScroll():
             yield Label("Zenith Project Initializer", classes="brand-title")
@@ -632,6 +651,7 @@ class FeaturesScreen(Screen[object]):
                 "Step 2 of 2: Features & AI Assistant Tooling",
                 classes="brand-subtitle",
             )
+            yield Label(summary_text, id="step1-summary", classes="step-summary")
 
             yield Label("Core Project Features", classes="section-title")
             yield Checkbox(
@@ -684,7 +704,9 @@ class FeaturesScreen(Screen[object]):
             )
 
             yield Label(
-                "AI Assistant Integrations",
+                f"AI Assistant Integrations "
+                f"({len(cfg.ai_tools)} / {len(ALL_AI_TOOLS)} selected)",
+                id="ai-tools-heading",
                 classes="section-title",
             )
             with Horizontal(classes="preset-bar"):
@@ -722,6 +744,28 @@ class FeaturesScreen(Screen[object]):
     def zenith_app(self) -> ZenithApp:
         """Typed reference to parent ZenithApp."""
         return cast("ZenithApp", self.app)
+
+    def on_mount(self) -> None:
+        """Synchronize AI tool counter and active preset highlight on mount."""
+        self._sync_ai_tools_status()
+
+    def _sync_ai_tools_status(self) -> None:
+        """Update the AI tools selection count and active preset button style."""
+        ai_list = self.query_one("#ai-tools-list", SelectionList)
+        selected_set = set(ai_list.selected)
+        heading = self.query_one("#ai-tools-heading", Label)
+        heading.update(
+            f"AI Assistant Integrations "
+            f"({len(selected_set)} / {len(ALL_AI_TOOLS)} selected)"
+        )
+        for preset_name, preset_tools in AI_TOOL_PRESETS.items():
+            btn = self.query_one(f"#preset-{preset_name}", Button)
+            btn.variant = "primary" if selected_set == set(preset_tools) else "default"
+
+    @on(SelectionList.SelectedChanged, "#ai-tools-list")
+    def on_ai_tools_changed(self) -> None:
+        """Refresh AI tools counter and preset highlight when selection changes."""
+        self._sync_ai_tools_status()
 
     def _apply_tool_preset(self, tools: Sequence[str]) -> None:
         """Update selection list checkboxes to match specified tool sequence.

@@ -6,7 +6,7 @@ import asyncio
 from pathlib import Path
 from unittest.mock import patch
 
-from textual.widgets import Checkbox, Input, Label, Select, SelectionList
+from textual.widgets import Button, Checkbox, Input, Label, Select, SelectionList
 
 from zenith.models import (
     ALL_AI_TOOLS,
@@ -538,6 +538,42 @@ def test_zenith_app_coupled_git_hooks_and_keyboard_submit() -> None:
             init_git.value = True
             await pilot.pause()
             assert hooks_box.disabled is False
+            await pilot.exit(None)
+
+    asyncio.run(run())
+
+
+def test_zenith_app_summary_strip_ai_counter_and_ctrl_n() -> None:
+    """Verify Ctrl+N, Step 1 summary strip, and live AI tools counter/preset state."""
+
+    async def run() -> None:
+        app = ZenithApp()
+        async with app.run_test(size=(120, 100)) as pilot:
+            await pilot.press("ctrl+n")
+            await pilot.pause()
+            assert isinstance(app.screen, FeaturesScreen)
+
+            summary = app.screen.query_one("#step1-summary", Label)
+            summary_text = str(summary.content)
+            assert "my_project" in summary_text
+            assert "Python 3.12" in summary_text
+            assert "MIT" in summary_text
+
+            heading = app.screen.query_one("#ai-tools-heading", Label)
+            assert f"({len(PRESET_RECOMMENDED)} / {len(ALL_AI_TOOLS)} selected)" in str(
+                heading.content
+            )
+            assert (
+                app.screen.query_one("#preset-recommended", Button).variant == "primary"
+            )
+
+            await pilot.click("#preset-none")
+            await pilot.pause()
+            assert f"(0 / {len(ALL_AI_TOOLS)} selected)" in str(heading.content)
+            assert app.screen.query_one("#preset-none", Button).variant == "primary"
+            assert (
+                app.screen.query_one("#preset-recommended", Button).variant == "default"
+            )
             await pilot.exit(None)
 
     asyncio.run(run())
