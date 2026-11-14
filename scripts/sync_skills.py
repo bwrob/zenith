@@ -124,6 +124,38 @@ def _sync_skill(
     return None
 
 
+def _prune_dangling_symlinks(
+    target_dir: Path,
+    source_names: set[str],
+    *,
+    check_only: bool,
+) -> list[str]:
+    """Detect or remove dangling symlinks in target_dir.
+
+    Args:
+        target_dir: Repository skills directory to scan.
+        source_names: Skill directory names present in the source directory.
+        check_only: Whether to report drift instead of removing symlinks.
+
+    Returns:
+        A list of error messages for dangling symlinks in check mode.
+
+    """
+    dangling = [
+        entry
+        for entry in sorted(target_dir.iterdir())
+        if entry.name not in source_names and entry.is_symlink() and not entry.exists()
+    ]
+    if check_only:
+        return [
+            f"Dangling skill symlink in {target_dir}: {entry.name}"
+            for entry in dangling
+        ]
+    for entry in dangling:
+        entry.unlink()
+    return []
+
+
 def sync_skills(
     source_dir: Path,
     target_dir: Path,
@@ -150,6 +182,8 @@ def sync_skills(
         return [f"Source directory not found: {source_dir}"]
     if not tgt_resolved.is_dir():
         return [f"Target directory not found: {target_dir}"]
+    if src_resolved == tgt_resolved:
+        return [f"Source and target directories must differ: {src_resolved}"]
 
     source_skills = sorted(
         [d for d in src_resolved.iterdir() if d.is_dir() and not d.name.startswith(".")]
@@ -160,6 +194,11 @@ def sync_skills(
         if err:
             errors.append(err)
 
+    errors.extend(
+        _prune_dangling_symlinks(
+            target_dir, {d.name for d in source_skills}, check_only=check_only
+        )
+    )
     return errors
 
 
