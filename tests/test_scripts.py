@@ -59,6 +59,36 @@ def test_parse_frontmatter_trailing_multiline() -> None:
     assert meta["description"] == "Line one Line two"
 
 
+def test_parse_frontmatter_plain_multiline_preserves_opening_line() -> None:
+    """Preserve the opening line of plain multiline YAML frontmatter values.
+
+    Bug: A plain multiline YAML scalar starting on the key line and continuing
+    on indented lines lost its opening line after parsing.
+    Root cause: ``_handle_key_value`` returned an empty ``multiline_buf`` for
+    inline scalars, so flushing subsequent continuation lines overwrote
+    ``metadata[current_key]``.
+    Fix: Seed ``multiline_buf`` with ``[val_clean]`` whenever an inline scalar
+    value is present while keeping block indicators (``>``, ``|``) empty.
+    """
+    content = (
+        "---\n"
+        "name: my-skill\n"
+        "description: First line starts on key line\n"
+        "  and continues on an indented line.\n"
+        "empty_key:\n"
+        "folded: >-\n"
+        "  Folded line\n"
+        "---\n"
+    )
+    meta = check_skills.parse_frontmatter(content)
+    assert meta["name"] == "my-skill"
+    assert meta["description"] == (
+        "First line starts on key line and continues on an indented line."
+    )
+    assert "empty_key" not in meta
+    assert meta["folded"] == "Folded line"
+
+
 def test_parse_frontmatter_empty_value_and_orphan_line() -> None:
     """Test parse frontmatter empty value and orphan line."""
     content = "---\n  orphan line before any key\nempty_key:\nname: my-skill\n---\n"
