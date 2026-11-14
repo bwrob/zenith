@@ -168,6 +168,22 @@ def build_parser() -> argparse.ArgumentParser:
         help="Generate GitHub Actions workflows for testing and publishing.",
     )
     parser.add_argument(
+        "--include-ci-testing",
+        "--ci-testing",
+        dest="include_ci_testing",
+        action=argparse.BooleanOptionalAction,
+        default=None,
+        help="Include or exclude CI testing workflows.",
+    )
+    parser.add_argument(
+        "--include-ci-publishing",
+        "--ci-publishing",
+        dest="include_ci_publishing",
+        action=argparse.BooleanOptionalAction,
+        default=None,
+        help="Include or exclude CI publishing workflows.",
+    )
+    parser.add_argument(
         "--include-skills",
         "--skills",
         dest="include_skills",
@@ -263,8 +279,16 @@ def config_from_args(args: argparse.Namespace) -> ZenithConfig:
         python_version=args.python_version,
         license=args.license,
         include_cli=args.include_cli,
-        include_ci_testing=args.include_ci,
-        include_ci_publishing=args.include_ci,
+        include_ci_testing=(
+            args.include_ci
+            if getattr(args, "include_ci_testing", None) is None
+            else bool(args.include_ci_testing)
+        ),
+        include_ci_publishing=(
+            args.include_ci
+            if getattr(args, "include_ci_publishing", None) is None
+            else bool(args.include_ci_publishing)
+        ),
         include_agent_skills=args.include_skills,
         include_docs=getattr(args, "include_docs", defaults.include_docs),
         include_mutation_testing=getattr(
@@ -296,12 +320,17 @@ def _build_feature_flags(config: ZenithConfig) -> list[str]:
     has_custom_dir = (
         Path(config.output_dir).expanduser().resolve() != Path.cwd().resolve()
     )
+    ci_flag = {
+        (False, False): "--no-ci",
+        (False, True): "--no-ci-testing",
+        (True, False): "--no-ci-publishing",
+    }.get((config.include_ci_testing, config.include_ci_publishing), "")
     flag_conditions = (
         (has_custom_dir, f"--output-dir {shlex.quote(config.output_dir)}"),
         (not config.include_cli, "--no-cli"),
         (not config.include_docs, "--no-docs"),
         (not config.include_mutation_testing, "--no-mutation"),
-        (not (config.include_ci_testing or config.include_ci_publishing), "--no-ci"),
+        (bool(ci_flag), ci_flag),
         (not config.include_agent_skills, "--no-skills"),
         (not config.init_git, "--no-git"),
         (config.run_uv_sync, "--sync"),
