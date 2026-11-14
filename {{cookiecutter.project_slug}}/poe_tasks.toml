@@ -125,7 +125,7 @@
     cmd  = "rumdl check"
     help = "Lint markdown documentation with rumdl."
 
-{% if cookiecutter.include_agent_skills in [True, "yes", "true", "True", "1"] and cookiecutter.ai_tools.strip().lower() != "none" %}
+{% if cookiecutter.include_agent_skills in [True, "yes", "true", "True", "1"] and cookiecutter.ai_tools.lower().replace(";", ",").replace("none", "").replace(",", "").strip() != "" %}
 [tasks.lint-ste]
     cmd  = "python .agents/skills/guide-ste100/scripts/ste-lint.py .agents/skills"
     help = "Lint agent skills against ASD-STE100 structural rules."
@@ -187,7 +187,7 @@
         "typos -w",
     ]
 
-{% if cookiecutter.include_agent_skills in [True, "yes", "true", "True", "1"] and cookiecutter.ai_tools.strip().lower() != "none" %}
+{% if cookiecutter.include_agent_skills in [True, "yes", "true", "True", "1"] and cookiecutter.ai_tools.lower().replace(";", ",").replace("none", "").replace(",", "").strip() != "" %}
 [tasks.check-skills]
     cmd  = "python scripts/check_skills.py .agents/skills"
     help = "Validate structural invariants and frontmatter of agent skills in .agents/skills/."
@@ -211,7 +211,7 @@
         "zizmor",
 {% endif %}
         "dependencies",
-{% if cookiecutter.include_agent_skills in [True, "yes", "true", "True", "1"] and cookiecutter.ai_tools.strip().lower() != "none" %}
+{% if cookiecutter.include_agent_skills in [True, "yes", "true", "True", "1"] and cookiecutter.ai_tools.lower().replace(";", ",").replace("none", "").replace(",", "").strip() != "" %}
         "check-skills",
 {% endif %}
     ]
@@ -342,7 +342,7 @@
     # AI Coding Assistants & Agent Skills
     # ------------------------------------------------------------------------------
 
-{% if cookiecutter.include_agent_skills in [True, "yes", "true", "True", "1"] and cookiecutter.ai_tools.strip().lower() != "none" %}
+{% if cookiecutter.include_agent_skills in [True, "yes", "true", "True", "1"] and cookiecutter.ai_tools.lower().replace(";", ",").replace("none", "").replace(",", "").strip() != "" %}
 [tasks.sync-skills]
     cmd  = "uvx library-skills --all -y"
     help = "Synchronize agent skills from installed library dependencies via library-skills."
