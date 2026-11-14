@@ -79,9 +79,9 @@ Before editing code or executing tasks, ensure an isolated, clean working enviro
   - **Spec-Driven Features (`specs/`)**: Activate the matching `sdd-*` phase skill.
   - **Manual Only**: Never self-activate skills marked
     `disable-model-invocation: true` (`workflow-setup`, `workflow-docs-consumers`,
-    `workflow-inspect-repo`, `workflow-example-sync`). Run them only on explicit user
-    request. The merge-monitoring step above is such a request: read
-    `.agents/skills/workflow-example-sync/SKILL.md` directly.
+    `workflow-bug-hunt`, `workflow-inspect-repo`, `workflow-example-sync`). Run them
+    only on explicit user request. The merge-monitoring step above is such a request:
+    read `.agents/skills/workflow-example-sync/SKILL.md` directly.
 
 ## Subagent Orchestration & Work-Sharing Policy
 
@@ -174,7 +174,7 @@ these invariants:
 - **Workflow & Tool Guidance**: Consult `.agents/skills/` for lifecycle workflow skills
   (`workflow-git`, `workflow-code-review`, `workflow-changelog`, `workflow-adr`,
   `workflow-setup`, `workflow-skill-creator`, `workflow-docs-authoring`,
-  `workflow-docs-consumers`, `workflow-example-sync`), Spec-Driven
+  `workflow-docs-consumers`, `workflow-bug-hunt`, `workflow-example-sync`), Spec-Driven
   Development suite (`sdd`, `sdd-spec`, `sdd-plan`, `sdd-implement`, `sdd-review`),
   engineering guides (`guide-python`, `guide-ste100`), and tool-specific guidance
   (`tool-*/SKILL.md`).

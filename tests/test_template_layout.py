@@ -91,6 +91,7 @@ def test_agent_skills_present(full_project: Path) -> None:
     """Verify all bundled agent skills exist in the rendered project."""
     skills = [
         "workflow-adr",
+        "workflow-bug-hunt",
         "workflow-changelog",
         "workflow-code-review",
         "workflow-git",
