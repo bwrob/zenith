@@ -173,3 +173,65 @@ def test_run_cmd_handles_exceptions(tmp_path: Path) -> None:
     """Verify run_cmd safely suppresses subprocess errors."""
     # Calling a nonexistent command should be cleanly suppressed
     run_cmd(["nonexistent-command-xyz-123"], cwd=tmp_path)
+
+
+def test_generate_project_expands_tilde_in_output_dir(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Expand tilde home shortcuts in generate_project output directories.
+
+    Bug: ``generate_project`` resolved ``~/...`` relative to the current
+    working directory, bypassing collision checks and creating a literal
+    ``./~`` folder instead of using the user's home directory.
+    Root cause: ``validate_output_dir`` and UI previews called
+    ``.expanduser()``, while ``generate_project`` called ``.resolve()`` alone.
+    Fix: Call ``.expanduser().resolve()`` in ``generate_project`` and
+    ``_build_feature_flags``.
+    """
+    fake_home = tmp_path / "home"
+    fake_cwd = tmp_path / "cwd"
+    fake_home.mkdir()
+    fake_cwd.mkdir()
+
+    existing_target = fake_home / "projects" / "my-app"
+    existing_target.mkdir(parents=True)
+    (existing_target / "existing.txt").write_text("do not overwrite", encoding="utf-8")
+
+    monkeypatch.setenv("HOME", str(fake_home))
+    monkeypatch.chdir(fake_cwd)
+
+    colliding = ZenithConfig(
+        project_slug="my-app",
+        output_dir="~/projects",
+        init_git=False,
+        run_uv_sync=False,
+        install_git_hooks=False,
+    )
+    with (
+        patch("zenith.generator.cookiecutter") as mock_cc,
+        pytest.raises(FileExistsError),
+    ):
+        generate_project(colliding, output_dir="~/projects", overwrite=False)
+    mock_cc.assert_not_called()
+
+    fresh = ZenithConfig(
+        project_slug="fresh-app",
+        output_dir="~/projects",
+        init_git=False,
+        run_uv_sync=False,
+        install_git_hooks=False,
+    )
+    fake_template = tmp_path / "template"
+    fake_template.mkdir()
+    expected_out = fake_home / "projects"
+    with (
+        patch("zenith.generator.get_template_path", return_value=fake_template),
+        patch(
+            "zenith.generator.cookiecutter",
+            return_value=str(expected_out / "fresh-app"),
+        ) as mock_cc,
+    ):
+        result = generate_project(fresh, output_dir="~/projects", overwrite=False)
+        assert result == expected_out / "fresh-app"
+        assert mock_cc.call_args.kwargs["output_dir"] == str(expected_out)
