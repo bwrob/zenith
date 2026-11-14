@@ -157,12 +157,13 @@ and bug hunting audits from 10k to 1M lines of code:
   to 8 `CONFIRMED` findings per shard) try to disprove reachability past upstream
   guards, deduplicate overlapping flaws, and run a 3-step semantic variant sweep
   (`rg -n` and `rg -U`) before branch patching.
-- **Dual-assertion patch soundness & compatible separate MRs**: Patches require
-  root-cause fixes without broad exception swallowing and typed regression tests
-  asserting both the trigger input and adjacent valid boundary inputs. All
-  `fix/bh-<id>` branches are first merged in a temporary integration worktree to verify
-  cross-patch compatibility (`poe test` and `poe code-quality`), then opened as
-  separate pull requests (`gh pr create`) for one-by-one human review.
+- **Concurrent patcher-per-fix MRs & consolidation verification**: Concurrent Patcher
+  agents (one agent per accepted finding, up to 4 in parallel) each create an isolated
+  `fix/bh-<id>` worktree, apply a root-cause fix with a dual-assertion typed regression
+  test, push the branch, and open a dedicated pull request (`gh pr create`) for
+  individual human review. The Coordinator then merges all `fix/bh-<id>` branches inside
+  a temporary `.temp/worktrees/integration` worktree to verify cross-patch compatibility
+  (`poe test` and `poe code-quality`).
 
 ## Upstream Maintainer Skills (Template Repository Only)
 

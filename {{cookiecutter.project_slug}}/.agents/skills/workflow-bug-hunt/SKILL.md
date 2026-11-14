@@ -36,7 +36,7 @@ Read [references/agent_roles.md](./references/agent_roles.md) for isolation mode
 - **Scout Swarm**: Parallel read-only agents that scan assigned slices with 1-hop contract reads.
 - **Triage & Repro Agents**: Reproduce bugs inside clustered worktrees and save verified tests to `.temp/bug-hunt/repro/`.
 - **Arbiter**: Independent judge (sharded at 8 findings per agent) that verifies root causes, scans sibling variants, and issues verdicts.
-- **Patcher**: Writes minimal fixes and typed regression tests inside branch worktrees when the user requests fixes.
+- **Patcher**: Parallel agent (one agent per finding) that patches `fix/bh-<id>`, runs tests, and opens a pull request.
 
 ---
 
@@ -88,15 +88,16 @@ PYTHONPATH="$PWD:$PWD/src" UV_PROJECT_ENVIRONMENT="<root>/${UV_PROJECT_ENVIRONME
 4. Merge duplicate root causes, assign severity, and issue `ACCEPT`, `REJECT`, or `NEEDS_MORE_EVIDENCE` (at most 1 retry round).
 5. Mark slices `ARBITRATED`, write `.temp/bug-hunt/summary.md`, and pause for human review.
 
-### Stage 5: Worktree Patching & Merge Gate (Optional)
+### Stage 5: Concurrent Worktree Patching & MR Creation (Optional)
 
 Run this stage only when the user requests fixes, or after user approval of `.temp/bug-hunt/summary.md`.
 
-1. Create at most 4 concurrent branch worktrees (`git worktree add -b fix/bh-<id> .temp/worktrees/patch-<id>` or `workspace: "share"`) per disjoint cluster.
-2. Apply the minimal root-cause fix and in-slice sibling fixes inside the patch worktree without broad exception swallowing.
-3. Add a typed regression test (`from __future__ import annotations`, `-> None`, `Bug / Root cause / Fix` docstring) in `tests/test_<module>.py`.
-4. Assert both the blocked trigger input and adjacent valid inputs inside the regression test.
-5. Run file-scoped verification inside the patch worktree:
+1. Start up to 4 concurrent Patcher agents per wave. Assign one agent to one accepted finding (`BH-<id>`).
+2. Create an isolated branch worktree per agent (`git worktree add -b fix/bh-<id> .temp/worktrees/patch-<id>` or `workspace: "share"`).
+3. Apply the minimal root-cause fix and in-slice sibling fixes inside the patch worktree without broad exception swallowing.
+4. Add a typed regression test (`from __future__ import annotations`, `-> None`, `Bug / Root cause / Fix` docstring) in `tests/test_<module>.py`.
+5. Assert both the blocked trigger input and adjacent valid inputs inside the regression test.
+6. Run file-scoped verification inside the patch worktree:
 
 ```bash
 PYTHONPATH="$PWD:$PWD/src" UV_PROJECT_ENVIRONMENT="<root>/${UV_PROJECT_ENVIRONMENT:-.venv}" uv run --no-sync pytest -c pytest.ini --rootdir="$PWD" --no-cov <root>/.temp/bug-hunt/repro/test_bh_<id>.py tests/test_<module>.py
@@ -104,17 +105,17 @@ UV_PROJECT_ENVIRONMENT="<root>/${UV_PROJECT_ENVIRONMENT:-.venv}" uv run --no-syn
 UV_PROJECT_ENVIRONMENT="<root>/${UV_PROJECT_ENVIRONMENT:-.venv}" uv run --no-sync pyrefly check <modified_files>
 ```
 
-6. Commit verified changes to `fix/bh-<id>`, remove `.temp/worktrees/patch-<id>` immediately, and present `git diff HEAD...fix/bh-<id>` for approval.
+7. Stage explicit paths (`git add <files>`), commit to `fix/bh-<id>`, and remove `.temp/worktrees/patch-<id>` immediately.
+8. Push `fix/bh-<id>` (`git push -u origin fix/bh-<id>`) and open the pull request (`gh pr create --head fix/bh-<id> --body-file - <<'EOF'`) from the same agent.
 
 ---
 
-## 4. Compatibility Verification, Separate MRs & Cleanup
+## 4. Consolidation Compatibility Verification & Cleanup
 
-After human approval of the patch branches, verify combined compatibility and open separate pull requests:
+After the concurrent Patcher agents open their pull requests, verify cross-patch compatibility:
 
 1. Create a temporary consolidation worktree (`git worktree add --detach .temp/worktrees/integration`) and merge all `fix/bh-<id>` branches inside it.
 2. Run `PYTHONPATH="$PWD:$PWD/src" UV_PROJECT_ENVIRONMENT="<root>/${UV_PROJECT_ENVIRONMENT:-.venv}" uv run --no-sync poe test` and `poe code-quality` inside `.temp/worktrees/integration`.
-3. Remove `.temp/worktrees/integration` (`git worktree remove --force .temp/worktrees/integration`) once cross-fix compatibility passes.
-4. Push each approved `fix/bh-<id>` branch (`git push -u origin fix/bh-<id>`).
-5. Open one pull request per finding (`gh pr create --head fix/bh-<id> --body-file - <<'EOF'`) with root cause, trigger, reproducer, and soundness notes.
-6. Prune worktrees (`git worktree prune && rm -rf .temp/worktrees`) and remove `.temp/bug-hunt` once all waves finish.
+3. If a cross-fix conflict or test failure occurs, update the affected `fix/bh-<id>` branch and pull request.
+4. Remove `.temp/worktrees/integration` and prune worktrees (`git worktree prune && rm -rf .temp/worktrees`). Run `uv sync` at the repository root.
+5. Watch remote CI runs on all pull requests (`gh run watch`) and remove `.temp/bug-hunt` once all waves finish.
