@@ -329,6 +329,18 @@ def _remove_package_agent_dirs() -> None:
             remove_dir("src", pkg_dir.name, ".agents")
 
 
+def _prune_subagents() -> None:
+    """Remove tool-specific subagent directories when agent skills are disabled."""
+    for parts in (
+        (".claude", "agents"),
+        (".gemini", "agents"),
+        (".cursor", "agents"),
+        (".opencode", "agents"),
+        (".codex", "agents"),
+    ):
+        remove_dir(*parts)
+
+
 def _prune_all_ai_configs() -> None:
     remove_file("AGENTS.md")
     remove_file("AI_POLICY.md")
@@ -383,6 +395,8 @@ def setup_agent_instructions(*, include_agent_skills: bool, raw_ai_tools: str) -
     _setup_cursor_rules(active_tools)
     if include_agent_skills:
         _setup_subagents(PROJECT_DIR / ".agents" / "subagents", active_tools)
+    else:
+        _prune_subagents()
 
 
 def main() -> None:
