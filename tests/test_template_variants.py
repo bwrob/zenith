@@ -357,6 +357,65 @@ def test_ai_tools_custom_subset_rendering(temp_output_dir: Path) -> None:
     assert not (rendered / ".aider.conf.yml").exists()
 
 
+def test_include_agent_skills_false_prunes_tool_subagents(
+    temp_output_dir: Path,
+) -> None:
+    """Prune tool subagent directories when re-scaffolding without skills.
+
+    Bug: Re-scaffolding over an existing project with `include_agent_skills`
+    set to `False` left dangling subagent links in `.claude/agents`,
+    `.gemini/agents`, `.cursor/agents`, `.opencode/agents`, and stale
+    definitions in `.codex/agents`.
+    Root cause: `setup_agent_instructions` deleted `.agents` and skipped
+    `_setup_subagents`, but did not remove tool subagent directories.
+    Fix: Call `_prune_subagents` when `include_agent_skills` is `False` while
+    preserving top-level instructions and tool configuration files.
+    """
+    rendered = Path(
+        cookiecutter(
+            str(TEMPLATE_ROOT),
+            no_input=True,
+            output_dir=str(temp_output_dir),
+            extra_context={
+                "project_name": "Overwrite Subagents Project",
+                "include_agent_skills": True,
+                "ai_tools": "all",
+            },
+        )
+    )
+    for tool_dir in (".claude", ".gemini", ".cursor", ".opencode"):
+        agent_link = rendered / tool_dir / "agents" / "sdd-implementer.md"
+        assert agent_link.is_symlink() or agent_link.exists()
+    assert (rendered / ".codex" / "agents" / "sdd-implementer.toml").is_file()
+
+    cookiecutter(
+        str(TEMPLATE_ROOT),
+        no_input=True,
+        output_dir=str(temp_output_dir),
+        overwrite_if_exists=True,
+        extra_context={
+            "project_name": "Overwrite Subagents Project",
+            "include_agent_skills": False,
+            "ai_tools": "all",
+        },
+    )
+
+    assert not (rendered / ".agents").exists()
+    for tool_dir in (".claude", ".gemini", ".cursor", ".opencode", ".codex"):
+        agents_dir = rendered / tool_dir / "agents"
+        assert not agents_dir.is_symlink()
+        assert not agents_dir.exists()
+
+    assert (rendered / "AGENTS.md").is_file()
+    assert (rendered / "CLAUDE.md").exists()
+    assert (rendered / ".claude" / "settings.json").is_file()
+    assert (rendered / ".gemini" / "settings.json").is_file()
+    assert (rendered / ".cursorrules").exists()
+    assert (rendered / ".cursor" / "rules" / "zenith.mdc").is_file()
+    assert (rendered / "opencode.json").is_file()
+    assert (rendered / ".codex" / "config.toml").is_file()
+
+
 def test_include_agent_skills_false_prunes_skills(temp_output_dir: Path) -> None:
     """Test that include_agent_skills=false strips .agents/ while keeping configs."""
     rendered = Path(
