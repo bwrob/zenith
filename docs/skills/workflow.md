@@ -149,16 +149,20 @@ and bug hunting audits from 10k to 1M lines of code:
   while tracing 1-hop upstream guards (`Upstream Guards Audited`).
 - **Rolling worktrees, `hypothesis` shrinking & shared `.venv`**: Triage and patch
   agents run inside a rolling pool of at most 4 active Git worktrees
-  (`.temp/worktrees/`), pinning `PYTHONPATH="$PWD/src"` and
-  `UV_PROJECT_ENVIRONMENT="<root>/.venv"` with `pytest --no-cov` and `@given(...)`
-  `hypothesis` shrinking into `.temp/bug-hunt/repro/`.
+  (`.temp/worktrees/`), pinning `PYTHONPATH="$PWD:$PWD/src"`,
+  `UV_PROJECT_ENVIRONMENT="<root>/${UV_PROJECT_ENVIRONMENT:-.venv}"`, and
+  `pytest -c pytest.ini --rootdir="$PWD" --no-cov` with `@given(...)` `hypothesis`
+  shrinking into `.temp/bug-hunt/repro/`.
 - **Adversarial disprover arbiters & 3-step variant sweeps**: Independent arbiters (up
   to 8 `CONFIRMED` findings per shard) try to disprove reachability past upstream
   guards, deduplicate overlapping flaws, and run a 3-step semantic variant sweep
   (`rg -n` and `rg -U`) before branch patching.
-- **Dual-assertion patch soundness**: Patches require root-cause fixes without broad
-  exception swallowing and typed regression tests asserting both the trigger input and
-  adjacent valid boundary inputs.
+- **Dual-assertion patch soundness & compatible separate MRs**: Patches require
+  root-cause fixes without broad exception swallowing and typed regression tests
+  asserting both the trigger input and adjacent valid boundary inputs. All
+  `fix/bh-<id>` branches are first merged in a temporary integration worktree to verify
+  cross-patch compatibility (`poe test` and `poe code-quality`), then opened as
+  separate pull requests (`gh pr create`) for one-by-one human review.
 
 ## Upstream Maintainer Skills (Template Repository Only)
 

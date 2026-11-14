@@ -32,7 +32,7 @@ Keep `- **Location**:`, `- **Bug Class**:`, `- **Status**:`, and `- **Verdict**:
   - **Attempts**: `<1 | 2 | 3>`
   - **Worktree**: `.temp/worktrees/repro-<cluster>/`
   - **Repro File**: `.temp/bug-hunt/repro/test_bh_<slice>_<nn>.py`
-  - **Repro Command**: `PYTHONPATH="$PWD/src" UV_PROJECT_ENVIRONMENT="<root>/.venv" uv run --no-sync pytest --no-cov <root>/.temp/bug-hunt/repro/test_bh_<slice>_<nn>.py`
+  - **Repro Command**: `PYTHONPATH="$PWD:$PWD/src" UV_PROJECT_ENVIRONMENT="<root>/${UV_PROJECT_ENVIRONMENT:-.venv}" uv run --no-sync pytest -c pytest.ini --rootdir="$PWD" --no-cov <root>/.temp/bug-hunt/repro/test_bh_<slice>_<nn>.py`
   - **Observed Output**: `<exact error, assertion failure, or unexpected output>`
 - **Arbiter Review**:
   - **Disprover Notes**: `<why upstream guards and type contracts failed to block the trigger path>`

@@ -12,7 +12,7 @@ Adopt an adversarial disprover stance and try to falsify each finding first:
 
 - Can an external caller reach the target line, or do `Upstream Guards Audited` reject the trigger input?
 - Does the reproducer use real project types and public interfaces rather than broken mocks or bypassed constructors?
-- Did the command run with `PYTHONPATH="$PWD/src"` (or package source roots) so Python imported the worktree code?
+- Did the command run with `PYTHONPATH="$PWD:$PWD/src"` and `--rootdir="$PWD"` so Python imported the worktree code?
 - Did the test fail on the bug assertion or unhandled exception rather than a `fail_under = 100` coverage exit code?
 - Does the stack trace match the exact line and mechanism described in the finding (inspect target lines ±30 lines)?
 

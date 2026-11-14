@@ -21,7 +21,7 @@ It coordinates risk-tiered scouting, worktree reproduction, sharded arbiter revi
 2. **Evidence-Only Reporting**: Reject every finding that lacks a concrete trigger input or failing test.
 3. **Arbiter Independence**: Separate discovery from validation. Independent arbiters verify that each reproducer triggers the claimed root cause.
 4. **Rolling Worktree Pool**: Run experimentation, reproduction, and patching in Git worktrees under `.temp/worktrees/`. Cap active worktrees at 4 and remove completed worktrees immediately.
-5. **Shared Environment**: Pin `PYTHONPATH="$PWD/src"` and `UV_PROJECT_ENVIRONMENT="<root>/.venv"` with `--no-sync`. This avoids `.venv` rebuilds and shadowed imports.
+5. **Shared Environment**: Pin `PYTHONPATH="$PWD:$PWD/src"`, `UV_PROJECT_ENVIRONMENT="<root>/${UV_PROJECT_ENVIRONMENT:-.venv}"`, and `-c pytest.ini --rootdir="$PWD"` with `--no-sync`. This avoids `.venv` rebuilds and shadowed imports.
 6. **Persistent State Ledger**: Track slice status in `.temp/bug-hunt/scope.md`, findings in `.temp/bug-hunt/findings/`, and reproducers in `.temp/bug-hunt/repro/`. Never run `uv run poe clean` during an active hunt.
 7. **Human Review Gate**: Present triaged findings and branch diffs for human approval before merging fixes.
 
@@ -46,7 +46,7 @@ Read [references/agent_roles.md](./references/agent_roles.md) for isolation mode
 
 1. Run `git status` to verify a clean working tree and create `.temp/bug-hunt/{findings,repro}`.
 2. If `.temp/bug-hunt/scope.md` exists, resume from the first incomplete slice instead of remapping.
-3. Map entrypoints and module boundaries from `pyproject.toml` and `tach.toml`.
+3. Map entrypoints and module boundaries from `pyproject.toml` and `tach.toml` (if present).
 4. Rank modules by sink density (`rg -c` on process, file, parser, and network APIs) and 90-day churn (`git log --since="90 days ago" --name-only`).
 5. Partition modules into disjoint slices (`S01`, `S02`) of at most 15 files or 4,000 lines in `.temp/bug-hunt/scope.md` with status `PENDING`.
 6. Group slices into `Tier 1` (boundaries and dense sinks), `Tier 2` (core logic), and `Tier 3` (helpers).
@@ -74,7 +74,7 @@ rg "^- \*\*(Location|Bug Class|Status|Verdict)\*\*:" .temp/bug-hunt/findings/
 5. Run each reproducer inside the worktree without coverage thresholds against the root environment:
 
 ```bash
-PYTHONPATH="$PWD/src" UV_PROJECT_ENVIRONMENT="<root>/.venv" uv run --no-sync pytest --no-cov <root>/.temp/bug-hunt/repro/test_bh_<slice>_<nn>.py
+PYTHONPATH="$PWD:$PWD/src" UV_PROJECT_ENVIRONMENT="<root>/${UV_PROJECT_ENVIRONMENT:-.venv}" uv run --no-sync pytest -c pytest.ini --rootdir="$PWD" --no-cov <root>/.temp/bug-hunt/repro/test_bh_<slice>_<nn>.py
 ```
 
 6. Stop after 3 failed attempts per candidate and update status (`CONFIRMED`, `UNREPRODUCED`, or `FALSE_POSITIVE`).
@@ -99,26 +99,22 @@ Run this stage only when the user requests fixes, or after user approval of `.te
 5. Run file-scoped verification inside the patch worktree:
 
 ```bash
-PYTHONPATH="$PWD/src" UV_PROJECT_ENVIRONMENT="<root>/.venv" uv run --no-sync pytest --no-cov <root>/.temp/bug-hunt/repro/test_bh_<id>.py tests/test_<module>.py
-UV_PROJECT_ENVIRONMENT="<root>/.venv" uv run --no-sync ruff check <modified_files>
-UV_PROJECT_ENVIRONMENT="<root>/.venv" uv run --no-sync pyrefly check <modified_files>
+PYTHONPATH="$PWD:$PWD/src" UV_PROJECT_ENVIRONMENT="<root>/${UV_PROJECT_ENVIRONMENT:-.venv}" uv run --no-sync pytest -c pytest.ini --rootdir="$PWD" --no-cov <root>/.temp/bug-hunt/repro/test_bh_<id>.py tests/test_<module>.py
+UV_PROJECT_ENVIRONMENT="<root>/${UV_PROJECT_ENVIRONMENT:-.venv}" uv run --no-sync ruff check <modified_files>
+UV_PROJECT_ENVIRONMENT="<root>/${UV_PROJECT_ENVIRONMENT:-.venv}" uv run --no-sync pyrefly check <modified_files>
 ```
 
 6. Commit verified changes to `fix/bh-<id>`, remove `.temp/worktrees/patch-<id>` immediately, and present `git diff HEAD...fix/bh-<id>` for approval.
 
 ---
 
-## 4. Landing & Cleanup
+## 4. Compatibility Verification, Separate MRs & Cleanup
 
-After human approval, merge approved branches sequentially and run the full repository quality gate once in the main tree:
+After human approval of the patch branches, verify combined compatibility and open separate pull requests:
 
-```bash
-git merge --no-ff fix/bh-<id>
-git branch -d fix/bh-<id>
-git worktree prune
-rm -rf .temp/worktrees
-uv run poe test
-uv run poe code-quality
-```
-
-Remove `.temp/bug-hunt` only when all planned waves in `.temp/bug-hunt/scope.md` are complete.
+1. Create a temporary consolidation worktree (`git worktree add --detach .temp/worktrees/integration`) and merge all `fix/bh-<id>` branches inside it.
+2. Run `PYTHONPATH="$PWD:$PWD/src" UV_PROJECT_ENVIRONMENT="<root>/${UV_PROJECT_ENVIRONMENT:-.venv}" uv run --no-sync poe test` and `poe code-quality` inside `.temp/worktrees/integration`.
+3. Remove `.temp/worktrees/integration` (`git worktree remove --force .temp/worktrees/integration`) once cross-fix compatibility passes.
+4. Push each approved `fix/bh-<id>` branch (`git push -u origin fix/bh-<id>`).
+5. Open one pull request per finding (`gh pr create --head fix/bh-<id> --body-file - <<'EOF'`) with root cause, trigger, reproducer, and soundness notes.
+6. Prune worktrees (`git worktree prune && rm -rf .temp/worktrees`) and remove `.temp/bug-hunt` once all waves finish.

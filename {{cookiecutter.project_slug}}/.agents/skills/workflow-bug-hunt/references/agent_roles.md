@@ -10,7 +10,7 @@ This reference defines the five roles in `workflow-bug-hunt`, their isolation mo
 - **Write Scope**: Writes `.temp/bug-hunt/scope.md` and `.temp/bug-hunt/summary.md`.
 - **Context Budget Rule**: Never read all `BH-*.md` files into context at once on large repositories. Index metadata lines with `rg "^- \*\*(Location|Bug Class|Status|Verdict)\*\*:" .temp/bug-hunt/findings/`.
 - **Responsibilities**:
-  1. Map entrypoints from `pyproject.toml` and module boundaries from `tach.toml`.
+  1. Map entrypoints from `pyproject.toml` and module boundaries from `tach.toml` (if present).
   2. Rank modules by sink density (`rg -c`) and 90-day git churn.
   3. Partition slices (`S01`, `S02`) of at most 15 files or 4,000 lines in `.temp/bug-hunt/scope.md`.
   4. Budget at most 3 scout waves (15 slices) per run starting with `Tier 1` slices. Track slice status (`PENDING | SCOUTED | TRIAGED | ARBITRATED | PATCHED`).
@@ -22,7 +22,7 @@ This reference defines the five roles in `workflow-bug-hunt`, their isolation mo
 
 - **Count**: Waves of 3 to 5 parallel agents.
 - **Mode**: Read-only (`research` subagent or `swarm` worker with `workspace: "inherit"`).
-- **Write Scope**: Writes `.temp/bug-hunt/findings/BH-<slice>-<nn>.md` only. Never edits tracked files.
+- **Write Scope**: Writes `.temp/bug-hunt/findings/BH-<slice>-<nn>.md` only (or returns markdown for the Coordinator to write when running as a sandboxed `research` subagent). Never edits tracked files.
 - **Three Audit Lenses**: Audit boundary sinks, spec-vs-code drift (`specs/`, docstrings, types), and partial state mutation on error.
 - **1-Hop Boundary & Guard Rule**: Report bugs only inside the assigned slice. Read 1-hop callers and callees to trace upstream guards and record `Upstream Guards Audited`.
 - **Candidate Cap**: Emit at most 5 highest-confidence findings per scout using `templates/finding_report.md`.
@@ -33,7 +33,7 @@ This reference defines the five roles in `workflow-bug-hunt`, their isolation mo
 
 - **Mode**: Clustered detached Git worktree (`git worktree add --detach .temp/worktrees/repro-<cluster>` or `workspace: "share"`), with at most 4 active worktrees.
 - **Write Scope**: Experiment inside the worktree, save tests to `<root>/.temp/bug-hunt/repro/test_bh_<slice>_<nn>.py`, and update Triage fields in `.temp/bug-hunt/findings/`. Never edit the main working tree.
-- **Execution Rule**: Pin `PYTHONPATH="$PWD/src"` and `UV_PROJECT_ENVIRONMENT="<root>/.venv"` with `uv run --no-sync pytest --no-cov` so `.venv` is not rebuilt and `fail_under = 100` does not mask results.
+- **Execution Rule**: Pin `PYTHONPATH="$PWD:$PWD/src"`, `UV_PROJECT_ENVIRONMENT="<root>/${UV_PROJECT_ENVIRONMENT:-.venv}"`, and `-c pytest.ini --rootdir="$PWD"` with `uv run --no-sync pytest --no-cov` so `.venv` is not rebuilt and `rootdir` or `fail_under = 100` does not mask results.
 - **Attempt Budget**: Stop after 3 failed reproduction attempts per candidate and mark `UNREPRODUCED`.
 - **Responsibilities**:
   1. Enter the assigned cluster worktree.
@@ -47,7 +47,7 @@ This reference defines the five roles in `workflow-bug-hunt`, their isolation mo
 
 - **Count**: 1 independent agent per shard of at most 8 `CONFIRMED` findings (never reuse a scout or triage agent for its own finding).
 - **Mode**: Read-only, executing batched reproducers from `.temp/bug-hunt/repro/`.
-- **Write Scope**: Updates only Arbiter fields in `.temp/bug-hunt/findings/BH-<slice>-<nn>.md`.
+- **Write Scope**: Updates only Arbiter fields in `.temp/bug-hunt/findings/BH-<slice>-<nn>.md` (or returns verdicts for the Coordinator to write when running as a sandboxed `research` subagent).
 - **Disprove-First Mandate**: Act as an adversarial disprover. Prove whether public callers can bypass upstream guards before accepting any finding.
 - **Responsibilities**:
   1. Re-run the shard's `CONFIRMED` reproducers in one batch with `pytest --no-cov`.
@@ -66,5 +66,7 @@ This reference defines the five roles in `workflow-bug-hunt`, their isolation mo
   1. Implement minimal fixes inside the patch worktree while preserving public API contracts.
   2. Add a typed regression test (`from __future__ import annotations`, `-> None`, `Bug / Root cause / Fix` docstring) in `tests/test_<module>.py`.
   3. Test both the blocked trigger input and adjacent valid boundary inputs inside the regression test.
-  4. Run file-scoped `pytest --no-cov`, `ruff check`, and `pyrefly check` on modified files using `PYTHONPATH="$PWD/src"` and `UV_PROJECT_ENVIRONMENT="<root>/.venv"`.
-  5. Commit validated changes to `fix/bh-<id>` and remove `.temp/worktrees/patch-<id>` immediately so disk usage stays bounded.
+  4. Run file-scoped `pytest -c pytest.ini --rootdir="$PWD" --no-cov`, `ruff check`, and `pyrefly check` on modified files using `PYTHONPATH="$PWD:$PWD/src"` and `UV_PROJECT_ENVIRONMENT="<root>/${UV_PROJECT_ENVIRONMENT:-.venv}"`.
+  5. Commit validated changes to `fix/bh-<id>` and remove `.temp/worktrees/patch-<id>` immediately.
+  6. Test combined compatibility of all `fix/bh-<id>` branches inside `.temp/worktrees/integration`, then remove the temporary worktree.
+  7. Push each `fix/bh-<id>` branch and open a separate pull request with full explanations for individual human review.
