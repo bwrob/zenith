@@ -294,6 +294,81 @@ def test_include_agent_skills_false_prunes_skills(temp_output_dir: Path) -> None
     assert "sdd-new" not in poe_text
 
 
+def test_include_agent_skills_false_or_none_removes_package_agents_dir(
+    temp_output_dir: Path,
+) -> None:
+    """Verify disabled skills or ai_tools=none remove src/<pkg>/.agents."""
+    no_skills = Path(
+        cookiecutter(
+            str(TEMPLATE_ROOT),
+            no_input=True,
+            output_dir=str(temp_output_dir),
+            extra_context={
+                "project_name": "No Skills Pkg",
+                "include_agent_skills": False,
+                "ai_tools": "claude",
+            },
+        )
+    )
+    assert not (no_skills / ".agents").exists()
+    assert not (no_skills / "src" / "no_skills_pkg" / ".agents").exists()
+    assert (no_skills / "src" / "no_skills_pkg" / "core.py").exists()
+
+    ai_none = Path(
+        cookiecutter(
+            str(TEMPLATE_ROOT),
+            no_input=True,
+            output_dir=str(temp_output_dir),
+            extra_context={
+                "project_name": "AI None Pkg",
+                "include_agent_skills": True,
+                "ai_tools": "none",
+            },
+        )
+    )
+    assert not (ai_none / ".agents").exists()
+    assert not (ai_none / "src" / "ai_none_pkg" / ".agents").exists()
+    assert (ai_none / "src" / "ai_none_pkg" / "core.py").exists()
+
+    both_off = Path(
+        cookiecutter(
+            str(TEMPLATE_ROOT),
+            no_input=True,
+            output_dir=str(temp_output_dir),
+            extra_context={
+                "project_name": "Both Off Pkg",
+                "include_agent_skills": False,
+                "ai_tools": "none",
+            },
+        )
+    )
+    assert not (both_off / ".agents").exists()
+    assert not (both_off / "src" / "both_off_pkg" / ".agents").exists()
+
+    skills_enabled = Path(
+        cookiecutter(
+            str(TEMPLATE_ROOT),
+            no_input=True,
+            output_dir=str(temp_output_dir),
+            extra_context={
+                "project_name": "Skills Enabled Pkg",
+                "include_agent_skills": True,
+                "ai_tools": "minimal",
+            },
+        )
+    )
+    assert (skills_enabled / ".agents").is_dir()
+    assert (
+        skills_enabled
+        / "src"
+        / "skills_enabled_pkg"
+        / ".agents"
+        / "skills"
+        / "skills-enabled-pkg"
+        / "SKILL.md"
+    ).is_file()
+
+
 def test_include_docs_false_prunes_docs(temp_output_dir: Path) -> None:
     """Test that include_docs=false prunes docs directory and zensical configuration."""
     rendered = Path(
