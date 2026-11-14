@@ -16,6 +16,7 @@ from rich.panel import Panel
 from zenith import __version__
 from zenith.generator import generate_project
 from zenith.models import (
+    AI_TOOL_ALIASES,
     AI_TOOL_PRESETS,
     PRESET_RECOMMENDED,
     SUPPORTED_LICENSES,
@@ -231,12 +232,17 @@ def _resolve_ai_tools(raw: str | None) -> tuple[str, ...]:
     if raw is None:
         return PRESET_RECOMMENDED
 
-    normalized = raw.strip().lower()
-    if normalized in AI_TOOL_PRESETS:
-        return AI_TOOL_PRESETS[normalized]
+    tokens = [t.strip().lower() for t in raw.replace(";", ",").split(",") if t.strip()]
+    if not tokens:
+        return ("",)
 
-    items = [t.strip() for t in normalized.replace(";", ",").split(",") if t.strip()]
-    return tuple(items)
+    resolved: list[str] = []
+    for token in tokens:
+        if token in AI_TOOL_PRESETS:
+            resolved.extend(AI_TOOL_PRESETS[token])
+        else:
+            resolved.append(AI_TOOL_ALIASES.get(token, token))
+    return tuple(dict.fromkeys(resolved))
 
 
 def config_from_args(args: argparse.Namespace) -> ZenithConfig:

@@ -9,6 +9,8 @@ import shutil
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+from zenith.models import AI_TOOL_PRESETS, ALL_AI_TOOLS
+
 if TYPE_CHECKING:
     from collections.abc import Callable
 
@@ -226,6 +228,37 @@ def validate_github_username(value: str) -> str | None:
     return None
 
 
+def validate_ai_tools(ai_tools: tuple[str, ...]) -> str | None:
+    """Validate selected AI tool identifiers.
+
+    Parameters
+    ----------
+    ai_tools : tuple[str, ...]
+        Tuple of canonical AI tool identifiers (`()` selects no tools).
+
+    Returns
+    -------
+    str | None
+        Error message if any identifier is invalid, otherwise `None`.
+
+    """
+    invalid = [tool for tool in ai_tools if tool not in ALL_AI_TOOLS]
+    if not invalid:
+        return None
+    valid_tools = ", ".join(ALL_AI_TOOLS)
+    valid_presets = ", ".join(AI_TOOL_PRESETS)
+    if invalid == [""]:
+        return (
+            "AI tools cannot be empty. "
+            f"Valid presets: {valid_presets}. Valid tools: {valid_tools}."
+        )
+    invalid_str = ", ".join(tool or "''" for tool in invalid)
+    return (
+        f"Unknown AI tool(s): {invalid_str}. "
+        f"Valid presets: {valid_presets}. Valid tools: {valid_tools}."
+    )
+
+
 def check_prerequisites() -> list[str]:
     """Check whether required external CLI tools are available on `PATH`.
 
@@ -267,4 +300,7 @@ def validate_config(config: ZenithConfig) -> list[tuple[str, str]]:
         error = validator(value)
         if error is not None:
             errors.append((field_name, error))
+    ai_tools_error = validate_ai_tools(config.ai_tools)
+    if ai_tools_error is not None:
+        errors.append(("ai_tools", ai_tools_error))
     return errors
