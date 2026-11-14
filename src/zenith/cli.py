@@ -293,7 +293,9 @@ def _build_feature_flags(config: ZenithConfig) -> list[str]:
         List of CLI flag strings.
 
     """
-    has_custom_dir = Path(config.output_dir).resolve() != Path.cwd().resolve()
+    has_custom_dir = (
+        Path(config.output_dir).expanduser().resolve() != Path.cwd().resolve()
+    )
     flag_conditions = (
         (has_custom_dir, f"--output-dir {shlex.quote(config.output_dir)}"),
         (not config.include_cli, "--no-cli"),

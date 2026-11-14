@@ -88,7 +88,7 @@ def generate_project(
         FileExistsError: If the target directory exists and overwrite is False.
 
     """
-    out_path = Path(output_dir).resolve()
+    out_path = Path(output_dir).expanduser().resolve()
     target_dir = out_path / config.project_slug
 
     if target_dir.is_dir() and not overwrite and any(target_dir.iterdir()):
