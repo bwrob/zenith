@@ -53,7 +53,18 @@ AI_TOOL_PRESETS: dict[str, tuple[str, ...]] = {
     "recommended": PRESET_RECOMMENDED,
     "ide-only": PRESET_IDE_ONLY,
     "cli-only": PRESET_CLI_ONLY,
+    "minimal": PRESET_NONE,
     "none": PRESET_NONE,
+}
+
+AI_TOOL_ALIASES: dict[str, str] = {
+    "antigravity": "gemini",
+    "google-gemini": "gemini",
+    "claude-code": "claude",
+    "openai-codex": "codex",
+    "github-copilot": "copilot",
+    "oh-my-pi": "omp",
+    "hermes-agent": "hermes",
 }
 
 AI_TOOL_METADATA: dict[str, tuple[str, str]] = {

@@ -115,9 +115,12 @@ class FeaturesScreen(Screen[object]):
                 id="install-git-hooks",
             )
 
+            selected_count = sum(
+                1 for tool_id in ALL_AI_TOOLS if tool_id in cfg.ai_tools
+            )
             yield Label(
                 f"AI Assistant Integrations "
-                f"({len(cfg.ai_tools)} / {len(ALL_AI_TOOLS)} selected)",
+                f"({selected_count} / {len(ALL_AI_TOOLS)} selected)",
                 id="ai-tools-heading",
                 classes="section-title",
             )
@@ -170,8 +173,9 @@ class FeaturesScreen(Screen[object]):
             f"AI Assistant Integrations "
             f"({len(selected_set)} / {len(ALL_AI_TOOLS)} selected)"
         )
-        for preset_name, preset_tools in AI_TOOL_PRESETS.items():
+        for preset_name in ("recommended", "all", "ide-only", "cli-only", "none"):
             btn = self.query_one(f"#preset-{preset_name}", Button)
+            preset_tools = AI_TOOL_PRESETS[preset_name]
             btn.variant = "primary" if selected_set == set(preset_tools) else "default"
 
     @on(SelectionList.SelectedChanged, "#ai-tools-list")

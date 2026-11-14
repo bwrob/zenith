@@ -17,6 +17,7 @@ from zenith.cli import (
     render_summary,
 )
 from zenith.models import PRESET_RECOMMENDED, ZenithConfig
+from zenith.validation import validate_config
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -131,6 +132,105 @@ def test_cli_ai_tools_preset(tmp_path: Path) -> None:
         assert exit_code == 0
         config = mock_gen.call_args[0][0]
         assert config.ai_tools == ("cursor", "windsurf", "zed", "copilot")
+
+
+def test_cli_ai_tools_aliases_combined_presets_and_validation(tmp_path: Path) -> None:
+    """Verify minimal preset, combined presets, aliases, and validation failures."""
+    minimal_cfg = config_from_args(
+        build_parser().parse_args(["--name", "demo", "--ai-tools", "minimal"])
+    )
+    assert minimal_cfg.ai_tools == ()
+    assert validate_config(minimal_cfg) == []
+
+    deduped_cfg = config_from_args(
+        build_parser().parse_args(
+            ["--name", "demo", "--ai-tools", "recommended,cursor"]
+        )
+    )
+    assert deduped_cfg.ai_tools == PRESET_RECOMMENDED
+
+    combined_cfg = config_from_args(
+        build_parser().parse_args(["--name", "demo", "--ai-tools", "recommended,zed"])
+    )
+    assert combined_cfg.ai_tools == (*PRESET_RECOMMENDED, "zed")
+
+    ide_plus_claude_cfg = config_from_args(
+        build_parser().parse_args(["--name", "demo", "--ai-tools", "ide-only,claude"])
+    )
+    assert ide_plus_claude_cfg.ai_tools == (
+        "cursor",
+        "windsurf",
+        "zed",
+        "copilot",
+        "claude",
+    )
+
+    aliases_cfg = config_from_args(
+        build_parser().parse_args(
+            [
+                "--name",
+                "demo",
+                "--ai-tools",
+                "antigravity,claude-code,openai-codex,github-copilot,oh-my-pi,hermes-agent",
+            ]
+        )
+    )
+    assert aliases_cfg.ai_tools == (
+        "gemini",
+        "claude",
+        "codex",
+        "copilot",
+        "omp",
+        "hermes",
+    )
+    assert validate_config(aliases_cfg) == []
+
+    google_gemini_cfg = config_from_args(
+        build_parser().parse_args(["--name", "demo", "--ai-tools", "google-gemini"])
+    )
+    assert google_gemini_cfg.ai_tools == ("gemini",)
+
+    invalid_cfg = config_from_args(
+        build_parser().parse_args(["--name", "demo", "--ai-tools", "foo"])
+    )
+    assert "ai_tools" in dict(validate_config(invalid_cfg))
+
+    blank_cfg = config_from_args(
+        build_parser().parse_args(["--name", "demo", "--ai-tools", "   "])
+    )
+    assert blank_cfg.ai_tools == ("",)
+    assert "ai_tools" in dict(validate_config(blank_cfg))
+
+    with patch("zenith.cli.generate_project") as mock_gen:
+        assert (
+            main(
+                [
+                    "--no-input",
+                    "--output-dir",
+                    str(tmp_path),
+                    "--name",
+                    "demo",
+                    "--ai-tools",
+                    "foo",
+                ]
+            )
+            == 1
+        )
+        assert (
+            main(
+                [
+                    "--no-input",
+                    "--output-dir",
+                    str(tmp_path),
+                    "--name",
+                    "demo",
+                    "--ai-tools",
+                    "   ",
+                ]
+            )
+            == 1
+        )
+        mock_gen.assert_not_called()
 
 
 def test_cli_interactive_success(tmp_path: Path) -> None:
