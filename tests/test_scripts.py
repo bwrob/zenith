@@ -504,6 +504,32 @@ def test_sync_example_main(tmp_path: Path) -> None:
         mock_sync.assert_called_once_with(Path(dest), lock=False)
 
 
+def test_sync_example_handles_directory_symlinks(tmp_path: Path) -> None:
+    """Clean and copy directory symlinks as symlinks without touching targets."""
+    ext, shared = tmp_path / "ext", tmp_path / "shared"
+    target, rendered = tmp_path / "target", tmp_path / "rendered"
+    for d in (ext, shared, rendered, target / ".git"):
+        d.mkdir(parents=True)
+    (ext / "keep.txt").write_text("preserve", encoding="utf-8")
+    (shared / "data.txt").write_text("data", encoding="utf-8")
+    (target / "stale_link").symlink_to(ext)
+    (target / "dangling").symlink_to(tmp_path / "missing")
+    (rendered / "copied_link").symlink_to(shared)
+    (rendered / "dangling_link").symlink_to(tmp_path / "missing_out")
+    with (
+        patch("scripts.sync_example.cookiecutter", return_value=str(rendered)),
+        patch("scripts.sync_example.shutil.which", return_value="/usr/bin/uv"),
+        patch("subprocess.run"),
+    ):
+        sync_example.sync_example(target, lock=False)
+    assert not (target / "stale_link").is_symlink()
+    assert not (target / "dangling").is_symlink()
+    assert (ext / "keep.txt").read_text(encoding="utf-8") == "preserve"
+    assert (target / "copied_link").is_symlink()
+    assert (target / "copied_link").resolve() == shared.resolve()
+    assert (target / "dangling_link").is_symlink()
+
+
 # --- sync_skills.py tests ---
 
 
