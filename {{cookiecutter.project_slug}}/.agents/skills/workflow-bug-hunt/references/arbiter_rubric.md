@@ -55,3 +55,12 @@ Assign severity based on reachability from external or public boundaries and con
 - **`ACCEPT`**: The reproducer is deterministic, and the arbiter verifies the root cause, sibling variants, and severity. Ready to report or patch.
 - **`NEEDS_MORE_EVIDENCE`**: Hypothesis looks plausible, but the reproducer is flaky or relies on questionable assumptions. Return the finding to triage at most once, then issue `ACCEPT` or `REJECT`.
 - **`REJECT`**: False positive, unreachable dead code, or reproducer triggers an unrelated error. Exclude from the final report.
+
+---
+
+## 5. Patch Soundness Audit (When Fixes Are Requested)
+
+Verify each candidate patch against both soundness rules before approving merge:
+
+- Verify that the patch fixes the root cause rather than swallowing exceptions or returning silent defaults.
+- Verify that the regression test asserts both the blocked trigger input and adjacent valid boundary inputs.

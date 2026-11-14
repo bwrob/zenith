@@ -93,9 +93,10 @@ PYTHONPATH="$PWD/src" UV_PROJECT_ENVIRONMENT="<root>/.venv" uv run --no-sync pyt
 Run this stage only when the user requests fixes, or after user approval of `.temp/bug-hunt/summary.md`.
 
 1. Create at most 4 concurrent branch worktrees (`git worktree add -b fix/bh-<id> .temp/worktrees/patch-<id>` or `workspace: "share"`) per disjoint cluster.
-2. Apply the minimal fix and in-slice sibling fixes inside the patch worktree.
+2. Apply the minimal root-cause fix and in-slice sibling fixes inside the patch worktree without broad exception swallowing.
 3. Add a typed regression test (`from __future__ import annotations`, `-> None`, `Bug / Root cause / Fix` docstring) in `tests/test_<module>.py`.
-4. Run file-scoped verification inside the patch worktree:
+4. Assert both the blocked trigger input and adjacent valid inputs inside the regression test.
+5. Run file-scoped verification inside the patch worktree:
 
 ```bash
 PYTHONPATH="$PWD/src" UV_PROJECT_ENVIRONMENT="<root>/.venv" uv run --no-sync pytest --no-cov <root>/.temp/bug-hunt/repro/test_bh_<id>.py tests/test_<module>.py
@@ -103,7 +104,7 @@ UV_PROJECT_ENVIRONMENT="<root>/.venv" uv run --no-sync ruff check <modified_file
 UV_PROJECT_ENVIRONMENT="<root>/.venv" uv run --no-sync pyrefly check <modified_files>
 ```
 
-5. Commit verified changes to `fix/bh-<id>`, remove `.temp/worktrees/patch-<id>` immediately, and present `git diff HEAD...fix/bh-<id>` for approval.
+6. Commit verified changes to `fix/bh-<id>`, remove `.temp/worktrees/patch-<id>` immediately, and present `git diff HEAD...fix/bh-<id>` for approval.
 
 ---
 

@@ -155,7 +155,10 @@ and bug hunting audits from 10k to 1M lines of code:
 - **Adversarial disprover arbiters & 3-step variant sweeps**: Independent arbiters (up
   to 8 `CONFIRMED` findings per shard) try to disprove reachability past upstream
   guards, deduplicate overlapping flaws, and run a 3-step semantic variant sweep
-  (`rg -n` and `rg -U`) before branch patching and human review.
+  (`rg -n` and `rg -U`) before branch patching.
+- **Dual-assertion patch soundness**: Patches require root-cause fixes without broad
+  exception swallowing and typed regression tests asserting both the trigger input and
+  adjacent valid boundary inputs.
 
 ## Upstream Maintainer Skills (Template Repository Only)
 

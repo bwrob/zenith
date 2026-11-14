@@ -42,3 +42,4 @@ Keep `- **Location**:`, `- **Bug Class**:`, `- **Status**:`, and `- **Verdict**:
   - **Patch Worktree & Branch**: `.temp/worktrees/patch-<slice>-<nn>/` (`fix/bh-<slice>-<nn>`)
   - **Patch Summary**: `<minimal change description including sibling variants>`
   - **Regression Test**: `<tests/test_<module>.py::test_name>`
+  - **Soundness Check**: `<how the regression test covers both the trigger input and valid boundary inputs>`

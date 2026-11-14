@@ -61,8 +61,10 @@ This reference defines the five roles in `workflow-bug-hunt`, their isolation mo
 
 - **Count**: Rolling pool of at most 4 concurrent branch worktrees (`git worktree add -b fix/bh-<id> .temp/worktrees/patch-<id>` or `workspace: "share"`).
 - **Write Scope**: Only the target module, its in-slice sibling variants, and `tests/test_<module>.py` inside the patch worktree.
+- **Patch Soundness Rule**: Fix the root cause directly. Never mask failures with broad exception handlers or silent fallback returns.
 - **Responsibilities**:
   1. Implement minimal fixes inside the patch worktree while preserving public API contracts.
   2. Add a typed regression test (`from __future__ import annotations`, `-> None`, `Bug / Root cause / Fix` docstring) in `tests/test_<module>.py`.
-  3. Run file-scoped `pytest --no-cov`, `ruff check`, and `pyrefly check` on modified files using `PYTHONPATH="$PWD/src"` and `UV_PROJECT_ENVIRONMENT="<root>/.venv"`.
-  4. Commit validated changes to `fix/bh-<id>` and remove `.temp/worktrees/patch-<id>` immediately so disk usage stays bounded.
+  3. Test both the blocked trigger input and adjacent valid boundary inputs inside the regression test.
+  4. Run file-scoped `pytest --no-cov`, `ruff check`, and `pyrefly check` on modified files using `PYTHONPATH="$PWD/src"` and `UV_PROJECT_ENVIRONMENT="<root>/.venv"`.
+  5. Commit validated changes to `fix/bh-<id>` and remove `.temp/worktrees/patch-<id>` immediately so disk usage stays bounded.
