@@ -109,6 +109,51 @@ def test_parse_frontmatter_unclosed() -> None:
         check_skills.parse_frontmatter("---\nname: my-skill\n")
 
 
+def test_parse_frontmatter_rejects_inline_triple_dashes_and_accepts_crlf() -> None:
+    """Require line-anchored frontmatter fences and support CRLF/empty blocks.
+
+    Bug: `parse_frontmatter` split on arbitrary `---` substrings, so inline
+    `---` inside scalar values truncated metadata and unclosed frontmatter
+    silently matched horizontal-rule or Markdown table dashes in the body.
+    Root cause: `content.startswith("---")` and `content.split("---", 2)`
+    did not anchor `---` delimiters to full lines.
+    Fix: Validate the opening boundary and extract the YAML block using the
+    line-anchored `FRONTMATTER_PATTERN` supporting LF, CRLF, and empty blocks.
+    """
+    inline_dashes = (
+        "---\n"
+        "description: >-\n"
+        "  Parse YAML between --- markers.\n"
+        "note: foo---bar\n"
+        "name: valid-skill\n"
+        "---\n"
+        "# Body\n"
+    )
+    meta = check_skills.parse_frontmatter(inline_dashes)
+    assert meta == {
+        "description": "Parse YAML between --- markers.",
+        "note": "foo---bar",
+        "name": "valid-skill",
+    }
+
+    crlf_content = (
+        "---\r\n# comment\r\n\r\nname: crlf-skill\r\ndescription: CRLF body.\r\n---\r\n"
+    )
+    assert check_skills.parse_frontmatter(crlf_content) == {
+        "name": "crlf-skill",
+        "description": "CRLF body.",
+    }
+
+    assert check_skills.parse_frontmatter("---\n---\n# Body\n---\n") == {}
+
+    with pytest.raises(ValueError, match="Missing leading '---'"):
+        check_skills.parse_frontmatter("---not-a-fence\nname: my-skill\n---\n")
+
+    unclosed_table = "---\nname: valid-skill\n\n| A | B |\n|---|---|\n"
+    with pytest.raises(ValueError, match="Unclosed frontmatter"):
+        check_skills.parse_frontmatter(unclosed_table)
+
+
 def test_validate_skill_missing_file(tmp_path: Path) -> None:
     """Test validate skill missing file."""
     skill_dir = tmp_path / "test-skill"
