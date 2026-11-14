@@ -573,6 +573,32 @@ def test_sync_skills_overwrite_existing(tmp_path: Path) -> None:
     assert dir_target.is_symlink()
 
 
+def test_sync_skills_prunes_dangling_symlinks_and_rejects_same_dir(
+    tmp_path: Path,
+) -> None:
+    """Test pruning dangling symlinks and rejecting identical source and target."""
+    src_dir, tgt_dir = tmp_path / "src", tmp_path / "tgt"
+    (src_dir / "active-skill").mkdir(parents=True)
+    (src_dir / "active-skill" / "SKILL.md").write_text("# skill\n", encoding="utf-8")
+    (tgt_dir / "repo-only").mkdir(parents=True)
+    (tgt_dir / "active-skill").symlink_to("../src/active-skill")
+    stale = tgt_dir / "stale-skill"
+    stale.symlink_to("../src/stale-skill")
+
+    check_errs = sync_skills.sync_skills(src_dir, tgt_dir, check_only=True)
+    assert any("stale-skill" in err for err in check_errs)
+    assert stale.is_symlink()
+
+    assert sync_skills.sync_skills(src_dir, tgt_dir, check_only=False) == []
+    assert not stale.is_symlink()
+    assert (tgt_dir / "repo-only").is_dir()
+
+    same_errs = sync_skills.sync_skills(src_dir, src_dir, check_only=False)
+    assert any("must differ" in err for err in same_errs)
+    assert (src_dir / "active-skill" / "SKILL.md").is_file()
+    assert not (src_dir / "active-skill").is_symlink()
+
+
 def test_sync_skills_main(tmp_path: Path) -> None:
     """Test sync skills main."""
     src_dir = tmp_path / "src"
