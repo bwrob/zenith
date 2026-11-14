@@ -55,9 +55,10 @@ Read [references/agent_roles.md](./references/agent_roles.md) for isolation mode
 ### Stage 2: Scout Swarm (Parallel Discovery)
 
 1. Start 3 to 5 read-only scouts per wave for `PENDING` slices.
-2. Allow each scout to read 1-hop callers and callees outside its slice to audit cross-module contracts.
-3. Cap each scout at 5 findings written to `.temp/bug-hunt/findings/BH-<slice>-<nn>.md` using [templates/finding_report.md](./templates/finding_report.md).
-4. Mark completed slices as `SCOUTED` in `.temp/bug-hunt/scope.md`.
+2. Audit each slice across three lenses: boundary sinks, spec-vs-code drift, and partial state mutation on error.
+3. Read 1-hop callers and callees to trace upstream guards and record `Upstream Guards Audited` in [templates/finding_report.md](./templates/finding_report.md).
+4. Cap each scout at 5 findings written to `.temp/bug-hunt/findings/BH-<slice>-<nn>.md`.
+5. Mark completed slices as `SCOUTED` in `.temp/bug-hunt/scope.md`.
 
 ### Stage 3: Clustered Worktree Triage & Reproduction
 
@@ -69,7 +70,7 @@ rg "^- \*\*(Location|Bug Class|Status|Verdict)\*\*:" .temp/bug-hunt/findings/
 
 2. Deduplicate candidates by `(Location, Bug Class)` and group up to 4 candidates per triage cluster.
 3. Create a detached Git worktree per active cluster (`git worktree add --detach .temp/worktrees/repro-<cluster>` or `workspace: "share"`), keeping at most 4 active worktrees.
-4. Experiment inside the worktree and save each minimal failing `pytest` test to `<root>/.temp/bug-hunt/repro/test_bh_<slice>_<nn>.py`.
+4. Experiment inside the worktree and save each minimal failing `pytest` or `@given(...)` `hypothesis` test (`@settings(max_examples=100, deadline=None)`) to `<root>/.temp/bug-hunt/repro/test_bh_<slice>_<nn>.py`.
 5. Run each reproducer inside the worktree without coverage thresholds against the root environment:
 
 ```bash
@@ -82,8 +83,8 @@ PYTHONPATH="$PWD/src" UV_PROJECT_ENVIRONMENT="<root>/.venv" uv run --no-sync pyt
 ### Stage 4: Sharded Arbiter Review & Variant Scan
 
 1. Group `CONFIRMED` findings by subsystem into shards of at most 8 findings per independent arbiter agent.
-2. Evaluate each shard against [references/arbiter_rubric.md](./references/arbiter_rubric.md) and re-run its reproducers in batch with `pytest --no-cov`.
-3. Scan source roots with `rg -n` for sibling occurrences of each verified root cause and record them under `Sibling Variants`.
+2. Adopt an adversarial disprover stance against [references/arbiter_rubric.md](./references/arbiter_rubric.md) and re-run reproducers in batch with `pytest --no-cov`.
+3. Run the 3-step variant sweep (`rg -n` and `rg -U` structural patterns) across source roots and record `Sibling Variants`.
 4. Merge duplicate root causes, assign severity, and issue `ACCEPT`, `REJECT`, or `NEEDS_MORE_EVIDENCE` (at most 1 retry round).
 5. Mark slices `ARBITRATED`, write `.temp/bug-hunt/summary.md`, and pause for human review.
 

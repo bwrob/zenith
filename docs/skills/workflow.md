@@ -143,17 +143,19 @@ and bug hunting audits from 10k to 1M lines of code:
   reachability, high-risk sink density (`rg -c`), and 90-day Git churn
   (`Tier 1`–`Tier 3`), checkpointing slice state in `.temp/bug-hunt/scope.md` across
   multi-wave runs.
-- **Disjoint scout slices with 1-hop reads**: Parallel read-only scouts report findings
-  (`BH-<slice>-<nn>.md`) only inside their assigned slice (`<= 15` files or `4,000`
-  lines) while reading 1-hop callers and callees across module boundaries.
-- **Rolling worktrees & shared `.venv`**: Triage and patch agents run inside a rolling
-  pool of at most 4 active Git worktrees (`.temp/worktrees/`), pinning
-  `PYTHONPATH="$PWD/src"` and `UV_PROJECT_ENVIRONMENT="<root>/.venv"` with
-  `pytest --no-cov` and saving persistent reproducers to `.temp/bug-hunt/repro/`.
-- **Sharded arbiters & sibling variant scans**: Independent arbiters (up to 8
-  `CONFIRMED` findings per shard) verify root-cause alignment, deduplicate overlapping
-  flaws, and scan source roots with `rg -n` for sibling variants before branch patching
-  and human review.
+- **Disjoint scout slices with 3 lenses & guard tracing**: Parallel read-only scouts
+  report findings (`BH-<slice>-<nn>.md`) only inside their assigned slice (`<= 15` files
+  or `4,000` lines), auditing boundary sinks, spec-vs-code drift, and failure atomicity
+  while tracing 1-hop upstream guards (`Upstream Guards Audited`).
+- **Rolling worktrees, `hypothesis` shrinking & shared `.venv`**: Triage and patch
+  agents run inside a rolling pool of at most 4 active Git worktrees
+  (`.temp/worktrees/`), pinning `PYTHONPATH="$PWD/src"` and
+  `UV_PROJECT_ENVIRONMENT="<root>/.venv"` with `pytest --no-cov` and `@given(...)`
+  `hypothesis` shrinking into `.temp/bug-hunt/repro/`.
+- **Adversarial disprover arbiters & 3-step variant sweeps**: Independent arbiters (up
+  to 8 `CONFIRMED` findings per shard) try to disprove reachability past upstream
+  guards, deduplicate overlapping flaws, and run a 3-step semantic variant sweep
+  (`rg -n` and `rg -U`) before branch patching and human review.
 
 ## Upstream Maintainer Skills (Template Repository Only)
 

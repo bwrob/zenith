@@ -6,21 +6,21 @@ Every `CONFIRMED` finding must pass all four audits before receiving an `ACCEPT`
 
 ---
 
-## 1. Root-Cause Alignment Audit
+## 1. Adversarial Disprover & Root-Cause Alignment Audit
 
-Verify that the reproducer fails because of the **claimed bug**, not an unrelated artifact:
+Adopt an adversarial disprover stance and try to falsify each finding first:
 
-- Does the reproducer use real project types and public interfaces rather than broken mocks?
+- Can an external caller reach the target line, or do `Upstream Guards Audited` reject the trigger input?
+- Does the reproducer use real project types and public interfaces rather than broken mocks or bypassed constructors?
 - Did the command run with `PYTHONPATH="$PWD/src"` (or package source roots) so Python imported the worktree code?
 - Did the test fail on the bug assertion or unhandled exception rather than a `fail_under = 100` coverage exit code?
 - Does the stack trace match the exact line and mechanism described in the finding (inspect target lines ±30 lines)?
-- Does the failure occur under realistic caller or user inputs?
 
-If the reproducer fails due to missing fixtures, hand-crafted invalid internal state, or coverage configuration, issue `REJECT` or `NEEDS_MORE_EVIDENCE`.
+If upstream guards block the path or the failure stems from broken fixtures or coverage settings, issue `REJECT` or `NEEDS_MORE_EVIDENCE`.
 
 ---
 
-## 2. Deduplication & Sibling Variant Audit
+## 2. Deduplication & 3-Step Variant Sweep
 
 Merge two findings into one canonical entry when any of these conditions hold:
 
@@ -29,7 +29,11 @@ Merge two findings into one canonical entry when any of these conditions hold:
 - Multiple CLI or API entrypoints funnel into the same unvalidated helper.
 
 Keep the highest-severity trigger path as the primary reproducer and list sibling entrypoints in the notes.
-Scan source roots with `rg -n` for sibling occurrences of the same unsafe pattern and record all matching `file:line` locations under `Sibling Variants`.
+Run a 3-step semantic variant sweep across source roots for each accepted root cause:
+
+1. **Extract Exact Pattern**: Identify the defective operation and missing guard in the original finding.
+2. **Abstract Structural Pattern**: Generalize variable and helper names into a structural regex (`rg -n` or `rg -U`) across `src/`.
+3. **Triage Sibling Call Sites**: Audit each match for upstream guards and record unguarded `file:line` locations under `Sibling Variants`.
 
 ---
 

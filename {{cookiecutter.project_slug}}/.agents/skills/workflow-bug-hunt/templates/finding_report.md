@@ -23,7 +23,9 @@ Keep `- **Location**:`, `- **Bug Class**:`, `- **Status**:`, and `- **Verdict**:
 - **Verdict**: `<PENDING | ACCEPT | REJECT | NEEDS_MORE_EVIDENCE>`
 - **Severity**: `<Critical | High | Medium | Low>`
 - **Scout Hypothesis**:
+  - **Bug Lens**: `<sink-boundary | spec-drift | state-corruption>`
   - **Entrypoint**: `<public function, CLI command, or API route>`
+  - **Upstream Guards Audited**: `<1-hop callers inspected and why they do not block the trigger input>`
   - **Trigger Input**: `<concrete input or state sequence>`
   - **Suspected Root Cause**: `<why the current code fails>`
 - **Triage & Reproducer**:
@@ -33,6 +35,7 @@ Keep `- **Location**:`, `- **Bug Class**:`, `- **Status**:`, and `- **Verdict**:
   - **Repro Command**: `PYTHONPATH="$PWD/src" UV_PROJECT_ENVIRONMENT="<root>/.venv" uv run --no-sync pytest --no-cov <root>/.temp/bug-hunt/repro/test_bh_<slice>_<nn>.py`
   - **Observed Output**: `<exact error, assertion failure, or unexpected output>`
 - **Arbiter Review**:
+  - **Disprover Notes**: `<why upstream guards and type contracts failed to block the trigger path>`
   - **Sibling Variants**: `<none | list of file_path:line sharing the same root cause>`
   - **Rationale**: `<root-cause alignment audit and deduplication notes>`
 - **Candidate Fix (If Requested)**:

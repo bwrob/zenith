@@ -23,7 +23,8 @@ This reference defines the five roles in `workflow-bug-hunt`, their isolation mo
 - **Count**: Waves of 3 to 5 parallel agents.
 - **Mode**: Read-only (`research` subagent or `swarm` worker with `workspace: "inherit"`).
 - **Write Scope**: Writes `.temp/bug-hunt/findings/BH-<slice>-<nn>.md` only. Never edits tracked files.
-- **1-Hop Boundary Rule**: Report bugs only inside the assigned primary slice. Read 1-hop upstream callers and downstream callees across modules to audit interface contracts.
+- **Three Audit Lenses**: Audit boundary sinks, spec-vs-code drift (`specs/`, docstrings, types), and partial state mutation on error.
+- **1-Hop Boundary & Guard Rule**: Report bugs only inside the assigned slice. Read 1-hop callers and callees to trace upstream guards and record `Upstream Guards Audited`.
 - **Candidate Cap**: Emit at most 5 highest-confidence findings per scout using `templates/finding_report.md`.
 
 ---
@@ -36,7 +37,7 @@ This reference defines the five roles in `workflow-bug-hunt`, their isolation mo
 - **Attempt Budget**: Stop after 3 failed reproduction attempts per candidate and mark `UNREPRODUCED`.
 - **Responsibilities**:
   1. Enter the assigned cluster worktree.
-  2. Translate up to 4 cluster candidates into minimal failing `pytest` tests saved in `<root>/.temp/bug-hunt/repro/`.
+  2. Translate up to 4 cluster candidates into minimal failing `pytest` or `@given(...)` `hypothesis` tests (`@settings(max_examples=100, deadline=None)`) in `<root>/.temp/bug-hunt/repro/`.
   3. Record command output, stack trace, attempt count, and status (`CONFIRMED`, `UNREPRODUCED`, or `FALSE_POSITIVE`).
   4. Remove `.temp/worktrees/repro-<cluster>` immediately when the cluster finishes.
 
@@ -47,10 +48,11 @@ This reference defines the five roles in `workflow-bug-hunt`, their isolation mo
 - **Count**: 1 independent agent per shard of at most 8 `CONFIRMED` findings (never reuse a scout or triage agent for its own finding).
 - **Mode**: Read-only, executing batched reproducers from `.temp/bug-hunt/repro/`.
 - **Write Scope**: Updates only Arbiter fields in `.temp/bug-hunt/findings/BH-<slice>-<nn>.md`.
+- **Disprove-First Mandate**: Act as an adversarial disprover. Prove whether public callers can bypass upstream guards before accepting any finding.
 - **Responsibilities**:
   1. Re-run the shard's `CONFIRMED` reproducers in one batch with `pytest --no-cov`.
   2. Audit each failure trace against the claimed root cause by reading target lines ±30 lines.
-  3. Scan source roots with `rg -n` for sibling occurrences of every accepted root cause.
+  3. Run the 3-step semantic variant sweep (`rg -n` and `rg -U`) across source roots for accepted root causes.
   4. Merge duplicate findings and issue `ACCEPT`, `REJECT`, or `NEEDS_MORE_EVIDENCE` (at most 1 retry round).
 
 ---
