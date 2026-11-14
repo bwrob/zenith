@@ -7,6 +7,7 @@ from unittest.mock import patch
 
 import pytest
 
+from zenith.cli import build_parser, config_from_args
 from zenith.models import ZenithConfig
 from zenith.validation import (
     check_prerequisites,
@@ -159,3 +160,62 @@ def test_validate_config() -> None:
     bad = ZenithConfig(project_slug="my.app", author_email="bad-email")
     errors = dict(validate_config(bad))
     assert set(errors) == {"project_slug", "author_email"}
+
+
+def test_validators_reject_trailing_newlines_and_surrounding_whitespace(
+    tmp_path: Path,
+) -> None:
+    r"""Reject trailing newlines and surrounding whitespace after validation.
+
+    Bug: Validators called ``.strip()`` before checking forbidden characters
+    and regexes used ``$`` instead of ``\Z``, allowing trailing newlines and
+    surrounding whitespace into generated TOML and hooks.
+    Root cause: Stripping input before checking characters masked leading and
+    trailing line breaks, while unstripped CLI arguments were saved to config.
+    Fix: Check forbidden characters and ``\Z``-anchored patterns against the
+    raw input values and strip whitespace-only output directory CLI values.
+    """
+    valid_dir = str(tmp_path / "out")
+    newline_dir = f"{valid_dir}\n"
+    assert validate_output_dir(newline_dir) is not None
+    assert validate_output_dir("   ") is None
+    assert validate_output_dir(valid_dir) is None
+    blank_args = build_parser().parse_args(["--output-dir", "   "])
+    assert config_from_args(blank_args).output_dir == ZenithConfig().output_dir
+
+    assert validate_project_name("My Project\n") is not None
+    assert validate_project_name("My Project") is None
+    assert validate_description("Desc\r\n") is not None
+    assert validate_description("A valid description.") is None
+    assert validate_author_name("Ada\n") is not None
+    assert validate_author_name("Ada Lovelace") is None
+
+    assert validate_author_email("ada@example.com\n") is not None
+    assert validate_author_email("ada@example.com") is None
+    assert validate_project_slug("my-slug\n") is not None
+    assert validate_project_slug("my-slug") is None
+    assert validate_package_name(" my_pkg ") is not None
+    assert validate_package_name("my_pkg") is None
+    assert validate_github_username("bwrob\n") is not None
+    assert validate_github_username("bwrob") is None
+
+    bad_config = ZenithConfig(
+        output_dir=newline_dir,
+        project_name="My Project\n",
+        project_slug="my-slug\n",
+        package_name=" my_pkg ",
+        description="A valid description\n",
+        author_name="Ada Lovelace\n",
+        author_email="ada@example.com\n",
+        github_username="bwrob\n",
+    )
+    assert dict(validate_config(bad_config)) == {
+        "output_dir": validate_output_dir(newline_dir),
+        "project_name": validate_project_name("My Project\n"),
+        "project_slug": validate_project_slug("my-slug\n"),
+        "package_name": validate_package_name(" my_pkg "),
+        "description": validate_description("A valid description\n"),
+        "author_name": validate_author_name("Ada Lovelace\n"),
+        "author_email": validate_author_email("ada@example.com\n"),
+        "github_username": validate_github_username("bwrob\n"),
+    }
