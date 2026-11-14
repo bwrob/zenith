@@ -199,6 +199,7 @@ def test_generate_project_expands_tilde_in_output_dir(
     (existing_target / "existing.txt").write_text("do not overwrite", encoding="utf-8")
 
     monkeypatch.setenv("HOME", str(fake_home))
+    monkeypatch.setenv("USERPROFILE", str(fake_home))
     monkeypatch.chdir(fake_cwd)
 
     colliding = ZenithConfig(
