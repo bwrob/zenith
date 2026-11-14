@@ -447,6 +447,10 @@ def format_toml_files() -> None:
 
 def init_prek() -> None:
     """Initialize git repository and install prek git hooks if tools are available."""
+    init_git = to_bool(os.environ.get("ZENITH_INIT_GIT", "true"))
+    if not init_git:
+        return
+    install_hooks = to_bool(os.environ.get("ZENITH_INSTALL_GIT_HOOKS", "true"))
     git_bin = shutil.which("git")
     if not git_bin:
         return
@@ -460,6 +464,8 @@ def init_prek() -> None:
             )
         except (OSError, subprocess.SubprocessError):
             return
+    if not install_hooks:
+        return
 
     prek_bin = shutil.which("prek")
     uv_bin = shutil.which("uv")
