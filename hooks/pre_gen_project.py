@@ -6,6 +6,7 @@ import keyword
 import re
 import shutil
 import sys
+from urllib.parse import unquote
 
 from rich.console import Console
 
@@ -38,8 +39,8 @@ if shutil.which("git") is None:
     )
     sys.exit(1)
 
-PACKAGE_REGEX = r"^[a-zA-Z][_a-zA-Z0-9]*$"
-package_name = "{{ cookiecutter.package_name }}"
+PACKAGE_REGEX = r"^[a-zA-Z][_a-zA-Z0-9]*\Z"
+package_name = unquote("{{ cookiecutter.package_name | urlencode }}")
 
 if not re.match(PACKAGE_REGEX, package_name) or keyword.iskeyword(package_name):
     error_console.print(
@@ -51,8 +52,8 @@ if not re.match(PACKAGE_REGEX, package_name) or keyword.iskeyword(package_name):
     )
     sys.exit(1)
 
-PROJECT_SLUG_REGEX = r"^[-a-zA-Z0-9_]+$"
-project_slug = "{{ cookiecutter.project_slug }}"
+PROJECT_SLUG_REGEX = r"^[-a-zA-Z0-9_]+\Z"
+project_slug = unquote("{{ cookiecutter.project_slug | urlencode }}")
 
 if not re.match(PROJECT_SLUG_REGEX, project_slug):
     error_console.print(
@@ -87,7 +88,7 @@ TOOL_ALIASES = {
     "hermes-agent": "hermes",
 }
 
-raw_ai_tools = "{{ cookiecutter.ai_tools }}".strip().lower()
+raw_ai_tools = unquote("{{ cookiecutter.ai_tools | urlencode }}").strip().lower()
 tokens = [t.strip() for t in raw_ai_tools.replace(";", ",").split(",") if t.strip()]
 
 if not tokens:

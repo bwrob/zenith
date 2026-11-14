@@ -328,3 +328,65 @@ def test_include_mutation_testing_false_prunes_mutation(
         )
     )
     assert not (rendered / "cosmic-ray.toml").exists()
+
+
+def test_hooks_safely_reject_quotes_and_backslashes_without_syntax_error(
+    temp_output_dir: Path,
+    capfd: pytest.CaptureFixture[str],
+) -> None:
+    r"""Reject quotes and backslashes in hook inputs without hook SyntaxError.
+
+    Bug: Quotes, trailing backslashes, or newlines in Cookiecutter variables
+    such as ``ai_tools`` or ``package_name`` broke out of double-quoted
+    string literals in rendered hooks.
+    Root cause: Hooks interpolated raw Jinja variables (``"{{ ... }}"``)
+    instead of decoding URL-encoded values inside generated Python files.
+    Fix: Interpolate hook values with ``unquote("{{ ... | urlencode }}")`` and
+    anchor pre-gen regexes with ``\Z``.
+    """
+    with pytest.raises(FailedHookException):
+        cookiecutter(
+            str(TEMPLATE_ROOT),
+            no_input=True,
+            output_dir=str(temp_output_dir),
+            extra_context={
+                "project_name": "Quoted AI Tools",
+                "ai_tools": '"claude"',
+            },
+        )
+    err_ai = capfd.readouterr().err
+    assert "SyntaxError" not in err_ai
+    assert "Unknown AI tool or preset in 'ai_tools'" in err_ai
+
+    with pytest.raises(FailedHookException):
+        cookiecutter(
+            str(TEMPLATE_ROOT),
+            no_input=True,
+            output_dir=str(temp_output_dir),
+            extra_context={
+                "project_name": "Quoted Package",
+                "package_name": 'bad"pkg\\',
+            },
+        )
+    err_pkg = capfd.readouterr().err
+    assert "SyntaxError" not in err_pkg
+    assert "not a valid Python package name" in err_pkg
+
+    rendered = Path(
+        cookiecutter(
+            str(TEMPLATE_ROOT),
+            no_input=True,
+            output_dir=str(temp_output_dir),
+            extra_context={
+                "project_name": "Valid Escaped Hook Project",
+                "ai_tools": "claude",
+                "include_docs": False,
+                "include_mutation_testing": False,
+                "include_ci_testing": False,
+                "include_ci_publishing": False,
+                "include_agent_skills": False,
+            },
+        )
+    )
+    assert (rendered / ".claude" / "settings.json").exists()
+    assert not (rendered / "docs").exists()

@@ -9,6 +9,7 @@ import pathlib
 import re
 import shutil
 import subprocess
+from urllib.parse import unquote
 
 import yaml
 
@@ -357,15 +358,23 @@ def setup_agent_instructions(*, include_agent_skills: bool, raw_ai_tools: str) -
 
 def main() -> None:
     """Generate the final project: prune branches, wire agents, format, install prek."""
-    include_cli = to_bool("{{ cookiecutter.include_cli }}")
-    include_docs = to_bool("{{ cookiecutter.include_docs }}")
-    include_mutation_testing = to_bool("{{ cookiecutter.include_mutation_testing }}")
-    include_ci_testing = to_bool("{{ cookiecutter.include_ci_testing }}")
-    include_ci_publishing = to_bool("{{ cookiecutter.include_ci_publishing }}")
-    include_agent_skills = to_bool("{{ cookiecutter.include_agent_skills }}")
-    ai_tools = "{{ cookiecutter.ai_tools }}"
-    license_type = "{{ cookiecutter.license }}"
-    package_name = "{{ cookiecutter.package_name }}"
+    include_cli = to_bool(unquote("{{ cookiecutter.include_cli | urlencode }}"))
+    include_docs = to_bool(unquote("{{ cookiecutter.include_docs | urlencode }}"))
+    include_mutation_testing = to_bool(
+        unquote("{{ cookiecutter.include_mutation_testing | urlencode }}")
+    )
+    include_ci_testing = to_bool(
+        unquote("{{ cookiecutter.include_ci_testing | urlencode }}")
+    )
+    include_ci_publishing = to_bool(
+        unquote("{{ cookiecutter.include_ci_publishing | urlencode }}")
+    )
+    include_agent_skills = to_bool(
+        unquote("{{ cookiecutter.include_agent_skills | urlencode }}")
+    )
+    ai_tools = unquote("{{ cookiecutter.ai_tools | urlencode }}")
+    license_type = unquote("{{ cookiecutter.license | urlencode }}")
+    package_name = unquote("{{ cookiecutter.package_name | urlencode }}")
 
     # Strip template educational header comments from generated project configs
     strip_config_headers()
