@@ -579,3 +579,110 @@ def test_zenith_app_summary_strip_ai_counter_and_ctrl_n() -> None:
             await pilot.exit(None)
 
     asyncio.run(run())
+
+
+async def _assert_target_changes_reset_overwrite(
+    cfg: ZenithConfig, parent_b: Path
+) -> None:
+    """Exercise target slug and output-dir edits on MetadataScreen."""
+    app = ZenithApp(initial_config=cfg, overwrite=False)
+    async with app.run_test(size=(120, 100)) as pilot:
+        overwrite_box = app.screen.query_one("#overwrite-target", Checkbox)
+        slug_error = app.screen.query_one("#project-slug-error", Label)
+        slug_input = app.screen.query_one("#project-slug", Input)
+        preview = app.screen.query_one("#target-preview", Label)
+
+        assert overwrite_box.has_class("visible")
+        assert overwrite_box.value is False
+        overwrite_box.value = True
+        await pilot.pause()
+
+        # Changing to another colliding slug must require fresh confirmation.
+        slug_input.value = "dir-b"
+        await pilot.pause()
+        assert overwrite_box.has_class("visible")
+        assert overwrite_box.value is False
+        await pilot.click("#next-btn")
+        await pilot.pause()
+        assert isinstance(app.screen, MetadataScreen)
+        assert app.overwrite is False
+        assert slug_error.has_class("visible")
+
+        # Confirming overwrite clears the collision error on #project-slug-error.
+        overwrite_box.value = True
+        await pilot.pause()
+        assert not slug_error.has_class("visible")
+
+        # Changing to a non-colliding slug hides and resets overwrite.
+        slug_input.value = "fresh-dir"
+        await pilot.pause()
+        assert not overwrite_box.has_class("visible")
+        assert overwrite_box.value is False
+
+        # Colliding again, triggering error, then changing #output-dir clears it.
+        slug_input.value = "dir-b"
+        await pilot.pause()
+        await pilot.click("#next-btn")
+        await pilot.pause()
+        assert slug_error.has_class("visible")
+        app.screen.query_one("#output-dir", Input).value = str(parent_b)
+        await pilot.pause()
+        assert not preview.has_class("target-warning")
+        assert not overwrite_box.has_class("visible")
+        assert overwrite_box.value is False
+        assert not slug_error.has_class("visible")
+
+        await pilot.click("#next-btn")
+        await pilot.pause()
+        assert isinstance(app.screen, FeaturesScreen)
+        assert app.overwrite is False
+        await pilot.exit(None)
+
+
+async def _assert_initial_overwrite_preserved(
+    cfg: ZenithConfig, parent_b: Path
+) -> None:
+    """Verify initial overwrite=True holds on mount until target inputs change."""
+    app_keep = ZenithApp(initial_config=cfg, overwrite=True)
+    async with app_keep.run_test(size=(120, 100)) as pilot:
+        overwrite_box = app_keep.screen.query_one("#overwrite-target", Checkbox)
+        assert overwrite_box.has_class("visible")
+        assert overwrite_box.value is True
+        await pilot.click("#next-btn")
+        await pilot.pause()
+        assert isinstance(app_keep.screen, FeaturesScreen)
+        assert app_keep.overwrite is True
+        await pilot.exit(None)
+
+    app_edit = ZenithApp(initial_config=cfg, overwrite=True)
+    async with app_edit.run_test(size=(120, 100)) as pilot:
+        overwrite_box = app_edit.screen.query_one("#overwrite-target", Checkbox)
+        slug_error = app_edit.screen.query_one("#project-slug-error", Label)
+        app_edit.screen.query_one("#project-name", Input).value = "Dir B"
+        await pilot.pause()
+        assert overwrite_box.has_class("visible")
+        assert overwrite_box.value is False
+        app_edit.screen.query_one("#project-slug", Input).value = "bad.slug"
+        await pilot.pause()
+        app_edit.screen.query_one("#output-dir", Input).value = str(parent_b)
+        await pilot.pause()
+        assert slug_error.has_class("visible")
+        await pilot.exit(None)
+
+
+def test_metadata_screen_target_change_resets_overwrite_and_clears_collision_error(
+    tmp_path: Path,
+) -> None:
+    """Verify target edits reset overwrite state and clear stale collision errors."""
+    parent_a = tmp_path / "parent-a"
+    for slug in ("dir-a", "dir-b"):
+        existing = parent_a / slug
+        existing.mkdir(parents=True)
+        (existing / "existing.txt").write_text(slug, encoding="utf-8")
+    parent_b = tmp_path / "parent-b"
+    parent_b.mkdir()
+    cfg = ZenithConfig(
+        output_dir=str(parent_a), project_name="Dir A", project_slug="dir-a"
+    )
+    asyncio.run(_assert_target_changes_reset_overwrite(cfg, parent_b))
+    asyncio.run(_assert_initial_overwrite_preserved(cfg, parent_b))

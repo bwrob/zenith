@@ -136,6 +136,7 @@ class MetadataScreen(Screen[object]):
     BINDINGS: ClassVar[list[BindingType]] = [
         Binding("ctrl+n", "next", "Next Step"),
     ]
+    _last_target_pair: tuple[str, str] | None = None
 
     @override
     def compose(self) -> ComposeResult:
@@ -310,6 +311,7 @@ class MetadataScreen(Screen[object]):
         cfg = self.zenith_app.config_state
         self._last_auto_slug: str = slugify(cfg.project_name)
         self._last_auto_pkg: str = slugify(cfg.project_name, separator="_")
+        self._last_target_pair = (cfg.output_dir, cfg.project_slug)
         self._validate_all_fields(focus_first=False)
 
     def _set_field_error(self, input_id: str, error: str | None) -> None:
@@ -381,9 +383,17 @@ class MetadataScreen(Screen[object]):
         self._last_auto_slug = new_slug
         self._last_auto_pkg = new_pkg
 
+    def _revalidate_slug_error(self) -> None:
+        """Restore the project-slug error label to pure field validation state."""
+        slug_val = self.query_one("#project-slug", Input).value
+        self._set_field_error(
+            "project-slug",
+            METADATA_FIELD_VALIDATORS["project-slug"](slug_val),
+        )
+
     @on(Input.Changed, "#output-dir, #project-slug")
     def on_target_inputs_changed(self) -> None:
-        """Update the live destination preview and collision warning label."""
+        """Update target preview, overwrite state, and slug error on path change."""
         out_val = self.query_one("#output-dir", Input).value
         slug_val = self.query_one("#project-slug", Input).value
         preview_text, is_warning = format_target_preview(out_val, slug_val)
@@ -392,6 +402,24 @@ class MetadataScreen(Screen[object]):
         preview_label.set_class(is_warning, "target-warning")
         overwrite_box = self.query_one("#overwrite-target", Checkbox)
         overwrite_box.set_class(is_warning, "visible")
+        if not is_warning:
+            overwrite_box.value = False
+        target_pair = (out_val, slug_val)
+        if self._last_target_pair is not None and target_pair != self._last_target_pair:
+            self._last_target_pair = target_pair
+            overwrite_box.value = False
+            self._revalidate_slug_error()
+
+    @on(Checkbox.Changed, "#overwrite-target")
+    def on_overwrite_target_changed(self, event: Checkbox.Changed) -> None:
+        """Clear stale collision error when overwrite confirmation is enabled.
+
+        Args:
+            event: Checkbox change event for `#overwrite-target`.
+
+        """
+        if event.value:
+            self._revalidate_slug_error()
 
     @on(Input.Submitted)
     def on_input_submitted(self, event: Input.Submitted) -> None:
