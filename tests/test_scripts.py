@@ -257,6 +257,29 @@ def test_validate_skill_valid(tmp_path: Path) -> None:
     assert errors == []
 
 
+def test_validate_skill_dot_slash_and_fragment_links(tmp_path: Path) -> None:
+    """Validate relative links with or without './' and '#anchor' fragments.
+
+    Bug: ``#anchor`` links failed and bare relative links were skipped.
+    Root cause: Regex required ``./`` and kept ``#anchor`` in the path check.
+    Fix: Make ``./`` optional and strip ``#fragment`` before ``exists()``.
+    """
+    skill_dir = tmp_path / "valid-skill"
+    (skill_dir / "references").mkdir(parents=True)
+    (skill_dir / "references" / "guide.md").write_text("# Section\n", encoding="utf-8")
+    skill_md = skill_dir / "SKILL.md"
+    ok = "[A](references/guide.md#section) [B](./references/guide.md#section)\n"
+    skill_md.write_text(SKILL_FRONTMATTER + ok, encoding="utf-8")
+    assert check_skills.validate_skill(skill_dir) == []
+    bad = "[C](references/missing.md) [D](./references/missing.md#section)\n"
+    skill_md.write_text(SKILL_FRONTMATTER + bad, encoding="utf-8")
+    prefix = "valid-skill/SKILL.md: broken link to missing file"
+    assert check_skills.validate_skill(skill_dir) == [
+        f"{prefix}: references/missing.md",
+        f"{prefix}: ./references/missing.md#section",
+    ]
+
+
 def test_check_skills_main_missing_dir(tmp_path: Path) -> None:
     """Test check skills main missing dir."""
     ret = check_skills.main([str(tmp_path / "nonexistent")])
