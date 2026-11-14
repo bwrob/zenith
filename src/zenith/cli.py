@@ -239,7 +239,10 @@ def config_from_args(args: argparse.Namespace) -> ZenithConfig:
         "output_dir",
         None,
     )
-    output_dir = raw_dir if raw_dir and raw_dir != "." else defaults.output_dir
+    cleaned_dir = raw_dir.strip() if isinstance(raw_dir, str) else ""
+    output_dir = (
+        cleaned_dir if cleaned_dir and cleaned_dir != "." else defaults.output_dir
+    )
     name = args.project_name or defaults.project_name
     fallback_slug = slugify(name) if args.project_name else defaults.project_slug
     slug = args.project_slug or fallback_slug

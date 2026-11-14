@@ -14,11 +14,11 @@ if TYPE_CHECKING:
 
     from zenith.models import ZenithConfig
 
-PROJECT_SLUG_PATTERN: re.Pattern[str] = re.compile(r"^[-a-zA-Z0-9_]+$")
-PACKAGE_NAME_PATTERN: re.Pattern[str] = re.compile(r"^[a-zA-Z][_a-zA-Z0-9]*$")
-EMAIL_PATTERN: re.Pattern[str] = re.compile(r"^[^\s@\"\\]+@[^\s@\"\\]+\.[^\s@\"\\]+$")
+PROJECT_SLUG_PATTERN: re.Pattern[str] = re.compile(r"^[-a-zA-Z0-9_]+\Z")
+PACKAGE_NAME_PATTERN: re.Pattern[str] = re.compile(r"^[a-zA-Z][_a-zA-Z0-9]*\Z")
+EMAIL_PATTERN: re.Pattern[str] = re.compile(r"^[^\s@\"\\]+@[^\s@\"\\]+\.[^\s@\"\\]+\Z")
 GITHUB_USERNAME_PATTERN: re.Pattern[str] = re.compile(
-    r"^[a-zA-Z0-9](?:[a-zA-Z0-9]|-(?=[a-zA-Z0-9])){0,38}$",
+    r"^[a-zA-Z0-9](?:[a-zA-Z0-9]|-(?=[a-zA-Z0-9])){0,38}\Z",
 )
 
 _FORBIDDEN_TOML_CHARS: tuple[str, ...] = ('"', "\\", "\n", "\r", "\x00")
@@ -39,11 +39,11 @@ def validate_output_dir(value: str) -> str | None:
         Error message if invalid, otherwise `None`.
 
     """
+    if any(ch in value for ch in ("\n", "\r", "\x00")):
+        return "Root directory cannot contain line breaks or null characters."
     stripped = value.strip()
     if not stripped:
         return None
-    if any(ch in stripped for ch in ("\n", "\r", "\x00")):
-        return "Root directory cannot contain line breaks or null characters."
     path = Path(stripped).expanduser()
     with contextlib.suppress(OSError):
         if path.exists() and not path.is_dir():
@@ -67,14 +67,14 @@ def validate_toml_text(value: str, field_label: str) -> str | None:
         Error message if invalid, otherwise `None`.
 
     """
-    stripped = value.strip()
-    if not stripped:
-        return f"{field_label} cannot be empty."
-    if any(ch in stripped for ch in _FORBIDDEN_TOML_CHARS):
+    if any(ch in value for ch in _FORBIDDEN_TOML_CHARS):
         return (
             f'{field_label} cannot contain double quotes ("), '
             "backslashes (\\), or line breaks."
         )
+    stripped = value.strip()
+    if not stripped:
+        return f"{field_label} cannot be empty."
     return None
 
 
@@ -109,10 +109,9 @@ def validate_project_slug(value: str) -> str | None:
         Error message if invalid, otherwise `None`.
 
     """
-    stripped = value.strip()
-    if not stripped:
+    if not value.strip():
         return "Project slug cannot be empty."
-    if not PROJECT_SLUG_PATTERN.match(stripped):
+    if not PROJECT_SLUG_PATTERN.match(value):
         return (
             "Project slug can only contain letters, numbers, "
             "hyphens (-), and underscores (_)."
@@ -134,16 +133,15 @@ def validate_package_name(value: str) -> str | None:
         Error message if invalid, otherwise `None`.
 
     """
-    stripped = value.strip()
-    if not stripped:
+    if not value.strip():
         return "Package name cannot be empty."
-    if not PACKAGE_NAME_PATTERN.match(stripped):
+    if not PACKAGE_NAME_PATTERN.match(value):
         return (
             "Package name must start with a letter and contain only "
             "letters, numbers, and underscores (_)."
         )
-    if keyword.iskeyword(stripped):
-        return f"Package name '{stripped}' is a Python reserved keyword."
+    if keyword.iskeyword(value):
+        return f"Package name '{value}' is a Python reserved keyword."
     return None
 
 
@@ -195,11 +193,10 @@ def validate_author_email(value: str) -> str | None:
         Error message if invalid, otherwise `None`.
 
     """
-    stripped = value.strip()
-    if not stripped:
+    if not value.strip():
         return "Author email cannot be empty."
-    if any(ch in stripped for ch in ("\n", "\r", "\x00")) or not EMAIL_PATTERN.match(
-        stripped
+    if any(ch in value for ch in ("\n", "\r", "\x00")) or not EMAIL_PATTERN.match(
+        value
     ):
         return "Author email must be a valid email address (e.g. name@example.com)."
     return None
@@ -219,10 +216,9 @@ def validate_github_username(value: str) -> str | None:
         Error message if invalid, otherwise `None`.
 
     """
-    stripped = value.strip()
-    if not stripped:
+    if not value.strip():
         return "GitHub username cannot be empty."
-    if not GITHUB_USERNAME_PATTERN.match(stripped):
+    if not GITHUB_USERNAME_PATTERN.match(value):
         return (
             "GitHub username may only contain alphanumeric characters or "
             "single hyphens, up to 39 characters."
