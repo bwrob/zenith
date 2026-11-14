@@ -301,6 +301,16 @@ def _setup_subagents(subagents_src: pathlib.Path, active_tools: set[str]) -> Non
         _setup_codex_subagents(subagents_src)
 
 
+def _remove_package_agent_dirs() -> None:
+    """Remove bundled .agents skill directories inside src/<package_name>/."""
+    src_dir = PROJECT_DIR / "src"
+    if not src_dir.is_dir():
+        return
+    for pkg_dir in src_dir.iterdir():
+        if pkg_dir.is_dir():
+            remove_dir("src", pkg_dir.name, ".agents")
+
+
 def _prune_all_ai_configs() -> None:
     remove_file("AGENTS.md")
     remove_file("AI_POLICY.md")
@@ -344,6 +354,7 @@ def setup_agent_instructions(*, include_agent_skills: bool, raw_ai_tools: str) -
 
     if not include_agent_skills or is_none:
         remove_dir(".agents")
+        _remove_package_agent_dirs()
         remove_file("scripts", "check_skills.py")
 
     if is_none:
