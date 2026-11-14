@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import contextlib
+import os
 import subprocess  # ruff: ignore[suspicious-subprocess-import] -- post-scaffold lifecycle automation
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -12,7 +13,7 @@ from cookiecutter.main import cookiecutter
 from zenith.template import get_template_path
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
+    from collections.abc import Callable, Generator
 
     from zenith.models import ZenithConfig
 
@@ -66,6 +67,35 @@ def _run_post_scaffold(
         run_cmd(["uv", "run", "prek", "install"], cwd=project_dir)
 
 
+@contextlib.contextmanager
+def _temporary_hook_env(config: ZenithConfig) -> Generator[None, None, None]:
+    """Temporarily set hook environment overrides for Cookiecutter execution.
+
+    Args:
+        config: Project configuration whose Git and hook flags control the
+            post-generation hook.
+
+    Yields:
+        Control while `ZENITH_INIT_GIT` and `ZENITH_INSTALL_GIT_HOOKS` are
+        applied to `os.environ`.
+
+    """
+    overrides = {
+        "ZENITH_INIT_GIT": "1" if config.init_git else "0",
+        "ZENITH_INSTALL_GIT_HOOKS": "1" if config.install_git_hooks else "0",
+    }
+    previous = {key: os.environ.get(key) for key in overrides}
+    os.environ.update(overrides)
+    try:
+        yield
+    finally:
+        for key, old_value in previous.items():
+            if old_value is None:
+                os.environ.pop(key, None)
+            else:
+                os.environ[key] = old_value
+
+
 def generate_project(
     config: ZenithConfig,
     output_dir: Path | str = ".",
@@ -99,13 +129,14 @@ def generate_project(
     context = config.to_cookiecutter_context()
 
     on_step(f"Scaffolding project template into {target_dir.name}...")
-    result = cookiecutter(
-        template=str(template_path),
-        extra_context=context,
-        no_input=True,
-        output_dir=str(out_path),
-        overwrite_if_exists=overwrite,
-    )
+    with _temporary_hook_env(config):
+        result = cookiecutter(
+            template=str(template_path),
+            extra_context=context,
+            no_input=True,
+            output_dir=str(out_path),
+            overwrite_if_exists=overwrite,
+        )
     project_path = Path(result)
     _run_post_scaffold(project_path, config, on_step=on_step)
     return project_path
