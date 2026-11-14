@@ -150,6 +150,24 @@ TOOL_CONFIG_PATHS: dict[str, list[tuple[str, ...]]] = {
 }
 
 
+def is_ai_tools_none(raw_ai_tools: str) -> bool:
+    """Return True when `raw_ai_tools` resolves exclusively to `none` tokens.
+
+    Args:
+        raw_ai_tools: Raw string specification from cookiecutter prompt.
+
+    Returns:
+        True if every non-empty token is `none`, otherwise False.
+
+    """
+    tokens = [
+        t.strip()
+        for t in raw_ai_tools.strip().lower().replace(";", ",").split(",")
+        if t.strip()
+    ]
+    return bool(tokens) and all(t == "none" for t in tokens)
+
+
 def resolve_active_ai_tools(raw_ai_tools: str) -> set[str]:
     """Resolve raw cookiecutter ai_tools input into a set of active tool keys.
 
@@ -347,7 +365,7 @@ def setup_agent_instructions(*, include_agent_skills: bool, raw_ai_tools: str) -
         raw_ai_tools: Raw string specification of AI tools from prompt.
 
     """
-    is_none = raw_ai_tools.strip().lower() == "none"
+    is_none = is_ai_tools_none(raw_ai_tools)
     active_tools = set() if is_none else resolve_active_ai_tools(raw_ai_tools)
 
     prune_inactive_ai_tools(active_tools, is_none=is_none)

@@ -203,6 +203,95 @@ def test_ai_tools_none_renders_clean_project(temp_output_dir: Path) -> None:
     assert "sdd-new" not in poe_text
 
 
+def test_ai_tools_compound_none_tokens_prunes_all_agent_configs(
+    temp_output_dir: Path,
+) -> None:
+    """Prune AI configs for compound 'none' tokens while keeping mixed tools."""
+    pruned_paths = (
+        ("AGENTS.md",),
+        ("AI_POLICY.md",),
+        (".agents",),
+        ("scripts", "check_skills.py"),
+        (".claude",),
+        (".gemini",),
+        (".codex",),
+        (".opencode",),
+        ("opencode.json",),
+        (".cursor",),
+        (".cursorrules",),
+        (".windsurfrules",),
+        (".devin",),
+        (".zed",),
+        (".pi",),
+        (".omp",),
+        ("HERMES.md",),
+        ("CLAUDE.md",),
+        (".aider.conf.yml",),
+        (".github", "copilot-instructions.md"),
+    )
+    compound_cases = (
+        ("trailing-comma", "none,"),
+        ("trailing-semi", "none;"),
+        ("dup-comma", "none,none"),
+        ("dup-semi-upper", "none;NONE"),
+    )
+    for case_dir, raw_none in compound_cases:
+        out_dir = temp_output_dir / case_dir
+        out_dir.mkdir()
+        rendered = Path(
+            cookiecutter(
+                str(TEMPLATE_ROOT),
+                no_input=True,
+                output_dir=str(out_dir),
+                extra_context={
+                    "project_name": "Compound None Project",
+                    "ai_tools": raw_none,
+                },
+            )
+        )
+        leftovers = [
+            "/".join(parts)
+            for parts in pruned_paths
+            if (p := rendered.joinpath(*parts)).exists() or p.is_symlink()
+        ]
+        assert not leftovers, f"{raw_none!r} left AI artifacts behind: {leftovers}"
+
+        poe_text = (rendered / "poe_tasks.toml").read_text(encoding="utf-8")
+        assert "lint-ste" not in poe_text
+        assert "check-skills" not in poe_text
+        assert "sync-skills" not in poe_text
+        assert "sdd-new" not in poe_text
+
+    mixed_dir = temp_output_dir / "mixed-none-claude"
+    mixed_dir.mkdir()
+    mixed_rendered = Path(
+        cookiecutter(
+            str(TEMPLATE_ROOT),
+            no_input=True,
+            output_dir=str(mixed_dir),
+            extra_context={
+                "project_name": "Mixed None Claude Project",
+                "ai_tools": "none,claude",
+            },
+        )
+    )
+    assert (mixed_rendered / "AGENTS.md").exists()
+    assert (mixed_rendered / "AI_POLICY.md").exists()
+    assert (mixed_rendered / ".agents").exists()
+    assert (mixed_rendered / "scripts" / "check_skills.py").exists()
+    assert (mixed_rendered / ".claude" / "settings.json").exists()
+    assert (mixed_rendered / ".claude" / "agents").exists()
+    assert (mixed_rendered / "CLAUDE.md").exists()
+    assert not (mixed_rendered / ".cursor").exists()
+    assert not (mixed_rendered / ".gemini").exists()
+
+    mixed_poe = (mixed_rendered / "poe_tasks.toml").read_text(encoding="utf-8")
+    assert "lint-ste" in mixed_poe
+    assert "check-skills" in mixed_poe
+    assert "sync-skills" in mixed_poe
+    assert "sdd-new" in mixed_poe
+
+
 def test_ai_tools_minimal_renders_context_only(temp_output_dir: Path) -> None:
     """Test that ai_tools=minimal preserves AGENTS.md but excludes tool directories."""
     rendered = Path(
