@@ -252,6 +252,64 @@ def test_build_reproduce_command_roundtrip() -> None:
     assert reconstructed.ai_tools == ("cursor", "zed")
 
 
+@pytest.mark.parametrize(
+    ("include_ci_testing", "include_ci_publishing", "expected_flag"),
+    [
+        (True, False, "--no-ci-publishing"),
+        (False, True, "--no-ci-testing"),
+        (True, True, None),
+        (False, False, "--no-ci"),
+    ],
+)
+def test_build_reproduce_command_split_ci_flags_roundtrip(
+    *,
+    include_ci_testing: bool,
+    include_ci_publishing: bool,
+    expected_flag: str | None,
+) -> None:
+    """Preserve independent CI testing and publishing flags across CLI roundtrip.
+
+    Bug: `build_reproduce_command` omitted any CI flag when only one CI workflow
+    was disabled, silently re-enabling both workflows on CLI roundtrip.
+    Root cause: `build_parser` and `config_from_args` exposed only a single
+    `--include-ci` flag and `_build_feature_flags` emitted `--no-ci` only
+    when both `include_ci_testing` and `include_ci_publishing` were false.
+    Fix: Add `--include-ci-testing` and `--include-ci-publishing` options and
+    emit `--no-ci-testing` or `--no-ci-publishing` for split CI states.
+    """
+    config = ZenithConfig(
+        include_ci_testing=include_ci_testing,
+        include_ci_publishing=include_ci_publishing,
+    )
+    cmd = build_reproduce_command(config)
+    tokens = shlex.split(cmd)
+    ci_tokens = [
+        token
+        for token in tokens
+        if token in {"--no-ci", "--no-ci-testing", "--no-ci-publishing"}
+    ]
+    expected_tokens = [expected_flag] if expected_flag is not None else []
+    assert ci_tokens == expected_tokens
+
+    args = build_parser().parse_args(tokens[2:])
+    reconstructed = config_from_args(args)
+    assert reconstructed.include_ci_testing is include_ci_testing
+    assert reconstructed.include_ci_publishing is include_ci_publishing
+
+    # Verify --no-ci overrides cleanly with explicit --ci-testing / --ci-publishing
+    override_testing = config_from_args(
+        build_parser().parse_args(["--no-ci", "--ci-testing"])
+    )
+    assert override_testing.include_ci_testing is True
+    assert override_testing.include_ci_publishing is False
+
+    override_publishing = config_from_args(
+        build_parser().parse_args(["--no-ci", "--ci-publishing"])
+    )
+    assert override_publishing.include_ci_testing is False
+    assert override_publishing.include_ci_publishing is True
+
+
 def test_build_reproduce_command_presets() -> None:
     """Verify that build_reproduce_command maps presets and empty tools."""
     rec_config = ZenithConfig(ai_tools=PRESET_RECOMMENDED)
