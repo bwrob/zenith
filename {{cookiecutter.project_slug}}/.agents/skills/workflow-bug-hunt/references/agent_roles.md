@@ -14,8 +14,8 @@ This reference defines the five roles in `workflow-bug-hunt`, their isolation mo
   2. Rank modules by sink density (`rg -c`) and 90-day git churn.
   3. Partition slices (`S01`, `S02`) of at most 15 files or 4,000 lines in `.temp/bug-hunt/scope.md`.
   4. Budget at most 3 scout waves (15 slices) per run starting with `Tier 1` slices. Track slice status (`PENDING | SCOUTED | TRIAGED | ARBITRATED | PATCHED`).
-  5. Deduplicate candidates via `rg` indexing, batch up to 4 per triage cluster, and shard `CONFIRMED` findings into batches of 8 per arbiter.
-  6. Start concurrent Patcher agents (one agent per finding), verify combined compatibility in `.temp/worktrees/integration`, and watch remote CI.
+  5. Deduplicate candidates via `rg` indexing and triage every `RAW` finding before Stage 5. Shard `CONFIRMED` findings into batches of 8 per arbiter.
+  6. Assign disjoint anchors (10+ lines apart for helpers and call sites) plus test budgets to Patcher batches. Verify compatibility in `.temp/worktrees/integration`, run `uv sync` at root, and merge sequentially.
 
 ---
 
@@ -62,12 +62,12 @@ This reference defines the five roles in `workflow-bug-hunt`, their isolation mo
 
 - **Count**: Up to 4 concurrent agents per wave (1 agent = 1 finding = 1 branch = 1 pull request).
 - **Mode**: Isolated branch worktree (`git worktree add -b fix/bh-<id> .temp/worktrees/patch-<id>` or `workspace: "share"`).
-- **Write Scope**: Only the target module, its in-slice sibling variants, `tests/test_<module>.py` inside `.temp/worktrees/patch-<id>`, and `.temp/bug-hunt/findings/BH-<id>.md`.
-- **Patch Soundness Rule**: Fix the root cause directly. Never mask failures with broad exception handlers or silent fallback returns.
+- **Write Scope**: Only the target module, its in-slice sibling variants, any mirrored file copies, `tests/test_<module>.py` inside `.temp/worktrees/patch-<id>`, and `.temp/bug-hunt/findings/BH-<id>.md`.
+- **Patch Soundness Rule**: Fix the root cause directly inside Coordinator-assigned line anchors and line budgets. Never mask failures with broad exception handlers or silent fallback returns.
 - **Responsibilities**:
   1. Implement minimal fixes inside `.temp/worktrees/patch-<id>` while preserving public API contracts.
   2. Add a typed regression test (`from __future__ import annotations`, `-> None`, `Bug / Root cause / Fix` docstring) in `tests/test_<module>.py`.
-  3. Test both the blocked trigger input and adjacent valid boundary inputs inside the regression test.
-  4. Run file-scoped `pytest -c pytest.ini --rootdir="$PWD" --no-cov`, `ruff check`, and `pyrefly check` on modified files using `PYTHONPATH="$PWD:$PWD/src"` and `UV_PROJECT_ENVIRONMENT="<root>/${UV_PROJECT_ENVIRONMENT:-.venv}"`.
+  3. Write OS-portable assertions for the blocked trigger input and valid boundary inputs (set `USERPROFILE` with `HOME`, compare `.resolve()` symlink targets, and specify UTF-8 encoding).
+  4. Run file-scoped `pytest -c pytest.ini --rootdir="$PWD" --no-cov`, `ruff check`, `ruff format --check`, and `pyrefly check` on modified files using `PYTHONPATH="$PWD:$PWD/src"` and `UV_PROJECT_ENVIRONMENT="<root>/${UV_PROJECT_ENVIRONMENT:-.venv}"`.
   5. Stage explicit files (`git add <files>`), commit to `fix/bh-<id>`, and remove `.temp/worktrees/patch-<id>` immediately.
-  6. Push `fix/bh-<id>` (`git push -u origin fix/bh-<id>`) and open a dedicated pull request (`gh pr create --head fix/bh-<id> --body-file - <<'EOF'`) with root cause, trigger, reproducer, and soundness explanations.
+  6. Push `fix/bh-<id>` (`git push -u origin fix/bh-<id>`), open a dedicated pull request (`gh pr create --head fix/bh-<id> --body-file - <<'EOF'`), and exit immediately without running `gh run watch`.

@@ -5,7 +5,7 @@ description: >-
   Runs only when explicitly requested.
   Triggers: bug hunt, audit codebase, find vulnerabilities, bug hunting, security audit, swarm audit, arbiter.
 disable-model-invocation: true
-version: 1.2.0
+version: 1.3.0
 ---
 
 # Multi-Agent Bug Hunt (`workflow-bug-hunt`)
@@ -68,7 +68,7 @@ Read [references/agent_roles.md](./references/agent_roles.md) for isolation mode
 rg "^- \*\*(Location|Bug Class|Status|Verdict)\*\*:" .temp/bug-hunt/findings/
 ```
 
-2. Deduplicate candidates by `(Location, Bug Class)` and group up to 4 candidates per triage cluster.
+2. Deduplicate candidates by `(Location, Bug Class)` and process every `RAW` finding in clusters of at most 4 candidates.
 3. Create a detached Git worktree per active cluster (`git worktree add --detach .temp/worktrees/repro-<cluster>` or `workspace: "share"`), keeping at most 4 active worktrees.
 4. Experiment inside the worktree and save each minimal failing `pytest` or `@given(...)` `hypothesis` test (`@settings(max_examples=100, deadline=None)`) to `<root>/.temp/bug-hunt/repro/test_bh_<slice>_<nn>.py`.
 5. Run each reproducer inside the worktree without coverage thresholds against the root environment:
@@ -86,27 +86,29 @@ PYTHONPATH="$PWD:$PWD/src" UV_PROJECT_ENVIRONMENT="<root>/${UV_PROJECT_ENVIRONME
 2. Adopt an adversarial disprover stance against [references/arbiter_rubric.md](./references/arbiter_rubric.md) and re-run reproducers in batch with `pytest --no-cov`.
 3. Run the 3-step variant sweep (`rg -n` and `rg -U` structural patterns) across source roots and record `Sibling Variants`.
 4. Merge duplicate root causes, assign severity, and issue `ACCEPT`, `REJECT`, or `NEEDS_MORE_EVIDENCE` (at most 1 retry round).
-5. Mark slices `ARBITRATED`, write `.temp/bug-hunt/summary.md`, and pause for human review.
+5. Mark slices `ARBITRATED`, verify that zero `RAW` candidates remain un-triaged in `.temp/bug-hunt/summary.md`, and pause for human review.
 
 ### Stage 5: Concurrent Worktree Patching & MR Creation (Optional)
 
 Run this stage only when the user requests fixes, or after user approval of `.temp/bug-hunt/summary.md`.
 
-1. Start up to 4 concurrent Patcher agents per wave. Assign one agent to one accepted finding (`BH-<id>`).
-2. Create an isolated branch worktree per agent (`git worktree add -b fix/bh-<id> .temp/worktrees/patch-<id>` or `workspace: "share"`).
-3. Apply the minimal root-cause fix and in-slice sibling fixes inside the patch worktree without broad exception swallowing.
-4. Add a typed regression test (`from __future__ import annotations`, `-> None`, `Bug / Root cause / Fix` docstring) in `tests/test_<module>.py`.
-5. Assert both the blocked trigger input and adjacent valid inputs inside the regression test.
-6. Run file-scoped verification inside the patch worktree:
+1. Start up to 4 concurrent Patcher agents per batch. Assign one agent to one accepted finding (`BH-<id>`).
+2. Assign disjoint line anchors (at least 10 lines apart) when multiple findings edit one file. Separate helpers, call sites, and test line budgets.
+3. Create an isolated branch worktree per agent (`git worktree add -b fix/bh-<id> .temp/worktrees/patch-<id>` or `workspace: "share"`).
+4. Apply the minimal root-cause fix, in-slice sibling fixes, and any mirrored file copies inside the patch worktree without broad exception swallowing.
+5. Add a typed regression test (`from __future__ import annotations`, `-> None`, `Bug / Root cause / Fix` docstring) in `tests/test_<module>.py`.
+6. Write OS-portable assertions for the blocked trigger and valid boundary inputs. Set `USERPROFILE` with `HOME`, compare `.resolve()` symlink targets, and specify UTF-8 encoding.
+7. Run file-scoped verification inside the patch worktree:
 
 ```bash
 PYTHONPATH="$PWD:$PWD/src" UV_PROJECT_ENVIRONMENT="<root>/${UV_PROJECT_ENVIRONMENT:-.venv}" uv run --no-sync pytest -c pytest.ini --rootdir="$PWD" --no-cov <root>/.temp/bug-hunt/repro/test_bh_<id>.py tests/test_<module>.py
 UV_PROJECT_ENVIRONMENT="<root>/${UV_PROJECT_ENVIRONMENT:-.venv}" uv run --no-sync ruff check <modified_files>
+UV_PROJECT_ENVIRONMENT="<root>/${UV_PROJECT_ENVIRONMENT:-.venv}" uv run --no-sync ruff format --check <modified_files>
 UV_PROJECT_ENVIRONMENT="<root>/${UV_PROJECT_ENVIRONMENT:-.venv}" uv run --no-sync pyrefly check <modified_files>
 ```
 
-7. Stage explicit paths (`git add <files>`), commit to `fix/bh-<id>`, and remove `.temp/worktrees/patch-<id>` immediately.
-8. Push `fix/bh-<id>` (`git push -u origin fix/bh-<id>`) and open the pull request (`gh pr create --head fix/bh-<id> --body-file - <<'EOF'`) from the same agent.
+8. Stage explicit paths (`git add <files>`), commit to `fix/bh-<id>`, and remove `.temp/worktrees/patch-<id>` immediately.
+9. Push `fix/bh-<id>` (`git push -u origin fix/bh-<id>`), open the pull request (`gh pr create --head fix/bh-<id> --body-file - <<'EOF'`), and exit without running `gh run watch`.
 
 ---
 
@@ -115,7 +117,7 @@ UV_PROJECT_ENVIRONMENT="<root>/${UV_PROJECT_ENVIRONMENT:-.venv}" uv run --no-syn
 After the concurrent Patcher agents open their pull requests, verify cross-patch compatibility:
 
 1. Create a temporary consolidation worktree (`git worktree add --detach .temp/worktrees/integration`) and merge all `fix/bh-<id>` branches inside it.
-2. Run `PYTHONPATH="$PWD:$PWD/src" UV_PROJECT_ENVIRONMENT="<root>/${UV_PROJECT_ENVIRONMENT:-.venv}" uv run --no-sync poe test` and `poe code-quality` inside `.temp/worktrees/integration`.
+2. Run `PYTHONPATH="$PWD:$PWD/src" UV_PROJECT_ENVIRONMENT="<root>/${UV_PROJECT_ENVIRONMENT:-.venv}" uv run --no-sync poe test` and `poe code-quality` inside `.temp/worktrees/integration`. Verify 100% branch coverage on all modified source and test files (scans that filter `.temp` path segments can miscount untouched files inside `.temp/worktrees/`).
 3. If a cross-fix conflict or test failure occurs, update the affected `fix/bh-<id>` branch and pull request.
-4. Remove `.temp/worktrees/integration` and prune worktrees (`git worktree prune && rm -rf .temp/worktrees`). Run `uv sync` at the repository root.
-5. Watch remote CI runs on all pull requests (`gh run watch`) and remove `.temp/bug-hunt` once all waves finish.
+4. Remove `.temp/worktrees/integration` and prune worktrees (`git worktree prune && rm -rf .temp/worktrees`). Run `uv sync` at the repository root so editable package links point back to the root checkout.
+5. Monitor remote CI runs across all pull requests (including Windows and macOS), then rebase and squash-merge approved pull requests sequentially before deleting `.temp/bug-hunt`.
