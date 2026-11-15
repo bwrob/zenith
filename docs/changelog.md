@@ -13,6 +13,14 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Added
+
+- New `workflow-bug-hunt` agent skill (`disable-model-invocation: true`) implementing a
+  five-stage multi-agent bug hunting and security audit pipeline (risk-tiered
+  reconnaissance, parallel 1-hop scouts, rolling Git worktree reproduction, sharded
+  arbiter verification with sibling variant scans, and branch patching) scaled from 10k
+  to 1M lines of code.
+
 ## [0.2.1] - 2026-11-08
 
 ### Fixed

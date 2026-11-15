@@ -16,7 +16,7 @@ and environment setup.
 
 ## Template Workflow Skills
 
-These eight workflow skills ship in every generated Zenith project (when
+These nine workflow skills ship in every generated Zenith project (when
 `include_agent_skills` is enabled):
 
 | Skill                                                                               | Activation  | Trigger Domain                                     | Verification Gate                                                |
@@ -29,6 +29,7 @@ These eight workflow skills ship in every generated Zenith project (when
 | [`workflow-skill-creator`](#skill-authoring-workflow-skill-creator)                 | Mandatory   | Creating or modifying skills in `.agents/skills/`  | `poe lint-ste`, `poe check-skills`                               |
 | [`workflow-setup`](#environment-bootstrap-workflow-setup)                           | Manual only | Bootstrapping or repairing the local `.venv`       | `uv sync`, `prek install`, `poe test`, `poe code-quality`        |
 | [`workflow-docs-consumers`](#documentation-consumer-review-workflow-docs-consumers) | Manual only | Stress-testing docs with simulated reader personas | Persona reports written to `.temp/docs-review/<persona-slug>.md` |
+| [`workflow-bug-hunt`](#multi-agent-bug-hunt-workflow-bug-hunt)                      | Manual only | Multi-agent security and bug hunting audits        | Isolated Git worktrees, `poe test`, `poe code-quality`           |
 
 ### Git Hygiene (workflow-git)
 
@@ -132,6 +133,40 @@ subagents representing five reader personas (*Junior Developer*, *Opinionated Se
 Pythonista*, *Tech Lead & Engineering Manager*, *DevOps Engineer*, *Solo Prototyper*).
 Each persona writes a review artifact to `.temp/docs-review/<persona-slug>.md`, which
 the lead agent compacts into concrete file-by-file edit proposals.
+
+### Multi-Agent Bug Hunt (workflow-bug-hunt)
+
+Manual-only workflow (`disable-model-invocation: true`) that scales multi-stage security
+and bug hunting audits from 10k to 1M lines of code:
+
+- **Risk-tiered reconnaissance & wave budgeting**: Ranks modules by entrypoint
+  reachability, high-risk sink density (`rg -c`), and 90-day Git churn
+  (`Tier 1`–`Tier 3`), checkpointing slice state in `.temp/bug-hunt/scope.md` across
+  multi-wave runs.
+- **Disjoint scout slices with 3 lenses & guard tracing**: Parallel read-only scouts
+  report findings (`BH-<slice>-<nn>.md`) only inside their assigned slice (`<= 15` files
+  or `4,000` lines), auditing boundary sinks, spec-vs-code drift, and failure atomicity
+  while tracing 1-hop upstream guards (`Upstream Guards Audited`).
+- **Rolling worktrees, `hypothesis` shrinking & shared `.venv`**: Triage and patch
+  agents run inside a rolling pool of at most 4 active Git worktrees
+  (`.temp/worktrees/`), pinning `PYTHONPATH="$PWD:$PWD/src"`,
+  `UV_PROJECT_ENVIRONMENT="<root>/${UV_PROJECT_ENVIRONMENT:-.venv}"`, and
+  `pytest -c pytest.ini --rootdir="$PWD" --no-cov` with `@given(...)` `hypothesis`
+  shrinking into `.temp/bug-hunt/repro/`.
+- **Adversarial disprover arbiters & 3-step variant sweeps**: Independent arbiters (up
+  to 8 `CONFIRMED` findings per shard) arbitrate every `RAW` finding before patching,
+  try to disprove reachability past upstream guards, deduplicate overlapping flaws, and
+  run a 3-step semantic variant sweep (`rg -n` and `rg -U`).
+- **Concurrent patcher-per-fix MRs & consolidation verification**: Concurrent Patcher
+  agents (one agent per accepted finding, up to 4 in parallel, assigned disjoint line
+  anchors and test line budgets) each create an isolated `fix/bh-<id>` worktree, apply a
+  root-cause fix (plus any locked mirror files) with an OS-portable dual-assertion typed
+  regression test, push the branch, open a dedicated pull request (`gh pr create`), and
+  exit without blocking on `gh run watch`. The Coordinator merges all `fix/bh-<id>`
+  branches inside `.temp/worktrees/integration` to verify cross-patch compatibility
+  (`poe test` and `poe code-quality`), runs `uv sync` at the repository root after
+  cleanup, and coordinates CI-gated sequential rebases and squash merges across all
+  platforms.
 
 ## Upstream Maintainer Skills (Template Repository Only)
 
