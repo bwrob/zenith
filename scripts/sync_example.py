@@ -42,7 +42,7 @@ def _clean_target_dir(target_dir: Path) -> None:
     for item in target_dir.iterdir():
         if item.name == ".git":
             continue
-        if item.is_dir():
+        if item.is_dir() and not item.is_symlink():
             shutil.rmtree(item)
         else:
             item.unlink()
@@ -54,7 +54,7 @@ def _copy_rendered_files(rendered_path: Path, target_dir: Path) -> None:
         if item.name == ".git":
             continue
         dest = target_dir / item.name
-        if item.is_dir():
+        if item.is_dir() and not item.is_symlink():
             shutil.copytree(item, dest, symlinks=True)
         else:
             shutil.copy2(item, dest, follow_symlinks=False)
