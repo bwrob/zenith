@@ -160,13 +160,12 @@ and bug hunting audits from 10k to 1M lines of code:
 - **Concurrent patcher-per-fix MRs & consolidation verification**: Concurrent Patcher
   agents (one agent per accepted finding, up to 4 in parallel, assigned disjoint line
   anchors and test line budgets) each create an isolated `fix/bh-<id>` worktree, apply a
-  root-cause fix (plus any locked mirror files) with an OS-portable dual-assertion typed
-  regression test, push the branch, open a dedicated pull request (`gh pr create`), and
-  exit without blocking on `gh run watch`. The Coordinator merges all `fix/bh-<id>`
-  branches inside `.temp/worktrees/integration` to verify cross-patch compatibility
-  (`poe test` and `poe code-quality`), runs `uv sync` at the repository root after
-  cleanup, and coordinates CI-gated sequential rebases and squash merges across all
-  platforms.
+  root-cause fix with a portable dual-assertion typed regression test, push the branch,
+  open a dedicated pull request (`gh pr create`), and exit without blocking on
+  `gh run watch`. The Coordinator merges all `fix/bh-<id>` branches inside
+  `.temp/worktrees/integration` to verify cross-patch compatibility (`poe test` and
+  `poe code-quality`), runs `uv sync` at the repository root after cleanup, and
+  coordinates CI-gated sequential rebases and squash merges across supported platforms.
 
 ## Upstream Maintainer Skills (Template Repository Only)
 
